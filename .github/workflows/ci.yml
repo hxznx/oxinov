@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate project documents and local links
+        run: python scripts/validate_project.py
+      - name: Validate Docker Compose syntax
+        env:
+          POSTGRES_PASSWORD: ci-only-placeholder
+          REDIS_PASSWORD: ci-only-placeholder
+          MINIO_ROOT_USER: ci-only-placeholder
+          MINIO_ROOT_PASSWORD: ci-only-placeholder
+        run: docker compose config --quiet
+
+  # App lint, tests, migrations, image builds, and mobile tests are added
+  # when apps/ source is implemented. See docs/devops/CI-CD.md.

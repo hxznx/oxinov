@@ -1,0 +1,22 @@
+# Template only; replace host and select a controller/certificate strategy.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oxinov
+spec:
+  rules:
+    - host: lms.example.invalid
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: oxinov-backend
+                port: { number: 80 }
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: oxinov-frontend
+                port: { number: 80 }

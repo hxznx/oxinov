@@ -1,0 +1,19 @@
+name: Deployment preflight (deployment not configured)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check application and deployment readiness
+        run: python scripts/validate_project.py --deploy
+
+  # No remote deployment step is enabled until the cloud provider, registry,
+  # secrets, database backup, and staging environment are selected.

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: oxinov-frontend
+spec:
+  selector: { app: oxinov-frontend }
+  ports: [{ port: 80, targetPort: 3000 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oxinov-backend
+spec:
+  selector: { app: oxinov-backend }
+  ports: [{ port: 80, targetPort: 4000 }]

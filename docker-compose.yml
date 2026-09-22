@@ -1,0 +1,107 @@
+name: ${COMPOSE_PROJECT_NAME:-oxinov-lms}
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-oxinov_lms}
+      POSTGRES_USER: ${POSTGRES_USER:-oxinov}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [private]
+
+  redis:
+    image: redis:7-alpine
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}
+    command: ["sh", "-c", "exec redis-server --requirepass \"$$REDIS_PASSWORD\""]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [private]
+
+  minio:
+    image: minio/minio:latest # Local only; pin a digest before production use.
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${MINIO_API_PORT:-9000}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+    networks: [private]
+
+  backend:
+    profiles: [app]
+    build: { context: ., target: backend }
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-oxinov}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_lms}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+    ports:
+      - "127.0.0.1:${API_PORT:-4000}:4000"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [private]
+
+  frontend:
+    profiles: [app]
+    build: { context: ., target: frontend }
+    environment:
+      NODE_ENV: development
+      API_BASE_URL: http://backend:4000
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3000}:3000"
+    depends_on:
+      - backend
+    networks: [private]
+
+  worker:
+    profiles: [app]
+    build: { context: ., target: worker }
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER:-oxinov}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_lms}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [private]
+
+  chat:
+    profiles: [app]
+    build: { context: ., target: chat }
+    environment:
+      NODE_ENV: development
+      PORT: 4001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-oxinov}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_lms}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+    ports:
+      - "127.0.0.1:${CHAT_PORT:-4001}:4001"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [private]
+
+networks:
+  private:
+
+volumes:
+  postgres_data:
+  minio_data:

@@ -1,0 +1,21 @@
+name: Security baseline
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 3 * * 1'
+
+jobs:
+  scaffold-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check scaffold security rules
+        run: python scripts/validate_project.py --security
+
+  # Dependency and image scans are required once package manifests and
+  # buildable application images exist. See docs/engineering/DEPENDENCY-POLICY.md.
