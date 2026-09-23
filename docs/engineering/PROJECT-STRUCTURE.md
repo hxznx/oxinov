@@ -22,6 +22,10 @@ monitoring/
   prometheus/       scrape configuration and alert rules
   alertmanager/     alert routing configuration
   grafana/          provisioned data source and dashboards
+security/
+  ci/               CI security scanning policy
+  soc/              security-event schema, Sigma detections, runbooks, and incidents
+  evidence/         evidence-handling policy; actual evidence is ignored by Git
 packages/
   contracts/        shared API types and generated client
   domain/           pure domain types and rules where sharing is safe
@@ -31,4 +35,4 @@ scripts/            repository validation and maintenance utilities
 docker-compose.yml  root entry point for local containers and profiles
 ```
 
-Each application owns its runtime and Docker build target. Packages must not import from applications. Only `backend/api` and `backend/worker` may use the database client; `frontend/web` and `frontend/mobile` call the versioned API. Database migrations and policies live in `database/` and are executed by controlled backend or CI tasks. Monitoring configuration never imports product code. GitHub requires executable workflows under `.github/workflows/`; DevOps design and provider assets remain under `devops/`. Do not share secrets or database clients into a frontend bundle. Create backend modules for tenant, identity, catalog, learning, exams, chat, billing, and AI commands. The folders and ownership rules are present; application source has not been scaffolded yet.
+Each application owns its runtime and Docker build target. Packages must not import from applications. Only `backend/api` and `backend/worker` may use the database client; `frontend/web` and `frontend/mobile` call the versioned API. Database migrations and policies live in `database/` and are executed by controlled backend or CI tasks. Monitoring configuration never imports product code. Security detections consume normalized events and cannot bypass application authorization or query production databases directly. GitHub requires executable workflows under `.github/workflows/`; DevOps design and provider assets remain under `devops/`. Do not share secrets or database clients into a frontend bundle. Create backend modules for tenant, identity, catalog, learning, exams, chat, billing, and AI commands. `backend/api` is scaffolded (tenancy, catalog, learning, and exams in one module for now); the other applications have not been scaffolded yet.

@@ -1,0 +1,60 @@
+/**
+ * Stable API error codes (docs/api/ERROR-HANDLING.md). Clients branch on `code`, never on
+ * `message`. Add codes deliberately; renaming one is a breaking API change.
+ */
+export type ErrorCode =
+  | 'VALIDATION_FAILED'
+  | 'UNAUTHENTICATED'
+  | 'FORBIDDEN'
+  | 'RESOURCE_NOT_FOUND'
+  | 'CONFLICT'
+  | 'EMAIL_NOT_VERIFIED'
+  | 'SLUG_UNAVAILABLE'
+  | 'PAYMENT_REQUIRED'
+  | 'NOT_ENTITLED'
+  | 'COURSE_NOT_AVAILABLE'
+  | 'ATTEMPT_LIMIT_REACHED'
+  | 'ATTEMPT_EXPIRED'
+  | 'ATTEMPT_CLOSED'
+  | 'EXAM_NOT_AVAILABLE'
+  | 'RATE_LIMITED'
+  | 'INTERNAL_ERROR';
+
+export class DomainError extends Error {
+  constructor(
+    readonly code: ErrorCode,
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'DomainError';
+  }
+}
+
+export const Errors = {
+  unauthenticated: () => new DomainError('UNAUTHENTICATED', 401, 'Sign in to continue.'),
+  forbidden: (message = 'You do not have permission to do this.') =>
+    new DomainError('FORBIDDEN', 403, message),
+  /** Used for missing objects and for other tenants' objects alike, so IDs are not disclosed. */
+  notFound: (resource: string) =>
+    new DomainError('RESOURCE_NOT_FOUND', 404, `${resource} was not found.`),
+  conflict: (message: string) => new DomainError('CONFLICT', 409, message),
+  emailNotVerified: () =>
+    new DomainError('EMAIL_NOT_VERIFIED', 403, 'Verify your email address before continuing.'),
+  slugUnavailable: () =>
+    new DomainError('SLUG_UNAVAILABLE', 409, 'That workspace address is already taken.'),
+  paymentRequired: () =>
+    new DomainError('PAYMENT_REQUIRED', 402, 'This course must be purchased before enrolling.'),
+  notEntitled: () =>
+    new DomainError('NOT_ENTITLED', 403, 'You need access to this course first.'),
+  courseNotAvailable: () =>
+    new DomainError('COURSE_NOT_AVAILABLE', 409, 'This course is not open for enrollment.'),
+  attemptLimitReached: () =>
+    new DomainError('ATTEMPT_LIMIT_REACHED', 409, 'No attempts remain for this exam.'),
+  attemptExpired: () =>
+    new DomainError('ATTEMPT_EXPIRED', 409, 'The time limit for this attempt has passed.'),
+  attemptClosed: () =>
+    new DomainError('ATTEMPT_CLOSED', 409, 'This attempt has already been submitted.'),
+  examNotAvailable: () =>
+    new DomainError('EXAM_NOT_AVAILABLE', 409, 'This exam is not available.'),
+} as const;

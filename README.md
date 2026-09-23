@@ -19,11 +19,12 @@ Documentation-first scaffold for a cloud-hosted, multi-tenant learning platform 
 | `database/` | Prisma schema, migrations, seeds, and PostgreSQL policies |
 | `devops/` | Docker build, Kubernetes, Terraform, and Ansible assets |
 | `monitoring/` | Prometheus, Alertmanager, exporters, and Grafana provisioning |
+| `security/` | CI security policy, SOC event schema, Sigma detections, runbooks, and incident templates |
 | `packages/` | Shared contracts and pure domain packages |
 
 ## Current state
 
-The requirements and repository scaffold are present. Frontend, API, worker, chat, and mobile application code have not yet been implemented. Docker application targets and deployment manifests are templates until those apps exist. No production deployment target is configured.
+The first backend slice exists in `backend/api` (NestJS): workspaces, catalog, free-course enrollment, and server-graded timed exams, backed by the Prisma schema, numbered migrations, PostgreSQL row-level security, and a two-tenant JLPT N5 seed under `database/`. See [the API README](backend/api/README.md) for routes, local setup, and tests. Paid checkout (Stripe), lesson progress, certificates, the web and mobile apps, the worker, and chat are not implemented yet. Frontend, worker, and chat Docker targets and the deployment manifests remain templates. No production deployment target is configured.
 
 ## Decisions still needed
 

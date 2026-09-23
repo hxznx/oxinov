@@ -1,0 +1,19 @@
+title: Oxinov Invalid Payment Webhook Signature
+id: b0f255df-0c06-4bbc-80d0-0c967330b89a
+status: experimental
+description: Detects rejection of a payment webhook with an invalid provider signature.
+author: Oxinov Security
+date: 2026-09-24
+references:
+  - ../../runbooks/PAYMENT-WEBHOOK-ABUSE.md
+logsource:
+  category: application
+  product: oxinov_lms
+detection:
+  selection:
+    event.action: payment.webhook.signature_invalid
+    event.outcome: failure
+  condition: selection
+falsepositives:
+  - Provider test tools configured with an obsolete test secret
+level: medium

@@ -59,6 +59,8 @@ The starter platform dashboard shows scrape health, request throughput, API p95 
 
 Tenant-wide product analytics belong in the authorized application analytics layer. Operational dashboards must avoid tenant identifiers unless a separately reviewed, access-controlled metric design proves bounded cardinality and privacy.
 
+Security-event analysis belongs in the separate SOC pipeline described in `docs/security/SOC.md`. Grafana and Prometheus remain responsible for operational health; they may show aggregate security-control health but do not store investigation evidence or replace the SIEM.
+
 ## Alerts and service objectives
 
 The checked-in rules cover scrape failures, PostgreSQL/Redis exporter availability, API server error ratio above 5%, API p95 latency above one second, payment fulfillment failures, and exam submission failures. Before production, add alerts for queue lag, stalled video jobs, certificate failures, storage pressure, failed backups, and expiring TLS certificates.

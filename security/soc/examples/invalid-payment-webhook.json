@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "timestamp": "2026-09-24T03:10:00Z",
+  "event_id": "974e6bd4-283a-474b-8bd1-80bbd3e04ff6",
+  "event": {
+    "action": "payment.webhook.signature_invalid",
+    "category": "payment",
+    "outcome": "failure",
+    "severity": 5
+  },
+  "service": { "name": "api", "version": "0.1.0-test" },
+  "environment": "staging",
+  "actor": { "type": "anonymous" },
+  "source": { "ip": "192.0.2.30", "country_code": "US" },
+  "request": {
+    "correlation_id": "99999999-9999-4999-8999-999999999999",
+    "route": "/v1/webhooks/stripe",
+    "method": "POST"
+  },
+  "target": { "type": "payment_webhook" },
+  "reason_code": "WEBHOOK_SIGNATURE_INVALID",
+  "attributes": { "provider": "stripe", "test_event": true }
+}

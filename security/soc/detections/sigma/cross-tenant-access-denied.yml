@@ -1,0 +1,19 @@
+title: Oxinov Cross-Tenant Access Denied
+id: 92b8ea74-93b6-4fa1-af31-72b896a528c8
+status: experimental
+description: Detects an application control preventing access to a different tenant.
+author: Oxinov Security
+date: 2026-09-24
+references:
+  - ../../runbooks/CROSS-TENANT-ACCESS.md
+logsource:
+  category: application
+  product: oxinov_lms
+detection:
+  selection:
+    event.action: tenant.cross_access.denied
+    event.outcome: failure
+  condition: selection
+falsepositives:
+  - Stale browser state after an authorized workspace switch
+level: high

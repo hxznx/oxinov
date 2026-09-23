@@ -24,3 +24,4 @@
 | Cloud provider, production host count, domains, and backup storage | Determines deployment topology, TLS, disaster recovery, and scaling. |
 | One shared mobile app or separately branded app binaries per tenant | The current requirement assumes one shared app with in-app tenant selection and tenant branding. |
 | AI provider, allowed inputs, usage limits, and review policy | Determines cost, data processing, and which prompt-generated drafts may be proposed. |
+| SIEM hosting, security-event retention/residency, on-call owner, notification channel, and whether Wazuh endpoint agents are needed | Determines SOC cost, access control, response coverage, evidence handling, and whether OpenSearch alone meets the production need. |

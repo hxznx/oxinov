@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oxinov.example/schemas/security-event-v1.json",
+  "title": "Oxinov security event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "timestamp",
+    "event_id",
+    "event",
+    "service",
+    "environment",
+    "reason_code"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "event_id": { "type": "string", "format": "uuid" },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "category", "outcome", "severity"],
+      "properties": {
+        "action": { "type": "string", "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$" },
+        "category": {
+          "enum": [
+            "authentication",
+            "authorization",
+            "configuration",
+            "data_access",
+            "malware",
+            "payment",
+            "tenant_isolation",
+            "threat",
+            "vulnerability"
+          ]
+        },
+        "outcome": { "enum": ["success", "failure", "unknown"] },
+        "severity": { "type": "integer", "minimum": 0, "maximum": 10 }
+      }
+    },
+    "service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "enum": ["api", "worker", "chat", "web", "mobile", "database", "platform"] },
+        "version": { "type": "string", "minLength": 1, "maxLength": 100 }
+      }
+    },
+    "environment": { "enum": ["local", "ci", "staging", "production"] },
+    "tenant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "format": "uuid" }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "type": { "enum": ["user", "service", "system", "anonymous"] },
+        "role": { "type": "string", "maxLength": 80 }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ip": {
+          "type": "string",
+          "oneOf": [{ "format": "ipv4" }, { "format": "ipv6" }]
+        },
+        "country_code": { "type": "string", "pattern": "^[A-Z]{2}$" }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "correlation_id": { "type": "string", "format": "uuid" },
+        "route": { "type": "string", "maxLength": 200 },
+        "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"] }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "maxLength": 80 },
+        "id": { "type": "string", "format": "uuid" },
+        "role": { "type": "string", "maxLength": 80 }
+      }
+    },
+    "reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,79}$" },
+    "attributes": {
+      "type": "object",
+      "maxProperties": 20,
+      "additionalProperties": {
+        "type": ["string", "number", "integer", "boolean"],
+        "maxLength": 200
+      }
+    }
+  }
+}

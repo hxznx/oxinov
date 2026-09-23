@@ -1,0 +1,23 @@
+title: Oxinov Privileged Tenant Role Change
+id: ea4d3b8e-8eaa-49a9-bf3d-eb7c02069626
+status: experimental
+description: Detects assignment or modification of a privileged tenant or platform role.
+author: Oxinov Security
+date: 2026-09-24
+references:
+  - ../../runbooks/ACCOUNT-TAKEOVER.md
+logsource:
+  category: application
+  product: oxinov_lms
+detection:
+  selection:
+    event.action: membership.role.changed
+    event.outcome: success
+    target.role:
+      - tenant_owner
+      - tenant_admin
+      - platform_admin
+  condition: selection
+falsepositives:
+  - Approved administrator onboarding or ownership transfer
+level: high

@@ -23,6 +23,7 @@ Use this concrete starting architecture. PostgreSQL is the mandatory transaction
 | Notifications | Transactional email provider, Web Push API, and native push integration | Account email, course announcements, chat and result alerts, and opted-in browser or mobile push. Select the email and native push providers before implementation. |
 | AI integration | Provider adapter behind backend-authorized commands | Generate tenant-scoped drafts and proposed actions without giving the model direct database, shell, payment, or publishing privileges. |
 | Metrics and dashboards | Prometheus, PostgreSQL/Redis exporters, Alertmanager, and Grafana | Scrape bounded-cardinality operational metrics, evaluate alert rules, route notifications, and display version-controlled dashboards. Keep monitoring endpoints on private networks. |
+| Security engineering and SOC | GitHub CodeQL/dependency review, Trivy, OpenSearch Security Analytics with Sigma, and Falco; Wazuh optional for managed endpoints/hosts | Scan code, dependencies, secrets, images, and IaC; collect normalized security events; detect and investigate threats; run incident procedures. Keep security storage and access separate from product analytics and operational metrics. |
 
 External embeds cannot provide the same access and progress guarantees as hosted video. Hosted Mux video is the default for paid lessons. If embeds are approved, show their limits in the authoring UI and do not promise protected playback or exact watch-percentage tracking.
 
@@ -41,3 +42,7 @@ Use one shared PostgreSQL instance and tenant-scoped tables with PostgreSQL row-
 - [Mux secure video playback](https://www.mux.com/docs/guides/secure-video-playback)
 - [Prometheus metric naming](https://prometheus.io/docs/practices/naming/)
 - [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/)
+- [OpenSearch Security Analytics](https://docs.opensearch.org/latest/security-analytics/)
+- [Falco runtime security](https://falco.org/docs/)
+- [Wazuh components](https://documentation.wazuh.com/current/getting-started/components/index.html)
+- [GitHub CodeQL](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning)

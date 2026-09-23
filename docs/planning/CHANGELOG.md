@@ -1,5 +1,7 @@
 # Project changelog
 
+- **2026-09-24, v1.7:** Added the first backend slice: Prisma schema and numbered migrations, PostgreSQL row-level security with the least-privilege `oxinov_app` role, composite tenant foreign keys, database isolation tests, a deterministic two-tenant JLPT N5 seed, and the NestJS API (`backend/api`) for workspaces, catalog, free enrollment, and server-graded exam attempts with unit and PostgreSQL integration tests. Recorded ADR-006 and ADR-007.
+- **2026-09-24, v1.6:** Added a separate security operations area with a normalized event schema, Sigma detections, SOC runbooks, incident/evidence policy, CI repository scanning, SIEM/Falco architecture, and optional Wazuh endpoint coverage.
 - **2026-09-23, v1.5:** Separated frontend, backend, database, DevOps, monitoring, and shared-package ownership into top-level repository folders and updated all build, CI, validation, and documentation paths.
 - **2026-09-23, v1.4:** Added the Prometheus, Alertmanager, PostgreSQL/Redis exporter, and Grafana observability baseline; defined metric privacy, dashboards, alerts, local Compose startup, and production requirements.
 - **2026-09-22, v1.3:** Defined multi-tenant SaaS, PostgreSQL in Docker, separate frontend/backend targets, CI/CD, coding standards, AI-assisted authoring, and Google Play readiness.

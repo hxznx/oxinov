@@ -21,3 +21,4 @@ coverage/
 *.tfstate.*
 .terraform/
 __pycache__/
+security/evidence/

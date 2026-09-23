@@ -6,4 +6,4 @@
 4. Run `docker compose --profile monitoring up -d` to add PostgreSQL/Redis exporters, Prometheus, Alertmanager, and Grafana. Grafana is at `http://localhost:3001`; Prometheus is at `http://localhost:9090`; Alertmanager is at `http://localhost:9093`. Use the Grafana credentials from `.env`.
 5. Run `python scripts/validate_project.py` to check this documentation scaffold.
 
-Docker is not installed in the current workspace environment, so Compose and the monitoring containers could not be executed here. Application code and migrations are the next implementation phase.
+6. For the API, follow [backend/api/README.md](../../backend/api/README.md): install dependencies, apply migrations with `npm run db:migrate`, load demo data with `npm run db:seed`, and start it with `npm run dev`. A fresh Postgres volume creates the `oxinov_app` login from `APP_DB_PASSWORD`; for an existing volume, run the `ALTER ROLE` command in that README once.

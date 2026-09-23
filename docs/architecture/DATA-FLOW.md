@@ -15,3 +15,7 @@ Web/mobile requests short-lived media access -> player reports progress -> API s
 ## AI draft
 
 Authorized prompt -> tenant-scoped input retrieval -> structured proposal -> preview -> explicit approval -> draft creation -> human publication review. No direct SQL, shell, refund, or cross-tenant action.
+
+## Security operations
+
+Identity, application, cloud, database-audit, and runtime sources emit normalized security events -> collector validates and enriches the schema -> access-controlled SIEM stores events -> Sigma rules and correlation create findings -> severity routing opens a SOC runbook -> responders record actions and protected evidence outside Git.

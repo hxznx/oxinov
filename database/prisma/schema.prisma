@@ -1,0 +1,635 @@
+// Oxinov LMS — PostgreSQL system of record.
+//
+// Tenant isolation (FR-TENANT-1605, NFR-11):
+// - Every tenant-owned model has an immutable `tenantId` and a composite unique key
+//   (tenantId, id). Relations between tenant-owned models reference that composite key, so
+//   PostgreSQL rejects cross-tenant foreign keys.
+// - Row-level security policies live in the numbered migrations under database/migrations/
+//   (see database/policies/README.md). The API connects as `oxinov_app`, which cannot bypass RLS.
+// - Global registries (Tenant, UserProfile, ProviderEvent) have no tenantId column of their own
+//   except ProviderEvent, which records the resolved tenant for traceability.
+//
+// Money is stored as integer minor units plus an ISO 4217 currency. Timestamps are UTC.
+
+generator client {
+  provider = "prisma-client"
+  output       = "../../backend/api/src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Global registry
+// ---------------------------------------------------------------------------
+
+enum TenantStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELED
+
+  @@map("tenant_status")
+}
+
+model Tenant {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug            String       @unique @db.VarChar(63)
+  name            String       @db.VarChar(120)
+  status          TenantStatus @default(TRIAL)
+  defaultLocale   String       @default("en") @map("default_locale") @db.VarChar(16)
+  timeZone        String       @default("UTC") @map("time_zone") @db.VarChar(64)
+  primaryColor    String?      @map("primary_color") @db.VarChar(7)
+  createdByUserId String       @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  createdBy      UserProfile        @relation("TenantCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  memberships    TenantMembership[]
+  programs       Program[]
+  courses        Course[]
+  courseVersions CourseVersion[]
+  sections       Section[]
+  lessons        Lesson[]
+  enrollments    Enrollment[]
+  entitlements   Entitlement[]
+  payments       Payment[]
+  questions      Question[]
+  blueprints     ExamBlueprint[]
+  blueprintSects ExamBlueprintSection[]
+  attempts       ExamAttempt[]
+  attemptItems   ExamAttemptItem[]
+  results        ExamResult[]
+  auditEvents    AuditEvent[]
+
+  @@map("tenants")
+}
+
+model UserProfile {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  /// Subject claim from the identity provider (Clerk user ID). Never an email address.
+  authSubject   String   @unique @map("auth_subject") @db.VarChar(255)
+  email         String?  @db.VarChar(320)
+  emailVerified Boolean  @default(false) @map("email_verified")
+  displayName   String?  @map("display_name") @db.VarChar(120)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenantsCreated Tenant[]           @relation("TenantCreatedBy")
+  memberships    TenantMembership[]
+  coursesCreated Course[]
+  enrollments    Enrollment[]
+  entitlements   Entitlement[]
+  payments       Payment[]
+  attempts       ExamAttempt[]
+  auditEvents    AuditEvent[]
+
+  @@map("user_profiles")
+}
+
+// ---------------------------------------------------------------------------
+// Membership
+// ---------------------------------------------------------------------------
+
+enum TenantRole {
+  OWNER
+  ADMIN
+  INSTRUCTOR
+  LEARNER
+
+  @@map("tenant_role")
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+
+  @@map("membership_status")
+}
+
+model TenantMembership {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String           @map("tenant_id") @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  role      TenantRole
+  status    MembershipStatus @default(ACTIVE)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user   UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, userId])
+  @@index([userId])
+  @@map("tenant_memberships")
+}
+
+// ---------------------------------------------------------------------------
+// Education
+// ---------------------------------------------------------------------------
+
+enum ProgramKind {
+  JLPT
+  SSW
+  LANGUAGE
+  IT
+  OTHER
+
+  @@map("program_kind")
+}
+
+model Program {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String      @map("tenant_id") @db.Uuid
+  slug         String      @db.VarChar(80)
+  name         String      @db.VarChar(160)
+  kind         ProgramKind
+  /// Study language as a BCP 47 tag, for example "ja" or "zh-Hant".
+  language     String?     @db.VarChar(16)
+  /// Program-specific level such as "N5"; free text so non-JLPT programs can define their own.
+  level        String?     @db.VarChar(40)
+  position     Int         @default(0)
+  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant     Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  courses    Course[]
+  questions  Question[]
+  blueprints ExamBlueprint[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, slug])
+  @@map("programs")
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+
+  @@map("course_status")
+}
+
+enum CourseVersionStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  SUPERSEDED
+
+  @@map("course_version_status")
+}
+
+model Course {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String       @map("tenant_id") @db.Uuid
+  programId          String?      @map("program_id") @db.Uuid
+  slug               String       @db.VarChar(120)
+  status             CourseStatus @default(DRAFT)
+  /// Learner-visible version. Null until the first version is approved (FR-COURSE-203).
+  publishedVersionId String?      @map("published_version_id") @db.Uuid
+  /// Price in minor units of `currency`; 0 means free.
+  priceMinor         Int          @default(0) @map("price_minor")
+  currency           String       @default("USD") @db.Char(3)
+  createdByUserId    String       @map("created_by_user_id") @db.Uuid
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant           Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  program          Program?        @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
+  publishedVersion CourseVersion?  @relation("CoursePublishedVersion", fields: [tenantId, publishedVersionId], references: [tenantId, id], onDelete: Restrict)
+  createdBy        UserProfile     @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  versions         CourseVersion[] @relation("CourseVersions")
+  enrollments      Enrollment[]
+  entitlements     Entitlement[]
+  payments         Payment[]
+  blueprints       ExamBlueprint[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, slug])
+  @@unique([tenantId, publishedVersionId])
+  @@index([tenantId, status])
+  @@map("courses")
+}
+
+model CourseVersion {
+  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String              @map("tenant_id") @db.Uuid
+  courseId    String              @map("course_id") @db.Uuid
+  version     Int
+  status      CourseVersionStatus @default(DRAFT)
+  title       String              @db.VarChar(200)
+  summary     String              @db.VarChar(500)
+  description String              @default("")
+  /// Language the course is taught in (BCP 47), independent of the studied language.
+  language    String              @db.VarChar(16)
+  outcomes    String[]            @default([])
+  publishedAt DateTime?           @map("published_at") @db.Timestamptz(3)
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course           Course    @relation("CourseVersions", fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  publishedFor     Course?   @relation("CoursePublishedVersion")
+  sections         Section[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, courseId, version])
+  @@map("course_versions")
+}
+
+model Section {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  courseVersionId String   @map("course_version_id") @db.Uuid
+  title           String   @db.VarChar(200)
+  position        Int
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  courseVersion CourseVersion @relation(fields: [tenantId, courseVersionId], references: [tenantId, id], onDelete: Restrict)
+  lessons       Lesson[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, courseVersionId, position])
+  @@map("sections")
+}
+
+enum LessonKind {
+  VIDEO
+  AUDIO
+  TEXT
+
+  @@map("lesson_kind")
+}
+
+model Lesson {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String     @map("tenant_id") @db.Uuid
+  sectionId    String     @map("section_id") @db.Uuid
+  title        String     @db.VarChar(200)
+  kind         LessonKind
+  position     Int
+  /// Markdown body for text lessons and transcripts/text alternatives for media lessons.
+  bodyMarkdown String     @default("") @map("body_markdown")
+  isPreview    Boolean    @default(false) @map("is_preview")
+  isRequired   Boolean    @default(true) @map("is_required")
+  durationSec  Int?       @map("duration_sec")
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  section Section @relation(fields: [tenantId, sectionId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, sectionId, position])
+  @@map("lessons")
+}
+
+// ---------------------------------------------------------------------------
+// Learning and finance
+// ---------------------------------------------------------------------------
+
+enum EnrollmentStatus {
+  ACTIVE
+  REVOKED
+
+  @@map("enrollment_status")
+}
+
+model Enrollment {
+  id         String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String           @map("tenant_id") @db.Uuid
+  userId     String           @map("user_id") @db.Uuid
+  courseId   String           @map("course_id") @db.Uuid
+  status     EnrollmentStatus @default(ACTIVE)
+  enrolledAt DateTime         @default(now()) @map("enrolled_at") @db.Timestamptz(3)
+  revokedAt  DateTime?        @map("revoked_at") @db.Timestamptz(3)
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user         UserProfile   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  course       Course        @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  entitlements Entitlement[]
+
+  // One ACTIVE enrollment per learner and course is enforced by a partial unique index
+  // in migration 20260924000100_init (Prisma cannot express partial indexes).
+  @@unique([tenantId, id])
+  @@index([tenantId, userId])
+  @@map("enrollments")
+}
+
+enum EntitlementSource {
+  FREE
+  PURCHASE
+  SUBSCRIPTION
+  ADMIN_GRANT
+
+  @@map("entitlement_source")
+}
+
+/// Access ledger (FR-CATALOG-303). Access exists while a non-revoked entitlement covers now.
+model Entitlement {
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String            @map("tenant_id") @db.Uuid
+  userId       String            @map("user_id") @db.Uuid
+  courseId     String            @map("course_id") @db.Uuid
+  enrollmentId String            @map("enrollment_id") @db.Uuid
+  source       EntitlementSource
+  /// Set for PURCHASE entitlements; unique so one payment grants at most one entitlement.
+  paymentId    String?           @map("payment_id") @db.Uuid
+  startsAt     DateTime          @default(now()) @map("starts_at") @db.Timestamptz(3)
+  endsAt       DateTime?         @map("ends_at") @db.Timestamptz(3)
+  revokedAt    DateTime?         @map("revoked_at") @db.Timestamptz(3)
+  revokeReason String?           @map("revoke_reason") @db.VarChar(500)
+  createdAt    DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user       UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
+  course     Course      @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  enrollment Enrollment  @relation(fields: [tenantId, enrollmentId], references: [tenantId, id], onDelete: Restrict)
+  payment    Payment?    @relation(fields: [tenantId, paymentId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, paymentId])
+  @@index([tenantId, userId, courseId])
+  @@map("entitlements")
+}
+
+enum PaymentProvider {
+  STRIPE
+  GOOGLE_PLAY
+  APP_STORE
+
+  @@map("payment_provider")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+
+  @@map("payment_status")
+}
+
+/// Learner course purchase. Tenant SaaS subscriptions are a separate, future ledger.
+model Payment {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String          @map("tenant_id") @db.Uuid
+  userId            String          @map("user_id") @db.Uuid
+  courseId          String          @map("course_id") @db.Uuid
+  provider          PaymentProvider
+  providerPaymentId String          @map("provider_payment_id") @db.VarChar(255)
+  amountMinor       Int             @map("amount_minor")
+  currency          String          @db.Char(3)
+  status            PaymentStatus   @default(PENDING)
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user         UserProfile  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  course       Course       @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  entitlement  Entitlement?
+
+  @@unique([tenantId, id])
+  @@unique([provider, providerPaymentId])
+  @@map("payments")
+}
+
+/// Verified webhook events. Unique per provider event ID so each is processed once.
+/// Global table: webhooks arrive before tenant context exists. Only the webhook path uses it.
+model ProviderEvent {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provider        PaymentProvider
+  providerEventId String          @map("provider_event_id") @db.VarChar(255)
+  eventType       String          @map("event_type") @db.VarChar(120)
+  tenantId        String?         @map("tenant_id") @db.Uuid
+  receivedAt      DateTime        @default(now()) @map("received_at") @db.Timestamptz(3)
+  processedAt     DateTime?       @map("processed_at") @db.Timestamptz(3)
+
+  @@unique([provider, providerEventId])
+  @@map("provider_events")
+}
+
+// ---------------------------------------------------------------------------
+// Exams (FR-EXAM-1201..1205, FR-ASSESS-501/502)
+// ---------------------------------------------------------------------------
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  FILL_BLANK
+
+  @@map("question_type")
+}
+
+enum QuestionStatus {
+  ACTIVE
+  RETIRED
+
+  @@map("question_status")
+}
+
+model Question {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String         @map("tenant_id") @db.Uuid
+  programId       String         @map("program_id") @db.Uuid
+  /// Blueprint section this question can fill, for example "vocabulary" or "grammar".
+  sectionKey      String         @map("section_key") @db.VarChar(40)
+  topic           String?        @db.VarChar(80)
+  difficulty      Int            @default(1) @db.SmallInt
+  type            QuestionType
+  status          QuestionStatus @default(ACTIVE)
+  version         Int            @default(1)
+  prompt          String
+  passage         String?
+  /// [{ "id": "a", "text": "..." }] for choice questions; empty for FILL_BLANK.
+  choices         Json           @default("[]")
+  /// Choice IDs for choice questions, accepted strings for FILL_BLANK. Never sent to learners
+  /// before release.
+  answerKey       Json           @map("answer_key")
+  explanation     String?
+  marks           Int            @default(1)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant       Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  program      Program           @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
+  attemptItems ExamAttemptItem[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId, programId, sectionKey, status])
+  @@map("questions")
+}
+
+enum BlueprintKind {
+  PRACTICE
+  MOCK
+
+  @@map("blueprint_kind")
+}
+
+enum BlueprintStatus {
+  DRAFT
+  APPROVED
+  RETIRED
+
+  @@map("blueprint_status")
+}
+
+enum AnswerRelease {
+  AFTER_SUBMIT
+  NEVER
+
+  @@map("answer_release")
+}
+
+model ExamBlueprint {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String          @map("tenant_id") @db.Uuid
+  programId        String          @map("program_id") @db.Uuid
+  courseId         String          @map("course_id") @db.Uuid
+  title            String          @db.VarChar(200)
+  kind             BlueprintKind
+  status           BlueprintStatus @default(DRAFT)
+  version          Int             @default(1)
+  timeLimitSec     Int             @map("time_limit_sec")
+  passPercent      Int             @map("pass_percent") @db.SmallInt
+  maxAttempts      Int?            @map("max_attempts")
+  answerRelease    AnswerRelease   @default(AFTER_SUBMIT) @map("answer_release")
+  shuffleQuestions Boolean         @default(true) @map("shuffle_questions")
+  approvedAt       DateTime?       @map("approved_at") @db.Timestamptz(3)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant   Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  program  Program                @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
+  course   Course                 @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  sections ExamBlueprintSection[]
+  attempts ExamAttempt[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId, courseId])
+  @@map("exam_blueprints")
+}
+
+model ExamBlueprintSection {
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String @map("tenant_id") @db.Uuid
+  blueprintId   String @map("blueprint_id") @db.Uuid
+  sectionKey    String @map("section_key") @db.VarChar(40)
+  title         String @db.VarChar(160)
+  position      Int
+  questionCount Int    @map("question_count")
+
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  blueprint ExamBlueprint @relation(fields: [tenantId, blueprintId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, blueprintId, sectionKey])
+  @@map("exam_blueprint_sections")
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  EXPIRED
+
+  @@map("attempt_status")
+}
+
+model ExamAttempt {
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String        @map("tenant_id") @db.Uuid
+  blueprintId      String        @map("blueprint_id") @db.Uuid
+  blueprintVersion Int           @map("blueprint_version")
+  userId           String        @map("user_id") @db.Uuid
+  attemptNumber    Int           @map("attempt_number")
+  status           AttemptStatus @default(IN_PROGRESS)
+  startedAt        DateTime      @default(now()) @map("started_at") @db.Timestamptz(3)
+  deadlineAt       DateTime      @map("deadline_at") @db.Timestamptz(3)
+  submittedAt      DateTime?     @map("submitted_at") @db.Timestamptz(3)
+
+  tenant    Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  blueprint ExamBlueprint     @relation(fields: [tenantId, blueprintId], references: [tenantId, id], onDelete: Restrict)
+  user      UserProfile       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items     ExamAttemptItem[]
+  results   ExamResult[]
+
+  // One IN_PROGRESS attempt per learner and blueprint is a partial unique index in the init
+  // migration, so reconnecting resumes instead of creating a second attempt (FR-EXAM-1203).
+  @@unique([tenantId, id])
+  @@unique([tenantId, blueprintId, userId, attemptNumber])
+  @@map("exam_attempts")
+}
+
+/// Frozen copy of each question served in an attempt, so later edits never change history.
+model ExamAttemptItem {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  attemptId      String    @map("attempt_id") @db.Uuid
+  questionId     String    @map("question_id") @db.Uuid
+  sectionKey     String    @map("section_key") @db.VarChar(40)
+  position       Int
+  /// { type, prompt, passage, choices, marks, version } as served.
+  snapshot       Json
+  answerKey      Json      @map("answer_key")
+  explanation    String?
+  response       Json?
+  answeredAt     DateTime? @map("answered_at") @db.Timestamptz(3)
+  isCorrect      Boolean?  @map("is_correct")
+  marksAwarded   Int?      @map("marks_awarded")
+
+  tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  attempt  ExamAttempt @relation(fields: [tenantId, attemptId], references: [tenantId, id], onDelete: Restrict)
+  question Question    @relation(fields: [tenantId, questionId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, attemptId, position])
+  @@map("exam_attempt_items")
+}
+
+/// Result revisions: grading creates revision 1; corrections add revisions (FR-EXAM-1205).
+model ExamResult {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  attemptId        String   @map("attempt_id") @db.Uuid
+  revision         Int      @default(1)
+  score            Int
+  maxScore         Int      @map("max_score")
+  passed           Boolean
+  /// [{ sectionKey, title, score, maxScore }]
+  sectionBreakdown Json     @map("section_breakdown")
+  reason           String?  @db.VarChar(500)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant  Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  attempt ExamAttempt @relation(fields: [tenantId, attemptId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, attemptId, revision])
+  @@map("exam_results")
+}
+
+// ---------------------------------------------------------------------------
+// Governance
+// ---------------------------------------------------------------------------
+
+model AuditEvent {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  actorUserId String?  @map("actor_user_id") @db.Uuid
+  action      String   @db.VarChar(120)
+  targetType  String   @map("target_type") @db.VarChar(80)
+  targetId    String?  @map("target_id") @db.Uuid
+  reason      String?  @db.VarChar(500)
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  actor  UserProfile? @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId, createdAt])
+  @@map("audit_events")
+}

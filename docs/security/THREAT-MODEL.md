@@ -10,3 +10,11 @@
 | Lost container/host | Durable volumes, encrypted backups, restore drills | Recovery exercise |
 
 Update this model when a new integration, tenant isolation tier, or mobile payment route is added.
+
+## Detection coverage
+
+- Emit `tenant.cross_access.denied` for cross-tenant controls and treat any confirmed disclosure as critical.
+- Emit privileged membership, ownership, MFA, session, API-key, payout, refund, and export changes.
+- Emit invalid webhook signatures, replay detections, malware findings, prompt-injection blocks, and security-control changes.
+- Feed application events, identity-provider risk events, cloud audit logs, database audit events, and production Falco events to the SIEM.
+- Map each high or critical detection to a tested runbook under `security/soc/runbooks/`.
