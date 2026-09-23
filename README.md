@@ -8,6 +8,7 @@ Documentation-first scaffold for a cloud-hosted, multi-tenant learning platform 
 2. Review [architecture](docs/architecture/ARCHITECTURE.md), [database design](docs/data/DATABASE-DESIGN.md), and [roadmap](docs/planning/ROADMAP.md).
 3. Coding agents follow [AGENTS.md](AGENTS.md). See [project structure](docs/engineering/PROJECT-STRUCTURE.md) before adding applications.
 4. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis minio` after Docker is installed.
+5. Start local monitoring with `docker compose --profile monitoring up -d`. Open Grafana at `http://localhost:3001`, Prometheus at `http://localhost:9090`, and Alertmanager at `http://localhost:9093`.
 
 ## Current state
 

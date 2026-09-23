@@ -22,6 +22,7 @@ Use this concrete starting architecture. PostgreSQL is the mandatory transaction
 | Files | Private S3-compatible object storage; MinIO container for local development | Attachments, submissions, and certificates; issue time-limited download URLs after tenant and role checks. Do not store video binaries or user uploads in PostgreSQL. |
 | Notifications | Transactional email provider, Web Push API, and native push integration | Account email, course announcements, chat and result alerts, and opted-in browser or mobile push. Select the email and native push providers before implementation. |
 | AI integration | Provider adapter behind backend-authorized commands | Generate tenant-scoped drafts and proposed actions without giving the model direct database, shell, payment, or publishing privileges. |
+| Metrics and dashboards | Prometheus, PostgreSQL/Redis exporters, Alertmanager, and Grafana | Scrape bounded-cardinality operational metrics, evaluate alert rules, route notifications, and display version-controlled dashboards. Keep monitoring endpoints on private networks. |
 
 External embeds cannot provide the same access and progress guarantees as hosted video. Hosted Mux video is the default for paid lessons. If embeds are approved, show their limits in the authoring UI and do not promise protected playback or exact watch-percentage tracking.
 
@@ -38,3 +39,5 @@ Use one shared PostgreSQL instance and tenant-scoped tables with PostgreSQL row-
 - [Expo Android App Bundle submission](https://docs.expo.dev/submit/android/)
 - [Stripe webhooks](https://docs.stripe.com/webhooks)
 - [Mux secure video playback](https://www.mux.com/docs/guides/secure-video-playback)
+- [Prometheus metric naming](https://prometheus.io/docs/practices/naming/)
+- [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/)

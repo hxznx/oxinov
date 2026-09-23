@@ -38,6 +38,12 @@ REQUIRED = [
     "docs/devops/ROLLBACK.md", "docs/planning/ROADMAP.md",
     "docs/planning/TASKS.md", "docs/planning/ACCEPTANCE-CRITERIA.md",
     "docs/planning/RISKS.md", "docs/planning/CHANGELOG.md",
+    "infrastructure/observability/prometheus/prometheus.yml",
+    "infrastructure/observability/prometheus/rules/oxinov-alerts.yml",
+    "infrastructure/observability/alertmanager/alertmanager.yml",
+    "infrastructure/observability/grafana/provisioning/datasources/prometheus.yml",
+    "infrastructure/observability/grafana/provisioning/dashboards/oxinov.yml",
+    "infrastructure/observability/grafana/dashboards/platform-overview.json",
 ]
 
 

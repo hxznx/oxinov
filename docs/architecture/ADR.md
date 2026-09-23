@@ -14,6 +14,10 @@ Record each decision with date, status, context, choice, consequences, and alter
 
 **Status:** Proposed. A single Expo app lets users switch their tenant workspaces and renders tenant branding. Separately branded binaries require a future decision because they multiply store releases.
 
+## ADR-004: Prometheus and Grafana observability baseline
+
+**Date:** 2026-09-23. **Status:** Accepted for the initial implementation. Services expose Prometheus-compatible metrics only on the private network. Prometheus stores short-term metrics and evaluates version-controlled rules; Alertmanager routes alerts; Grafana loads data sources and dashboards from version-controlled provisioning files. PostgreSQL and Redis use dedicated exporters. Do not use tenant IDs, user IDs, email addresses, URLs with identifiers, or other unbounded values as metric labels. Production may replace these containers with compatible managed services while preserving metric names, dashboards, and alert behavior.
+
 ## Pending
 
 Choose cloud provider, production deployment topology, AI provider, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).

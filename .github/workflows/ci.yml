@@ -20,7 +20,24 @@ jobs:
           REDIS_PASSWORD: ci-only-placeholder
           MINIO_ROOT_USER: ci-only-placeholder
           MINIO_ROOT_PASSWORD: ci-only-placeholder
+          GRAFANA_ADMIN_PASSWORD: ci-only-placeholder
         run: docker compose config --quiet
+      - name: Validate Grafana dashboard JSON
+        run: python -m json.tool infrastructure/observability/grafana/dashboards/platform-overview.json > /dev/null
+      - name: Validate Prometheus configuration and rules
+        run: >-
+          docker run --rm
+          --entrypoint /bin/promtool
+          -v "$PWD/infrastructure/observability/prometheus:/etc/prometheus:ro"
+          prom/prometheus:v3.14.0
+          check config /etc/prometheus/prometheus.yml
+      - name: Validate Alertmanager configuration
+        run: >-
+          docker run --rm
+          --entrypoint /bin/amtool
+          -v "$PWD/infrastructure/observability/alertmanager:/etc/alertmanager:ro"
+          prom/alertmanager:v0.34.1
+          check-config /etc/alertmanager/alertmanager.yml
 
   # App lint, tests, migrations, image builds, and mobile tests are added
   # when apps/ source is implemented. See docs/devops/CI-CD.md.
