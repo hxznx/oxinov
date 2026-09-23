@@ -9,10 +9,15 @@ node_modules/
 dist/
 build/
 coverage/
+.expo/
+*.aab
+*.apk
+*.log
 *.pem
 *.p12
 *.keystore
 *.jks
 *.tfstate
 *.tfstate.*
+.terraform/
 __pycache__/

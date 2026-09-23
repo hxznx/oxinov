@@ -10,6 +10,17 @@ Documentation-first scaffold for a cloud-hosted, multi-tenant learning platform 
 4. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis minio` after Docker is installed.
 5. Start local monitoring with `docker compose --profile monitoring up -d`. Open Grafana at `http://localhost:3001`, Prometheus at `http://localhost:9090`, and Alertmanager at `http://localhost:9093`.
 
+## Repository areas
+
+| Folder | Ownership |
+| --- | --- |
+| `frontend/` | Next.js web and Expo mobile clients |
+| `backend/` | NestJS API, worker, and chat services |
+| `database/` | Prisma schema, migrations, seeds, and PostgreSQL policies |
+| `devops/` | Docker build, Kubernetes, Terraform, and Ansible assets |
+| `monitoring/` | Prometheus, Alertmanager, exporters, and Grafana provisioning |
+| `packages/` | Shared contracts and pure domain packages |
+
 ## Current state
 
 The requirements and repository scaffold are present. Frontend, API, worker, chat, and mobile application code have not yet been implemented. Docker application targets and deployment manifests are templates until those apps exist. No production deployment target is configured.

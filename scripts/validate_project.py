@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from pathlib import Path
 
@@ -11,11 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = [
     "README.md", "AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md",
     ".env.example", ".gitignore", ".dockerignore", ".editorconfig", ".prettierrc",
-    "eslint.config.js", "tsconfig.json", "Dockerfile", "docker-compose.yml",
+    "eslint.config.js", "tsconfig.json", "devops/docker/Dockerfile", "docker-compose.yml",
     ".github/workflows/ci.yml", ".github/workflows/security.yml",
-    ".github/workflows/deploy.yml", "infrastructure/terraform/README.md",
-    "infrastructure/ansible/README.md", "k8s/deployment.yaml",
-    "k8s/service.yaml", "k8s/ingress.yaml", "k8s/configmap.yaml",
+    ".github/workflows/deploy.yml", "devops/terraform/README.md",
+    "devops/ansible/README.md", "devops/kubernetes/deployment.yaml",
+    "devops/kubernetes/service.yaml", "devops/kubernetes/ingress.yaml",
+    "devops/kubernetes/configmap.yaml", "devops/kubernetes/README.md",
+    "devops/README.md", "devops/docker/README.md",
     "docs/00-PROJECT-BRIEF.md", "docs/01-PRD.md", "docs/02-FRD.md", "docs/03-NFR.md",
     "docs/architecture/ARCHITECTURE.md", "docs/architecture/TECH-STACK.md",
     "docs/architecture/ADR.md", "docs/architecture/DATA-FLOW.md",
@@ -38,12 +41,19 @@ REQUIRED = [
     "docs/devops/ROLLBACK.md", "docs/planning/ROADMAP.md",
     "docs/planning/TASKS.md", "docs/planning/ACCEPTANCE-CRITERIA.md",
     "docs/planning/RISKS.md", "docs/planning/CHANGELOG.md",
-    "infrastructure/observability/prometheus/prometheus.yml",
-    "infrastructure/observability/prometheus/rules/oxinov-alerts.yml",
-    "infrastructure/observability/alertmanager/alertmanager.yml",
-    "infrastructure/observability/grafana/provisioning/datasources/prometheus.yml",
-    "infrastructure/observability/grafana/provisioning/dashboards/oxinov.yml",
-    "infrastructure/observability/grafana/dashboards/platform-overview.json",
+    "docs/functional_requirements.md",
+    "frontend/README.md", "frontend/web/README.md", "frontend/mobile/README.md",
+    "backend/README.md", "backend/api/README.md", "backend/worker/README.md",
+    "backend/chat/README.md", "database/README.md", "database/prisma/README.md",
+    "database/migrations/README.md", "database/seeds/README.md",
+    "database/policies/README.md", "packages/contracts/README.md",
+    "packages/domain/README.md", "monitoring/README.md",
+    "monitoring/prometheus/prometheus.yml",
+    "monitoring/prometheus/rules/oxinov-alerts.yml",
+    "monitoring/alertmanager/alertmanager.yml",
+    "monitoring/grafana/provisioning/datasources/prometheus.yml",
+    "monitoring/grafana/provisioning/dashboards/oxinov.yml",
+    "monitoring/grafana/dashboards/platform-overview.json",
 ]
 
 
@@ -64,6 +74,17 @@ def check_docs(errors: list[str]) -> None:
         if len(ids) != len(set(ids)):
             errors.append("FRD contains duplicate requirement IDs")
 
+    dashboard = ROOT / "monitoring/grafana/dashboards/platform-overview.json"
+    if dashboard.is_file():
+        try:
+            json.loads(dashboard.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            errors.append(f"Invalid Grafana dashboard JSON: {exc}")
+
+    for legacy in ("apps", "infrastructure", "k8s"):
+        if (ROOT / legacy).exists():
+            errors.append(f"Legacy root must not return: {legacy}/")
+
     link_pattern = re.compile(r"(?<!!)\[[^]]+\]\(([^)]+)\)")
     for path in ROOT.glob("**/*.md"):
         if any(part.startswith(".") for part in path.relative_to(ROOT).parts):
@@ -81,20 +102,33 @@ def check_security(errors: list[str]) -> None:
     docker_ignored = (ROOT / ".dockerignore").read_text(encoding="utf-8")
     if ".env\n" not in ignored or ".env\n" not in docker_ignored:
         errors.append(".env must be excluded from Git and Docker build contexts")
-    if (ROOT / "terraform.tfstate").exists():
-        errors.append("Terraform state must not be stored in the repository root")
+    terraform_root = ROOT / "devops" / "terraform"
+    for state in terraform_root.rglob("*.tfstate*"):
+        errors.append(f"Terraform state must not be stored in Git: {state.relative_to(ROOT)}")
     compose = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
     if "privileged: true" in compose:
         errors.append("Compose must not use privileged containers")
-    for manifest in (ROOT / "k8s").glob("*.yaml"):
+    if "devops/docker/Dockerfile" not in compose:
+        errors.append("Compose application builds must use devops/docker/Dockerfile")
+    for legacy_path in ("apps/", "infrastructure/observability", "./k8s/"):
+        if legacy_path in compose:
+            errors.append(f"Compose contains a legacy path: {legacy_path}")
+    for manifest in (ROOT / "devops" / "kubernetes").glob("*.yaml"):
         if "kind: Secret" in manifest.read_text(encoding="utf-8"):
             errors.append(f"Keep literal Kubernetes Secrets out of Git: {manifest.name}")
 
 
 def check_deploy(errors: list[str]) -> None:
-    for app in ["web", "api", "worker", "chat", "mobile"]:
-        if not (ROOT / "apps" / app / "package.json").is_file():
-            errors.append(f"Application source not ready: apps/{app}/package.json")
+    applications = {
+        "frontend/web": ROOT / "frontend" / "web" / "package.json",
+        "frontend/mobile": ROOT / "frontend" / "mobile" / "package.json",
+        "backend/api": ROOT / "backend" / "api" / "package.json",
+        "backend/worker": ROOT / "backend" / "worker" / "package.json",
+        "backend/chat": ROOT / "backend" / "chat" / "package.json",
+    }
+    for name, manifest in applications.items():
+        if not manifest.is_file():
+            errors.append(f"Application source not ready: {name}/package.json")
     errors.append("Deployment target and release credentials are not configured")
 
 

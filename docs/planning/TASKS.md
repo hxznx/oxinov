@@ -2,7 +2,7 @@
 
 | Priority | Task | Acceptance evidence |
 | --- | --- | --- |
-| 0 | Scaffold apps/web, apps/api, apps/mobile, worker, and chat | Local builds and health endpoints |
+| 0 | Scaffold frontend/web, frontend/mobile, backend/api, backend/worker, and backend/chat | Local builds and health endpoints |
 | 0 | Start PostgreSQL/Redis/MinIO via Compose and create migrations | Reproducible setup; data persists restart |
 | 0 | Implement tenant creation, membership, RLS, and domain routing | Two-tenant positive and negative tests |
 | 0 | Instrument services and provision Prometheus, Alertmanager, exporters, and Grafana | Healthy scrape targets, dashboard loads, rules validate, and a synthetic alert reaches its staging receiver |

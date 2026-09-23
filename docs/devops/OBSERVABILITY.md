@@ -10,7 +10,7 @@
 | PostgreSQL exporter | Publishes database health and activity metrics | `postgres-exporter:9187` |
 | Redis exporter | Publishes cache, queue-support, memory, and connection metrics | `redis-exporter:9121` |
 
-Configuration lives under `infrastructure/observability/`. Keep data sources, dashboards, and alert rules in version control. The local Alertmanager receiver is intentionally empty; staging and production require a real notification receiver and secret injection.
+Configuration lives under `monitoring/`. Keep data sources, dashboards, and alert rules in version control. The local Alertmanager receiver is intentionally empty; staging and production require a real notification receiver and secret injection.
 
 ## Local operation
 
@@ -20,7 +20,7 @@ Configuration lives under `infrastructure/observability/`. Keep data sources, da
 4. In Prometheus, check **Status > Targets**. Prometheus, PostgreSQL, and Redis should be up.
 5. In Grafana, open **Oxinov LMS > Oxinov Platform Overview**.
 
-The application scrape targets are added when `apps/api`, `apps/worker`, `apps/chat`, and `apps/web` expose `/metrics`; adding them earlier would generate false target-down alerts in the documentation-only scaffold.
+The application scrape targets are added when `backend/api`, `backend/worker`, `backend/chat`, and `frontend/web` expose `/metrics`; adding them earlier would generate false target-down alerts in the documentation-only scaffold.
 
 ## Application instrumentation contract
 
