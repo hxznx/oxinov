@@ -48,7 +48,7 @@ Reuse as reference: `Service`, `ServiceCategory`, `ServiceSubcategory`, `Service
 | --- | --- | --- |
 | Browse services and providers | T0 Visitor | None |
 | Save providers, post a service demand draft | T1 Member | Oxinov Terms and Privacy |
-| Publish a demand, book, message, review | T2 Contact-verified | Payments, Refunds, and Disputes Policy on first payment |
+| Publish a demand, book, message, review | T2 Contact-verified | Payments, Escrow, Refunds, and Disputes Policy on first payment |
 | Offer services and receive payment as an individual | T3 Identity-verified | Provider Policy |
 | Offer services as a registered business with staff | T4 Business-verified | Provider Policy |
 

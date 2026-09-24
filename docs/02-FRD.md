@@ -1,9 +1,15 @@
-# Functional Requirements Document: Learning Management System
+# Functional Requirements Document: OxinovLMS
 
-**Version:** 1.3  
-**Date:** 2026-09-22  
+**Version:** 2.0  
+**Date:** 2026-09-24  
 **Status:** Draft for product review  
-**Audience:** Product, design, engineering, and QA
+**Audience:** Product, design, engineering, and QA  
+**Product:** OxinovLMS (`lms.oxinov.com`), the first Oxinov product plane  
+**Standard:** [Oxinov requirements standard](requirements/README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
+
+## 0. Platform dependencies
+
+OxinovLMS runs on the shared Oxinov Platform. Sign-in, sessions, trust levels, policy acceptance, organizations, plans, entitlements, payments ledger, KYC, notifications, and privacy requests are defined in the [Platform FRD](requirements/PLATFORM-FRD.md) and are not redefined here. LMS tenant memberships, roles, instructor approval, courses, learning, exams, and results remain in this document and in the LMS database boundary. Where an LMS requirement below conflicts with a platform requirement, the platform requirement wins and the LMS requirement is marked **Superseded**.
 
 ## 1. Purpose and scope
 
@@ -45,11 +51,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 
 ### 3.1 Accounts and access
 
-**FR-AUTH-101 — Registration and sign-in.** Support email/password and Google, GitHub, and Microsoft sign-in. Verify email ownership for password registrations before purchase, enrollment, or instructor application. Provide password reset and expired-link handling. When a social provider returns an email already in use, require an account-linking flow rather than silently making a duplicate account.
+**FR-AUTH-101 — Registration and sign-in.** *Status: Superseded by FR-ID-2201, FR-ID-2202, FR-ID-2203, FR-ID-2204, and FR-ID-2206 (ADR-011). LMS uses Oxinov single sign-on with Google or email one-time codes and no customer passwords. The original text is kept for history:* Support email/password and Google, GitHub, and Microsoft sign-in. Verify email ownership for password registrations before purchase, enrollment, or instructor application. Provide password reset and expired-link handling. When a social provider returns an email already in use, require an account-linking flow rather than silently making a duplicate account.
 
 **FR-AUTH-102 — Tenant roles and instructor approval.** A learner can request instructor status in a tenant. Its administrator can approve or reject with a recorded reason and time. Only approved instructors can submit that tenant's courses for review. A tenant administrator can invite or promote another tenant administrator but cannot grant the platform-operator role. Denied requests reveal no protected data.
 
-**FR-AUTH-103 — Profile and security.** Users can edit avatar, headline, bio, and social links. Password users can change passwords. Users can enable MFA and revoke other sessions; MFA is required for administrators. Role and account changes take effect on the next protected request, including from existing sessions.
+**FR-AUTH-103 — Profile and security.** *Status: Partially superseded. Sign-in methods, sessions, sign-out everywhere, and MFA follow FR-ID-2206, FR-ID-2208, and FR-ID-2209; password changes no longer apply. LMS keeps the profile fields and the rule that role changes take effect on the next protected request.* Users can edit avatar, headline, bio, and social links. Password users can change passwords. Users can enable MFA and revoke other sessions; MFA is required for administrators. Role and account changes take effect on the next protected request, including from existing sessions.
 
 ### 3.2 Course authoring and publishing
 
@@ -185,7 +191,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 
 ## Related documents
 
-Non-functional requirements: [03-NFR.md](03-NFR.md). Architecture and delivery rules: [architecture](architecture/ARCHITECTURE.md) and [engineering](engineering/CODING-STANDARDS.md). Acceptance journeys: [ACCEPTANCE-CRITERIA.md](planning/ACCEPTANCE-CRITERIA.md).
+Platform requirements: [Platform FRD](requirements/PLATFORM-FRD.md). Requirements standard: [requirements/README.md](requirements/README.md). Non-functional requirements: [03-NFR.md](03-NFR.md). Architecture and delivery rules: [architecture](architecture/ARCHITECTURE.md) and [engineering](engineering/CODING-STANDARDS.md). Acceptance journeys: [ACCEPTANCE-CRITERIA.md](planning/ACCEPTANCE-CRITERIA.md).
 
 ## Subject and platform references
 

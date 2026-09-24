@@ -1,0 +1,15 @@
+{
+  "name": "@oxinov/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Oxinov shared OpenAPI schemas, API DTOs, and event contracts",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "echo 0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

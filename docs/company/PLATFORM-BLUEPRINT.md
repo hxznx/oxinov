@@ -14,6 +14,8 @@ Use three layers:
 2. **Platform control plane:** identity, organizations, product catalogue, subscriptions, entitlements, billing records, notifications, support, audit, consent, and the customer product launcher.
 3. **Product planes:** OxinovLMS and each later product own their workflows, APIs, deployments, and product data.
 
+Beneath all three layers is a cross-cutting **research evidence foundation**. User and product research validates needs, journeys, language, accessibility, trust, and live outcomes; technical R&D validates uncertain capabilities. The foundation is a decision process, not a shared runtime service or database. Every product follows the [user-centred product standard](../research/USER-CENTERED-PRODUCT-STANDARD.md).
+
 The control plane knows that a person or organization can use a product. It does not own the product's lessons, robot telemetry, media projects, agricultural observations, or research datasets.
 
 ## Portfolio and release order
@@ -23,7 +25,7 @@ The control plane knows that a person or organization can use a product. It does
 | Oxinov company website | Explain the company, products, research, services, and contact routes | Public frontend with managed content | First |
 | Oxinov account portal | One login, organization switcher, product launcher, plans, invoices, support, and privacy controls | Shared control plane | First |
 | OxinovLMS | Multi-tenant language, SSW, IT, exam, media, assignment, chat, and administration platform | First independent product plane | First |
-| [Oxinov Agri Market](../products/AGRI-MARKET.md) | Verified agricultural commodity marketplace for farmers, cooperatives, and buyers | Independent product plane; adopted Flo Softwares concept (ADR-010) | Second product after platform foundation |
+| [Oxinov Commodity Market](../products/COMMODITY-MARKET.md) | Verified marketplace for agricultural produce, raw materials, commercial machinery, and circular second-hand goods | Independent product plane; adopted Flo Softwares concept expanded to all commodities & re-commerce (ADR-010) | Second product after platform foundation |
 | [Oxinov Jobs](../products/JOBS.md) | Verified jobs and skill matching linked to OxinovLMS certificates | Independent product plane; adopted Flo Softwares concept (ADR-010) | Third product |
 | [Oxinov Services Market](../products/SERVICES-MARKET.md) | Book verified local service providers or post service needs | Independent product plane; adopted Flo Softwares concept (ADR-010) | Fourth product |
 | Oxinov AI | AI tools, model services, evaluation, and governed agent capabilities | Independent product; reuse identity, billing, audit, and AI gateway | After platform foundation |
@@ -34,6 +36,8 @@ The control plane knows that a person or organization can use a product. It does
 | Oxinov Research and Space | Research portfolio, publications, intellectual property, data, and regulated programs | Separate restricted systems where required | Long horizon |
 
 New product planes require a product owner, customer problem, revenue or strategic outcome, data classification, regulatory review, operational owner, and a funded release plan before implementation.
+
+Research may investigate opportunities before a product release gate, but it follows the [R&D operating system](../research/README.md): named ownership, a time-boxed hypothesis, reproducible evidence, safe data and environments, IP and regulatory review, and an explicit stop, continue, pivot, or transfer decision. Research status never authorizes a customer launch, product subdomain, production data access, or product-plane scaffold.
 
 ## Strategic pillars on oxinov.com
 
@@ -47,7 +51,7 @@ The incorporation objectives define ten strategic pillars. Every pillar gets a p
 | Oxinov Services | `oxinov.com/services` | `services.oxinov.com` (Oxinov Services Market) after release gate; client portal module in `app.oxinov.com` | Future initiative |
 | Oxinov Robotics & Automation | `oxinov.com/robotics` | `iot.oxinov.com` device platform after release gate | Future initiative |
 | Oxinov Media & Studio | `oxinov.com/studio` | `studio.oxinov.com` after release gate | Future initiative |
-| Oxinov AgriTech | `oxinov.com/agritech` | `agri.oxinov.com` (Oxinov Agri Market) after release gate | Future initiative |
+| Oxinov AgriTech | `oxinov.com/agritech` | `market.oxinov.com` (Oxinov Commodity Market) after release gate | Future initiative |
 | Oxinov Space | `oxinov.com/space` | Separate restricted system when approved | Long horizon, regulated |
 | Oxinov Research | `oxinov.com/research` | Publications and IP pages on the company site | Long horizon |
 | Oxinov Production | `oxinov.com/production` | Company site content only | Long horizon |
@@ -82,7 +86,7 @@ These are candidate product modules derived from the incorporation objectives. T
 | Media & Studio | Media Asset Manager | Client file storage and delivery | |
 | Media & Studio | Oxinov Stream | Educational and cultural streaming | **Regulated:** broadcasting authorization |
 | Media & Studio | Dubbing and Subtitling | Nepali and multilingual localization | |
-| AgriTech | [Oxinov Agri Market](../products/AGRI-MARKET.md) | Commodity listings, orders, and market prices | Draft charter (ADR-010) |
+| AgriTech & Production | [Oxinov Commodity Market](../products/COMMODITY-MARKET.md) | Agricultural crops, industrial raw materials, commercial machinery, and circular second-hand listings | Draft charter (ADR-010) |
 | AgriTech | Farm Management App | Crops, irrigation, and costs | |
 | AgriTech | Smart Irrigation and Soil Sensing | Sensor-driven irrigation | Uses the IoT Device Cloud |
 | AgriTech | Crop AI | Disease detection and yield prediction | |
@@ -103,13 +107,13 @@ These are candidate product modules derived from the incorporation objectives. T
 | --- | --- | --- |
 | 1 | Company website, identity, and account portal | Every product depends on them |
 | 2 | OxinovLMS | Existing product |
-| 3 | Oxinov Agri Market | Most complete adopted concept; Nepal agriculture need (ADR-010) |
+| 3 | Oxinov Commodity Market | Most complete adopted concept; expanded to all commodities and circular second-hand trade (ADR-010) |
 | 4 | Oxinov Jobs | Connects OxinovLMS graduates to employers (ADR-010) |
 | 5 | Oxinov Services Market | Reuses shared KYC, bookings, and payments (ADR-010) |
 | 6 | Client Project Portal | Services revenue for Oxinov's own consulting |
 | 7 | AI Studio and AI API | Market demand; reuses LMS content and the AI gateway |
 | 8 | IoT Device Cloud | Foundation for robotics, automation, and AgriTech sensing |
-| 9 | Farm Management App and Crop AI | Builds on Agri Market users and the IoT Device Cloud |
+| 9 | Farm Management App and Crop AI | Builds on Commodity Market users and the IoT Device Cloud |
 | 10 | Studio Booking and Media Asset Manager | Reuses the LMS media pipeline |
 | Later | Space, streaming, and import/export modules | Require licences and dedicated teams |
 
@@ -122,7 +126,7 @@ The order is a recommendation, not a commitment. Select the next module using cu
 - Actions that affect other people or move money require a higher trust level (verified phone, individual KYC, or business KYC) and acceptance of the relevant product-role policy. See [platform policies](PLATFORM-POLICIES.md).
 - Plans follow one ladder (Free, Plus, Pro, Business, Enterprise). Oxinov One unlocks paid tiers across all products; `oxinov.com/pricing` governs every plan. See the [subscription model](SUBSCRIPTION-MODEL.md).
 - An organization can subscribe to several Oxinov products.
-- Product roles remain product-specific. An LMS instructor or Agri Market seller does not automatically gain a role in another product.
+- Product roles remain product-specific. An LMS instructor or Commodity Market seller does not automatically gain a role in another product.
 - Oxinov staff access uses separate roles, MFA, time-limited support elevation, justification, and audit events.
 
 ## Domain plan
@@ -134,7 +138,7 @@ The order is a recommendation, not a commitment. Select the next module using cu
 | `id.oxinov.com` | Central sign in and account security |
 | `api.oxinov.com` | Public API gateway and versioned APIs |
 | `lms.oxinov.com` | OxinovLMS web application |
-| `agri.oxinov.com` | Oxinov Agri Market, after its release gate |
+| `market.oxinov.com` | Oxinov Commodity Market, after its release gate (alias `commodity.oxinov.com`) |
 | `jobs.oxinov.com` | Oxinov Jobs, after its release gate |
 | `services.oxinov.com` | Oxinov Services Market, after its release gate |
 | `oxinov.com/pricing` | Plans and prices for all products |
@@ -151,6 +155,7 @@ Future products receive a subdomain only after they pass their release gate. Cus
 - Share design tokens, identity libraries, API contracts, observability, security event contracts, and infrastructure modules. Do not share product business tables.
 - Use an adapter for identity, payments, storage, notifications, media, and AI providers so provider eligibility and regional needs do not rewrite product logic.
 - Keep regulated aerospace, broadcasting, education, financial, import/export, and other activities behind legal and operational approval gates.
+- Manage research as a balanced portfolio with evidence gates, protected core-product capacity, reproducible experiment records, and explicit transfer into an approved product owner. Track candidate work in the [R&D portfolio](../research/PORTFOLIO.md).
 
 ## First platform release
 

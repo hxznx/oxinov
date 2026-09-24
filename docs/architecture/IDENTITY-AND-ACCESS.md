@@ -53,7 +53,7 @@ Rules:
 
 - On first sign-in the platform grants a free **member** entitlement to every launched product. A person does not have to sign up again for each product.
 - Paid plans, organization seats, and higher limits are extra entitlements from the control plane.
-- Product roles stay inside each product. Being a seller in Agri Market does not grant anything in Oxinov Jobs or OxinovLMS.
+- Product roles stay inside each product. Being a seller in Commodity Market does not grant anything in Oxinov Jobs or OxinovLMS.
 - A product that has not passed its release gate is invisible and grants nothing.
 
 ## Progressive trust levels
@@ -65,15 +65,15 @@ Easy sign-in gives low-risk access. Actions that can harm other people or move m
 | T0 Visitor | Not signed in | Read the company site, public listings, jobs, services, and course catalogues |
 | T1 Member | Signed in with a verified email and accepted the Oxinov Terms and Privacy Policy | Free courses, save items, follow, basic profile, browse all products |
 | T2 Contact-verified | Verified mobile number by SMS one-time code | Message other users, place orders, book services, apply to jobs, write reviews |
-| T3 Identity-verified | Individual KYC approved by Oxinov operations | Sell in Agri Market, offer services, receive payouts, become an instructor |
-| T4 Business-verified | Organization KYC approved for a platform organization | Post jobs as an employer, sell as a registered business or cooperative, manage staff |
+| T3 Identity-verified | Individual KYC approved by Oxinov operations | Sell in Commodity Market (produce, equipment, second-hand items), offer services, receive payouts, become an instructor |
+| T4 Business-verified | Organization KYC approved for a platform organization | Post jobs as an employer, sell as a registered business, dealer, or cooperative, manage staff |
 | Staff | Separate staff identity, hardware-key or authenticator MFA required | Moderation, KYC review, support elevation; never granted by Google sign-in alone |
 
 A person at a lower level who tries a higher-level action sees one clear step to reach it, for example "Verify your phone to message sellers", and then returns to the action.
 
 ## Policy acceptance
 
-- The Oxinov Terms and Privacy Policy are accepted once at T1. Each product role has a short product policy accepted just in time the first time the person takes that role: Seller Policy, Provider Policy, Employer Policy, Instructor Policy.
+- The Oxinov Terms and Privacy Policy are accepted once at T1. Each product role has a short product policy accepted just in time the first time the person takes that role: Marketplace Seller Policy, Provider Policy, Employer Policy, Instructor Policy, and the Inspector Partner Agreement.
 - Every acceptance is stored with user ID, policy ID, version, timestamp, and channel. A material policy change asks for re-acceptance on the next visit; minor changes are notified only.
 - Policies and enforcement are described in [platform policies](../company/PLATFORM-POLICIES.md).
 

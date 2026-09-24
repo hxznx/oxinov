@@ -14,12 +14,12 @@ frontend/
   platform-web/                app.oxinov.com account portal, product launcher, KYC, billing
   products/
     lms-web/                   lms.oxinov.com
-    agri-web/                  agri.oxinov.com         after release gate
+    market-web/                market.oxinov.com       after release gate
     jobs-web/                  jobs.oxinov.com         after release gate
     services-web/              services.oxinov.com     after release gate
   mobile/
     lms/                       OxinovLMS Android and iOS
-    marketplace/               shared Agri, Jobs, and Services mobile app if approved
+    marketplace/               shared Commodity, Jobs, and Services mobile app if approved
 
 backend/
   gateway/                     api.oxinov.com routing and edge policy
@@ -30,8 +30,8 @@ backend/
     lms-api/                   LMS business API
     lms-worker/                LMS media, results, certificates, scheduled work
     lms-chat/                  LMS realtime gateway
-    agri-api/                  listings, orders, market prices            after release gate
-    agri-worker/               price imports, order timeouts             after release gate
+    market-api/                listings, orders, escrow, price indices    after release gate
+    market-worker/             price feeds, escrow timers, dispute SLAs  after release gate
     jobs-api/                  postings, applications, matching          after release gate
     services-api/              services, demands, bookings               after release gate
 
@@ -39,7 +39,7 @@ database/
   platform/                    platform Prisma schema, migrations, seeds, RLS policies
   products/
     lms/                       LMS schema, migrations, seeds, RLS policies
-    agri/                      Agri Market schema                         after release gate
+    market/                    Commodity Market schema                    after release gate
     jobs/                      Jobs schema                                after release gate
     services/                  Services Market schema                     after release gate
 

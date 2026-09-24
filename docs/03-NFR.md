@@ -23,6 +23,7 @@ Numeric targets below are proposed acceptance targets. Confirm regions, traffic,
 | NFR-13 AI governance | Log AI-generated drafts and approved actions by tenant and actor without storing secrets in prompts. Apply usage limits and human review gates; test that prompt injection cannot gain cross-tenant access or execute unapproved actions. |
 | NFR-14 Google Play readiness | Maintain a release build, signing credentials, stable Android package ID, version code, privacy policy, Data safety declarations, permissions rationale, content rating, billing compliance, and internal testing track. Target the current Google Play API level at release; as of September 2026, new submissions require Android 16 / API level 36 or higher. |
 | NFR-15 Security operations | Scan source, dependencies, secrets, containers, and infrastructure configuration in CI. Emit schema-valid security events for authentication, authorization, tenant isolation, privileged changes, payment abuse, malware, exports, and security-control changes. Send production events to a separately access-controlled SIEM, evaluate reviewed detections, and exercise incident runbooks in staging. Do not include secrets, raw bodies, private messages, exam answers, or raw AI prompts. Define severity ownership, response targets, retention, evidence custody, and notification escalation before launch. |
+| NFR-16 Human-centred usability | Link every material journey to an evidence-backed user need and test content or prototypes with intended users before build. Before release, benchmark the implemented end-to-end journey for unassisted task success, false completion, time, ease, confidence, error recovery, mobile and low-bandwidth behavior, required languages, and accessibility. Include disabled and assisted-digital users throughout the lifecycle. No unresolved critical usability or accessibility failure may ship. Continue outcome research after launch according to the [user-centred product standard](research/USER-CENTERED-PRODUCT-STANDARD.md). |
 
 ## Standards
 
@@ -30,3 +31,6 @@ Numeric targets below are proposed acceptance targets. Confirm regions, traffic,
 - [OWASP ASVS](https://owasp.org/projects/asvs)
 - [OWASP multi-tenant security guidance](https://cheatsheetseries.owasp.org/cheatsheets/Multi_Tenant_Security_Cheat_Sheet.html)
 - [Google Play target API requirements](https://support.google.com/googleplay/android-developer/answer/11926878?hl=en)
+- [ISO 9241-210 human-centred design](https://www.iso.org/standard/77520.html)
+- [GOV.UK continuous user research](https://www.gov.uk/service-manual/user-research/how-user-research-improves-service-design)
+- [Web Vitals](https://web.dev/articles/vitals)

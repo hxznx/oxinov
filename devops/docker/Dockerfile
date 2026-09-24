@@ -1,34 +1,34 @@
-# The backend target builds backend/api. The frontend, worker, and chat targets become buildable
-# after their application package.json and source files are created.
-# Adjust COPY/install steps for packages/contracts and the chosen workspace lockfile
-# when shared packages are introduced; this file is not a runnable app image yet.
+# The backend target builds the existing OxinovLMS API from the canonical pnpm workspace.
+# Frontend, worker, and chat targets remain templates until their source is implemented.
 FROM node:22-alpine AS base
 WORKDIR /app
+RUN npm install --global pnpm@12.6.0
 ENV NODE_ENV=production
 
 FROM base AS frontend
-COPY frontend/web/package*.json ./
-RUN npm ci
-COPY frontend/web/ ./
-RUN npm run build && npm prune --omit=dev
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY frontend/web/package.json ./frontend/web/package.json
+RUN pnpm install --frozen-lockfile --filter @oxinov/lms-web...
+COPY frontend/web/ ./frontend/web/
+RUN pnpm --filter @oxinov/lms-web build
 USER node
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD ["pnpm", "--filter", "@oxinov/lms-web", "start"]
 
-# API: build with dev dependencies (NODE_ENV=production would skip them), then ship a slim image.
 FROM base AS backend-build
-WORKDIR /app/backend/api
-COPY backend/api/package*.json ./
-RUN npm ci --include=dev
-COPY database/prisma/ /app/database/prisma/
-COPY backend/api/ ./
-RUN npm run build && npm prune --omit=dev
+ENV NODE_ENV=development
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY backend/api/package.json ./backend/api/package.json
+RUN pnpm install --frozen-lockfile --filter @oxinov/lms-api...
+COPY backend/api/ ./backend/api/
+COPY database/prisma/ ./database/prisma/
+COPY security/soc/event-schema.json ./security/soc/event-schema.json
+RUN pnpm --filter @oxinov/lms-api build
+RUN pnpm --filter @oxinov/lms-api --prod deploy /app/deploy
 
 FROM base AS backend
 WORKDIR /app/backend/api
-COPY --from=backend-build /app/backend/api/package.json ./
-COPY --from=backend-build /app/backend/api/node_modules ./node_modules
-COPY --from=backend-build /app/backend/api/dist ./dist
+COPY --from=backend-build /app/deploy/ ./
 USER node
 EXPOSE 4000
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
@@ -36,18 +36,20 @@ HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
 CMD ["node", "dist/main.js"]
 
 FROM base AS worker
-COPY backend/worker/package*.json ./
-RUN npm ci
-COPY backend/worker/ ./
-RUN npm run build && npm prune --omit=dev
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY backend/worker/package.json ./backend/worker/package.json
+RUN pnpm install --frozen-lockfile --filter @oxinov/lms-worker...
+COPY backend/worker/ ./backend/worker/
+RUN pnpm --filter @oxinov/lms-worker build
 USER node
-CMD ["node", "dist/main.js"]
+CMD ["node", "backend/worker/dist/main.js"]
 
 FROM base AS chat
-COPY backend/chat/package*.json ./
-RUN npm ci
-COPY backend/chat/ ./
-RUN npm run build && npm prune --omit=dev
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY backend/chat/package.json ./backend/chat/package.json
+RUN pnpm install --frozen-lockfile --filter @oxinov/lms-chat...
+COPY backend/chat/ ./backend/chat/
+RUN pnpm --filter @oxinov/lms-chat build
 USER node
 EXPOSE 4001
-CMD ["node", "dist/main.js"]
+CMD ["node", "backend/chat/dist/main.js"]

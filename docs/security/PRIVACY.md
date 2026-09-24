@@ -10,7 +10,7 @@ Oxinov Pvt. Ltd. is responsible for personal data processed by the Oxinov platfo
 | Platform | Country, phone number (T2), policy acceptances, organizations, entitlements, payments ledger, support cases | Operate one account across products |
 | KYC (T3/T4) | Citizenship or passport images, date of birth, address, business registration and PAN documents, reviewer decisions | Verify sellers, providers, employers, and payout recipients |
 | OxinovLMS | Enrollment, progress, exam attempts and results, assignments, chat, certificates | Deliver learning |
-| Agri Market | Listings, orders, delivery locations, messages, reviews | Operate the commodity marketplace |
+| Commodity Market | Listings, orders, RFQs, escrow records, delivery locations, inspection reports, vehicle and machinery ownership documents, messages, reviews | Operate the commodity and second-hand marketplace |
 | Jobs | Candidate profile, CV, employment history, applications, employer messages | Match candidates and employers |
 | Services Market | Service demands, bookings, service addresses, messages, reviews | Operate the services marketplace |
 

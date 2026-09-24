@@ -10,8 +10,9 @@ Oxinov Pvt. Ltd. operates every Oxinov product under one set of company-wide pol
 | Oxinov Privacy Policy | All products | First sign-in (T1) | `oxinov.com/legal/privacy` |
 | Acceptable Use and Community Policy | All products | Included in the Terms | `oxinov.com/legal/acceptable-use` |
 | KYC and Verification Policy | Identity and business verification | Starting KYC (T3/T4) | `oxinov.com/legal/verification` |
-| Payments, Refunds, and Disputes Policy | Any paid transaction | First payment or payout | `oxinov.com/legal/payments` |
-| Seller Policy | Oxinov Agri Market sellers and cooperatives | First listing | `oxinov.com/legal/agri-seller` |
+| Payments, Escrow, Refunds, and Disputes Policy | Any paid transaction, including milestone escrow | First payment, escrow deposit, or payout | `oxinov.com/legal/payments` |
+| Marketplace Seller Policy | Oxinov Commodity Market sellers, dealers, cooperatives, and enterprises | First listing | `oxinov.com/legal/market-seller` |
+| Inspector Partner Agreement | Commodity Market depot and inspection partners | Partner onboarding (signed contract) | Not public; linked from the partner portal |
 | Provider Policy | Oxinov Services Market providers | First service listing | `oxinov.com/legal/services-provider` |
 | Employer Policy | Oxinov Jobs employers | First job posting | `oxinov.com/legal/employer` |
 | Instructor Policy | OxinovLMS instructors and tenants | Becoming an instructor | `oxinov.com/legal/instructor` |
@@ -23,7 +24,7 @@ Oxinov Pvt. Ltd. operates every Oxinov product under one set of company-wide pol
 - **Terms:** eligibility and minimum age, account responsibilities, one account per person, Oxinov's role as a platform versus a party to trades, prohibited conduct, content licence, termination, liability limits, governing law (Nepal), and contact details for Oxinov Pvt. Ltd., Lalitpur, Nepal.
 - **Privacy:** data collected per product, Google sign-in data used (name, email, photo), purpose and lawful basis, KYC document handling, processors and cross-border transfers, retention, and how to export or delete data.
 - **Acceptable use:** fraud, fake listings or jobs, impersonation, harassment, spam, prohibited goods and services, off-platform payment steering, scraping, and security abuse.
-- **Product role policies:** listing accuracy, quality and quantity claims, pricing and fees, delivery or completion duties, cancellations, reviews, and disputes for that role.
+- **Product role policies:** listing accuracy, condition disclosures and inspection reports for second-hand equipment and commodities, quality and quantity claims, pricing and fees, delivery and escrow milestones, cancellations, reviews, and disputes for that role.
 
 ## Acceptance records
 

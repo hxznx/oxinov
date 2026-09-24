@@ -1,0 +1,25 @@
+{
+  "name": "@oxinov/platform-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Oxinov shared control plane API (api.oxinov.com) for identity, organizations, entitlements, KYC, and payments ledger",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "echo 0",
+    "start": "echo 0",
+    "lint": "echo 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.2.6",
+    "@nestjs/core": "11.2.6",
+    "@nestjs/platform-express": "11.2.6",
+    "@oxinov/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.43",
+    "typescript": "5.9.3"
+  }
+}

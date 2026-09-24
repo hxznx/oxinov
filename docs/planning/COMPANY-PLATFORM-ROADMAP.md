@@ -6,6 +6,7 @@
 - Confirm ownership of `oxinov.com`, DNS, email, trademarks, brand assets, and required Nepal regulatory advice.
 - Record AWS Mumbai as the primary deployment decision; approve AWS account ownership, budgets, production sizing, identity operations, payment providers, privacy policy, and support model.
 - Create measurable first-release objectives and a cost ceiling.
+- Establish the [R&D operating system](../research/README.md): appoint the portfolio roles, approve a quarterly capacity ceiling and horizon mix, screen the [candidate portfolio](../research/PORTFOLIO.md), and authorize no more than three first-wave research briefs.
 
 ## Phase 1 Company presence
 
@@ -39,7 +40,7 @@
 
 ## Phase 5 Additional product pilots
 
-- Deliver the adopted Flo Softwares concepts one at a time: [Oxinov Agri Market](../products/AGRI-MARKET.md), then [Oxinov Jobs](../products/JOBS.md), then [Oxinov Services Market](../products/SERVICES-MARKET.md) (ADR-010).
+- Deliver the adopted Flo Softwares concepts one at a time: [Oxinov Commodity Market](../products/COMMODITY-MARKET.md), then [Oxinov Jobs](../products/JOBS.md), then [Oxinov Services Market](../products/SERVICES-MARKET.md) (ADR-010).
 - Before the first of them: confirm written rights to the Flo Softwares code, designs, and names, and rotate secrets committed to those repositories.
 - Select any further product using customer evidence and company strategy.
 - Approve its product charter, product owner, budget, architecture boundary, regulatory assessment, data policy, and exit criteria.
@@ -55,7 +56,8 @@
 5. Create company brand assets and approve public legal pages.
 6. Scaffold the company website and platform control plane through the reviewed AI command.
 7. Keep the LMS backlog moving behind stable platform contracts.
+8. Assign R&D governance roles and approve or reject the proposed first-wave experiments without delaying the platform and LMS commitments.
 
 ## Release gate for every new product
 
-A product enters implementation only when it has an accountable owner, a defined user and problem, scope exclusions, success metrics, pricing or strategic justification, data classification, regulatory review, architecture boundary, operations and support plan, delivery budget, and an approved stop or continue checkpoint.
+A product enters implementation only when it has an accountable owner, observed user evidence and evidence-backed needs, validated critical journeys, usability and accessibility measures, scope exclusions, success metrics, pricing or strategic justification, data classification, regulatory review, architecture boundary, operations and support plan, delivery budget, and an approved stop or continue checkpoint. It follows the [user-centred product standard](../research/USER-CENTERED-PRODUCT-STANDARD.md) through discovery, prototype, beta, launch, and live improvement.

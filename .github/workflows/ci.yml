@@ -1,8 +1,15 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
   pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   scaffold:
@@ -14,9 +21,12 @@ jobs:
           python-version: '3.12'
       - name: Validate project documents and local links
         run: python scripts/validate_project.py
+      - name: Validate monorepo boundaries and release gates
+        run: node scripts/validate-workspace.mjs
       - name: Validate Docker Compose syntax
         env:
           POSTGRES_PASSWORD: ci-only-placeholder
+          APP_DB_PASSWORD: ci-only-placeholder
           REDIS_PASSWORD: ci-only-placeholder
           MINIO_ROOT_USER: ci-only-placeholder
           MINIO_ROOT_PASSWORD: ci-only-placeholder
@@ -39,5 +49,66 @@ jobs:
           prom/alertmanager:v0.34.1
           check-config /etc/alertmanager/alertmanager.yml
 
-  # Application lint, tests, migrations, image builds, and mobile tests are added
-  # when frontend/ and backend/ source is implemented. See docs/devops/CI-CD.md.
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: oxinov_lms_test
+          POSTGRES_USER: oxinov
+          POSTGRES_PASSWORD: ci-only-owner
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U oxinov -d oxinov_lms_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_lms_test
+      DATABASE_URL: postgresql://oxinov_app:ci-only-app@localhost:5432/oxinov_lms_test
+      TEST_MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_lms_test
+      TEST_DATABASE_URL: postgresql://oxinov_app:ci-only-app@localhost:5432/oxinov_lms_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @oxinov/lms-api prisma:generate
+      - run: pnpm --filter @oxinov/lms-api typecheck
+      - run: pnpm --filter @oxinov/lms-api lint
+      - run: pnpm --filter @oxinov/lms-api test
+      - name: Apply migrations with Prisma and check the schema has not drifted
+        run: |
+          pnpm --filter @oxinov/lms-api exec prisma migrate deploy
+          pnpm --filter @oxinov/lms-api exec prisma migrate diff --from-config-datasource --to-schema ../../database/prisma/schema.prisma --exit-code
+      - name: Give the request role a login for tests
+        run: psql "$MIGRATION_DATABASE_URL" -c "ALTER ROLE oxinov_app LOGIN PASSWORD 'ci-only-app'"
+      - run: pnpm --filter @oxinov/lms-api db:seed
+      - run: pnpm --filter @oxinov/lms-api db:test-policies
+      - run: pnpm --filter @oxinov/lms-api test:integration
+      - run: pnpm --filter @oxinov/lms-api build
+
+  lms-api-image:
+    needs: api
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build immutable LMS API candidate
+        run: docker build --file devops/docker/Dockerfile --target backend --tag oxinov/lms-api:${{ github.sha }} .
+      - name: Scan the LMS API image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: oxinov/lms-api:${{ github.sha }}
+          format: table
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+
+  # Frontend, worker, chat, and mobile tests are added when that source
+  # is implemented. See docs/devops/CI-CD.md.

@@ -5,7 +5,7 @@ Each Oxinov product plane has a charter before implementation starts. A charter 
 | Product | Address | Pillar | Origin | Charter status |
 | --- | --- | --- | --- | --- |
 | OxinovLMS | `lms.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/02-FRD.md`) |
-| [Oxinov Agri Market](AGRI-MARKET.md) | `agri.oxinov.com` | AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) | Draft |
+| [Oxinov Commodity Market](COMMODITY-MARKET.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) expanded to all commodities & second-hand items ([Agri Market](AGRI-MARKET.md) superseded) | Draft |
 | [Oxinov Jobs](JOBS.md) | `jobs.oxinov.com` | Education | Flo Softwares concept (`hr-backend`, `hr-frontend`) | Draft |
 | [Oxinov Services Market](SERVICES-MARKET.md) | `services.oxinov.com` | Services | Flo Softwares concept (`service-platform`, `service-platform-frontend`) | Draft |
 
@@ -15,6 +15,7 @@ A draft charter does not authorize scaffolding product folders, databases, or de
 
 - Every product has its own frontend, backend, and database following the [product plane template](../engineering/COMPANY-PROJECT-STRUCTURE.md#product-plane-template).
 - Users sign in once with their Oxinov account and reach every launched product without signing up again. Each charter lists the trust level and policy required for each action, per [identity and access](../architecture/IDENTITY-AND-ACCESS.md) and [platform policies](../company/PLATFORM-POLICIES.md).
+- Every product is based on continuous user research. Its charter links observed evidence to user needs and critical journeys; implementation and release require representative usability, accessibility, device, network, trust, recovery, and support evidence under the [user-centred product standard](../research/USER-CENTERED-PRODUCT-STANDARD.md).
 
 ## Shared rules for adopted products
 

@@ -26,7 +26,7 @@ function claimString(payload: JWTPayload, key: string): string | null {
 
 /**
  * Verifies bearer tokens. Production uses the identity provider's JWKS (Clerk session tokens are
- * standard RS256 JWTs). Local development may also accept HS256 tokens from `npm run dev:token`;
+ * standard RS256 JWTs). Local development may also accept HS256 tokens from the LMS dev-token script;
  * configuration refuses that secret in production.
  *
  * Email and verification status are read from `email` and `email_verified` claims. For Clerk,

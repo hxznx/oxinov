@@ -1,0 +1,15 @@
+{
+  "name": "@oxinov/design-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Oxinov shared cyberpunk design tokens, brand assets, and UI primitives",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "echo 0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

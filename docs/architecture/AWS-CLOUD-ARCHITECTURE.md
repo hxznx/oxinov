@@ -92,6 +92,8 @@ flowchart TB
 | Secrets and encryption | AWS Secrets Manager, Systems Manager Parameter Store for non-secrets, and AWS KMS |
 | Email candidate | Amazon SES after sender-domain and delivery review |
 | Queue option | Existing Redis/BullMQ first; Amazon SQS for AWS-native decoupled jobs when justified |
+| Generative AI | Amazon Bedrock through the Oxinov AI gateway; Guardrails, evaluation, tagged inference profiles, and Knowledge Bases only for approved use cases |
+| Custom and predictive ML | Amazon SageMaker AI for approved training and MLOps; AWS IoT Greengrass for approved edge inference |
 | Metrics and dashboards | OpenTelemetry, Amazon Managed Service for Prometheus, and Amazon Managed Grafana, or a documented compatible deployment |
 | Logs and audit | Structured application logs, CloudWatch Logs, organization CloudTrail, and protected S3 log archive |
 | Security posture | IAM Identity Center, GuardDuty, Security Hub, AWS Config, Inspector, WAF, and the separate SOC/SIEM pipeline |
@@ -107,6 +109,9 @@ flowchart TB
 - Place production database credentials in Secrets Manager and rotate them through a tested procedure.
 - Restrict administrative access with MFA, least privilege, separation of duties, and audited emergency access.
 - Forward normalized application security events to the existing SIEM. Operational AWS logs do not replace the SOC event contract.
+- Restrict Bedrock and SageMaker access to dedicated workload roles used by the AI gateway or approved ML pipelines. Browser/mobile clients and ordinary product tasks receive no model-provider permission.
+- Default AI processing to approved in-Region models. Record and approve all Regions in any cross-Region inference profile before restricted data is allowed.
+- Keep Bedrock model invocation logging disabled unless a reviewed redacted and time-limited use case requires it; application logs remain metadata-only.
 
 ## Connectivity and cost controls
 
@@ -124,6 +129,7 @@ flowchart TB
 4. Create ECR, ECS, load balancers, Route 53, CloudFront, WAF, and certificate resources.
 5. Create RDS, ElastiCache, S3, secrets, backups, and alarms.
 6. Add observability, security services, CI federation, deployment, and rollback automation.
+7. Add Bedrock inference profiles, AI gateway permissions, Guardrails, quotas, budgets, evaluation assets, and monitoring only after the AI Phase 0 gate.
 
 No Terraform apply targets production until peer review, a saved plan, security checks, budget alarms, state backup, change approval, and rollback or replacement steps exist.
 
@@ -135,3 +141,6 @@ No Terraform apply targets production until peer review, a saved plan, security 
 - [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/)
 - [Amazon RDS Multi-AZ](https://aws.amazon.com/rds/features/multi-az/)
 - [GitHub Actions OIDC with AWS](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html)
+- [Amazon Bedrock documentation](https://aws.amazon.com/documentation-overview/bedrock/)
+- [Amazon Bedrock cross-Region inference](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html)
+- [Amazon SageMaker AI MLOps](https://docs.aws.amazon.com/en_en/sagemaker/latest/dg/mlops.html)

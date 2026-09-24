@@ -5,10 +5,12 @@ Company platform and product monorepo for Oxinov Pvt. Ltd. OxinovLMS is the firs
 ## Start here
 
 1. Use the [documentation map](docs/README.md). Read the [company platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS architecture](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [platform policies](docs/company/PLATFORM-POLICIES.md), and [company roadmap](docs/planning/COMPANY-PLATFORM-ROADMAP.md).
-2. For OxinovLMS work, read its [project brief](docs/00-PROJECT-BRIEF.md), [PRD](docs/01-PRD.md), [FRD](docs/02-FRD.md), and [NFR](docs/03-NFR.md).
-3. Coding agents follow [AGENTS.md](AGENTS.md), the [current structure](docs/engineering/PROJECT-STRUCTURE.md), and the [target company structure](docs/engineering/COMPANY-PROJECT-STRUCTURE.md). The reviewed [AI build command](prompts/BUILD-OXINOV-PLATFORM.md) starts company-platform milestones.
-4. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis minio` after Docker is installed.
-5. Start local monitoring with `docker compose --profile monitoring up -d`. Open Grafana at `http://localhost:3001`, Prometheus at `http://localhost:9090`, and Alertmanager at `http://localhost:9093`.
+2. For company AI work, read the [AI implementation strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI platform architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), and [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md).
+3. For OxinovLMS work, read its [project brief](docs/00-PROJECT-BRIEF.md), [PRD](docs/01-PRD.md), [FRD](docs/02-FRD.md), and [NFR](docs/03-NFR.md).
+4. Coding agents follow [AGENTS.md](AGENTS.md), the [current structure](docs/engineering/PROJECT-STRUCTURE.md), and the [target company structure](docs/engineering/COMPANY-PROJECT-STRUCTURE.md). The reviewed [platform build command](prompts/BUILD-OXINOV-PLATFORM.md) and [AI foundation command](prompts/IMPLEMENT-AI-FOUNDATION.md) start approved milestones.
+5. Install Node.js 22 and pnpm 12.6.0, then run `pnpm install --frozen-lockfile` from the repository root.
+6. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis minio` after Docker is installed.
+7. Start local monitoring with `docker compose --profile monitoring up -d`. Open Grafana at `http://localhost:3001`, Prometheus at `http://localhost:9090`, and Alertmanager at `http://localhost:9093`.
 
 ## Company, platform, and products
 
@@ -18,7 +20,7 @@ Company platform and product monorepo for Oxinov Pvt. Ltd. OxinovLMS is the firs
 | One Oxinov account and sign-in (Google or email code) | `id.oxinov.com` | Planned (Phase 2) |
 | Account portal and product launcher | `app.oxinov.com` | Planned (Phase 2) |
 | OxinovLMS | `lms.oxinov.com` | First product, partially implemented |
-| [Oxinov Agri Market](docs/products/AGRI-MARKET.md) | `agri.oxinov.com` | Draft charter |
+| [Oxinov Commodity Market](docs/products/COMMODITY-MARKET.md) | `market.oxinov.com` | Draft charter (all commodities & second-hand items) |
 | [Oxinov Jobs](docs/products/JOBS.md) | `jobs.oxinov.com` | Draft charter |
 | [Oxinov Services Market](docs/products/SERVICES-MARKET.md) | `services.oxinov.com` | Draft charter |
 
@@ -41,8 +43,8 @@ Each product has its own frontend, backend, and database; one Oxinov account sig
 
 The implemented code is currently OxinovLMS. Its first backend slice exists in `backend/api` (NestJS): workspaces, catalog, free-course enrollment, and server-graded timed exams, backed by the Prisma schema, numbered migrations, PostgreSQL row-level security, and a two-tenant JLPT N5 seed under `database/`. See [the API README](backend/api/README.md) for routes, local setup, and tests.
 
-The company website, account portal, shared control plane, product-entitlement integration, LMS web and mobile apps, paid checkout, lesson progress, certificates, worker, and chat are not implemented yet. Frontend, worker, and chat Docker targets and deployment manifests remain templates. No production deployment target is configured.
+The monorepo boundaries for the company website, account portal, shared control plane, and LMS product are established, but their application source is not implemented yet. Product-entitlement integration, LMS web and mobile apps, paid checkout, lesson progress, certificates, worker, and chat also remain unimplemented. Frontend, worker, and chat Docker targets and deployment manifests remain templates. No production deployment target is configured.
 
 ## Decisions still needed
 
-Company-platform ownership, AWS account and identity operations, launch markets, payment-provider eligibility, product pricing, AI providers, and initial course inventory are tracked in [risks and decisions](docs/planning/RISKS.md) and [architecture decisions](docs/architecture/ADR.md).
+Company-platform ownership, AWS account and identity operations, launch markets, payment-provider eligibility, product pricing, exact AI pilot owners/models/data, and initial course inventory are tracked in [risks and decisions](docs/planning/RISKS.md) and [architecture decisions](docs/architecture/ADR.md).

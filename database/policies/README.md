@@ -8,7 +8,7 @@ security (RLS). Every tenant-owned table must fail closed when tenant context is
 | File | Purpose |
 | --- | --- |
 | `../migrations/20260924000200_tenant_isolation/migration.sql` | Canonical RLS policies, context functions, the `oxinov_app` role grants, and constraints Prisma cannot express. Policies ship only through reviewed migrations. |
-| `tenant_isolation_test.sql` | Database-level isolation tests, run as `oxinov_app` (`npm run db:test-policies` in `backend/api`). |
+| `tenant_isolation_test.sql` | Database-level isolation tests, run as `oxinov_app` (`pnpm --filter @oxinov/lms-api db:test-policies`). |
 | `local-app-role.sh` | Local Docker init script that gives `oxinov_app` a login password. |
 
 ## Model

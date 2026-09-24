@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">Oxinov</title>
+  <defs>
+    <linearGradient id="ring" x1="17" y1="60" x2="103" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00F0FF"/>
+      <stop offset="0.5" stop-color="#C040FF"/>
+      <stop offset="1" stop-color="#FF3EEC"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2"/>
+      <feMerge>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="120" height="120" fill="#000000"/>
+  <g fill="none" stroke-width="2.4" stroke-linecap="square" stroke-linejoin="miter" filter="url(#glow)">
+    <circle cx="60" cy="60" r="43" stroke="url(#ring)"/>
+    <path d="M37 37 L57.5 58.5 L35 81" stroke="#00F0FF"/>
+    <path d="M83 37 L62.5 58.5 L85 81" stroke="#FF3EEC"/>
+  </g>
+  <g fill="none" stroke-width="0.9" stroke-linecap="square" stroke-linejoin="miter" opacity="0.85">
+    <path d="M37 37 L57.5 58.5 L35 81" stroke="#E6FFFF"/>
+    <path d="M83 37 L62.5 58.5 L85 81" stroke="#FFE6FC"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="t">
+  <title id="t">Oxinov</title>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter">
+    <circle cx="60" cy="60" r="43"/>
+    <path d="M37 37 L57.5 58.5 L35 81"/>
+    <path d="M83 37 L62.5 58.5 L85 81"/>
+  </g>
+</svg>

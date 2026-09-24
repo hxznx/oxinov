@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Errors } from '../common/errors';
-import type { AppRequest } from '../common/request';
+import { pathParam, routePath, type AppRequest } from '../common/request';
 import { DatabaseContext } from '../database/database-context.service';
 import type { TenantRole } from '../generated/prisma/enums';
 import { SecurityEventsService } from '../observability/security-events.service';
@@ -32,7 +32,7 @@ export class TenantGuard implements CanActivate {
     const user = request.user;
     if (!user) throw Errors.unauthenticated();
 
-    const tenantId = request.params.tenantId;
+    const tenantId = pathParam(request, 'tenantId');
     if (!tenantId || !UUID.test(tenantId)) throw Errors.notFound('Workspace');
 
     const membership = await this.db.run({ tenantId, userId: user.userId }, (tx) =>
@@ -44,7 +44,7 @@ export class TenantGuard implements CanActivate {
 
     const requestInfo = {
       correlation_id: request.requestId,
-      route: request.route?.path as string | undefined,
+      route: routePath(request),
       method: request.method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
     };
 

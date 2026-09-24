@@ -12,12 +12,12 @@ Oxinov follows the pattern used by multi-product companies and consumer AI assis
           ┌──────────────────────┼───────────────────────────┐
           │                      │                           │
    Oxinov One             Product plans               Marketplace fees
-   (bundle across         (per product, when           (Agri Market, Services
+   (bundle across         (per product, when           (Commodity Market, Services
     all products)          a product needs its own)     Market, Jobs)
           │                      │                           │
           └──────────── entitlements and usage limits ───────┘
                                  │
-        lms app · agri app · jobs app · services app · future apps
+        lms app · market app · jobs app · services app · future apps
 ```
 
 ## Plan ladder
@@ -47,7 +47,7 @@ Individual product plans exist only where a product has a distinct buyer (for ex
 | Product | Free | Plus / Pro (Oxinov One) | Business / Enterprise |
 | --- | --- | --- | --- |
 | **OxinovLMS** | Free courses, limited mock exams per month, basic progress | All included practice content, unlimited mock exams, AI tutor and explanations, certificates, offline-ready content later | Institution workspaces (tenants), instructor seats, cohorts, analytics, branding, custom domain |
-| **Oxinov Agri Market** | Browse, buy, and list with standard commission | Price alerts, market price history, more active listings, AI listing writer | Cooperative workspace, member management, bulk listings, lower commission, reports |
+| **Oxinov Commodity Market** | Browse, buy, and list commodities or second-hand items with standard commission | Price alerts, market price history, more active listings, AI listing writer, condition badges | Dealer, cooperative & liquidator workspaces, member/fleet management, bulk listings & auctions, lower commission, reports |
 | **Oxinov Jobs** | Candidate profile, apply to jobs | Profile boost, application insights, AI CV and cover-letter helper, LMS certificate badges highlighted | Employer plans: job-post packs, applicant search, featured jobs, team hiring seats |
 | **Oxinov Services Market** | Browse, book, and offer services with standard commission | Priority booking, saved providers, AI request writer | Provider business plans: more categories and areas, staff accounts, featured placement, lower commission |
 | **Oxinov AI** (future) | Limited daily messages | Higher limits, stronger models, file and image tools | Team workspace, admin and data controls, API credits |
@@ -58,7 +58,7 @@ Individual product plans exist only where a product has a distinct buyer (for ex
 | --- | --- |
 | Subscriptions (monthly or annual; annual about two months cheaper) | Oxinov One, product plans, Business seats |
 | Usage-based credits | AI usage beyond included limits, API access |
-| Transaction commission | Agri Market orders and Services Market bookings; never charged to job candidates |
+| Transaction commission | Commodity Market orders & escrow releases, and Services Market bookings; never charged to job candidates |
 | Promotion | Featured listings, featured jobs, featured providers |
 | Institutional contracts | LMS institutions, cooperatives, employers, enterprise and government |
 
@@ -80,8 +80,8 @@ Products never check a plan name such as "Pro". The platform turns plans into **
 
 ```text
 plan: oxinov-one-plus
-  entitlements: lms.mock_exams.unlimited, lms.ai_tutor, agri.price_alerts, jobs.cv_helper, ...
-  limits:       ai.credits.monthly = 1000, storage.gb = 20, agri.active_listings = 50
+  entitlements: lms.mock_exams.unlimited, lms.ai_tutor, market.price_alerts, jobs.cv_helper, ...
+  limits:       ai.credits.monthly = 1000, storage.gb = 20, market.active_listings = 50
 ```
 
 - A plan is a named bundle of entitlement keys and limits stored in the platform catalogue.
@@ -105,7 +105,7 @@ A subscription bought on any channel unlocks the same entitlements on every devi
 
 - Khalti and eSewa are the first payment routes. Automatic recurring charges may not be available from local wallets, so the first release supports **prepaid periods** (1, 3, 6, or 12 months) with renewal reminders, a grace period, and one-tap renewal. Add auto-renewal when a provider supports it.
 - Prices are shown in NPR including applicable VAT once tax treatment is confirmed.
-- Downgrade and cancellation keep access until the end of the paid period. Refunds follow the published Payments, Refunds, and Disputes Policy.
+- Downgrade and cancellation keep access until the end of the paid period. Refunds follow the published Payments, Escrow, Refunds, and Disputes Policy.
 - International card subscriptions need an eligible provider or a merchant-of-record service for the Nepal entity; this is an open decision.
 
 ## Governance

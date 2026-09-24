@@ -20,3 +20,17 @@ export interface AppRequest extends Request {
   user?: AuthUser;
   tenant?: TenantScope;
 }
+
+/** Matched Express route pattern, or undefined when no handler matched. `req.route` is untyped. */
+export function routePath(request: Request): string | undefined {
+  const route: unknown = request.route;
+  if (typeof route !== 'object' || route === null) return undefined;
+  const path: unknown = (route as { path?: unknown }).path;
+  return typeof path === 'string' ? path : undefined;
+}
+
+/** A single path parameter; Express 5 types allow arrays for wildcard segments, which we reject. */
+export function pathParam(request: Request, name: string): string | undefined {
+  const value: unknown = request.params[name];
+  return typeof value === 'string' ? value : undefined;
+}

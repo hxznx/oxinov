@@ -5,6 +5,10 @@
 .github/
 node_modules/
 **/node_modules/
+.turbo/
+.pnpm-store/
+.tmp/
+pnpm-debug.log*
 .next/
 dist/
 build/

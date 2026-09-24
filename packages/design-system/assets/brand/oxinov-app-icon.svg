@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="t">
+  <title id="t">Oxinov app icon</title>
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="120" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0.14" stop-color="#00F0FF"/>
+      <stop offset="0.5" stop-color="#C040FF"/>
+      <stop offset="0.86" stop-color="#FF3EEC"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="b2"/>
+      <feMerge>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="#07070D"/>
+  <g transform="translate(76 76) scale(3)" fill="none" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter" filter="url(#glow)">
+    <circle cx="60" cy="60" r="43" stroke="url(#ring)"/>
+    <path d="M37 37 L57.5 58.5 L35 81" stroke="#00F0FF"/>
+    <path d="M83 37 L62.5 58.5 L85 81" stroke="#FF3EEC"/>
+  </g>
+</svg>

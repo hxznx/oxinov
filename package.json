@@ -1,0 +1,28 @@
+{
+  "name": "oxinov-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Oxinov company platform and product monorepo",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@12.6.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "format": "turbo run format",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
+    "typecheck": "turbo run typecheck",
+    "validate": "python scripts/validate_project.py && node scripts/validate-workspace.mjs",
+    "validate:security": "python scripts/validate_project.py --security",
+    "lms:dev": "pnpm --filter @oxinov/lms-api dev",
+    "lms:migrate": "pnpm --filter @oxinov/lms-api db:migrate",
+    "lms:seed": "pnpm --filter @oxinov/lms-api db:seed"
+  },
+  "devDependencies": {
+    "turbo": "2.11.3"
+  }
+}

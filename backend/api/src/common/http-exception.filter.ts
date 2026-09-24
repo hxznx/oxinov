@@ -10,7 +10,7 @@ import type { Response } from 'express';
 import { Prisma } from '../generated/prisma/client';
 import { DomainError, type ErrorCode } from './errors';
 import { JsonLogger } from './json-logger';
-import type { AppRequest } from './request';
+import { routePath, type AppRequest } from './request';
 import { LOGGER } from './tokens';
 
 const STATUS_CODES: Record<number, ErrorCode> = {
@@ -47,7 +47,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         requestId,
         tenantId: request.tenant?.tenantId,
         method: request.method,
-        route: request.route?.path,
+        route: routePath(request),
         errorName: exception instanceof Error ? exception.name : typeof exception,
         errorMessage: exception instanceof Error ? exception.message : undefined,
         stack: exception instanceof Error ? exception.stack : undefined,
@@ -69,7 +69,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       // ValidationPipe returns { message: string[] } describing each invalid field.
       const details =
         typeof payload === 'object' && payload !== null && Array.isArray((payload as { message?: unknown }).message)
-          ? ((payload as { message: unknown[] }).message.map(String) as string[])
+          ? (payload as { message: unknown[] }).message.map(String)
           : undefined;
       const message =
         status === 400

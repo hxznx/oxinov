@@ -3,6 +3,12 @@
 | System | Purpose | Required controls |
 | --- | --- | --- |
 | OIDC provider / Keycloak baseline | Company-wide identity, organizations, MFA, and sessions | Validate issuer, audience, signature, expiry, and scopes server-side; map identity to platform and product authorization records. |
+| Google and Apple sign-in | Customer sign-in through the OIDC provider (ADR-011) | Accept only verified emails; request only email, name, and photo scopes; brokered through Keycloak, never in product code. |
+| SMS provider (Nepal) | Phone verification for trust level T2 and security notices | Provider adapter, rate limits, code expiry, delivery status, no codes in logs. |
+| KYC verification provider (optional) | Document and identity checks for T3/T4 | Private document transfer, data-processing agreement, retention limits, human review of decisions. |
+| Licensed bank escrow or settlement partner | Commodity Market milestone escrow and seller payouts (ADR-013) | Server-verified status, idempotent ledger entries, reconciliation, no Oxinov stored-value balance. |
+| ConnectIPS and bank transfer | Higher-value Nepal payments | Provider adapter, verified confirmation, reconciliation to the ledger. |
+| Market price data sources | Commodity price tickers and indices | Licensed or public sources only, attribution, import validation, stale-data flags. |
 | Khalti/eSewa for Nepal and eligible international payment providers | Web payments, SaaS plans, purchases, refunds, and payouts where supported | Use provider adapters; verify status server-side, process event IDs idempotently, map organization/product context, and reconcile to the internal ledger. |
 | Apple/Google billing | Mobile digital purchases where required | Verify receipts server-side; normalize entitlements. |
 | Mux | Hosted recorded video | Signed playback, upload callbacks, tenant media mapping. |

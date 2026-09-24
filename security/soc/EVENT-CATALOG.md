@@ -17,6 +17,10 @@ Every event uses the envelope in `event-schema.json`. Add new actions through re
 | `payment.webhook.replay_denied` | API/worker | 6 | Duplicate/replayed provider event was denied |
 | `upload.malware.detected` | Upload scanner/worker | 9 | Malware scanner rejected uploaded content |
 | `ai.prompt_injection.blocked` | AI adapter | 5 | AI safety boundary blocked a suspicious instruction |
+| `ai.retrieval.cross_tenant_denied` | AI gateway/retriever | 8 | Retrieval attempted to cross the trusted tenant or product scope |
+| `ai.sensitive_data.blocked` | AI gateway | 6 | Input or output policy blocked a prohibited sensitive data class |
+| `ai.tool.authorization_denied` | AI gateway/application API | 7 | A proposed tool or parameters failed application authorization |
+| `ai.budget.abuse_detected` | AI gateway/usage ledger | 5 | Repeated or abnormal usage exhausted or attempted to evade an AI budget |
 | `security.configuration.changed` | Deployment/platform API | 7 | Security-relevant setting or policy changed |
 | `security.secret_access.denied` | Secret manager/cloud audit | 8 | Unauthorized secret access was denied |
 | `runtime.threat.detected` | GuardDuty/Falco/Wazuh | Source-defined | Runtime or endpoint rule created a finding |

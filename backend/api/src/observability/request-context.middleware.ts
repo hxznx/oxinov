@@ -2,7 +2,7 @@ import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import type { NextFunction, Response } from 'express';
 import { JsonLogger } from '../common/json-logger';
-import type { AppRequest } from '../common/request';
+import { routePath, type AppRequest } from '../common/request';
 import { LOGGER } from '../common/tokens';
 import { MetricsService } from './metrics.service';
 
@@ -31,9 +31,8 @@ export class RequestContextMiddleware implements NestMiddleware {
       finishActive();
       const seconds = Number(process.hrtime.bigint() - started) / 1e9;
       // Express sets route only when a handler matched; unmatched paths share one label value.
-      const routePath: unknown = request.route?.path;
-      const route =
-        typeof routePath === 'string' ? `${request.baseUrl ?? ''}${routePath}` : 'unmatched';
+      const matched = routePath(request);
+      const route = matched === undefined ? 'unmatched' : `${request.baseUrl ?? ''}${matched}`;
       if (route === '/metrics') return;
       this.metrics.requestFinished(request.method, route, response.statusCode, seconds);
       if (route.startsWith('/health')) return;

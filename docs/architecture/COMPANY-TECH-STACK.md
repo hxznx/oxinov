@@ -15,7 +15,8 @@
 | Events | Transactional outbox first; NATS JetStream when justified | Avoid dual-write loss and premature event-platform operations. Consumers are idempotent and contracts are versioned. |
 | Files | S3-compatible object storage; MinIO locally | Store uploads, documents, media derivatives, and exports outside PostgreSQL with private access. |
 | Search | PostgreSQL search first; OpenSearch when search scale or analytics requires it | Avoid operating a second search store before product needs justify it. |
-| AI | Provider-neutral AI gateway with prompt versions, structured outputs, evaluation, budgets, and human approval | Keep models replaceable and prevent models from directly accessing databases, shells, payments, or publishing actions. Use pgvector only for an approved retrieval requirement. |
+| Generative AI | Provider-neutral AI gateway with Amazon Bedrock first, model aliases, Guardrails, prompt versions, structured outputs, RAG, evaluation, budgets, and human approval | Centralize tenant authorization, data policy, safety, cost, audit, and shutdown. Keep model IDs out of domain code and prevent direct database, shell, secret, payment, publishing, or account access. |
+| Predictive and edge ML | Amazon SageMaker AI when custom training is justified; AWS IoT Greengrass for approved edge inference | Use for vision, anomaly detection, forecasting, predictive maintenance, agriculture, and robotics pilots. Keep deterministic physical safety controls outside language models. |
 | Payments | Internal provider adapter and ledger; Khalti and eSewa candidates for Nepal | Separate product rules from providers. Add Stripe only for an eligible operating entity and market. |
 | Observability | OpenTelemetry Collector, Prometheus, Alertmanager, Loki, Tempo, and Grafana | Correlate metrics, logs, and traces and keep operational telemetry portable. |
 | Security operations | CodeQL, dependency review, Trivy, GuardDuty Runtime Monitoring for ECS Fargate, OpenSearch Security Analytics, and Sigma; Falco optional for later EKS/EC2 | Cover source, supply chain, images, infrastructure, runtime, AWS activity, security events, detections, and incidents. |
@@ -46,6 +47,8 @@ Use the current supported stable release when a component is first implemented, 
 - [OpenTelemetry documentation](https://opentelemetry.io/docs/)
 - [Kubernetes production considerations](https://kubernetes.io/docs/setup/production-environment/)
 - [Oxinov AWS cloud architecture](AWS-CLOUD-ARCHITECTURE.md)
+- [Oxinov AI platform architecture](AI-PLATFORM-ARCHITECTURE.md)
+- [AWS Bedrock or SageMaker decision guide](https://docs.aws.amazon.com/decision-guides/latest/decision-guides/bedrock-or-sagemaker.html)
 - [AWS VPC planning](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-getting-started.html)
 - [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/)
 - [Khalti payment gateway](https://docs.khalti.com/)

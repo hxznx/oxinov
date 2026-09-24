@@ -16,6 +16,8 @@ Read these files before changing code:
 - docs/company/PLATFORM-BLUEPRINT.md
 - docs/company/PLATFORM-POLICIES.md
 - docs/architecture/IDENTITY-AND-ACCESS.md
+- docs/company/SUBSCRIPTION-MODEL.md
+- docs/design/BRAND.md and docs/design/DESIGN-SYSTEM.md
 - docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md
 - docs/architecture/COMPANY-TECH-STACK.md
 - docs/engineering/COMPANY-PROJECT-STRUCTURE.md
@@ -27,7 +29,7 @@ Context:
 - OxinovLMS is the first Oxinov product and its current code must remain functional.
 - The platform needs one company website, one Oxinov identity, one account portal, shared organizations and product entitlements, and independently owned product planes.
 - Use oxinov.com for the company site, app.oxinov.com for the account portal, id.oxinov.com for OIDC identity, api.oxinov.com for the API gateway, and lms.oxinov.com for OxinovLMS.
-- Oxinov Agri Market (agri.oxinov.com), Oxinov Jobs (jobs.oxinov.com), and Oxinov Services Market (services.oxinov.com) are adopted products with draft charters (ADR-010). Each gets its own frontend, backend, and database only after its release gate is approved.
+- Oxinov Commodity Market (market.oxinov.com, ADR-013), Oxinov Jobs (jobs.oxinov.com), and Oxinov Services Market (services.oxinov.com) are adopted products with draft charters (ADR-010). Each gets its own frontend, backend, and database only after its release gate is approved.
 - Future AI, engineering, robotics, IoT, media, research, and space products are roadmap items. Do not create empty services for them.
 - One Oxinov account works across all products. Customers sign in with Continue with Google or an email one-time code, never a password, and higher-risk actions require trust levels and policy acceptance (ADR-011).
 
@@ -42,6 +44,7 @@ Architecture requirements:
 - Use REST/OpenAPI and generated clients. Version API and event contracts.
 - Use payment adapters and an internal ledger. For Nepal, do not assume Stripe eligibility; keep Khalti and eSewa integrations server-verified and idempotent.
 - Instrument with OpenTelemetry. Keep Prometheus, Alertmanager, Grafana, Loki, and Tempo operational telemetry separate from the SIEM and SOC pipeline.
+- Use the approved Oxinov logo files in packages/design-system/assets/brand/ and the cyberpunk design tokens in docs/design/BRAND.md; never hard-code colors or redraw the logo. Dark is the default theme and the light Daylight theme is required. Meet WCAG 2.2 AA and honor reduced motion.
 - Use strict TypeScript, SOLID where useful, KISS, DRY for stable shared rules, YAGNI, dependency inversion at provider boundaries, least privilege, secure defaults, accessibility, internationalization, and privacy by design.
 - AI-generated changes can create drafts through typed authorized actions. AI never receives direct production SQL, shell, secrets, payment, publishing, role-change, deletion, or cross-tenant privileges.
 
@@ -61,7 +64,7 @@ Implement only this milestone now:
 ## First command to run
 
 ```text
-Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with the shared design-token package, accessible responsive navigation, company and product landing pages, one division page for each of the ten strategic pillars listed in docs/company/PLATFORM-BLUEPRINT.md (education, ai, engineering, services, robotics, studio, agritech, space, research, production), placeholder routes for careers, contact, privacy, terms, and security contact, company identity (Oxinov Pvt. Ltd., registered in Lalitpur, Nepal), health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify OxinovLMS as the first product and must label all unlaunched sectors as future initiatives. Do not move the current LMS applications in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
+Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with packages/design-system (cyberpunk tokens from docs/design/BRAND.md, dark default and Daylight theme, self-hosted Orbitron, Rajdhani, Inter, Noto Sans Devanagari, and JetBrains Mono, and the approved logo SVGs), the Full effect level on hero sections, accessible responsive navigation, company and product landing pages, one division page for each of the ten strategic pillars listed in docs/company/PLATFORM-BLUEPRINT.md (education, ai, engineering, services, robotics, studio, agritech, space, research, production), placeholder routes for careers, contact, privacy, terms, and security contact, company identity (Oxinov Pvt. Ltd., registered in Lalitpur, Nepal), health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify OxinovLMS as the first product, show Oxinov Commodity Market, Oxinov Jobs, and Oxinov Services Market as coming soon, and label all unlaunched sectors as future initiatives. Include a pricing page placeholder at /pricing and legal routes under /legal. Do not move the current LMS applications in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
 ```
 
 ## Second command after Phase 1 passes

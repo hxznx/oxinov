@@ -1,6 +1,6 @@
 // Issues a short-lived LOCAL development token for a seeded user. Never usable in production:
 // the API refuses AUTH_DEV_JWT_SECRET when NODE_ENV or DEPLOY_ENVIRONMENT is production.
-// Usage: npm run dev:token -- <subject> [--unverified]
+// Usage: pnpm --filter @oxinov/lms-api dev:token -- <subject> [--unverified]
 //   subjects from database/seeds/dev_seed.sql: dev|sakura-owner, dev|sakura-instructor,
 //   dev|learner-aiko, dev|learner-bikash, dev|everest-owner (or any new dev|... subject)
 import 'dotenv/config';

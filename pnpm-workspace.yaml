@@ -1,0 +1,20 @@
+packages:
+  - frontend/*
+  - frontend/products/*
+  - frontend/mobile/*
+  - backend/*
+  - backend/products/*
+  - backend/workers/*
+  - packages/*
+
+catalogMode: strict
+
+minimumReleaseAge: 720
+
+minimumReleaseAgeExclude:
+  - turbo
+
+allowBuilds:
+  '@prisma/engines': true
+  '@scarf/scarf': false
+  prisma: true
