@@ -1,6 +1,6 @@
 # Privacy
 
-Oxinov Pvt. Ltd. is responsible for personal data processed by the Oxinov platform and its products. Tenant owners control their educational data in OxinovLMS subject to platform operations and law. The public Privacy Policy is part of the [platform policies](../company/PLATFORM-POLICIES.md); its legal text requires review by qualified Nepal counsel against the Individual Privacy Act and the laws of each launch market.
+Oxinov Pvt. Ltd. is responsible for personal data processed by the Oxinov platform and its products. Tenant owners control their educational data in Oxinov Edu subject to platform operations and law. The public Privacy Policy is part of the [platform policies](../company/PLATFORM-POLICIES.md); its legal text requires review by qualified Nepal counsel against the Individual Privacy Act and the laws of each launch market.
 
 ## Data collected by layer
 
@@ -9,7 +9,7 @@ Oxinov Pvt. Ltd. is responsible for personal data processed by the Oxinov platfo
 | Sign-in (`id.oxinov.com`) | Email, name, profile photo from Google or Apple, sign-in method, session and device metadata | Authenticate and secure the account |
 | Platform | Country, phone number (T2), policy acceptances, organizations, entitlements, payments ledger, support cases | Operate one account across products |
 | KYC (T3/T4) | Citizenship or passport images, date of birth, address, business registration and PAN documents, reviewer decisions | Verify sellers, providers, employers, and payout recipients |
-| OxinovLMS | Enrollment, progress, exam attempts and results, assignments, chat, certificates | Deliver learning |
+| Oxinov Edu | Enrollment, progress, exam attempts and results, assignments, chat, certificates | Deliver learning |
 | Commodity Market | Listings, orders, RFQs, escrow records, delivery locations, inspection reports, vehicle and machinery ownership documents, messages, reviews | Operate the commodity and second-hand marketplace |
 | Jobs | Candidate profile, CV, employment history, applications, employer messages | Match candidates and employers |
 | Services Market | Service demands, bookings, service addresses, messages, reviews | Operate the services marketplace |

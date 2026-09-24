@@ -1,6 +1,6 @@
 # Threat model
 
-Covers the Oxinov platform (sign-in, account portal, shared services), OxinovLMS, and the adopted marketplace products (Commodity Market, Jobs, Services Market). Update this model when a new product, integration, tenant isolation tier, sign-in method, or payment route is added.
+Covers the Oxinov platform (sign-in, account portal, shared services), Oxinov Edu, and the adopted marketplace products (Commodity Market, Jobs, Services Market). Update this model when a new product, integration, tenant isolation tier, sign-in method, or payment route is added.
 
 ## Platform and identity
 

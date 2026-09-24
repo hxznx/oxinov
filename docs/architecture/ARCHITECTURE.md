@@ -1,6 +1,6 @@
 # System architecture
 
-**Scope:** This document defines the OxinovLMS product architecture. The shared company control plane and cross-product boundaries are defined in [Oxinov company platform architecture](COMPANY-PLATFORM-ARCHITECTURE.md).
+**Scope:** This document defines the Oxinov Edu product architecture. The shared company control plane and cross-product boundaries are defined in [Oxinov company platform architecture](COMPANY-PLATFORM-ARCHITECTURE.md).
 
 One SaaS platform serves many tenant LMS workspaces. A user identity may hold memberships in several tenants; the active tenant is resolved from verified membership and workspace address, not email text. Tenant-owned data carries `tenant_id`.
 

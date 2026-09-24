@@ -1,6 +1,6 @@
 # Development roadmap
 
-**Scope:** OxinovLMS delivery. Coordinate it with the [Oxinov company platform roadmap](COMPANY-PLATFORM-ROADMAP.md); platform identity and entitlements must not silently duplicate LMS tenant roles.
+**Scope:** Oxinov Edu delivery. Coordinate it with the [Oxinov company platform roadmap](COMPANY-PLATFORM-ROADMAP.md); platform identity and entitlements must not silently duplicate LMS tenant roles.
 
 0. **Foundation:** repository, Docker infrastructure, PostgreSQL migrations, CI security scanning, OpenAPI, tenant identity, two-tenant isolation tests, security-event schema, private metrics endpoints, Prometheus rules, Alertmanager, and Grafana dashboards.
 1. **SaaS core:** workspace signup, branding, membership, plans, catalog, course authoring, and recorded media.

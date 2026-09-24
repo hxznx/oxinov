@@ -13,7 +13,7 @@ Every product uses the cyberpunk style. Intensity varies with the audience and t
 | Level | Where | Effects allowed |
 | --- | --- | --- |
 | Full | Company website hero sections, sign-in background, Oxinov AI, launch pages | Grid, scanlines, signature gradient, glitch on logo, glow |
-| Standard | Account portal, Oxinov LMS, Oxinov Jobs | Grid background, clipped corners, glow on hover and focus, HUD labels |
+| Standard | Account portal, Oxinov Edu, Oxinov Jobs | Grid background, clipped corners, glow on hover and focus, HUD labels |
 | Calm | Oxinov Commodity Market, Oxinov Services Market, checkout, exams, forms, KYC, and long reading | Clipped corners and neon accents only; no scanlines, glitch, or animated glow |
 
 Reduced-motion settings turn off all animation at every level. Exams, payments, and KYC always use the Calm level.
@@ -44,7 +44,7 @@ Buttons, links, form fields with inline validation, one-time-code input, select,
 
 Each product builds its own domain components on the shared tokens and blocks:
 
-- **Oxinov LMS:** course card, lesson player, exam timer and question, result summary, certificate.
+- **Oxinov Edu:** course card, lesson player, exam timer and question, result summary, certificate.
 - **Oxinov Commodity Market:** listing card, condition and quality grade chip, inspection report, price ticker and index chart, RFQ thread, escrow timeline.
 - **Oxinov Jobs:** job card, candidate profile, application pipeline, skill match indicator.
 - **Oxinov Services Market:** provider card, service demand card, booking calendar, booking timeline.

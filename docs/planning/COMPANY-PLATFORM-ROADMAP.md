@@ -22,7 +22,7 @@
 - Add shared individual and organization KYC, conversations and messaging, and reviews primitives required by the adopted marketplace products (ADR-010).
 - Add OpenTelemetry, dashboards, alerts, backups, restore tests, SIEM events, CI security gates, and runbooks.
 
-## Phase 3 OxinovLMS integration
+## Phase 3 Oxinov Edu integration
 
 - Connect existing LMS identities to the shared OIDC provider.
 - Map LMS workspaces to platform organizations or individual owners.
@@ -49,7 +49,7 @@
 
 ## First 30 days
 
-1. Decide the first customer segment and launch country for OxinovLMS.
+1. Decide the first customer segment and launch country for Oxinov Edu.
 2. Confirm the domain registrar and DNS owner and inventory existing email and cloud accounts.
 3. Create the AWS organization/account plan, budgets, billing alerts, deployment roles, and OIDC operations ownership.
 4. Apply for Khalti and eSewa merchant access or record the selected payment alternative.

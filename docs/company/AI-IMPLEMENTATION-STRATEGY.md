@@ -3,7 +3,7 @@
 **Status:** Proposed company strategy  
 **Date:** 2026-09-24  
 **Decision owner:** To be assigned  
-**Applies to:** Oxinov Platform, OxinovLMS, future Oxinov products, internal operations, and R&D
+**Applies to:** Oxinov Platform, Oxinov Edu, future Oxinov products, internal operations, and R&D
 
 ## Executive decision
 
@@ -12,7 +12,7 @@ Build one governed AI capability for the whole company. Products call it through
 Start with two narrow, reviewable use cases:
 
 1. An internal knowledge assistant grounded only in approved company documents.
-2. An OxinovLMS authoring copilot that creates drafts for instructors to review.
+2. An Oxinov Edu authoring copilot that creates drafts for instructors to review.
 
 Do not train a foundation model, launch a general autonomous agent, or build every proposed AI product in the first release. RAG, prompt design, evaluation, and human review should be exhausted before fine-tuning is approved.
 
@@ -70,7 +70,7 @@ Targets are hypotheses until the owner approves a baseline, evaluation set, and 
 
 ## Language and speech plan
 
-OxinovLMS needs Japanese, Korean, Chinese, Nepali, English, Russian, Arabic, and Spanish. Model capability must be tested by **language, dialect, task, and learner level** rather than inferred from a provider's general multilingual claim.
+Oxinov Edu needs Japanese, Korean, Chinese, Nepali, English, Russian, Arabic, and Spanish. Model capability must be tested by **language, dialect, task, and learner level** rather than inferred from a provider's general multilingual claim.
 
 As of this review:
 

@@ -46,7 +46,7 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 
 | Product | Address | Documents |
 | --- | --- | --- |
-| OxinovLMS | `lms.oxinov.com` | [Brief](00-PROJECT-BRIEF.md), [PRD](01-PRD.md), [FRD](02-FRD.md), [legacy functional requirements](functional_requirements.md), [NFR](03-NFR.md), [LMS architecture](architecture/ARCHITECTURE.md), [LMS tech stack](architecture/TECH-STACK.md), [LMS roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [LMS UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
+| Oxinov Edu | `edu.oxinov.com` | [Brief](00-PROJECT-BRIEF.md), [PRD](01-PRD.md), [FRD](02-FRD.md), [legacy functional requirements](functional_requirements.md), [NFR](03-NFR.md), [LMS architecture](architecture/ARCHITECTURE.md), [LMS tech stack](architecture/TECH-STACK.md), [LMS roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [LMS UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
 | [Oxinov Commodity Market](products/COMMODITY-MARKET.md) | `market.oxinov.com` | [Charter](products/COMMODITY-MARKET.md) ([Agri Market](products/AGRI-MARKET.md) superseded) |
 | Oxinov Jobs | `jobs.oxinov.com` | [Charter](products/JOBS.md) |
 | Oxinov Services Market | `services.oxinov.com` | [Charter](products/SERVICES-MARKET.md) |

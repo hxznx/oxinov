@@ -4,7 +4,7 @@
 
 Oxinov Platform is the digital foundation for Oxinov Pvt. Ltd. and its product portfolio. It gives customers one Oxinov account, one company portal, a consistent trust and billing layer, and access to separately operated products under `oxinov.com`.
 
-OxinovLMS is the first product. The company objectives also identify future work in artificial intelligence, engineering, cloud and cybersecurity services, robotics and automation, IoT and electronics, media production, AgriTech, space technology, research, education, and production. These business areas are a portfolio roadmap. They are not requirements to place every capability in one application or release.
+Oxinov Edu is the first product. The company objectives also identify future work in artificial intelligence, engineering, cloud and cybersecurity services, robotics and automation, IoT and electronics, media production, AgriTech, space technology, research, education, and production. These business areas are a portfolio roadmap. They are not requirements to place every capability in one application or release.
 
 ## Product model
 
@@ -12,7 +12,7 @@ Use three layers:
 
 1. **Company presence:** public company, product, research, careers, newsroom, contact, and legal pages.
 2. **Platform control plane:** identity, organizations, product catalogue, subscriptions, entitlements, billing records, notifications, support, audit, consent, and the customer product launcher.
-3. **Product planes:** OxinovLMS and each later product own their workflows, APIs, deployments, and product data.
+3. **Product planes:** Oxinov Edu and each later product own their workflows, APIs, deployments, and product data.
 
 Beneath all three layers is a cross-cutting **research evidence foundation**. User and product research validates needs, journeys, language, accessibility, trust, and live outcomes; technical R&D validates uncertain capabilities. The foundation is a decision process, not a shared runtime service or database. Every product follows the [user-centred product standard](../research/USER-CENTERED-PRODUCT-STANDARD.md).
 
@@ -24,9 +24,9 @@ The control plane knows that a person or organization can use a product. It does
 | --- | --- | --- | --- |
 | Oxinov company website | Explain the company, products, research, services, and contact routes | Public frontend with managed content | First |
 | Oxinov account portal | One login, organization switcher, product launcher, plans, invoices, support, and privacy controls | Shared control plane | First |
-| OxinovLMS | Multi-tenant language, SSW, IT, exam, media, assignment, chat, and administration platform | First independent product plane | First |
+| Oxinov Edu | Multi-tenant language, SSW, IT, exam, media, assignment, chat, and administration platform | First independent product plane | First |
 | [Oxinov Commodity Market](../products/COMMODITY-MARKET.md) | Verified marketplace for agricultural produce, raw materials, commercial machinery, and circular second-hand goods | Independent product plane; adopted Flo Softwares concept expanded to all commodities & re-commerce (ADR-010) | Second product after platform foundation |
-| [Oxinov Jobs](../products/JOBS.md) | Verified jobs and skill matching linked to OxinovLMS certificates | Independent product plane; adopted Flo Softwares concept (ADR-010) | Third product |
+| [Oxinov Jobs](../products/JOBS.md) | Verified jobs and skill matching linked to Oxinov Edu certificates | Independent product plane; adopted Flo Softwares concept (ADR-010) | Third product |
 | [Oxinov Services Market](../products/SERVICES-MARKET.md) | Book verified local service providers or post service needs | Independent product plane; adopted Flo Softwares concept (ADR-010) | Fourth product |
 | Oxinov AI | AI tools, model services, evaluation, and governed agent capabilities | Independent product; reuse identity, billing, audit, and AI gateway | After platform foundation |
 | Oxinov Engineering and Services | Software, cloud, networking, cybersecurity, consulting, and managed services | Service portal and project operations module | After platform foundation |
@@ -45,7 +45,7 @@ The incorporation objectives define ten strategic pillars. Every pillar gets a p
 
 | Pillar | Public page | Application address | Status |
 | --- | --- | --- | --- |
-| Oxinov Education | `oxinov.com/education` | `lms.oxinov.com` (OxinovLMS); `jobs.oxinov.com` (Oxinov Jobs) after release gate | First product |
+| Oxinov Education | `oxinov.com/education` | `edu.oxinov.com` (Oxinov Edu); `jobs.oxinov.com` (Oxinov Jobs) after release gate | First product |
 | Oxinov AI | `oxinov.com/ai` | `ai.oxinov.com` after release gate | Future initiative |
 | Oxinov Engineering | `oxinov.com/engineering` | Service portal module in `app.oxinov.com` | Future initiative |
 | Oxinov Services | `oxinov.com/services` | `services.oxinov.com` (Oxinov Services Market) after release gate; client portal module in `app.oxinov.com` | Future initiative |
@@ -64,7 +64,7 @@ These are candidate product modules derived from the incorporation objectives. T
 
 | Pillar | Candidate module | Summary | Notes |
 | --- | --- | --- | --- |
-| Education | OxinovLMS | Courses, exams, assignments, certificates | In development (first product) |
+| Education | Oxinov Edu | Courses, exams, assignments, certificates | In development (first product) |
 | Education | Oxinov Academy | Bootcamps and professional training programs | Education approvals where applicable |
 | Education | Virtual Labs | Online practice environments for robotics, IoT, networking, and cloud | |
 | Education | [Oxinov Jobs](../products/JOBS.md) | Jobs, internships, and skill matching | Draft charter (ADR-010); absorbs the Internship and Fellowship Portal |
@@ -106,9 +106,9 @@ These are candidate product modules derived from the incorporation objectives. T
 | Order | Module | Reason |
 | --- | --- | --- |
 | 1 | Company website, identity, and account portal | Every product depends on them |
-| 2 | OxinovLMS | Existing product |
+| 2 | Oxinov Edu | Existing product |
 | 3 | Oxinov Commodity Market | Most complete adopted concept; expanded to all commodities and circular second-hand trade (ADR-010) |
-| 4 | Oxinov Jobs | Connects OxinovLMS graduates to employers (ADR-010) |
+| 4 | Oxinov Jobs | Connects Oxinov Edu graduates to employers (ADR-010) |
 | 5 | Oxinov Services Market | Reuses shared KYC, bookings, and payments (ADR-010) |
 | 6 | Client Project Portal | Services revenue for Oxinov's own consulting |
 | 7 | AI Studio and AI API | Market demand; reuses LMS content and the AI gateway |
@@ -137,7 +137,7 @@ The order is a recommendation, not a commitment. Select the next module using cu
 | `app.oxinov.com` | Account portal and product launcher |
 | `id.oxinov.com` | Central sign in and account security |
 | `api.oxinov.com` | Public API gateway and versioned APIs |
-| `lms.oxinov.com` | OxinovLMS web application |
+| `edu.oxinov.com` | Oxinov Edu web application |
 | `market.oxinov.com` | Oxinov Commodity Market, after its release gate (alias `commodity.oxinov.com`) |
 | `jobs.oxinov.com` | Oxinov Jobs, after its release gate |
 | `services.oxinov.com` | Oxinov Services Market, after its release gate |
@@ -159,4 +159,4 @@ Future products receive a subdomain only after they pass their release gate. Cus
 
 ## First platform release
 
-The first release is successful when a visitor can discover Oxinov and OxinovLMS, create or use one Oxinov account, open the account portal, create or join an organization, see entitled products, launch OxinovLMS, and return to the portal without signing in again. Operations must have backups, metrics, logs, traces, security events, and audited administrator access.
+The first release is successful when a visitor can discover Oxinov and Oxinov Edu, create or use one Oxinov account, open the account portal, create or join an organization, see entitled products, launch Oxinov Edu, and return to the portal without signing in again. Operations must have backups, metrics, logs, traces, security events, and audited administrator access.

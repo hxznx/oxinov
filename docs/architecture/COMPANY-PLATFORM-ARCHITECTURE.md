@@ -9,7 +9,7 @@ flowchart TB
     U[Visitors customers and staff] --> E[DNS CDN WAF and ingress]
     E --> CW[Company website oxinov.com]
     E --> PW[Account portal app.oxinov.com]
-    E --> LMS[OxinovLMS lms.oxinov.com]
+    E --> LMS[Oxinov Edu edu.oxinov.com]
     E --> G[API gateway api.oxinov.com]
     U --> ID[OIDC identity id.oxinov.com]
 
@@ -58,7 +58,7 @@ It does not own product-specific authoring, learning, examinations, robot contro
 
 ## Product planes
 
-Each product plane owns its frontend, API modules, workers, database migrations, product authorization, product audit events, runbooks, dashboards, and release lifecycle. OxinovLMS retains its current tenant model: LMS workspaces belong to platform organizations or individual owners, while courses and learner data remain in the LMS database boundary.
+Each product plane owns its frontend, API modules, workers, database migrations, product authorization, product audit events, runbooks, dashboards, and release lifecycle. Oxinov Edu retains its current tenant model: LMS workspaces belong to platform organizations or individual owners, while courses and learner data remain in the LMS database boundary.
 
 ## Identity and authorization
 
@@ -111,7 +111,7 @@ Kubernetes is a later deployment target, not a requirement for the first custome
 
 ## Failure boundaries
 
-- A failure in a future product must not prevent customers from signing in to the portal or using OxinovLMS.
+- A failure in a future product must not prevent customers from signing in to the portal or using Oxinov Edu.
 - The portal can display a product as unavailable without calling the product database.
 - Notification, analytics, and audit delivery use queues and retries; their temporary failure must not duplicate payments or corrupt product state.
 - Identity and entitlement outages use documented fail-closed or limited-session behavior based on the operation's risk.

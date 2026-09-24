@@ -53,7 +53,7 @@ Rules:
 
 - On first sign-in the platform grants a free **member** entitlement to every launched product. A person does not have to sign up again for each product.
 - Paid plans, organization seats, and higher limits are extra entitlements from the control plane.
-- Product roles stay inside each product. Being a seller in Commodity Market does not grant anything in Oxinov Jobs or OxinovLMS.
+- Product roles stay inside each product. Being a seller in Commodity Market does not grant anything in Oxinov Jobs or Oxinov Edu.
 - A product that has not passed its release gate is invisible and grants nothing.
 
 ## Progressive trust levels

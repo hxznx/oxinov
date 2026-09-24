@@ -170,7 +170,7 @@ Every release identifies which of these journeys changed and attaches research a
 | --- | --- |
 | Company site | Understand what Oxinov offers, distinguish launched products from research, find pricing, policies, security, and contact |
 | Shared account | Sign in, first-time welcome, launch a product, switch product or organization, step up trust, manage plan, get support, export or delete data |
-| Oxinov LMS | Discover a course, understand price and access, enroll/pay, resume learning, complete practice/exam/assignment, understand results, verify certificate |
+| Oxinov Edu | Discover a course, understand price and access, enroll/pay, resume learning, complete practice/exam/assignment, understand results, verify certificate |
 | LMS creator/admin | Create workspace, invite staff, author and submit, review/publish, support learner, understand payments and tenant status |
 | Commodity Market | Discover and compare an item, understand seller/condition/inspection, list, order, verify payment or escrow state, arrange completion, dispute and review |
 | Oxinov Jobs | Discover a suitable job, create profile, understand match, apply, track status, message safely; employer verifies, posts, reviews, and decides |

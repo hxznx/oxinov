@@ -1,4 +1,4 @@
-# OxinovLMS API target
+# Oxinov Edu API target
 
 This is the target product-plane location for the existing LMS API in `backend/api/`. The working
 service remains at its legacy path until a dedicated migration updates workspace, Docker, CI,

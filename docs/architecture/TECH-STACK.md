@@ -1,6 +1,6 @@
 # Technology stack
 
-**Scope:** OxinovLMS product stack. Cross-product choices are defined in the [company platform stack](COMPANY-TECH-STACK.md). **Status:** Proposed baseline; record changes in [ADR.md](ADR.md).
+**Scope:** Oxinov Edu product stack. Cross-product choices are defined in the [company platform stack](COMPANY-TECH-STACK.md). **Status:** Proposed baseline; record changes in [ADR.md](ADR.md).
 
 ## Recommended implementation stack
 

@@ -7,7 +7,7 @@
 | Decision | Why it matters |
 | --- | --- |
 | Product owner, customer, release gate, budget, and stop/continue checkpoint for each Oxinov product | Prevents the broad company objectives from becoming simultaneous unsupported software projects. |
-| R&D executive sponsor, portfolio owner, reviewer independence, quarterly capacity ceiling, and core/adjacent/frontier allocation | Determines whether research is systematic and evidence-led without starving the platform, OxinovLMS, security, support, or recovery work. |
+| R&D executive sponsor, portfolio owner, reviewer independence, quarterly capacity ceiling, and core/adjacent/frontier allocation | Determines whether research is systematic and evidence-led without starving the platform, Oxinov Edu, security, support, or recovery work. |
 | R&D participant, dataset, publication, partnership, and IP procedures | Required before research uses people, personal or tenant data, third-party datasets, university or industry partners, patentable work, or public claims. |
 | Product-research owner, participant access, incentives, consent, secure research repository, and coverage across language, disability, digital confidence, device, and network contexts | Without these, Oxinov may build polished products around internal assumptions, miss excluded users, or collect research data without adequate protection. |
 | Registrar/DNS ownership, subdomain map, company email, trademark/brand assets, and public legal-page owners | Required to operate `oxinov.com`, company communications, product routing, and trustworthy public content. |
@@ -40,7 +40,7 @@
 | Rotation of secrets committed to Flo Softwares repositories | `.env` files and test credentials were found in those repositories; any live value must be treated as compromised. |
 | Marketplace payment model: direct provider payment, licensed escrow, or payouts | Holding customer funds or operating a wallet may require Nepal Rastra Bank authorization; determines Commodity Market escrow and Services Market checkout. |
 | Nepal e-commerce registration and consumer protection obligations | Applies to Commodity Market and Services Market before public launch. |
-| Foreign employment licensing | Required if Oxinov Jobs or OxinovLMS ever arranges overseas placements such as Japan SSW. |
+| Foreign employment licensing | Required if Oxinov Jobs or Oxinov Edu ever arranges overseas placements such as Japan SSW. |
 | KYC provider, reviewer staffing, and document retention | Determines T3/T4 verification speed, cost, privacy risk, and seller or employer onboarding time. |
 | SMS provider for phone verification in Nepal | Required for trust level T2 before messaging, orders, bookings, or applications. |
 | Email one-time-code sign-in implementation in Keycloak | May require a reviewed extension or custom authenticator (ADR-011). |

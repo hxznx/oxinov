@@ -101,7 +101,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 
 **FR-ID-2207 — Single sign-on across products.** A signed-in person must be able to open any launched Oxinov product without signing in again. Each product is a separate OIDC client with its own audience.
 *Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* ADR-008, ADR-011.
-- Acceptance: Given an active session, opening `lms.oxinov.com` from the app launcher lands signed in.
+- Acceptance: Given an active session, opening `edu.oxinov.com` from the app launcher lands signed in.
 - Acceptance: Given a token issued for one product, another product's API rejects it.
 
 **FR-ID-2208 — Sessions and sign-out.** Access tokens must last 5–15 minutes; refresh tokens rotate on use and are revoked on sign-out, suspension, or reuse detection. People can sign out of the current device or all devices, and see active sessions.
@@ -287,7 +287,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 
 | Product | Platform requirements it depends on |
 | --- | --- |
-| OxinovLMS | FR-ID-2201–2208, FR-PLAN-2602–2605, FR-PAY-2701–2702, FR-POLICY-2403 (instructors), FR-PORTAL-3102 |
+| Oxinov Edu | FR-ID-2201–2208, FR-PLAN-2602–2605, FR-PAY-2701–2702, FR-POLICY-2403 (instructors), FR-PORTAL-3102 |
 | Oxinov Commodity Market | FR-TRUST-2302–2304, FR-POLICY-2403, FR-PAY-2701–2703, FR-KYC-2801–2803, FR-MSG-3001–3002 |
 | Oxinov Jobs | FR-TRUST-2302, FR-KYC-2802, FR-POLICY-2403, FR-MSG-3001–3002 |
 | Oxinov Services Market | FR-TRUST-2302–2304, FR-KYC-2801–2802, FR-PAY-2701–2702, FR-MSG-3001–3002 |

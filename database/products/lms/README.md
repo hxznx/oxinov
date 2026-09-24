@@ -1,4 +1,4 @@
-# OxinovLMS database target
+# Oxinov Edu database target
 
 This is the target product-plane location for the existing LMS database assets currently under
 `database/prisma/`, `database/migrations/`, `database/seeds/`, and `database/policies/`. Move those

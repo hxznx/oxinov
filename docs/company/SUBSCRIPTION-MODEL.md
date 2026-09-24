@@ -46,7 +46,7 @@ Individual product plans exist only where a product has a distinct buyer (for ex
 
 | Product | Free | Plus / Pro (Oxinov One) | Business / Enterprise |
 | --- | --- | --- | --- |
-| **OxinovLMS** | Free courses, limited mock exams per month, basic progress | All included practice content, unlimited mock exams, AI tutor and explanations, certificates, offline-ready content later | Institution workspaces (tenants), instructor seats, cohorts, analytics, branding, custom domain |
+| **Oxinov Edu** | Free courses, limited mock exams per month, basic progress | All included practice content, unlimited mock exams, AI tutor and explanations, certificates, offline-ready content later | Institution workspaces (tenants), instructor seats, cohorts, analytics, branding, custom domain |
 | **Oxinov Commodity Market** | Browse, buy, and list commodities or second-hand items with standard commission | Price alerts, market price history, more active listings, AI listing writer, condition badges | Dealer, cooperative & liquidator workspaces, member/fleet management, bulk listings & auctions, lower commission, reports |
 | **Oxinov Jobs** | Candidate profile, apply to jobs | Profile boost, application insights, AI CV and cover-letter helper, LMS certificate badges highlighted | Employer plans: job-post packs, applicant search, featured jobs, team hiring seats |
 | **Oxinov Services Market** | Browse, book, and offer services with standard commission | Priority booking, saved providers, AI request writer | Provider business plans: more categories and areas, staff accounts, featured placement, lower commission |

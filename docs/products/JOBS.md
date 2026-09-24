@@ -4,7 +4,7 @@
 
 ## Problem and customers
 
-Employers in Nepal struggle to find verified, skilled candidates, and learners who complete training have no direct route to relevant jobs. Oxinov Jobs connects verified candidates, including OxinovLMS graduates, with verified employers using skill and location matching.
+Employers in Nepal struggle to find verified, skilled candidates, and learners who complete training have no direct route to relevant jobs. Oxinov Jobs connects verified candidates, including Oxinov Edu graduates, with verified employers using skill and location matching.
 
 | Role | Description |
 | --- | --- |
@@ -20,11 +20,11 @@ Employers in Nepal struggle to find verified, skilled candidates, and learners w
 - Job postings with type, location, skills, salary range, and moderation.
 - Applications with a documented status lifecycle and employer-candidate messaging.
 - Skill and location matching with an explainable ranking.
-- Display of verified OxinovLMS certificates on candidate profiles through the LMS API.
+- Display of verified Oxinov Edu certificates on candidate profiles through the LMS API.
 
 ## Out of scope for the first release
 
-- Training courses, exams, exam bookings, and certifications (owned by OxinovLMS).
+- Training courses, exams, exam bookings, and certifications (owned by Oxinov Edu).
 - Platform coins, wallets, or paid credits (requires payments and regulatory review).
 - Recruitment or placement for employment abroad, including Japan SSW placements (requires a foreign employment licence).
 - Automated hiring decisions; AI may rank or summarize but a person decides.
@@ -32,7 +32,7 @@ Employers in Nepal struggle to find verified, skilled candidates, and learners w
 
 ## Reuse from the source concept
 
-Reuse as reference: `JobPosting`, `JobApplication`, `UrgentJob`, `EmploymentHistory`, `TrendingJob`, `TrendingSkill`, and the skill-matching rules; employer and candidate dashboard screens. Move to OxinovLMS: `TrainingCourse`, `TrainingEnrollment`, `TrainingComment`, `TrainingRequest`, `Exam`, `ExamBooking`, `Certification`, and `Orientation`. Replace with platform services: `User`, `OTP`, `RefreshToken`, `IndividualKYC`, `IndustrialKYC`, `Notification`, `PlatformCoin`, and `CoinTransaction`. `Event` and `EventRegistration` stay out until a separate need is approved.
+Reuse as reference: `JobPosting`, `JobApplication`, `UrgentJob`, `EmploymentHistory`, `TrendingJob`, `TrendingSkill`, and the skill-matching rules; employer and candidate dashboard screens. Move to Oxinov Edu: `TrainingCourse`, `TrainingEnrollment`, `TrainingComment`, `TrainingRequest`, `Exam`, `ExamBooking`, `Certification`, and `Orientation`. Replace with platform services: `User`, `OTP`, `RefreshToken`, `IndividualKYC`, `IndustrialKYC`, `Notification`, `PlatformCoin`, and `CoinTransaction`. `Event` and `EventRegistration` stay out until a separate need is approved.
 
 ## Product plane
 

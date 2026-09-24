@@ -10,13 +10,13 @@ Oxinov uses a **masterbrand** model, like a large multi-product technology compa
 | --- | --- | --- |
 | Company | Oxinov Pvt. Ltd. | Legal name in footers, policies, invoices, and contracts only |
 | Masterbrand | Oxinov | Neon wordmark and symbol on `oxinov.com`, sign-in, account portal, and app launcher |
-| Product | Oxinov LMS, Oxinov Commodity Market, Oxinov Jobs, Oxinov Services Market, later Oxinov AI | Oxinov symbol + product name; each product has one neon accent and one app icon |
+| Product | Oxinov Edu, Oxinov Commodity Market, Oxinov Jobs, Oxinov Services Market, later Oxinov AI | Oxinov symbol + product name; each product has one neon accent and one app icon |
 | Plan | Oxinov One Plus, Pro; Business; Enterprise | Neon plan badge in the account menu and pricing page |
 | Division | Oxinov Education, AgriTech, AI, … | Company website sections only; divisions are not customer-facing apps |
 
 Naming rules:
 
-- Always write "Oxinov" with a capital O and no space. Write product names as two or three words with a space ("Oxinov Jobs"). The existing name "OxinovLMS" should move to "Oxinov LMS" or a friendlier name such as "Oxinov Learn" (decision pending).
+- Always write "Oxinov" with a capital O and no space. Write product names as two or three words with a space ("Oxinov Jobs"). The first product, formerly "OxinovLMS", is named "Oxinov Edu" at `edu.oxinov.com` (decided; ADR-015). Internal technical identifiers (packages, folders, databases, entitlement keys, tokens, and requirement IDs) keep the `lms` prefix and are never shown to customers.
 - Do not use the legacy concept names KrishiConnect, Kaji, or BT-Bazz on Oxinov products.
 - Product names describe the job to be done; avoid invented sub-brands.
 
@@ -111,7 +111,7 @@ Accents identify the product in its header, app icon, borders, and glow. Primary
 
 | Product | Token | Dark | Light |
 | --- | --- | --- | --- |
-| Oxinov LMS | `color.product.lms` | `#B388FF` neon violet (7.5:1) | `#6B2FD6` (6.5:1) |
+| Oxinov Edu | `color.product.lms` | `#B388FF` neon violet (7.5:1) | `#6B2FD6` (6.5:1) |
 | Oxinov Commodity Market | `color.product.market` | `#39FF14` acid green (14.8:1) | `#2E7D0B` (4.8:1) |
 | Oxinov Jobs | `color.product.jobs` | `#FF8A00` neon orange (8.5:1) | `#B34700` (5.1:1) |
 | Oxinov Services Market | `color.product.services` | `#3D8BFF` electric blue (6.1:1) | `#1F5FD1` (5.4:1) |

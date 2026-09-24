@@ -15,7 +15,7 @@ Oxinov Pvt. Ltd. operates every Oxinov product under one set of company-wide pol
 | Inspector Partner Agreement | Commodity Market depot and inspection partners | Partner onboarding (signed contract) | Not public; linked from the partner portal |
 | Provider Policy | Oxinov Services Market providers | First service listing | `oxinov.com/legal/services-provider` |
 | Employer Policy | Oxinov Jobs employers | First job posting | `oxinov.com/legal/employer` |
-| Instructor Policy | OxinovLMS instructors and tenants | Becoming an instructor | `oxinov.com/legal/instructor` |
+| Instructor Policy | Oxinov Edu instructors and tenants | Becoming an instructor | `oxinov.com/legal/instructor` |
 | Cookie Policy | Websites | Consent banner (non-essential cookies off by default) | `oxinov.com/legal/cookies` |
 | Security Disclosure Policy | Researchers | Not accepted; published | `oxinov.com/security` |
 

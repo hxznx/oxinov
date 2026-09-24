@@ -1,15 +1,15 @@
-# Functional Requirements Document: OxinovLMS
+# Functional Requirements Document: Oxinov Edu
 
 **Version:** 2.0  
 **Date:** 2026-09-24  
 **Status:** Draft for product review  
 **Audience:** Product, design, engineering, and QA  
-**Product:** OxinovLMS (`lms.oxinov.com`), the first Oxinov product plane  
+**Product:** Oxinov Edu (`edu.oxinov.com`), the first Oxinov product plane  
 **Standard:** [Oxinov requirements standard](requirements/README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
 
 ## 0. Platform dependencies
 
-OxinovLMS runs on the shared Oxinov Platform. Sign-in, sessions, trust levels, policy acceptance, organizations, plans, entitlements, payments ledger, KYC, notifications, and privacy requests are defined in the [Platform FRD](requirements/PLATFORM-FRD.md) and are not redefined here. LMS tenant memberships, roles, instructor approval, courses, learning, exams, and results remain in this document and in the LMS database boundary. Where an LMS requirement below conflicts with a platform requirement, the platform requirement wins and the LMS requirement is marked **Superseded**.
+Oxinov Edu runs on the shared Oxinov Platform. Sign-in, sessions, trust levels, policy acceptance, organizations, plans, entitlements, payments ledger, KYC, notifications, and privacy requests are defined in the [Platform FRD](requirements/PLATFORM-FRD.md) and are not redefined here. LMS tenant memberships, roles, instructor approval, courses, learning, exams, and results remain in this document and in the LMS database boundary. Where an LMS requirement below conflicts with a platform requirement, the platform requirement wins and the LMS requirement is marked **Superseded**.
 
 ## 1. Purpose and scope
 

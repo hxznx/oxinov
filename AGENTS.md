@@ -10,7 +10,7 @@ The Oxinov repository holds the company platform of **Oxinov Pvt. Ltd.** and its
 | --- | --- | --- |
 | Company website | `oxinov.com` | Not built (Phase 1) |
 | Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Not built (Phase 2) |
-| OxinovLMS | `lms.oxinov.com` | Partial backend in `backend/api`; must stay working |
+| Oxinov Edu | `edu.oxinov.com` | Partial backend in `backend/api`; must stay working |
 | Commodity Market, Jobs, Services Market | `market.`, `jobs.`, `services.oxinov.com` | Draft charters only; do not scaffold |
 
 Do not claim that an application, deployment, or integration works unless it was executed and verified.
@@ -23,7 +23,7 @@ Start with [docs/README.md](docs/README.md), the documentation map. Then read wh
 | --- | --- |
 | Any change | This file, [README.md](README.md), [platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [requirements standard](docs/requirements/README.md) |
 | Platform feature (sign-in, trust, policies, plans, payments, KYC, portal) | [Platform FRD](docs/requirements/PLATFORM-FRD.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [policies](docs/company/PLATFORM-POLICIES.md), [subscription model](docs/company/SUBSCRIPTION-MODEL.md) |
-| OxinovLMS feature | [LMS FRD](docs/02-FRD.md), [NFR](docs/03-NFR.md), [LMS architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
+| Oxinov Edu feature | [LMS FRD](docs/02-FRD.md), [NFR](docs/03-NFR.md), [LMS architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
 | Other product | Its charter in [docs/products/](docs/products/README.md); build nothing until its release gate is approved |
 | Website or any UI | [brand](docs/design/BRAND.md), [design system](docs/design/DESIGN-SYSTEM.md), [accessibility](docs/design/ACCESSIBILITY.md), [user-centred product standard](docs/research/USER-CENTERED-PRODUCT-STANDARD.md) |
 | AI feature | [AI strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md) |

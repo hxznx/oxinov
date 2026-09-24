@@ -4,7 +4,7 @@
 
 This document is the company operating system for turning uncertainty into reusable knowledge, validated technology, and evidence-backed product decisions. It applies across Oxinov Education, AI, Engineering, Services, Robotics and Automation, Media, AgriTech, Space, Research, and Production.
 
-The system permits broad exploration without silently approving a product, production deployment, regulated activity, or new product plane. OxinovLMS and the company-platform foundation remain the delivery priority. Research informs those products and the later portfolio; it does not bypass their requirements, release gates, architecture boundaries, or operating owners.
+The system permits broad exploration without silently approving a product, production deployment, regulated activity, or new product plane. Oxinov Edu and the company-platform foundation remain the delivery priority. Research informs those products and the later portfolio; it does not bypass their requirements, release gates, architecture boundaries, or operating owners.
 
 Oxinov uses the OECD Frascati criteria to distinguish R&D from ordinary delivery. Work is recorded as R&D only when it is novel, creative, uncertain, systematic, and intended to produce transferable or reproducible knowledge. Customer discovery, routine implementation, maintenance, training, and market analysis can support R&D but are not labeled R&D unless they meet those criteria.
 

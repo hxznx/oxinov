@@ -1,6 +1,6 @@
-# OxinovLMS web target
+# Oxinov Edu web target
 
-This is the target product-plane location for the OxinovLMS web application. The existing
+This is the target product-plane location for the Oxinov Edu web application. The existing
 `frontend/web/` placeholder remains in place until a dedicated migration updates workspace,
 Docker, CI, import, and test references together.
 

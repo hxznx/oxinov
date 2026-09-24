@@ -1,4 +1,4 @@
-# OxinovLMS API service
+# Oxinov Edu API service
 
 NestJS REST/OpenAPI service. It owns authorization, validation, tenant context, business
 transactions, and database access for request-driven operations. Requirements: `AGENTS.md`,

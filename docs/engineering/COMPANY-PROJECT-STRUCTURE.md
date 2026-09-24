@@ -2,7 +2,7 @@
 
 ## Migration rule
 
-The current `frontend/web`, `frontend/mobile`, `backend/api`, `backend/worker`, `backend/chat`, and `database/` implementation belongs to OxinovLMS. Keep it working while the platform foundation is added. Move or rename existing code only in a dedicated migration with import, Docker, CI, and test updates in the same change.
+The current `frontend/web`, `frontend/mobile`, `backend/api`, `backend/worker`, `backend/chat`, and `database/` implementation belongs to Oxinov Edu. Keep it working while the platform foundation is added. Move or rename existing code only in a dedicated migration with import, Docker, CI, and test updates in the same change.
 
 ## Target repository layout
 
@@ -13,12 +13,12 @@ frontend/
   company-web/                 oxinov.com public company site, divisions, legal pages
   platform-web/                app.oxinov.com account portal, product launcher, KYC, billing
   products/
-    lms-web/                   lms.oxinov.com
+    lms-web/                   edu.oxinov.com
     market-web/                market.oxinov.com       after release gate
     jobs-web/                  jobs.oxinov.com         after release gate
     services-web/              services.oxinov.com     after release gate
   mobile/
-    lms/                       OxinovLMS Android and iOS
+    lms/                       Oxinov Edu Android and iOS
     marketplace/               shared Commodity, Jobs, and Services mobile app if approved
 
 backend/

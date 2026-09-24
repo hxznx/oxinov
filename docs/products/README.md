@@ -4,7 +4,7 @@ Each Oxinov product plane has a charter before implementation starts. A charter 
 
 | Product | Address | Pillar | Origin | Charter status |
 | --- | --- | --- | --- | --- |
-| OxinovLMS | `lms.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/02-FRD.md`) |
+| Oxinov Edu | `edu.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/02-FRD.md`) |
 | [Oxinov Commodity Market](COMMODITY-MARKET.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) expanded to all commodities & second-hand items ([Agri Market](AGRI-MARKET.md) superseded) | Draft |
 | [Oxinov Jobs](JOBS.md) | `jobs.oxinov.com` | Education | Flo Softwares concept (`hr-backend`, `hr-frontend`) | Draft |
 | [Oxinov Services Market](SERVICES-MARKET.md) | `services.oxinov.com` | Services | Flo Softwares concept (`service-platform`, `service-platform-frontend`) | Draft |
@@ -21,5 +21,5 @@ A draft charter does not authorize scaffolding product folders, databases, or de
 
 - Rebuild on the Oxinov stack and patterns. Source repositories are reference material for requirements, data models, screens, and business rules; their code is not copied in unreviewed.
 - Use the shared identity, organizations, entitlements, KYC, payments ledger, notifications, messaging, file storage, and audit services from the platform control plane. Products do not ship their own login, OTP, password reset, wallet, or KYC tables.
-- Training, courses, exams, and certifications belong to OxinovLMS. Other products link to LMS certificates through a versioned API.
+- Training, courses, exams, and certifications belong to Oxinov Edu. Other products link to LMS certificates through a versioned API.
 - Each product owns its database, migrations, row-level security policies, workers, dashboards, alerts, runbooks, and release lifecycle.

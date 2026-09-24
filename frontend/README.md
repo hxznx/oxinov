@@ -7,6 +7,6 @@ User-facing clients are separated by company, platform, and product responsibili
 - `products/` contains independently owned product web clients.
 - `mobile/` contains product mobile clients only when approved.
 
-The legacy `web/` and `mobile/` placeholders belong to OxinovLMS and remain until a dedicated
+The legacy `web/` and `mobile/` placeholders belong to Oxinov Edu and remain until a dedicated
 migration updates every path together. All clients call versioned APIs and must never connect
 directly to PostgreSQL or contain server secrets.
