@@ -28,3 +28,6 @@ __pycache__/
 .vscode/
 security/evidence/*
 !security/evidence/README.md
+
+# Temporary agent worktrees
+.claude/worktrees/
