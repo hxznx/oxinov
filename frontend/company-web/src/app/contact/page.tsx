@@ -14,7 +14,6 @@ type Row = { label: string; value: string; href?: string };
 export default function ContactPage() {
   const emailRow = (label: string, address: string | null): Row =>
     address ? { label, value: address, href: `mailto:${address}` } : { label, value: toBeAnnounced };
-  const officeAddress = company.officeAddress ?? company.locality;
   const rows: Row[] = [
     emailRow('General enquiries and support', company.email),
     emailRow('Billing and subscriptions', company.billingEmail),
@@ -26,7 +25,7 @@ export default function ContactPage() {
     ...(company.phone
       ? [{ label: 'WhatsApp', value: company.phoneDisplay, href: `https://wa.me/${company.phone.replace(/\D/g, '')}` }]
       : []),
-    { label: 'Office', value: company.streetAddress ? `${company.streetAddress}, ${officeAddress}` : officeAddress },
+    { label: 'Office', value: company.streetAddress ? `${company.streetAddress}, ${company.locality}` : company.locality },
     { label: 'Office hours', value: company.officeHours ?? toBeAnnounced },
   ];
   return (

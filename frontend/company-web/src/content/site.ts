@@ -8,7 +8,7 @@ export type Status = 'in-development' | 'coming-soon' | 'future' | 'long-horizon
 export const company = {
   name: 'Oxinov',
   legalName: 'Oxinov Pvt. Ltd.',
-  locality: 'Mahalaxmi Municipality, Ward 6, Lalitpur, Nepal',
+  locality: 'Mahalaxmi Municipality, Ward 8, Lalitpur, Nepal',
   // Zoho Mail mailboxes (devops/terraform/environments/production/edge/mail.tf).
   email: 'support@oxinov.com' as string | null,
   securityEmail: 'security@oxinov.com' as string | null,
@@ -17,7 +17,6 @@ export const company = {
   // E.164 number, also reachable on WhatsApp and WeChat.
   phone: '+9779842572888' as string | null,
   phoneDisplay: '+977 984-2572888',
-  officeAddress: 'Mahalaxmi Municipality, Ward 8, Lalitpur, Nepal' as string | null,
   officeHours: '24/7' as string | null,
   // Owner to supply before launch (see frontend/company-web/README.md).
   careersEmail: null as string | null,
