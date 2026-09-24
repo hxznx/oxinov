@@ -16,4 +16,6 @@ RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}@sha256:29be7252db0a106f1cd2ac17b9a56ff2668073da645638a38b9fc67deeb2d6c4
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
+# The upstream image already runs as the unprivileged keycloak user (UID 1000); state it explicitly.
+USER 1000
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
