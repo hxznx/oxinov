@@ -50,6 +50,11 @@ describe('generated CSS', () => {
     assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*--ox-duration-glitch: 0ms;/);
   });
 
+  it('builds the signature gradient from the brand colors of each theme', () => {
+    assert.match(css, /:root \{[^}]*--ox-gradient-signature: linear-gradient\(90deg, #00F0FF 0%, #C040FF 50%, #FF3EEC 100%\);/s);
+    assert.match(css, /:root\[data-theme="light"\] \{[^}]*--ox-gradient-signature: linear-gradient\(90deg, #0077A3 0%, #7A2BC2 50%, #B0128F 100%\);/s);
+  });
+
   it('exposes every product accent', () => {
     for (const product of Object.keys(themes.dark.product)) {
       assert.match(css, new RegExp(`--ox-color-product-${product}:`));

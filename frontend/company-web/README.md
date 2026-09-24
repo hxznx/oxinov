@@ -1,12 +1,38 @@
-# Oxinov Company Website (`frontend/company-web`)
+# Oxinov company website (`frontend/company-web`)
 
-Public corporate web application for **Oxinov Pvt. Ltd.** served at `oxinov.com`.
+Public website of **Oxinov Pvt. Ltd.** at `oxinov.com`. It is a Next.js App Router site exported as static files (`output: 'export'`) for Amazon S3 behind CloudFront. There is no Node server in production.
 
-## Scope
-- Corporate presence, executive mission, and contact information (Lalitpur, Nepal).
-- 10 Strategic Pillar division showcases: Education, AI, Engineering, Services, Robotics, Studio, AgriTech, Space, Research, Production.
-- Product discovery & launcher links for **Oxinov Edu**, **Oxinov Commodity Market**, **Oxinov Jobs**, and **Oxinov Services Market**.
-- Centralized legal, trust, and policy center (`/legal/terms`, `/legal/privacy`, `/legal/market-seller`, etc.).
-- Pricing overview and plan matrix (`/pricing`).
+## What it contains
 
-Built with Next.js App Router, Tailwind CSS, and `@oxinov/design-system`.
+| Route | Content |
+| --- | --- |
+| `/` | Home: headline, values, product status cards |
+| `/about/` | Company story, mission, vision |
+| `/products/` | Oxinov Edu (in development) and the three coming-soon products |
+| `/divisions/` and `/<slug>/` | The ten divisions, each at `oxinov.com/<slug>` (education, ai, engineering, services, robotics, studio, agritech, space, research, production) |
+| `/pricing/` | The plan ladder; prices are published at launch |
+| `/careers/`, `/contact/`, `/security/` | Company contact routes |
+| `/legal/` and `/legal/<doc>/` | Policy pages (text pending legal review) |
+
+All copy lives in `src/content/site.ts`. Styling uses Tailwind CSS mapped to `@oxinov/design-system` tokens; components never hard-code colors. Dark is the default theme, the Daylight theme follows the device until the visitor chooses, and reduced motion turns animation off.
+
+## Commands (from the repository root)
+
+```bash
+pnpm --filter @oxinov/design-system build
+pnpm --filter @oxinov/company-web dev
+pnpm --filter @oxinov/company-web build
+pnpm --filter @oxinov/company-web test
+```
+
+`build` copies the approved logo files from the design system into `public/brand/` and writes the static site to `out/`. `test` checks the exported pages: every route exists, one `h1`, unique titles and descriptions, `lang`, skip link, image alt text, no broken internal links, honest product status, regulated-division labels, no placeholders or retired names, and no analytics or third-party scripts.
+
+## Owner inputs still needed before launch
+
+| Item | Where it goes |
+| --- | --- |
+| Contact email, careers email, phone, street address, office hours, company registration number | `company` in `src/content/site.ts` (shown as "To be announced" until set) |
+| Nepali translation reviewed by a native speaker | A Nepali dictionary with the same keys (FR-SITE-2101) |
+| Reviewed policy text | `/legal/*` pages (FR-POLICY-2401) |
+| Contact form backend with rate limiting | Arrives with `api.oxinov.com` (FR-SITE-2104); until then contact details only |
+| Prices | `/pricing/` after the plan catalogue is approved (FR-SITE-2103) |

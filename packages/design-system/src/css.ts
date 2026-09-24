@@ -2,7 +2,6 @@ import {
   cut,
   cutCorners,
   fonts,
-  gradientSignature,
   lineHeight,
   motion,
   space,
@@ -21,6 +20,8 @@ function colorVariables(colors: ThemeColors): string[] {
   for (const [product, value] of Object.entries(colors.product)) {
     lines.push(`--ox-color-product-${product}: ${value};`);
   }
+  // Gradient stops are the theme's brand colors, each tested for AA text contrast, so gradient text stays readable.
+  lines.push(`--ox-gradient-signature: linear-gradient(90deg, ${colors.brand} 0%, ${colors.brandMid} 50%, ${colors.brand2} 100%);`);
   return lines;
 }
 
@@ -41,7 +42,6 @@ export function renderTokensCss(): string {
     ...space.map((size, index) => `--ox-space-${index + 1}: ${size}px;`),
     `--ox-cut-sm: ${cutCorners(cut.sm)};`,
     `--ox-cut-md: ${cutCorners(cut.md)};`,
-    `--ox-gradient-signature: ${gradientSignature};`,
     `--ox-duration-fast: ${motion.fastMs}ms;`,
     `--ox-duration-base: ${motion.baseMs}ms;`,
     `--ox-duration-glow: ${motion.glowMs}ms;`,
