@@ -4,7 +4,7 @@ Record each decision with date, status, context, choice, consequences, and alter
 
 ## ADR-001: PostgreSQL as system of record
 
-**Status:** Proposed. Use containerized PostgreSQL for transactional LMS data. Default to shared tenant-scoped tables with RLS and API authorization; offer dedicated PostgreSQL only for a justified customer tier. Redis and object storage are supporting systems.
+**Date:** 2026-09-24. **Status:** Accepted. Use PostgreSQL for transactional platform and LMS data. PostgreSQL runs in Docker for local development and CI; production uses Amazon RDS for PostgreSQL with encryption, backups, isolated data subnets, and Multi-AZ according to the environment availability target. Default to shared tenant-scoped LMS tables with RLS and API authorization; offer a dedicated database only for a justified customer tier. Redis and object storage are supporting systems.
 
 ## ADR-002: Separate frontend and backend
 
@@ -20,7 +20,7 @@ Record each decision with date, status, context, choice, consequences, and alter
 
 ## ADR-005: Separate security operations pipeline
 
-**Date:** 2026-09-24. **Status:** Accepted as the baseline design. Operational metrics remain in Prometheus/Grafana. Security events follow the versioned schema under `security/soc/` and are sent to an access-controlled SIEM. OpenSearch Security Analytics with portable Sigma rules is the initial SIEM recommendation; a compatible managed SIEM may replace it. Falco supplies production Linux/Kubernetes runtime detections. Wazuh is optional when endpoint/host agents, file-integrity monitoring, inventory, or compliance capabilities justify the additional platform. Actual incident evidence is never stored in Git.
+**Date:** 2026-09-24. **Status:** Accepted as the baseline design. Operational metrics remain in Prometheus/Grafana. Security events follow the versioned schema under `security/soc/` and are sent to an access-controlled SIEM. OpenSearch Security Analytics with portable Sigma rules is the initial SIEM recommendation; a compatible managed SIEM may replace it. Amazon GuardDuty Runtime Monitoring supplies initial ECS Fargate runtime detections. Falco or GuardDuty may cover later EKS/EC2 workloads. Wazuh is optional when endpoint/host agents, file-integrity monitoring, inventory, or compliance capabilities justify the additional platform. Actual incident evidence is never stored in Git.
 
 ## ADR-006: Tenant context through transaction-local settings and a non-bypass role
 
@@ -34,6 +34,10 @@ Record each decision with date, status, context, choice, consequences, and alter
 
 **Date:** 2026-09-24. **Status:** Accepted as the target architecture. `oxinov.com` provides the public company presence, `app.oxinov.com` provides one account and product launcher, and an OIDC identity service provides single sign on. The control plane owns organizations, product catalogue, plans, entitlements, shared billing records, audit, privacy, and support access. OxinovLMS and every later product own their product workflows, deployments, and data and integrate through versioned APIs and events. Begin with modular applications and a transactional outbox; extract services or introduce a message platform only for measured scale, availability, security, data, or team-ownership needs. Keycloak is the default OIDC implementation while the application contract remains provider-neutral. Existing OxinovLMS code is migrated incrementally rather than rewritten.
 
+## ADR-009: AWS as the production cloud
+
+**Date:** 2026-09-24. **Status:** Accepted. AWS is the production cloud, with `ap-south-1` Mumbai as the primary region subject to pre-launch Nepal network latency verification. Use separate accounts and VPCs for production and non-production, at least two Availability Zones for production, CloudFront/WAF and an Application Load Balancer at the public edge, ECS Fargate for initial Docker workloads, RDS PostgreSQL, ElastiCache, S3, ECR, Route 53, Secrets Manager/KMS, and Terraform. Store encrypted recovery copies in `ap-south-2` Hyderabad initially; add warm or active multi-region compute only when recovery objectives justify its cost. Amazon EKS remains a later option based on measured scale or team ownership. Alternatives considered were Google Cloud Delhi/Mumbai, which may offer strong Nepal latency, and Azure; AWS was selected for the overall networking, managed-service, security, and container ecosystem required by the product portfolio.
+
 ## Pending
 
-Choose company-platform product owners, cloud provider, identity operations model, production deployment topology, Nepal and international payment providers, SIEM hosting/retention/on-call ownership, AI provider, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).
+Choose company-platform product owners, AWS account and operations owners, identity operations model, final production sizing, Nepal and international payment providers, SIEM hosting/retention/on-call ownership, AI provider, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).

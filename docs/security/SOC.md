@@ -11,7 +11,7 @@ Security operations is separate from product observability. Prometheus and Grafa
 | Source and configuration security | CodeQL, dependency review, Trivy, and secret scanning in GitHub Actions | Detect vulnerable code/dependencies, exposed credentials, container issues, and IaC misconfiguration before release. |
 | Application security events | Versioned JSON event contract in `security/soc/event-schema.json` | Normalize authentication, authorization, tenant-isolation, payment, malware, data-access, and configuration events. |
 | SIEM and detections | OpenSearch Security Analytics or a compatible managed SIEM with Sigma rules | Store and search security events, create findings, correlate activity, and route security alerts. |
-| Runtime detection | Falco on production Linux/Kubernetes nodes | Detect suspicious container, process, file, network, and Kubernetes behavior. |
+| Runtime detection | Amazon GuardDuty Runtime Monitoring for ECS Fargate initially; Falco or GuardDuty for later EKS/EC2 workloads | Detect suspicious container, process, file, network, AWS credential, and Kubernetes behavior using a control compatible with the compute platform. |
 | Endpoint/host option | Wazuh when managed endpoints or host agents are required | Add endpoint inventory, vulnerability detection, file-integrity monitoring, configuration assessment, and host response. |
 | Incident response | Version-controlled runbooks plus protected evidence storage | Make investigation, containment, recovery, communication, and review repeatable. |
 
@@ -20,7 +20,7 @@ Do not deploy both OpenSearch Security Analytics and Wazuh as competing SIEMs wi
 ## Security-event flow
 
 ```text
-Identity / API / worker / chat / database audit / cloud / Falco
+Identity / API / worker / chat / database audit / AWS / GuardDuty runtime
                          |
                          v
              collector and schema validation
@@ -47,7 +47,7 @@ Security events use the schema under `security/soc/`. They may include access-re
 - Invalid payment/webhook signatures, replay detection, fulfillment failures, refunds, and payout configuration changes.
 - Malware/upload scan findings, unsafe file access, AI prompt-injection blocks, and secret-access denial.
 - Deployment, configuration, database-policy, backup, and security-control changes.
-- Falco/runtime, cloud audit, firewall/WAF, and selected database audit events in production.
+- GuardDuty runtime findings, AWS audit, firewall/WAF, and selected database audit events in production; Falco findings when EKS/EC2 workloads deploy it.
 
 ## Severity and service targets
 
@@ -70,7 +70,7 @@ Separate security-event storage from application analytics. Use least-privilege 
 2. Implement and test the security-event schema in the API, worker, chat, and identity webhook paths.
 3. Send staging events to the selected SIEM and validate Sigma rules with synthetic events.
 4. Assign alert owners and exercise the cross-tenant, account-takeover, and payment-webhook runbooks.
-5. Add Falco with the production Linux/Kubernetes deployment.
+5. Enable GuardDuty Runtime Monitoring for production ECS Fargate. Evaluate Falco or GuardDuty when EKS/EC2 workloads are introduced.
 6. Decide whether Wazuh endpoint/host monitoring is required.
 
-References: [OpenSearch Security Analytics](https://docs.opensearch.org/latest/security-analytics/), [Falco runtime security](https://falco.org/docs/), [Wazuh components](https://documentation.wazuh.com/current/getting-started/components/index.html), and [GitHub CodeQL](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning).
+References: [OpenSearch Security Analytics](https://docs.opensearch.org/latest/security-analytics/), [GuardDuty Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html), [Falco runtime security](https://falco.org/docs/), [Wazuh components](https://documentation.wazuh.com/current/getting-started/components/index.html), and [GitHub CodeQL](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning).

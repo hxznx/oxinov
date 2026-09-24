@@ -7,6 +7,6 @@
 | Staging | Production-like release rehearsal | Sanitized or synthetic |
 | Production | Customer LMS workspaces | Protected, backed up |
 
-Use the same immutable application images across staging and production. Separate credentials, domains, storage, databases, and payment modes. Tenant test data must never leak into production. Cloud provider and exact deployment target remain open decisions.
+Use the same immutable application images across staging and production. Separate AWS accounts or approved account boundaries, VPCs, credentials, domains, storage, databases, KMS keys, and payment modes. Tenant test data must never leak into production. AWS Mumbai is the primary region; exact production sizing and service quotas remain implementation decisions. See [AWS cloud architecture](../architecture/AWS-CLOUD-ARCHITECTURE.md).
 
 Local and CI use synthetic security events only. Staging sends synthetic events to a non-production SIEM for detection and runbook tests. Production security events and incident evidence use production-only access, encryption, retention, and notification channels.

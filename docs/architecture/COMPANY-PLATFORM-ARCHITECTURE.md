@@ -91,17 +91,17 @@ Use a payment-provider adapter and one internal order, payment, refund, subscrip
 ## Deployment evolution
 
 1. **Local development:** Docker Compose for PostgreSQL, Redis, object storage, identity, observability, and application containers.
-2. **Initial production:** managed PostgreSQL and object storage with a small managed container platform or managed Kubernetes only if the team can operate it.
-3. **Growth:** Kubernetes namespaces by environment and product, autoscaling, network policies, workload identity, secret manager, managed backups, and independent product deployments.
+2. **Initial production:** AWS Mumbai with ECS Fargate, RDS PostgreSQL, ElastiCache, S3, CloudFront/WAF, Route 53, Secrets Manager, and environment VPCs created through Terraform. See the [AWS cloud architecture](AWS-CLOUD-ARCHITECTURE.md).
+3. **Growth:** Amazon EKS namespaces by environment and product, autoscaling, network policies, workload identity, managed backups, and independent product deployments after an approved operating plan.
 4. **Regulated or high-scale products:** dedicated accounts/projects, clusters, databases, keys, regions, or networks where risk and regulation require them.
 
-Kubernetes is a deployment target, not a requirement for the first customer. The production decision must include staffing, cost, recovery, and security ownership.
+Kubernetes is a later deployment target, not a requirement for the first customer. ECS Fargate is the initial container runtime. Moving to EKS requires staffing, cost, recovery, security ownership, and a measured reason.
 
 ## Observability and security
 
 - Instrument applications with OpenTelemetry and propagate trace and correlation IDs.
 - Use Prometheus and Alertmanager for metrics and alerts, Loki for operational logs, Tempo for traces, and Grafana for dashboards.
-- Keep the existing SOC pipeline separate: normalized security events go to the SIEM and Sigma detections; Falco covers production container runtime threats.
+- Keep the existing SOC pipeline separate: normalized security events go to the SIEM and Sigma detections; GuardDuty Runtime Monitoring covers initial ECS Fargate runtime threats, with Falco optional for later EKS/EC2 workloads.
 - Never place passwords, tokens, private messages, raw prompts, payment secrets, or exam answers in logs, traces, metrics, or security events.
 - Define service-level objectives for the portal, identity, gateway, and each production product.
 

@@ -14,7 +14,7 @@ Use this concrete starting architecture. PostgreSQL is the mandatory transaction
 | Mobile build | React Native with Expo and TypeScript | Android and iOS apps call the same backend API and follow the same tenant and domain rules. Mobile binaries are built and signed in a mobile build pipeline; they run on devices, not in Docker. |
 | Web UI | Tailwind CSS and shadcn/ui | Responsive web layout and accessible controls; mobile uses native React Native components. |
 | Chat container | Dedicated Node.js WebSocket gateway | Cross-device conversations and unread state; persist messages in PostgreSQL and use Redis only for delivery fanout. |
-| PostgreSQL container | PostgreSQL with Prisma migrations and a persistent volume | Canonical records, tenant-scoped full-text search, transactions, and audit history. Production PostgreSQL also runs in Docker with encrypted backups and tested restore procedures. |
+| PostgreSQL | PostgreSQL with Prisma migrations; Docker with a persistent volume locally and Amazon RDS for PostgreSQL in AWS | Canonical records, tenant-scoped full-text search, transactions, and audit history. Production uses Multi-AZ where required, encrypted backups, isolated data subnets, and tested restore procedures. |
 | Redis container | Redis with no authoritative business records | Queue coordination, cache, rate limits, and chat fanout. Loss of Redis must not erase course, payment, or result records. |
 | Identity | Provider-neutral OpenID Connect; Keycloak is the company-platform default | Email/password or federated sign-in, MFA, and sessions. Keep tenant memberships, roles, and ownership in PostgreSQL. The existing generic JWKS verifier remains compatible with another approved OIDC provider. |
 | Payments | Provider adapter and internal ledger; evaluate Khalti and eSewa first for the Nepal entity, and Stripe only for an eligible entity/market; store billing where required for mobile | Keep tenant SaaS subscriptions distinct from learner course purchases and instructor payouts. Verify provider status server-side and normalize purchases into one entitlement ledger. |
@@ -23,7 +23,7 @@ Use this concrete starting architecture. PostgreSQL is the mandatory transaction
 | Notifications | Transactional email provider, Web Push API, and native push integration | Account email, course announcements, chat and result alerts, and opted-in browser or mobile push. Select the email and native push providers before implementation. |
 | AI integration | Provider adapter behind backend-authorized commands | Generate tenant-scoped drafts and proposed actions without giving the model direct database, shell, payment, or publishing privileges. |
 | Metrics and dashboards | Prometheus, PostgreSQL/Redis exporters, Alertmanager, and Grafana | Scrape bounded-cardinality operational metrics, evaluate alert rules, route notifications, and display version-controlled dashboards. Keep monitoring endpoints on private networks. |
-| Security engineering and SOC | GitHub CodeQL/dependency review, Trivy, OpenSearch Security Analytics with Sigma, and Falco; Wazuh optional for managed endpoints/hosts | Scan code, dependencies, secrets, images, and IaC; collect normalized security events; detect and investigate threats; run incident procedures. Keep security storage and access separate from product analytics and operational metrics. |
+| Security engineering and SOC | GitHub CodeQL/dependency review, Trivy, GuardDuty Runtime Monitoring for ECS Fargate, OpenSearch Security Analytics with Sigma, and optional Falco for later EKS/EC2; Wazuh optional for managed endpoints/hosts | Scan code, dependencies, secrets, images, and IaC; collect normalized security events; detect and investigate threats; run incident procedures. Keep security storage and access separate from product analytics and operational metrics. |
 
 External embeds cannot provide the same access and progress guarantees as hosted video. Hosted Mux video is the default for paid lessons. If embeds are approved, show their limits in the authoring UI and do not promise protected playback or exact watch-percentage tracking.
 
@@ -46,5 +46,6 @@ Use one shared PostgreSQL instance and tenant-scoped tables with PostgreSQL row-
 - [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/)
 - [OpenSearch Security Analytics](https://docs.opensearch.org/latest/security-analytics/)
 - [Falco runtime security](https://falco.org/docs/)
+- [GuardDuty Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html)
 - [Wazuh components](https://documentation.wazuh.com/current/getting-started/components/index.html)
 - [GitHub CodeQL](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning)

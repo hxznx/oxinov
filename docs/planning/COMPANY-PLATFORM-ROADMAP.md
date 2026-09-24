@@ -4,7 +4,7 @@
 
 - Approve product names, owners, target customers, launch countries, and data classifications.
 - Confirm ownership of `oxinov.com`, DNS, email, trademarks, brand assets, and required Nepal regulatory advice.
-- Approve the domain map, identity choice, cloud provider, production region, payment providers, privacy policy, and support model.
+- Record AWS Mumbai as the primary deployment decision; approve AWS account ownership, budgets, production sizing, identity operations, payment providers, privacy policy, and support model.
 - Create measurable first-release objectives and a cost ceiling.
 
 ## Phase 1 Company presence
@@ -46,7 +46,7 @@
 
 1. Decide the first customer segment and launch country for OxinovLMS.
 2. Confirm the domain registrar and DNS owner and inventory existing email and cloud accounts.
-3. Choose managed cloud and OIDC operations ownership.
+3. Create the AWS organization/account plan, budgets, billing alerts, deployment roles, and OIDC operations ownership.
 4. Apply for Khalti and eSewa merchant access or record the selected payment alternative.
 5. Create company brand assets and approve public legal pages.
 6. Scaffold the company website and platform control plane through the reviewed AI command.

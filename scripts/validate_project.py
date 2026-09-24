@@ -24,6 +24,7 @@ REQUIRED = [
     "docs/architecture/ARCHITECTURE.md", "docs/architecture/TECH-STACK.md",
     "docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md",
     "docs/architecture/COMPANY-TECH-STACK.md",
+    "docs/architecture/AWS-CLOUD-ARCHITECTURE.md",
     "docs/architecture/ADR.md", "docs/architecture/DATA-FLOW.md",
     "docs/architecture/INTEGRATIONS.md", "docs/architecture/SCALABILITY.md",
     "docs/design/UI-UX.md", "docs/design/USER-FLOWS.md",

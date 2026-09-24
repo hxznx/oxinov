@@ -9,6 +9,7 @@
 | Email/push providers | Verification, announcements, alerts | Templates, opt-in, retries, delivery status. |
 | AI provider | Draft content and configuration | Tenant permission, limits, review, prompt/data minimization. |
 | SIEM / OpenSearch Security Analytics | Security event search, findings, correlation, and alerts | Separate analyst access, schema validation, encryption, retention/residency, immutable administration audit, tested notification routes. |
+| Amazon GuardDuty Runtime Monitoring | ECS Fargate runtime threat detection and AWS findings | Organization delegation, automated agent coverage, private endpoint connectivity, coverage alarms, finding forwarding, cost monitoring, and tested response. |
 | Falco | Linux/Kubernetes runtime detection | Least required host capabilities, reviewed rules, controlled event forwarding, noise tuning, and deployment health monitoring. |
 | Wazuh (optional) | Endpoint/host inventory, vulnerability and file-integrity monitoring | Agent enrollment, encrypted channels, RBAC/MFA, retention, upgrade ownership, and avoidance of duplicate SIEM alerts. |
 

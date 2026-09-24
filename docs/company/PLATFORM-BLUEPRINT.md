@@ -32,6 +32,25 @@ The control plane knows that a person or organization can use a product. It does
 
 New product planes require a product owner, customer problem, revenue or strategic outcome, data classification, regulatory review, operational owner, and a funded release plan before implementation.
 
+## Strategic pillars on oxinov.com
+
+The incorporation objectives define ten strategic pillars. Every pillar gets a public division page on the company website from Phase 1. A pillar gets its own application subdomain only after one of its products passes the release gate.
+
+| Pillar | Public page | Application address | Status |
+| --- | --- | --- | --- |
+| Oxinov Education | `oxinov.com/education` | `lms.oxinov.com` (OxinovLMS) | First product |
+| Oxinov AI | `oxinov.com/ai` | `ai.oxinov.com` after release gate | Future initiative |
+| Oxinov Engineering | `oxinov.com/engineering` | Service portal module in `app.oxinov.com` | Future initiative |
+| Oxinov Services | `oxinov.com/services` | Service portal module in `app.oxinov.com` | Future initiative |
+| Oxinov Robotics & Automation | `oxinov.com/robotics` | `iot.oxinov.com` device platform after release gate | Future initiative |
+| Oxinov Media & Studio | `oxinov.com/studio` | `studio.oxinov.com` after release gate | Future initiative |
+| Oxinov AgriTech | `oxinov.com/agritech` | `agri.oxinov.com` after release gate | Future initiative |
+| Oxinov Space | `oxinov.com/space` | Separate restricted system when approved | Long horizon, regulated |
+| Oxinov Research | `oxinov.com/research` | Publications and IP pages on the company site | Long horizon |
+| Oxinov Production | `oxinov.com/production` | Company site content only | Long horizon |
+
+Regulated activities (broadcasting, space, aviation/drones, education approvals, import/export) are shown as future initiatives and are not offered to customers until the applicable approvals exist.
+
 ## Customer and organization model
 
 - A person has one Oxinov identity and can belong to several customer organizations.

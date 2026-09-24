@@ -18,10 +18,12 @@
 | AI | Provider-neutral AI gateway with prompt versions, structured outputs, evaluation, budgets, and human approval | Keep models replaceable and prevent models from directly accessing databases, shells, payments, or publishing actions. Use pgvector only for an approved retrieval requirement. |
 | Payments | Internal provider adapter and ledger; Khalti and eSewa candidates for Nepal | Separate product rules from providers. Add Stripe only for an eligible operating entity and market. |
 | Observability | OpenTelemetry Collector, Prometheus, Alertmanager, Loki, Tempo, and Grafana | Correlate metrics, logs, and traces and keep operational telemetry portable. |
-| Security operations | CodeQL, dependency review, Trivy, Falco, OpenSearch Security Analytics, and Sigma | Cover source, supply chain, images, infrastructure, runtime, security events, detections, and incidents. |
+| Security operations | CodeQL, dependency review, Trivy, GuardDuty Runtime Monitoring for ECS Fargate, OpenSearch Security Analytics, and Sigma; Falco optional for later EKS/EC2 | Cover source, supply chain, images, infrastructure, runtime, AWS activity, security events, detections, and incidents. |
 | Local delivery | Docker Compose | Give developers and coding agents reproducible dependencies and service profiles. |
-| Production delivery | GitHub Actions, OCI images, Terraform, and a managed container platform or managed Kubernetes | Build once, promote signed images, automate infrastructure, and choose Kubernetes only with an operating plan. |
-| Secrets | Cloud secret manager and workload identity | Keep secrets outside Git, images, repository variables, prompts, and application logs. |
+| Production delivery | AWS Mumbai, GitHub Actions OIDC, Amazon ECR, ECS Fargate, and Terraform | Build once, promote immutable images, use short-lived deployment credentials, and add EKS only through an approved scaling decision. |
+| Production data | Amazon RDS for PostgreSQL, ElastiCache, and private S3 buckets | Use managed high availability, backups, encryption, lifecycle rules, and isolated data subnets. PostgreSQL, Redis, and MinIO remain containerized for local development. |
+| Edge and networking | Route 53, CloudFront, AWS WAF, Application Load Balancer, and separate environment VPCs | Keep application and data tiers private and expose only the controlled edge and load-balancing path. |
+| Secrets | AWS Secrets Manager, KMS, and workload IAM roles | Keep secrets and long-lived AWS keys outside Git, images, repository variables, prompts, and application logs. |
 
 ## Version policy
 
@@ -43,6 +45,9 @@ Use the current supported stable release when a component is first implemented, 
 - [PostgreSQL row-level security](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
 - [OpenTelemetry documentation](https://opentelemetry.io/docs/)
 - [Kubernetes production considerations](https://kubernetes.io/docs/setup/production-environment/)
+- [Oxinov AWS cloud architecture](AWS-CLOUD-ARCHITECTURE.md)
+- [AWS VPC planning](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-getting-started.html)
+- [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/)
 - [Khalti payment gateway](https://docs.khalti.com/)
 - [eSewa payment API](https://developer.esewa.com.np/)
 - [Stripe global availability](https://stripe.com/global)

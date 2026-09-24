@@ -19,6 +19,6 @@ Every event uses the envelope in `event-schema.json`. Add new actions through re
 | `ai.prompt_injection.blocked` | AI adapter | 5 | AI safety boundary blocked a suspicious instruction |
 | `security.configuration.changed` | Deployment/platform API | 7 | Security-relevant setting or policy changed |
 | `security.secret_access.denied` | Secret manager/cloud audit | 8 | Unauthorized secret access was denied |
-| `runtime.threat.detected` | Falco/Wazuh | Source-defined | Runtime or endpoint rule created a finding |
+| `runtime.threat.detected` | GuardDuty/Falco/Wazuh | Source-defined | Runtime or endpoint rule created a finding |
 
 Severity is contextual. Elevate events involving platform administrators, payments, secrets, confirmed compromise, successful access, or multiple tenants.

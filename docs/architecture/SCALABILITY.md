@@ -1,7 +1,7 @@
 # Scalability strategy
 
-Begin with Docker Compose for local development and a measured single-host staging setup. Keep frontend, API, worker, and chat stateless so their images can scale independently. PostgreSQL and object storage hold durable state; Redis is replaceable.
+Begin with Docker Compose for local development and ECS Fargate in AWS for deployed application containers. Keep frontend, API, worker, and chat stateless so their images can scale independently. RDS PostgreSQL and S3 hold durable state; ElastiCache Redis is replaceable.
 
-Partition work by tenant in queues and apply tenant-level quotas to uploads, chat, exams, and AI usage. Monitor p95 API latency, database connections, queue lag, video failures, and storage/bandwidth by tenant. Add read replicas, dedicated tenant databases, or orchestration only when measured load or isolation needs justify them.
+Partition work by tenant in queues and apply tenant-level quotas to uploads, chat, exams, and AI usage. Monitor p95 API latency, database connections, queue lag, video failures, and storage/bandwidth by tenant. Add ECS task capacity, RDS read replicas, dedicated tenant databases, or EKS only when measured load, isolation, or team ownership justifies them.
 
 Before scale changes, run the [load and recovery tests](../engineering/TESTING-STRATEGY.md) and update the [ADR](ADR.md).

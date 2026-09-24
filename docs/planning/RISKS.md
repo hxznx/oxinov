@@ -26,7 +26,7 @@
 | Offline downloads and live classes | Both are outside the current requirements and would need separate access and rights rules if added. |
 | SaaS plans, trial length, tenant quotas, and suspension behavior | Determines provisioning, platform billing, and what learners can still access when a tenant is past due. |
 | Default shared PostgreSQL or dedicated PostgreSQL tier for selected customers | Determines cost, data residency, backup, migration, and isolation operations. PostgreSQL remains required in either tier. |
-| Cloud provider, production host count, domains, and backup storage | Determines deployment topology, TLS, disaster recovery, and scaling. |
+| AWS account owners, support plan, service quotas, production sizing, monthly budget, and Hyderabad recovery activation criteria | AWS and Mumbai are selected; these operating decisions determine cost control, deployment capacity, recovery readiness, and escalation. |
 | One shared mobile app or separately branded app binaries per tenant | The current requirement assumes one shared app with in-app tenant selection and tenant branding. |
 | AI provider, allowed inputs, usage limits, and review policy | Determines cost, data processing, and which prompt-generated drafts may be proposed. |
 | SIEM hosting, security-event retention/residency, on-call owner, notification channel, and whether Wazuh endpoint agents are needed | Determines SOC cost, access control, response coverage, evidence handling, and whether OpenSearch alone meets the production need. |

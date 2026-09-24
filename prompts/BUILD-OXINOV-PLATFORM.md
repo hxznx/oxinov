@@ -30,6 +30,7 @@ Architecture requirements:
 - Use a pnpm workspace and Turborepo for the TypeScript monorepo.
 - Use Next.js App Router for company and portal web applications, NestJS for APIs and workers, Expo for product mobile applications, PostgreSQL with Prisma for transactional data, Redis for rebuildable cache/queues/fanout, and private S3-compatible object storage for files.
 - Use OpenID Connect with provider-neutral application code; Keycloak is the default implementation.
+- Deploy production workloads to AWS Mumbai through Terraform. Use CloudFront/WAF, an Application Load Balancer, ECS Fargate, ECR, RDS PostgreSQL, ElastiCache, private S3, Route 53, Secrets Manager/KMS, separate environment VPCs, and short-lived GitHub Actions OIDC credentials. Keep EKS as a later approved option.
 - Start with modular applications and a transactional outbox. Do not create premature microservices or introduce NATS, Kafka, OpenSearch application search, or a separate analytics warehouse without an approved need.
 - Each product owns its data. No service reads another product database directly.
 - Use REST/OpenAPI and generated clients. Version API and event contracts.
@@ -54,7 +55,7 @@ Implement only this milestone now:
 ## First command to run
 
 ```text
-Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with the shared design-token package, accessible responsive navigation, company and product landing pages, placeholder routes for research, services, careers, contact, privacy, terms, and security contact, health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify OxinovLMS as the first product and must label all unlaunched sectors as future initiatives. Do not move the current LMS applications in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
+Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with the shared design-token package, accessible responsive navigation, company and product landing pages, one division page for each of the ten strategic pillars listed in docs/company/PLATFORM-BLUEPRINT.md (education, ai, engineering, services, robotics, studio, agritech, space, research, production), placeholder routes for careers, contact, privacy, terms, and security contact, company identity (Oxinov Pvt. Ltd., registered in Lalitpur, Nepal), health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify OxinovLMS as the first product and must label all unlaunched sectors as future initiatives. Do not move the current LMS applications in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
 ```
 
 ## Second command after Phase 1 passes

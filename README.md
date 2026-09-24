@@ -4,7 +4,7 @@ Company platform and product monorepo for Oxinov Pvt. Ltd. OxinovLMS is the firs
 
 ## Start here
 
-1. Read the [company platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), and [company roadmap](docs/planning/COMPANY-PLATFORM-ROADMAP.md).
+1. Read the [company platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS architecture](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), and [company roadmap](docs/planning/COMPANY-PLATFORM-ROADMAP.md).
 2. For OxinovLMS work, read its [project brief](docs/00-PROJECT-BRIEF.md), [PRD](docs/01-PRD.md), [FRD](docs/02-FRD.md), and [NFR](docs/03-NFR.md).
 3. Coding agents follow [AGENTS.md](AGENTS.md), the [current structure](docs/engineering/PROJECT-STRUCTURE.md), and the [target company structure](docs/engineering/COMPANY-PROJECT-STRUCTURE.md). The reviewed [AI build command](prompts/BUILD-OXINOV-PLATFORM.md) starts company-platform milestones.
 4. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis minio` after Docker is installed.
@@ -31,4 +31,4 @@ The company website, account portal, shared control plane, product-entitlement i
 
 ## Decisions still needed
 
-Company-platform ownership, launch markets, cloud and identity operations, payment-provider eligibility, product pricing, AI providers, and initial course inventory are tracked in [risks and decisions](docs/planning/RISKS.md) and [architecture decisions](docs/architecture/ADR.md).
+Company-platform ownership, AWS account and identity operations, launch markets, payment-provider eligibility, product pricing, AI providers, and initial course inventory are tracked in [risks and decisions](docs/planning/RISKS.md) and [architecture decisions](docs/architecture/ADR.md).
