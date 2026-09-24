@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { APP_CONFIG, type AppConfig } from '../config/app-config';
+import type { ServiceConfig } from './config';
+import { APP_CONFIG, SECURITY_EVENT_SINK } from './tokens';
 
 /**
- * Typed mirror of security/soc/event-schema.json (v1.0). A test validates emitted events against
- * that schema. Never add secrets, request bodies, private messages, exam answers, or prompts.
+ * Typed mirror of security/soc/event-schema.json (v1.0). Tests validate emitted events against that
+ * schema. Never add secrets, request bodies, private messages, exam answers, codes, or prompts.
  */
 export type SecurityCategory =
   | 'authentication'
@@ -27,8 +28,8 @@ export interface SecurityEvent {
     outcome: 'success' | 'failure' | 'unknown';
     severity: number;
   };
-  service: { name: 'api'; version: string };
-  environment: AppConfig['environment'];
+  service: { name: ServiceConfig['serviceName']; version: string };
+  environment: ServiceConfig['environment'];
   tenant?: { id: string };
   actor?: { id?: string; type?: 'user' | 'service' | 'system' | 'anonymous'; role?: string };
   request?: { correlation_id?: string; route?: string; method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' };
@@ -50,7 +51,6 @@ export interface SecurityEventInput {
   attributes?: SecurityEvent['attributes'];
 }
 
-export const SECURITY_EVENT_SINK = Symbol('SECURITY_EVENT_SINK');
 export type SecurityEventSink = (event: SecurityEvent) => void;
 
 /** Default sink: one JSON line on stdout tagged for the security-event collector. */
@@ -61,7 +61,7 @@ export const stdoutSecuritySink: SecurityEventSink = (event) => {
 @Injectable()
 export class SecurityEventsService {
   constructor(
-    @Inject(APP_CONFIG) private readonly config: AppConfig,
+    @Inject(APP_CONFIG) private readonly config: ServiceConfig,
     @Inject(SECURITY_EVENT_SINK) private readonly sink: SecurityEventSink,
   ) {}
 
@@ -76,7 +76,7 @@ export class SecurityEventsService {
         outcome: input.outcome,
         severity: input.severity,
       },
-      service: { name: 'api', version: this.config.serviceVersion },
+      service: { name: this.config.serviceName, version: this.config.serviceVersion },
       environment: this.config.environment,
       reason_code: input.reasonCode,
       ...(input.tenantId ? { tenant: { id: input.tenantId } } : {}),

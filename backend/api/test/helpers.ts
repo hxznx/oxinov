@@ -7,9 +7,8 @@ import path from 'node:path';
 import { Client } from 'pg';
 import request from 'supertest';
 import { createApp } from '../src/app.factory';
-import { JsonLogger } from '../src/common/json-logger';
+import { JsonLogger, type SecurityEvent } from '@oxinov/server-kit';
 import { loadConfig } from '../src/config/app-config';
-import type { SecurityEvent } from '../src/observability/security-events.service';
 
 const ROOT = path.resolve(__dirname, '../../..');
 

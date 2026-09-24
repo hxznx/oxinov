@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { SwaggerModule } from '@nestjs/swagger';
 import { buildOpenApi, createApp } from './app.factory';
-import { JsonLogger } from './common/json-logger';
+import { JsonLogger } from '@oxinov/server-kit';
 import { loadConfig } from './config/app-config';
 
 async function bootstrap(): Promise<void> {

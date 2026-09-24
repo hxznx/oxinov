@@ -20,16 +20,10 @@ export type ErrorCode =
   | 'RATE_LIMITED'
   | 'INTERNAL_ERROR';
 
-export class DomainError extends Error {
-  constructor(
-    readonly code: ErrorCode,
-    readonly status: number,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'DomainError';
-  }
-}
+import { DomainError as KitDomainError } from '@oxinov/server-kit';
+
+/** Edu API errors use the shared envelope; `code` is limited to the codes above. */
+export class DomainError extends KitDomainError<ErrorCode> {}
 
 export const Errors = {
   unauthenticated: () => new DomainError('UNAUTHENTICATED', 401, 'Sign in to continue.'),

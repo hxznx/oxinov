@@ -46,6 +46,7 @@ database/
 packages/
   contracts/                   versioned API and event contracts
   design-system/               tokens and accessible shared web components
+  server-kit/                  shared NestJS building blocks: config, token verification, errors, logging, metrics, security events, HTTP hardening
   auth/                        OIDC validation and authorization primitives
   observability/               logging metrics tracing and correlation
   security-events/             safe normalized security event client

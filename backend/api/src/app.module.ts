@@ -6,16 +6,27 @@ import {
   type Provider,
 } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import {
+  AuthGuard,
+  HttpExceptionFilter,
+  HttpMetrics,
+  IDENTITY_RESOLVER,
+  JWKS_RESOLVER,
+  JsonLogger,
+  LOGGER,
+  RateLimitMiddleware,
+  RequestContextMiddleware,
+  SECURITY_EVENT_SINK,
+  SecurityEventsService,
+  SecurityHeadersMiddleware,
+  TokenVerifier,
+  stdoutSecuritySink,
+  type SecurityEventSink,
+} from '@oxinov/server-kit';
 import type { JWTVerifyGetKey } from 'jose';
-import { AuthGuard } from './auth/auth.guard';
 import { IdentityService } from './auth/identity.service';
-import { JWKS_RESOLVER, TokenVerifier } from './auth/token-verifier';
 import { CatalogController } from './catalog/catalog.controller';
 import { CatalogService } from './catalog/catalog.service';
-import { HttpExceptionFilter } from './common/http-exception.filter';
-import { RateLimitMiddleware, SecurityHeadersMiddleware } from './common/http-hardening.middleware';
-import { JsonLogger } from './common/json-logger';
-import { LOGGER } from './common/tokens';
 import { APP_CONFIG, type AppConfig } from './config/app-config';
 import { DatabaseContext } from './database/database-context.service';
 import { PrismaService } from './database/prisma.service';
@@ -25,13 +36,6 @@ import { HealthController } from './health/health.controller';
 import { EnrollmentsController } from './learning/enrollments.controller';
 import { EnrollmentsService } from './learning/enrollments.service';
 import { MetricsService } from './observability/metrics.service';
-import { RequestContextMiddleware } from './observability/request-context.middleware';
-import {
-  SECURITY_EVENT_SINK,
-  SecurityEventsService,
-  stdoutSecuritySink,
-  type SecurityEventSink,
-} from './observability/security-events.service';
 import { TenantGuard } from './tenancy/tenant.guard';
 import { TenantsController } from './tenants/tenants.controller';
 import { TenantsService } from './tenants/tenants.service';
@@ -61,9 +65,12 @@ export class AppModule implements NestModule {
       PrismaService,
       DatabaseContext,
       MetricsService,
+      // Shared middleware records HTTP metrics through the base class.
+      { provide: HttpMetrics, useExisting: MetricsService },
       SecurityEventsService,
       TokenVerifier,
       IdentityService,
+      { provide: IDENTITY_RESOLVER, useExisting: IdentityService },
       TenantGuard,
       TenantsService,
       CatalogService,

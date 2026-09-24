@@ -2,14 +2,14 @@ import Ajv2020 from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import type { AppConfig } from '../config/app-config';
-import { SecurityEventsService, type SecurityEvent } from './security-events.service';
+import type { ServiceConfig } from './config';
+import { SecurityEventsService, type SecurityEvent } from './security-events';
 
 const schema = JSON.parse(
-  readFileSync(path.resolve(__dirname, '../../../../security/soc/event-schema.json'), 'utf8'),
+  readFileSync(path.resolve(__dirname, '../../../security/soc/event-schema.json'), 'utf8'),
 ) as object;
 
-const config = { serviceVersion: '1.2.3', environment: 'ci' } as AppConfig;
+const config = { serviceName: 'api', serviceVersion: '1.2.3', environment: 'ci' } as ServiceConfig;
 
 describe('SecurityEventsService', () => {
   const ajv = new Ajv2020({ allErrors: true, strict: false });
@@ -58,5 +58,18 @@ describe('SecurityEventsService', () => {
       reasonCode: 'lowercase is invalid',
     });
     expect(validate(emitted[0])).toBe(false);
+  });
+
+  it('names the platform service in a schema-valid way', () => {
+    const emitted: SecurityEvent[] = [];
+    new SecurityEventsService({ ...config, serviceName: 'platform' }, (event) => emitted.push(event)).emit({
+      action: 'auth.policy.accepted',
+      category: 'authentication',
+      outcome: 'success',
+      severity: 1,
+      reasonCode: 'POLICY_ACCEPTED',
+    });
+    expect(validate(emitted[0])).toBe(true);
+    expect(emitted[0]?.service.name).toBe('platform');
   });
 });

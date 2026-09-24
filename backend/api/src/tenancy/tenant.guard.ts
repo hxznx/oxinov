@@ -4,7 +4,7 @@ import { Errors } from '../common/errors';
 import { pathParam, routePath, type AppRequest } from '../common/request';
 import { DatabaseContext } from '../database/database-context.service';
 import type { TenantRole } from '../generated/prisma/enums';
-import { SecurityEventsService } from '../observability/security-events.service';
+import { SecurityEventsService } from '@oxinov/server-kit';
 import { hasRole } from './roles';
 
 const ROLE_KEY = 'oxinov:min-role';

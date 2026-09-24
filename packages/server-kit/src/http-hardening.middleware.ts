@@ -1,12 +1,8 @@
 import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import type { NextFunction, Response } from 'express';
-import { APP_CONFIG, type AppConfig } from '../config/app-config';
-import type { AppRequest } from './request';
-
-/** Full request path. Inside Nest middleware `request.path` is relative to the mount point. */
-function fullPath(request: AppRequest): string {
-  return request.originalUrl.split('?')[0] ?? '/';
-}
+import type { ServiceConfig } from './config';
+import { fullPath, type KitRequest } from './request';
+import { APP_CONFIG } from './tokens';
 
 /**
  * Baseline response headers for a JSON API. The Swagger UI under /docs (local and CI only) needs
@@ -14,7 +10,7 @@ function fullPath(request: AppRequest): string {
  */
 @Injectable()
 export class SecurityHeadersMiddleware implements NestMiddleware {
-  use(request: AppRequest, response: Response, next: NextFunction): void {
+  use(request: KitRequest, response: Response, next: NextFunction): void {
     response.setHeader('X-Content-Type-Options', 'nosniff');
     response.setHeader('X-Frame-Options', 'DENY');
     response.setHeader('Referrer-Policy', 'no-referrer');
@@ -27,8 +23,8 @@ export class SecurityHeadersMiddleware implements NestMiddleware {
 }
 
 /**
- * Fixed-window request counter per client key. It protects one API instance from bursts; the
- * edge WAF rate rules protect the fleet, and a shared Redis limiter can replace this later.
+ * Fixed-window request counter per client key. It protects one API instance from bursts; the edge
+ * WAF rate rules protect the fleet, and a shared Redis limiter can replace this later.
  */
 export class RateLimiter {
   private readonly windows = new Map<string, { startedAt: number; count: number }>();
@@ -69,11 +65,11 @@ export class RateLimiter {
 export class RateLimitMiddleware implements NestMiddleware {
   private readonly limiter?: RateLimiter;
 
-  constructor(@Inject(APP_CONFIG) config: AppConfig) {
+  constructor(@Inject(APP_CONFIG) config: ServiceConfig) {
     if (config.rateLimitPerMinute > 0) this.limiter = new RateLimiter(config.rateLimitPerMinute);
   }
 
-  use(request: AppRequest, response: Response, next: NextFunction): void {
+  use(request: KitRequest, response: Response, next: NextFunction): void {
     // Probes and scrapes come from the platform itself and must never be throttled.
     const path = fullPath(request);
     if (!this.limiter || path.startsWith('/health/') || path === '/metrics') {

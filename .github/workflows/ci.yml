@@ -79,6 +79,10 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      - name: Test and build the shared server kit
+        run: |
+          pnpm --filter @oxinov/server-kit test
+          pnpm --filter @oxinov/server-kit build
       - run: pnpm --filter @oxinov/lms-api prisma:generate
       - run: pnpm --filter @oxinov/lms-api typecheck
       - run: pnpm --filter @oxinov/lms-api lint

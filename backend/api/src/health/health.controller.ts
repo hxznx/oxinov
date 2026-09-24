@@ -1,7 +1,7 @@
 import { Controller, Get, Header, Res } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import type { Response } from 'express';
-import { Public } from '../auth/auth.guard';
+import { Public } from '@oxinov/server-kit';
 import { DatabaseContext } from '../database/database-context.service';
 import { MetricsService } from '../observability/metrics.service';
 

@@ -1,5 +1,7 @@
-import type { Request } from 'express';
+import type { KitRequest } from '@oxinov/server-kit';
 import type { TenantRole } from '../generated/prisma/enums';
+
+export { pathParam, routePath } from '@oxinov/server-kit';
 
 /** Authenticated caller, resolved from a verified identity token plus PostgreSQL. */
 export interface AuthUser {
@@ -15,22 +17,7 @@ export interface TenantScope {
   readonly role: TenantRole;
 }
 
-export interface AppRequest extends Request {
-  requestId: string;
+export interface AppRequest extends KitRequest {
   user?: AuthUser;
   tenant?: TenantScope;
-}
-
-/** Matched Express route pattern, or undefined when no handler matched. `req.route` is untyped. */
-export function routePath(request: Request): string | undefined {
-  const route: unknown = request.route;
-  if (typeof route !== 'object' || route === null) return undefined;
-  const path: unknown = (route as { path?: unknown }).path;
-  return typeof path === 'string' ? path : undefined;
-}
-
-/** A single path parameter; Express 5 types allow arrays for wildcard segments, which we reject. */
-export function pathParam(request: Request, name: string): string | undefined {
-  const value: unknown = request.params[name];
-  return typeof value === 'string' ? value : undefined;
 }

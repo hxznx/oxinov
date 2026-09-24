@@ -1,4 +1,6 @@
-import { loadConfig } from './app-config';
+import { loadServiceConfig } from './config';
+
+const loadConfig = (env: NodeJS.ProcessEnv) => loadServiceConfig(env, { serviceName: 'api', defaultPort: 4000 });
 
 const valid = {
   DATABASE_URL: 'postgresql://oxinov_app:x@localhost:5432/oxinov_lms',
@@ -10,6 +12,11 @@ describe('loadConfig', () => {
     const config = loadConfig(valid);
     expect(config.port).toBe(4000);
     expect(config.environment).toBe('local');
+    expect(config.serviceName).toBe('api');
+  });
+
+  it('uses the default port of each service', () => {
+    expect(loadServiceConfig(valid, { serviceName: 'platform', defaultPort: 4100 }).port).toBe(4100);
   });
 
   it('refuses development tokens outside local and CI', () => {

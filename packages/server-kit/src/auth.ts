@@ -1,11 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
-import {
-  createRemoteJWKSet,
-  jwtVerify,
-  type JWTPayload,
-  type JWTVerifyGetKey,
-} from 'jose';
-import { APP_CONFIG, type AppConfig } from '../config/app-config';
+import { CanActivate, ExecutionContext, Inject, Injectable, SetMetadata } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { createRemoteJWKSet, jwtVerify, type JWTPayload, type JWTVerifyGetKey } from 'jose';
+import type { ServiceConfig } from './config';
+import { CommonErrors } from './errors';
+import type { KitRequest } from './request';
+import { APP_CONFIG, IDENTITY_RESOLVER, JWKS_RESOLVER } from './tokens';
 
 export interface VerifiedIdentity {
   /** Stable identity-provider subject. Never an email address. */
@@ -16,8 +15,12 @@ export interface VerifiedIdentity {
   name?: string;
 }
 
+/** Maps a verified identity to the application's user record (for example, creating it on first sign-in). */
+export interface IdentityResolver<User = unknown> {
+  resolve(identity: VerifiedIdentity): Promise<User>;
+}
+
 export const DEV_ISSUER = 'oxinov-dev';
-export const JWKS_RESOLVER = Symbol('JWKS_RESOLVER');
 
 function claimString(payload: JWTPayload, key: string): string | null {
   const value = payload[key];
@@ -25,12 +28,9 @@ function claimString(payload: JWTPayload, key: string): string | null {
 }
 
 /**
- * Verifies standard bearer tokens through the configured OIDC provider's JWKS. Local development
- * may also accept HS256 tokens from the LMS dev-token script; configuration refuses that secret in
- * production.
- *
- * Email and verification status are read from `email` and `email_verified` claims. Configure both
- * as OIDC claims; without them, tenant creation is refused.
+ * Verifies bearer tokens through the configured OIDC provider's JWKS (issuer, audience, signature,
+ * expiry). Local development and CI may also accept HS256 tokens from the dev-token scripts;
+ * configuration refuses that secret in staging and production.
  */
 @Injectable()
 export class TokenVerifier {
@@ -38,7 +38,7 @@ export class TokenVerifier {
   private readonly devSecret?: Uint8Array;
 
   constructor(
-    @Inject(APP_CONFIG) private readonly config: AppConfig,
+    @Inject(APP_CONFIG) private readonly config: ServiceConfig,
     @Inject(JWKS_RESOLVER) jwksOverride: JWTVerifyGetKey | null,
   ) {
     if (jwksOverride) {
@@ -68,10 +68,7 @@ export class TokenVerifier {
   private async verifyPayload(token: string): Promise<JWTPayload | null> {
     try {
       if (this.devSecret && this.issuerOf(token) === DEV_ISSUER) {
-        const { payload } = await jwtVerify(token, this.devSecret, {
-          issuer: DEV_ISSUER,
-          algorithms: ['HS256'],
-        });
+        const { payload } = await jwtVerify(token, this.devSecret, { issuer: DEV_ISSUER, algorithms: ['HS256'] });
         return payload;
       }
       if (this.jwks && this.config.auth.issuer) {
@@ -98,5 +95,36 @@ export class TokenVerifier {
     } catch {
       return null;
     }
+  }
+}
+
+const PUBLIC_KEY = 'oxinov:public';
+
+/** Marks a route that needs no authentication (health, readiness, metrics, public catalogues). */
+export const Public = () => SetMetadata(PUBLIC_KEY, true);
+
+/** Global guard: every route requires a verified bearer token unless marked @Public(). */
+@Injectable()
+export class AuthGuard implements CanActivate {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly verifier: TokenVerifier,
+    @Inject(IDENTITY_RESOLVER) private readonly identities: IdentityResolver,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [context.getHandler(), context.getClass()]);
+    if (isPublic) return true;
+
+    const request = context.switchToHttp().getRequest<KitRequest>();
+    const header = request.header('authorization') ?? '';
+    const match = /^Bearer\s+(\S+)$/i.exec(header);
+    if (!match?.[1]) throw CommonErrors.unauthenticated();
+
+    const identity = await this.verifier.verify(match[1]);
+    if (!identity) throw CommonErrors.unauthenticated();
+
+    request.user = await this.identities.resolve(identity);
+    return true;
   }
 }

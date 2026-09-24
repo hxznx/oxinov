@@ -1,10 +1,10 @@
 import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import type { NextFunction, Response } from 'express';
-import { JsonLogger } from '../common/json-logger';
-import { routePath, type AppRequest } from '../common/request';
-import { LOGGER } from '../common/tokens';
-import { MetricsService } from './metrics.service';
+import { JsonLogger } from './logger';
+import { HttpMetrics } from './metrics';
+import { routePath, type KitRequest } from './request';
+import { LOGGER } from './tokens';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -15,11 +15,11 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 @Injectable()
 export class RequestContextMiddleware implements NestMiddleware {
   constructor(
-    private readonly metrics: MetricsService,
+    private readonly metrics: HttpMetrics,
     @Inject(LOGGER) private readonly logger: JsonLogger,
   ) {}
 
-  use(request: AppRequest, response: Response, next: NextFunction): void {
+  use(request: KitRequest, response: Response, next: NextFunction): void {
     const inbound = request.header('x-request-id');
     request.requestId = inbound && UUID.test(inbound) ? inbound : randomUUID();
     response.setHeader('X-Request-Id', request.requestId);

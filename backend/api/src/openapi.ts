@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { buildOpenApi, createApp } from './app.factory';
-import { JsonLogger } from './common/json-logger';
+import { JsonLogger } from '@oxinov/server-kit';
 import { loadConfig } from './config/app-config';
 
 /**

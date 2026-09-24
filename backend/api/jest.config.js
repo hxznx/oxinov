@@ -23,6 +23,8 @@ module.exports = {
       displayName: 'integration',
       testMatch: ['<rootDir>/test/**/*.e2e-spec.ts'],
       setupFiles: ['<rootDir>/test/setup-env.ts'],
+      // Each suite resets and re-seeds PostgreSQL in beforeAll; allow for slow CI machines.
+      testTimeout: 60_000,
     },
   ],
 };

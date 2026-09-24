@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import type { AuthUser } from '../common/request';
 import { DatabaseContext } from '../database/database-context.service';
 import { Prisma } from '../generated/prisma/client';
-import type { VerifiedIdentity } from './token-verifier';
+import type { IdentityResolver, VerifiedIdentity } from '@oxinov/server-kit';
 
 /**
  * Maps a verified identity to its global UserProfile, creating it on first sign-in. Tenant roles
  * are never taken from the token; they come from PostgreSQL memberships (docs/api/AUTH.md).
  */
 @Injectable()
-export class IdentityService {
+export class IdentityService implements IdentityResolver<AuthUser> {
   constructor(private readonly db: DatabaseContext) {}
 
   async resolve(identity: VerifiedIdentity): Promise<AuthUser> {

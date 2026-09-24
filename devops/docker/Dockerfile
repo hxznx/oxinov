@@ -19,11 +19,14 @@ FROM base AS backend-build
 ENV NODE_ENV=development
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY backend/api/package.json ./backend/api/package.json
+COPY packages/server-kit/package.json ./packages/server-kit/package.json
 RUN pnpm install --frozen-lockfile --filter @oxinov/lms-api...
 COPY tsconfig.json ./tsconfig.json
+COPY packages/server-kit/ ./packages/server-kit/
 COPY backend/api/ ./backend/api/
 COPY database/prisma/ ./database/prisma/
 COPY security/soc/event-schema.json ./security/soc/event-schema.json
+RUN pnpm --filter @oxinov/server-kit build
 RUN pnpm --filter @oxinov/lms-api build
 RUN pnpm --filter @oxinov/lms-api --prod deploy /app/deploy
 # @prisma/client lists the Prisma CLI as an optional peer; the running API only loads
