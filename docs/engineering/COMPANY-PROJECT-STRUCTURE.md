@@ -6,29 +6,42 @@ The current `frontend/web`, `frontend/mobile`, `backend/api`, `backend/worker`, 
 
 ## Target repository layout
 
+The repository follows the company structure: **company** (public website) → **platform** (one account, identity, shared services) → **products** (independent product planes). Every product has its own frontend, backend, and database folder. Folders marked *after release gate* are created only when that product's charter in `docs/products/` is approved.
+
 ```text
 frontend/
-  company-web/                 oxinov.com
-  platform-web/                app.oxinov.com
+  company-web/                 oxinov.com public company site, divisions, legal pages
+  platform-web/                app.oxinov.com account portal, product launcher, KYC, billing
   products/
     lms-web/                   lms.oxinov.com
+    agri-web/                  agri.oxinov.com         after release gate
+    jobs-web/                  jobs.oxinov.com         after release gate
+    services-web/              services.oxinov.com     after release gate
   mobile/
     lms/                       OxinovLMS Android and iOS
+    marketplace/               shared Agri, Jobs, and Services mobile app if approved
 
 backend/
   gateway/                     api.oxinov.com routing and edge policy
-  platform-api/                organizations products plans entitlements audit
+  platform-api/                users, trust levels, policies, organizations, entitlements, KYC, payments ledger, audit
   workers/
-    platform-worker/           notifications billing outbox and scheduled work
+    platform-worker/           notifications, billing, KYC checks, outbox, scheduled work
   products/
     lms-api/                   LMS business API
-    lms-worker/                LMS media results certificates and scheduled work
+    lms-worker/                LMS media, results, certificates, scheduled work
     lms-chat/                  LMS realtime gateway
+    agri-api/                  listings, orders, market prices            after release gate
+    agri-worker/               price imports, order timeouts             after release gate
+    jobs-api/                  postings, applications, matching          after release gate
+    services-api/              services, demands, bookings               after release gate
 
 database/
-  platform/                    platform Prisma schema migrations seeds policies
+  platform/                    platform Prisma schema, migrations, seeds, RLS policies
   products/
-    lms/                       LMS Prisma schema migrations seeds policies
+    lms/                       LMS schema, migrations, seeds, RLS policies
+    agri/                      Agri Market schema                         after release gate
+    jobs/                      Jobs schema                                after release gate
+    services/                  Services Market schema                     after release gate
 
 packages/
   contracts/                   versioned API and event contracts
@@ -50,6 +63,20 @@ security/                      CI security SOC detections runbooks and evidence 
 docs/                          company product architecture engineering and operations
 prompts/                       reviewed coding-agent commands
 ```
+
+## Product plane template
+
+Every product plane has the same shape so teams and coding agents can move between products:
+
+| Part | Location | Rule |
+| --- | --- | --- |
+| Web frontend | `frontend/products/<product>-web/` | Next.js App Router; signs in through `id.oxinov.com`; shows the shared product launcher; calls only its own API and the platform API |
+| API | `backend/products/<product>-api/` | NestJS; validates Oxinov tokens with `packages/auth`; checks entitlement and trust level from the platform before protected actions |
+| Worker | `backend/products/<product>-worker/` | Added only when the product needs background jobs |
+| Database | `database/products/<product>/` | Own PostgreSQL database and service account; RLS for tenant- or owner-scoped rows; stores the platform user ID, never a copy of login data |
+| Contracts | `packages/contracts/<product>/` | Versioned OpenAPI and event schemas |
+| Charter and requirements | `docs/products/<PRODUCT>.md` | Approved before any folder above is created |
+| Operations | `monitoring/`, `devops/`, `security/` | Dashboards, alerts, runbooks, deployment definition, and security events per product |
 
 ## Dependency rules
 

@@ -43,9 +43,11 @@ flowchart TB
 
 The control plane owns:
 
-- identity links and user profiles;
+- identity links, user profiles, trust levels, and policy acceptances;
+- individual and organization KYC status and documents;
 - organizations, memberships, invitations, and organization roles;
-- product catalogue, plans, subscriptions, and entitlements;
+- product catalogue, plans, subscriptions, entitlement keys, usage limits, and usage metering (see the [subscription model](../company/SUBSCRIPTION-MODEL.md), ADR-012);
+- app-store receipt verification for in-app subscriptions;
 - provider-neutral billing records and verified payment events;
 - notification preferences and delivery requests;
 - consent, privacy requests, support cases, audit events, and staff access;
@@ -59,6 +61,8 @@ It does not own product-specific authoring, learning, examinations, robot contro
 Each product plane owns its frontend, API modules, workers, database migrations, product authorization, product audit events, runbooks, dashboards, and release lifecycle. OxinovLMS retains its current tenant model: LMS workspaces belong to platform organizations or individual owners, while courses and learner data remain in the LMS database boundary.
 
 ## Identity and authorization
+
+Customers sign in with Google or an email one-time code, and one session works across all products; trust levels and policy acceptance gate higher-risk actions. The full design is in [identity and access](IDENTITY-AND-ACCESS.md) (ADR-011).
 
 Use OpenID Connect for single sign on. The identity provider proves who the user is; the platform database decides organization membership, product entitlement, and product roles. Access tokens use short lifetimes and an intended audience. Services validate issuer, audience, signature, expiry, and required scopes.
 

@@ -4,11 +4,25 @@ Company platform and product monorepo for Oxinov Pvt. Ltd. OxinovLMS is the firs
 
 ## Start here
 
-1. Read the [company platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS architecture](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), and [company roadmap](docs/planning/COMPANY-PLATFORM-ROADMAP.md).
+1. Use the [documentation map](docs/README.md). Read the [company platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS architecture](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [platform policies](docs/company/PLATFORM-POLICIES.md), and [company roadmap](docs/planning/COMPANY-PLATFORM-ROADMAP.md).
 2. For OxinovLMS work, read its [project brief](docs/00-PROJECT-BRIEF.md), [PRD](docs/01-PRD.md), [FRD](docs/02-FRD.md), and [NFR](docs/03-NFR.md).
 3. Coding agents follow [AGENTS.md](AGENTS.md), the [current structure](docs/engineering/PROJECT-STRUCTURE.md), and the [target company structure](docs/engineering/COMPANY-PROJECT-STRUCTURE.md). The reviewed [AI build command](prompts/BUILD-OXINOV-PLATFORM.md) starts company-platform milestones.
 4. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis minio` after Docker is installed.
 5. Start local monitoring with `docker compose --profile monitoring up -d`. Open Grafana at `http://localhost:3001`, Prometheus at `http://localhost:9090`, and Alertmanager at `http://localhost:9093`.
+
+## Company, platform, and products
+
+| Layer | Address | Status |
+| --- | --- | --- |
+| Company website | `oxinov.com` | Planned (Phase 1) |
+| One Oxinov account and sign-in (Google or email code) | `id.oxinov.com` | Planned (Phase 2) |
+| Account portal and product launcher | `app.oxinov.com` | Planned (Phase 2) |
+| OxinovLMS | `lms.oxinov.com` | First product, partially implemented |
+| [Oxinov Agri Market](docs/products/AGRI-MARKET.md) | `agri.oxinov.com` | Draft charter |
+| [Oxinov Jobs](docs/products/JOBS.md) | `jobs.oxinov.com` | Draft charter |
+| [Oxinov Services Market](docs/products/SERVICES-MARKET.md) | `services.oxinov.com` | Draft charter |
+
+Each product has its own frontend, backend, and database; one Oxinov account signs in to all of them.
 
 ## Repository areas
 

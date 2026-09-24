@@ -12,18 +12,24 @@ You are building the Oxinov company platform for Oxinov Pvt. Ltd. in the existin
 Read these files before changing code:
 - README.md
 - AGENTS.md
+- docs/README.md
 - docs/company/PLATFORM-BLUEPRINT.md
+- docs/company/PLATFORM-POLICIES.md
+- docs/architecture/IDENTITY-AND-ACCESS.md
 - docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md
 - docs/architecture/COMPANY-TECH-STACK.md
 - docs/engineering/COMPANY-PROJECT-STRUCTURE.md
 - docs/planning/COMPANY-PLATFORM-ROADMAP.md
+- the product charter in docs/products/ for any product touched by the milestone
 - all existing OxinovLMS PRD, FRD, NFR, security, data, API, and DevOps documents relevant to the milestone
 
 Context:
 - OxinovLMS is the first Oxinov product and its current code must remain functional.
 - The platform needs one company website, one Oxinov identity, one account portal, shared organizations and product entitlements, and independently owned product planes.
 - Use oxinov.com for the company site, app.oxinov.com for the account portal, id.oxinov.com for OIDC identity, api.oxinov.com for the API gateway, and lms.oxinov.com for OxinovLMS.
-- Future AI, engineering, robotics, IoT, media, AgriTech, research, and space products are roadmap items. Do not create empty services for them.
+- Oxinov Agri Market (agri.oxinov.com), Oxinov Jobs (jobs.oxinov.com), and Oxinov Services Market (services.oxinov.com) are adopted products with draft charters (ADR-010). Each gets its own frontend, backend, and database only after its release gate is approved.
+- Future AI, engineering, robotics, IoT, media, research, and space products are roadmap items. Do not create empty services for them.
+- One Oxinov account works across all products. Customers sign in with Continue with Google or an email one-time code, never a password, and higher-risk actions require trust levels and policy acceptance (ADR-011).
 
 Architecture requirements:
 - Preserve separate frontend, backend, database, packages, devops, monitoring, and security areas.
@@ -61,5 +67,5 @@ Use the Oxinov company platform master command. Implement Phase 1 foundation sli
 ## Second command after Phase 1 passes
 
 ```text
-Use the Oxinov company platform master command. Implement the first Phase 2 vertical slice: platform identity and organizations. Add frontend/platform-web, backend/platform-api, database/platform, and shared auth/contracts/config packages. Support OIDC sign-in, a user profile, organization creation, invitations, memberships, role checks, product catalogue entries, and read-only product entitlements. Add two-organization isolation tests, audit and security events, OpenAPI contracts, Prisma migrations, Docker targets, metrics, traces, dashboards, and rollback instructions. Use local Keycloak configuration for development but keep application authentication OIDC-provider-neutral. Do not integrate payments or move LMS code in this milestone.
+Use the Oxinov company platform master command. Implement the first Phase 2 vertical slice: platform identity and organizations. Add frontend/platform-web, backend/platform-api, database/platform, and shared auth/contracts/config packages. Support sign-in at id.oxinov.com with Continue with Google and email one-time codes (no customer passwords), a first-sign-in welcome screen that records Terms and Privacy acceptance, single sign-on across platform-web and the LMS client, automatic member entitlements for launched products, trust levels T0-T2 with SMS phone verification behind a provider adapter, policy-version and acceptance records, a user profile, organization creation, invitations, memberships, role checks, product catalogue entries, and read-only product entitlements. Add two-organization isolation tests, audit and security events, OpenAPI contracts, Prisma migrations, Docker targets, metrics, traces, dashboards, and rollback instructions. Use local Keycloak configuration for development but keep application authentication OIDC-provider-neutral. Do not integrate payments, KYC review (T3/T4), or move LMS code in this milestone.
 ```

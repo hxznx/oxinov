@@ -18,6 +18,7 @@
 - Build `id.oxinov.com`, `app.oxinov.com`, the gateway, platform API, and platform PostgreSQL database.
 - Implement identity linking, MFA, organizations, invitations, memberships, product catalogue, entitlements, audit, privacy controls, and support access.
 - Add provider-neutral payment, notification, object-storage, and AI adapters.
+- Add shared individual and organization KYC, conversations and messaging, and reviews primitives required by the adopted marketplace products (ADR-010).
 - Add OpenTelemetry, dashboards, alerts, backups, restore tests, SIEM events, CI security gates, and runbooks.
 
 ## Phase 3 OxinovLMS integration
@@ -31,13 +32,16 @@
 ## Phase 4 Commercial readiness
 
 - Integrate eligible Nepal payment providers using verified server-side confirmation.
+- Add the plan and entitlement catalogue, Oxinov One, usage metering, prepaid Nepal billing, and app-store receipt verification per the [subscription model](../company/SUBSCRIPTION-MODEL.md) (ADR-012).
 - Add plans, invoices, refunds, reconciliation, tax handling, customer support, status page, and service-level reporting.
 - Complete security, privacy, accessibility, disaster recovery, load, and incident exercises.
 - Launch to a small controlled customer group and measure activation, reliability, support load, and unit cost.
 
 ## Phase 5 Additional product pilots
 
-- Select one additional product using customer evidence and company strategy.
+- Deliver the adopted Flo Softwares concepts one at a time: [Oxinov Agri Market](../products/AGRI-MARKET.md), then [Oxinov Jobs](../products/JOBS.md), then [Oxinov Services Market](../products/SERVICES-MARKET.md) (ADR-010).
+- Before the first of them: confirm written rights to the Flo Softwares code, designs, and names, and rotate secrets committed to those repositories.
+- Select any further product using customer evidence and company strategy.
 - Approve its product charter, product owner, budget, architecture boundary, regulatory assessment, data policy, and exit criteria.
 - Reuse the platform control plane and build an independent product plane.
 - Do not start several new product implementations concurrently without teams that can own them.
