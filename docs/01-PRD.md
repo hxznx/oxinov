@@ -1,6 +1,6 @@
-# Product requirements document
+# OxinovLMS product requirements document
 
-**Status:** Draft for product review. **Source:** [project brief](00-PROJECT-BRIEF.md) and [FRD](02-FRD.md).
+**Status:** Draft for product review. **Portfolio:** OxinovLMS is the first product on the [Oxinov company platform](company/PLATFORM-BLUEPRINT.md). **Source:** [project brief](00-PROJECT-BRIEF.md) and [FRD](02-FRD.md).
 
 ## Personas and jobs
 

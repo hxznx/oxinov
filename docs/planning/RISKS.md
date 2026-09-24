@@ -6,6 +6,11 @@
 
 | Decision | Why it matters |
 | --- | --- |
+| Product owner, customer, release gate, budget, and stop/continue checkpoint for each Oxinov product | Prevents the broad company objectives from becoming simultaneous unsupported software projects. |
+| Registrar/DNS ownership, subdomain map, company email, trademark/brand assets, and public legal-page owners | Required to operate `oxinov.com`, company communications, product routing, and trustworthy public content. |
+| OIDC operations model: hardened/managed Keycloak or another approved managed provider | Identity is a company-wide critical dependency and requires MFA, backups, upgrades, monitoring, incident ownership, and recovery. |
+| Control-plane organization and product-entitlement model | Determines how one account launches several products without sharing product roles or product databases. |
+| Nepal merchant onboarding for Khalti/eSewa and eligibility for international payment providers | A Nepal-registered entity cannot assume every global provider is available; this determines checkout, reconciliation, refunds, currencies, and launch schedule. |
 | Launch countries, currencies, tax handling, and payment methods | Determines checkout, invoices, compliance, and whether Stripe covers the launch market. |
 | One-time purchases, subscriptions, or both in the first release | Determines pricing screens and entitlement rules. Both are target capabilities above. |
 | Instructor revenue share, payout schedule, refund window, and disputes | Determines Connect setup and financial reports. |

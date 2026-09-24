@@ -1,5 +1,7 @@
 # Project source structure
 
+This is the current OxinovLMS-oriented layout. The incremental target for the company website, shared control plane, and independent product planes is [Oxinov company platform target structure](COMPANY-PROJECT-STRUCTURE.md).
+
 ```text
 frontend/
   web/              Next.js browser application

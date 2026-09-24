@@ -28,8 +28,12 @@ Record each decision with date, status, context, choice, consequences, and alter
 
 ## ADR-007: Identity token verification and local development tokens
 
-**Date:** 2026-09-24. **Status:** Accepted. The API verifies bearer tokens against the identity provider's JWKS (`AUTH_ISSUER`, `AUTH_JWKS_URL`, optional `AUTH_AUDIENCE`), which works for Clerk session tokens without a provider SDK. Only the subject, `email`, and `email_verified` claims are used; tenant roles always come from PostgreSQL. Clerk's session token template must add `email` and `email_verified` before tenant creation can succeed. For local work and tests, HS256 tokens with issuer `oxinov-dev` are accepted when `AUTH_DEV_JWT_SECRET` is set; configuration refuses that secret when `NODE_ENV` or `DEPLOY_ENVIRONMENT` is `production`.
+**Date:** 2026-09-24. **Status:** Accepted. The API verifies bearer tokens against an approved OIDC provider's JWKS (`AUTH_ISSUER`, `AUTH_JWKS_URL`, optional `AUTH_AUDIENCE`) without depending on a provider SDK. Only the subject, `email`, and `email_verified` claims are used by the current LMS slice; tenant roles always come from PostgreSQL. The provider client must supply the required verified-email claims before tenant creation can succeed. For local work and tests, HS256 tokens with issuer `oxinov-dev` are accepted when `AUTH_DEV_JWT_SECRET` is set; configuration refuses that secret when `NODE_ENV` or `DEPLOY_ENVIRONMENT` is `production`.
+
+## ADR-008: Shared company control plane with independent product planes
+
+**Date:** 2026-09-24. **Status:** Accepted as the target architecture. `oxinov.com` provides the public company presence, `app.oxinov.com` provides one account and product launcher, and an OIDC identity service provides single sign on. The control plane owns organizations, product catalogue, plans, entitlements, shared billing records, audit, privacy, and support access. OxinovLMS and every later product own their product workflows, deployments, and data and integrate through versioned APIs and events. Begin with modular applications and a transactional outbox; extract services or introduce a message platform only for measured scale, availability, security, data, or team-ownership needs. Keycloak is the default OIDC implementation while the application contract remains provider-neutral. Existing OxinovLMS code is migrated incrementally rather than rewritten.
 
 ## Pending
 
-Choose cloud provider, production deployment topology, SIEM hosting/retention/on-call ownership, AI provider, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).
+Choose company-platform product owners, cloud provider, identity operations model, production deployment topology, Nepal and international payment providers, SIEM hosting/retention/on-call ownership, AI provider, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).

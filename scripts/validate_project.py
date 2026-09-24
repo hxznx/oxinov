@@ -1,4 +1,4 @@
-"""Validate the documentation-first Oxinov project scaffold."""
+"""Validate the Oxinov company platform and OxinovLMS project scaffold."""
 
 from __future__ import annotations
 
@@ -20,7 +20,10 @@ REQUIRED = [
     "devops/kubernetes/configmap.yaml", "devops/kubernetes/README.md",
     "devops/README.md", "devops/docker/README.md",
     "docs/00-PROJECT-BRIEF.md", "docs/01-PRD.md", "docs/02-FRD.md", "docs/03-NFR.md",
+    "docs/company/PLATFORM-BLUEPRINT.md",
     "docs/architecture/ARCHITECTURE.md", "docs/architecture/TECH-STACK.md",
+    "docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md",
+    "docs/architecture/COMPANY-TECH-STACK.md",
     "docs/architecture/ADR.md", "docs/architecture/DATA-FLOW.md",
     "docs/architecture/INTEGRATIONS.md", "docs/architecture/SCALABILITY.md",
     "docs/design/UI-UX.md", "docs/design/USER-FLOWS.md",
@@ -31,6 +34,7 @@ REQUIRED = [
     "docs/api/AUTH.md", "docs/api/ERROR-HANDLING.md",
     "docs/api/API-VERSIONING.md", "docs/engineering/CODING-STANDARDS.md",
     "docs/engineering/PROJECT-STRUCTURE.md", "docs/engineering/GIT-WORKFLOW.md",
+    "docs/engineering/COMPANY-PROJECT-STRUCTURE.md",
     "docs/engineering/TESTING-STRATEGY.md", "docs/engineering/ERROR-HANDLING.md",
     "docs/engineering/LOGGING.md", "docs/engineering/DEPENDENCY-POLICY.md",
     "docs/security/SECURITY.md", "docs/security/THREAT-MODEL.md",
@@ -40,6 +44,7 @@ REQUIRED = [
     "docs/devops/CI-CD.md", "docs/devops/DEPLOYMENT.md",
     "docs/devops/OBSERVABILITY.md", "docs/devops/BACKUP-RECOVERY.md",
     "docs/devops/ROLLBACK.md", "docs/planning/ROADMAP.md",
+    "docs/planning/COMPANY-PLATFORM-ROADMAP.md",
     "docs/planning/TASKS.md", "docs/planning/ACCEPTANCE-CRITERIA.md",
     "docs/planning/RISKS.md", "docs/planning/CHANGELOG.md",
     "docs/functional_requirements.md",
@@ -70,7 +75,7 @@ REQUIRED = [
     "security/soc/runbooks/ACCOUNT-TAKEOVER.md",
     "security/soc/runbooks/PAYMENT-WEBHOOK-ABUSE.md",
     "security/soc/incidents/INCIDENT-TEMPLATE.md",
-    "security/evidence/README.md",
+    "security/evidence/README.md", "prompts/BUILD-OXINOV-PLATFORM.md",
 ]
 
 

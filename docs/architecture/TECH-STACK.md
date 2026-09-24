@@ -1,6 +1,6 @@
 # Technology stack
 
-**Status:** Proposed baseline; record changes in [ADR.md](ADR.md).
+**Scope:** OxinovLMS product stack. Cross-product choices are defined in the [company platform stack](COMPANY-TECH-STACK.md). **Status:** Proposed baseline; record changes in [ADR.md](ADR.md).
 
 ## Recommended implementation stack
 
@@ -16,8 +16,8 @@ Use this concrete starting architecture. PostgreSQL is the mandatory transaction
 | Chat container | Dedicated Node.js WebSocket gateway | Cross-device conversations and unread state; persist messages in PostgreSQL and use Redis only for delivery fanout. |
 | PostgreSQL container | PostgreSQL with Prisma migrations and a persistent volume | Canonical records, tenant-scoped full-text search, transactions, and audit history. Production PostgreSQL also runs in Docker with encrypted backups and tested restore procedures. |
 | Redis container | Redis with no authoritative business records | Queue coordination, cache, rate limits, and chat fanout. Loss of Redis must not erase course, payment, or result records. |
-| Identity | Clerk | Email/password, social sign-in, MFA, and sessions. Keep tenant memberships, roles, and ownership in PostgreSQL. |
-| Payments | Stripe Checkout, Billing, and Connect for web; store billing integration where required for mobile | Keep tenant SaaS subscriptions distinct from learner course purchases and instructor payouts. Normalize verified course purchases into one entitlement ledger. |
+| Identity | Provider-neutral OpenID Connect; Keycloak is the company-platform default | Email/password or federated sign-in, MFA, and sessions. Keep tenant memberships, roles, and ownership in PostgreSQL. The existing generic JWKS verifier remains compatible with another approved OIDC provider. |
+| Payments | Provider adapter and internal ledger; evaluate Khalti and eSewa first for the Nepal entity, and Stripe only for an eligible entity/market; store billing where required for mobile | Keep tenant SaaS subscriptions distinct from learner course purchases and instructor payouts. Verify provider status server-side and normalize purchases into one entitlement ledger. |
 | Video | Mux Video | Direct upload, adaptive HLS, and signed playback for paid lessons. |
 | Files | Private S3-compatible object storage; MinIO container for local development | Attachments, submissions, and certificates; issue time-limited download URLs after tenant and role checks. Do not store video binaries or user uploads in PostgreSQL. |
 | Notifications | Transactional email provider, Web Push API, and native push integration | Account email, course announcements, chat and result alerts, and opted-in browser or mobile push. Select the email and native push providers before implementation. |
@@ -38,7 +38,9 @@ Use one shared PostgreSQL instance and tenant-scoped tables with PostgreSQL row-
 - [Docker Compose startup health checks](https://docs.docker.com/compose/how-tos/startup-order/)
 - [Docker Compose production configuration](https://docs.docker.com/compose/how-tos/production/)
 - [Expo Android App Bundle submission](https://docs.expo.dev/submit/android/)
-- [Stripe webhooks](https://docs.stripe.com/webhooks)
+- [Khalti payment gateway](https://docs.khalti.com/)
+- [eSewa payment API](https://developer.esewa.com.np/)
+- [Stripe global availability](https://stripe.com/global)
 - [Mux secure video playback](https://www.mux.com/docs/guides/secure-video-playback)
 - [Prometheus metric naming](https://prometheus.io/docs/practices/naming/)
 - [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/)

@@ -1,8 +1,10 @@
-# Project brief
+# OxinovLMS project brief
+
+**Portfolio context:** OxinovLMS is the first product on the wider [Oxinov company platform](company/PLATFORM-BLUEPRINT.md). This document defines the LMS product, not every Oxinov business objective.
 
 ## Vision
 
-A customer can create a branded LMS in the cloud, teach specialized subjects, manage learners and payments, and reach students through web and mobile apps.
+A customer can create a branded LMS in the cloud, teach specialized subjects, manage learners and payments, and reach students through web and mobile apps using their Oxinov identity and product entitlement.
 
 ## Problem
 
@@ -14,7 +16,7 @@ Tenant owners and administrators run an LMS. Instructors create courses and asse
 
 ## Product boundaries
 
-One shared codebase serves logically isolated tenant workspaces. PostgreSQL is the transactional source of truth. Web and native Android/iOS apps use one backend. Live teaching and offline video downloads require separate decisions.
+One LMS codebase serves logically isolated tenant workspaces as an independent product plane. PostgreSQL is the LMS transactional source of truth. Web and native Android/iOS apps use one LMS backend. Shared identity, organization, catalogue, subscription, and entitlement capabilities belong to the company control plane and integrate through versioned APIs and events. Live teaching and offline video downloads require separate decisions.
 
 ## Success measures to agree before launch
 

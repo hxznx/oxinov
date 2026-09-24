@@ -2,8 +2,8 @@
 
 | System | Purpose | Required controls |
 | --- | --- | --- |
-| Clerk | Identity and sessions | Map identity to tenant membership; verify tokens server-side. |
-| Stripe | Web payments, SaaS plans, Connect payouts | Verify webhook signatures, event IDs, tenant/account mapping, and reconciliation. |
+| OIDC provider / Keycloak baseline | Company-wide identity, organizations, MFA, and sessions | Validate issuer, audience, signature, expiry, and scopes server-side; map identity to platform and product authorization records. |
+| Khalti/eSewa for Nepal and eligible international payment providers | Web payments, SaaS plans, purchases, refunds, and payouts where supported | Use provider adapters; verify status server-side, process event IDs idempotently, map organization/product context, and reconcile to the internal ledger. |
 | Apple/Google billing | Mobile digital purchases where required | Verify receipts server-side; normalize entitlements. |
 | Mux | Hosted recorded video | Signed playback, upload callbacks, tenant media mapping. |
 | Email/push providers | Verification, announcements, alerts | Templates, opt-in, retries, delivery status. |
