@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { AccountHeader } from '@/components/AccountHeader';
 import { currentSession } from '@/lib/current-session.ts';
 import { PlatformApiError, platformApi, type Account, type Entitlement, type Product } from '@/lib/platform-api.ts';
+import { productUrl } from '@/lib/product-url.ts';
 
 const SIGN_IN_MESSAGES: Record<string, string> = {
   cancelled: 'Sign-in was cancelled.',
@@ -60,7 +61,7 @@ export default async function AccountHome({ searchParams }: Props) {
               {myProducts.map((product) => (
                 <li key={product.key}>
                   <a
-                    href={`https://${product.address}`}
+                    href={productUrl(product)}
                     className="card card-link"
                     style={{ borderColor: `var(--ox-color-product-${product.key})` }}
                   >

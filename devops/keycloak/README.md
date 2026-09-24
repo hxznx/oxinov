@@ -40,6 +40,7 @@ bash devops/keycloak/configure-realm.sh
 | Sessions | 30 days idle, 90 days maximum | Identity and access design |
 | Brute-force detection | On, lockout after 5 failures | Threat model |
 | `oxinov-platform-web` client | Confidential, authorization code with PKCE S256, access tokens for audience `oxinov-platform-api` only | FR-ID-2207 |
+| `oxinov-edu-web` client | Same settings for Oxinov Edu (`EDU_WEB_URL`, default `http://localhost:3002`), access tokens for audience `oxinov-lms-api` only; shares the realm session, so a signed-in person is not asked again | FR-ID-2207 |
 
 Verified end to end on 2026-09-24: email-only sign-in page, code delivered to Mailpit, token with audience `oxinov-platform-api` and a 600-second lifetime, single sign-on on a second authorization, and the platform API accepting the token for `/v1/me`, the welcome step, and entitlements.
 

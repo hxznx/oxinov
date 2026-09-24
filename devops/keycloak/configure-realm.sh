@@ -14,8 +14,28 @@ set +a
 
 REALM=oxinov
 PORTAL_URL=${PLATFORM_WEB_URL:-http://localhost:3001}
+EDU_URL=${EDU_WEB_URL:-http://localhost:3002}
 
-kc() { docker compose exec -T keycloak /opt/keycloak/bin/kcadm.sh "$@"; }
+kcadm() { docker compose exec -T keycloak /opt/keycloak/bin/kcadm.sh "$@"; }
+kc_login() {
+  kcadm config credentials --server http://localhost:8080 --realm master \
+    --user "$KEYCLOAK_ADMIN_USER" --password "$KEYCLOAK_ADMIN_PASSWORD" >/dev/null
+}
+# Every kcadm call starts a JVM, so on a busy machine the run can outlast the admin session; log in again and retry once.
+KC_ERR=$(mktemp)
+trap 'rm -f "$KC_ERR"' EXIT
+kc() {
+  local out status=0
+  out=$(kcadm "$@" 2>"$KC_ERR") || status=$?
+  if grep -q 'Session has expired' "$KC_ERR"; then
+    kc_login
+    status=0
+    out=$(kcadm "$@" 2>"$KC_ERR") || status=$?
+  fi
+  cat "$KC_ERR" >&2
+  if [ -n "$out" ]; then printf '%s\n' "$out"; fi
+  return "$status"
+}
 flow_exists() { kc get authentication/flows -r "$REALM" --fields alias --format csv --noquotes | grep -qx "$1"; }
 # Prints the execution ID in flow $1 whose providerId or displayName is $2.
 exec_id() {
@@ -29,8 +49,7 @@ add_subflow() {
     -s "alias=$2" -s type=basic-flow -s provider=registration-page-form >/dev/null
 }
 
-kc config credentials --server http://localhost:8080 --realm master \
-  --user "$KEYCLOAK_ADMIN_USER" --password "$KEYCLOAK_ADMIN_PASSWORD" >/dev/null
+kc_login
 
 # --- Realm: no passwords, verified emails, short tokens, rotating refresh tokens (FR-ID-2204, FR-ID-2208)
 if ! kc get "realms/$REALM" >/dev/null 2>&1; then
@@ -109,24 +128,33 @@ require oxinov-first-broker-link "$(exec_id oxinov-first-broker-link oxinov-firs
 require oxinov-first-broker-existing "$(exec_id oxinov-first-broker-existing idp-email-verification)" REQUIRED
 kc update "realms/$REALM" -s firstBrokerLoginFlow=oxinov-first-broker
 
-# --- Account portal client: confidential, authorization code with PKCE, tokens for the platform API only.
-CLIENT_ID=$(kc get clients -r "$REALM" -q clientId=oxinov-platform-web --fields id --format csv --noquotes)
-if [ -z "$CLIENT_ID" ]; then
-  kc create clients -r "$REALM" -s clientId=oxinov-platform-web -s protocol=openid-connect \
-    -s publicClient=false -s standardFlowEnabled=true -s directAccessGrantsEnabled=false \
-    -s implicitFlowEnabled=false -s serviceAccountsEnabled=false >/dev/null
-  CLIENT_ID=$(kc get clients -r "$REALM" -q clientId=oxinov-platform-web --fields id --format csv --noquotes)
-fi
-kc update "clients/$CLIENT_ID" -r "$REALM" \
-  -s "redirectUris=[\"$PORTAL_URL/*\"]" \
-  -s "webOrigins=[\"$PORTAL_URL\"]" \
-  -s 'attributes."pkce.code.challenge.method"=S256' \
-  -s "attributes.\"post.logout.redirect.uris\"=$PORTAL_URL/*"
-if ! kc get "clients/$CLIENT_ID/protocol-mappers/models" -r "$REALM" --fields name --format csv --noquotes | grep -qx platform-api-audience; then
-  kc create "clients/$CLIENT_ID/protocol-mappers/models" -r "$REALM" \
-    -s name=platform-api-audience -s protocol=openid-connect -s protocolMapper=oidc-audience-mapper \
-    -s 'config."included.custom.audience"=oxinov-platform-api' \
-    -s 'config."access.token.claim"=true' -s 'config."id.token.claim"=false' >/dev/null
-fi
+# --- Product web clients (FR-ID-2207): each is confidential, uses the authorization code flow with PKCE,
+# and receives access tokens for its own API audience only, so one product's token is refused by another.
+# Usage: web_client <clientId> <app url> <api audience>
+web_client() {
+  local client=$1 url=$2 audience=$3 mapper="${3#oxinov-}-audience" id
+  id=$(kc get clients -r "$REALM" -q "clientId=$client" --fields id --format csv --noquotes)
+  if [ -z "$id" ]; then
+    kc create clients -r "$REALM" -s "clientId=$client" -s protocol=openid-connect \
+      -s publicClient=false -s standardFlowEnabled=true -s directAccessGrantsEnabled=false \
+      -s implicitFlowEnabled=false -s serviceAccountsEnabled=false >/dev/null
+    id=$(kc get clients -r "$REALM" -q "clientId=$client" --fields id --format csv --noquotes)
+  fi
+  kc update "clients/$id" -r "$REALM" \
+    -s "redirectUris=[\"$url/*\"]" \
+    -s "webOrigins=[\"$url\"]" \
+    -s 'attributes."pkce.code.challenge.method"=S256' \
+    -s "attributes.\"post.logout.redirect.uris\"=$url/*"
+  if ! kc get "clients/$id/protocol-mappers/models" -r "$REALM" --fields name --format csv --noquotes | grep -qx "$mapper"; then
+    kc create "clients/$id/protocol-mappers/models" -r "$REALM" \
+      -s "name=$mapper" -s protocol=openid-connect -s protocolMapper=oidc-audience-mapper \
+      -s "config.\"included.custom.audience\"=$audience" \
+      -s 'config."access.token.claim"=true' -s 'config."id.token.claim"=false' >/dev/null
+  fi
+}
+
+# Account portal (account.oxinov.com) -> platform API; Oxinov Edu (edu.oxinov.com) -> Edu API.
+web_client oxinov-platform-web "$PORTAL_URL" oxinov-platform-api
+web_client oxinov-edu-web "$EDU_URL" oxinov-lms-api
 
 echo "Realm '$REALM' configured: sign-in at http://localhost:8080/realms/$REALM/account, email at http://localhost:8025"
