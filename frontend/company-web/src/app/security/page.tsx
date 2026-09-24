@@ -19,11 +19,21 @@ export default function SecurityPage() {
           reasonable time to fix it before sharing details. Do not access other people&apos;s data, disrupt services,
           or run automated scans that degrade them.
         </p>
-        <p>
-          {company.email
-            ? `Send reports to ${company.email}.`
-            : 'A dedicated security contact will be published here before our first product launches.'}
-        </p>
+        {company.securityEmail ? (
+          <>
+            <p>
+              Send reports to <a href={`mailto:${company.securityEmail}`}>{company.securityEmail}</a>. Include the
+              affected address, the steps to reproduce the issue, and its impact. We aim to acknowledge reports
+              within three working days.
+            </p>
+            <p>
+              Our contact details are also published in machine-readable form at{' '}
+              <a href="/.well-known/security.txt">/.well-known/security.txt</a>.
+            </p>
+          </>
+        ) : (
+          <p>A dedicated security contact will be published here before our first product launches.</p>
+        )}
       </div>
     </>
   );

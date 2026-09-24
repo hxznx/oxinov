@@ -101,6 +101,22 @@ describe('static export', () => {
     }
   });
 
+  it('publishes the company contact addresses and an RFC 9116 security.txt', () => {
+    const contact = html('/contact/');
+    for (const address of ['support', 'billing', 'legal', 'security']) {
+      assert.match(contact, new RegExp(`href="mailto:${address}@oxinov\\.com"`), `contact: ${address}@`);
+    }
+    assert.match(html('/security/'), /href="mailto:security@oxinov\.com"/);
+    assert.match(html('/legal/privacy/'), /href="mailto:legal@oxinov\.com"/);
+
+    const securityTxt = readFileSync(join(out, '.well-known', 'security.txt'), 'utf8');
+    assert.match(securityTxt, /^Contact: mailto:security@oxinov\.com$/m);
+    const expires = new Date(securityTxt.match(/^Expires: (.+)$/m)?.[1] ?? '');
+    const daysLeft = (expires.getTime() - Date.now()) / 86_400_000;
+    // RFC 9116: Expires must be in the future and should be less than a year away. Renew it when this fails.
+    assert.ok(daysLeft > 30 && daysLeft <= 366, `security.txt expires in ${Math.round(daysLeft)} days; renew it`);
+  });
+
   it('defaults to the dark theme and offers the Daylight switch', () => {
     const page = html('/');
     assert.match(page, /<html[^>]*data-theme="dark"/);

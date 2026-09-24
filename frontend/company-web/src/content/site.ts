@@ -9,8 +9,12 @@ export const company = {
   name: 'Oxinov',
   legalName: 'Oxinov Pvt. Ltd.',
   locality: 'Mahalaxmi Municipality, Ward 6, Lalitpur, Nepal',
+  // Zoho Mail mailboxes (devops/terraform/environments/production/edge/mail.tf).
+  email: 'support@oxinov.com' as string | null,
+  securityEmail: 'security@oxinov.com' as string | null,
+  legalEmail: 'legal@oxinov.com' as string | null,
+  billingEmail: 'billing@oxinov.com' as string | null,
   // Owner to supply before launch (see frontend/company-web/README.md).
-  email: null as string | null,
   careersEmail: null as string | null,
   phone: null as string | null,
   streetAddress: null as string | null,

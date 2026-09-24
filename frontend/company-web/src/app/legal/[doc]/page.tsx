@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
-import { legalDocs } from '@/content/site';
+import { company, legalDocs } from '@/content/site';
 
 export const dynamicParams = false;
 
@@ -37,6 +37,11 @@ export default async function LegalDocPage({ params }: Props) {
           <p>
             Today this website sets no cookies and loads no analytics. Your theme choice is stored only in your
             browser.
+          </p>
+        ) : null}
+        {company.legalEmail ? (
+          <p>
+            Questions about this policy or your personal data: <a href={`mailto:${company.legalEmail}`}>{company.legalEmail}</a>.
           </p>
         ) : null}
         <p>

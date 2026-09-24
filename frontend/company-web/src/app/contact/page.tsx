@@ -9,12 +9,19 @@ export const metadata: Metadata = {
 
 const toBeAnnounced = 'To be announced';
 
+type Row = { label: string; value: string; email?: boolean };
+
 export default function ContactPage() {
-  const rows: [string, string][] = [
-    ['General enquiries', company.email ?? toBeAnnounced],
-    ['Phone', company.phone ?? toBeAnnounced],
-    ['Address', company.streetAddress ? `${company.streetAddress}, ${company.locality}` : company.locality],
-    ['Office hours', company.officeHours ?? toBeAnnounced],
+  const emailRow = (label: string, address: string | null): Row =>
+    address ? { label, value: address, email: true } : { label, value: toBeAnnounced };
+  const rows: Row[] = [
+    emailRow('General enquiries and support', company.email),
+    emailRow('Billing and subscriptions', company.billingEmail),
+    emailRow('Legal and privacy', company.legalEmail),
+    emailRow('Security reports', company.securityEmail),
+    { label: 'Phone', value: company.phone ?? toBeAnnounced },
+    { label: 'Address', value: company.streetAddress ? `${company.streetAddress}, ${company.locality}` : company.locality },
+    { label: 'Office hours', value: company.officeHours ?? toBeAnnounced },
   ];
   return (
     <>
@@ -22,13 +29,11 @@ export default function ContactPage() {
         We would like to hear from you. Tell us who you are and how we can help.
       </PageHeader>
       <div className="mx-auto max-w-6xl px-4 py-12">
-        <dl className="card grid max-w-2xl gap-x-6 gap-y-3 sm:grid-cols-[12rem_1fr]">
-          {rows.map(([label, value]) => (
+        <dl className="card grid max-w-2xl gap-x-6 gap-y-3 sm:grid-cols-[14rem_1fr]">
+          {rows.map(({ label, value, email }) => (
             <div key={label} className="contents">
               <dt className="hud-label pt-1">{label}</dt>
-              <dd>
-                {label === 'General enquiries' && company.email ? <a href={`mailto:${company.email}`}>{value}</a> : value}
-              </dd>
+              <dd>{email ? <a href={`mailto:${value}`}>{value}</a> : value}</dd>
             </div>
           ))}
         </dl>
