@@ -65,6 +65,9 @@ resource "aws_s3_bucket_versioning" "state" {
   }
 }
 
+# Accepted for now: state holds resource IDs and no secrets yet. Switch to a customer managed KMS key
+# before any stack writes secrets into state (the first database stack).
+#trivy:ignore:AWS-0132
 resource "aws_s3_bucket_server_side_encryption_configuration" "state" {
   bucket = aws_s3_bucket.state.id
   rule {

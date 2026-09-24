@@ -1,4 +1,4 @@
-// Tests for the CloudFront router. Run: node --test devops/terraform/environments/production/edge/
+// Tests for the CloudFront router. Run: node --test devops/terraform/environments/production/edge/site-router.test.mjs
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';

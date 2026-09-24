@@ -19,6 +19,9 @@ resource "aws_s3_bucket_public_access_block" "site" {
   restrict_public_buckets = true
 }
 
+# Accepted: the bucket holds the public website, so a customer managed KMS key would add cost and a
+# CloudFront key grant without protecting anything confidential. S3 managed encryption stays on.
+#trivy:ignore:AWS-0132
 resource "aws_s3_bucket_server_side_encryption_configuration" "site" {
   bucket = aws_s3_bucket.site.id
   rule {
@@ -177,6 +180,9 @@ data "aws_cloudfront_cache_policy" "optimized" {
   name = "Managed-CachingOptimized"
 }
 
+# Accepted until the review date: the company site is static (no forms, logins or APIs), so AWS WAF
+# (about USD 6+ per month) is deferred; it is added with the first dynamic service behind CloudFront.
+#trivy:ignore:AWS-0011:exp:2027-03-31
 resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   comment             = "oxinov.com company website"
