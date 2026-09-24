@@ -356,6 +356,9 @@ importers:
 
   packages/design-system:
     devDependencies:
+      '@types/node':
+        specifier: 22.20.4
+        version: 22.20.4
       typescript:
         specifier: 5.9.3
         version: 5.9.3

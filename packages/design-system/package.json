@@ -3,13 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "description": "Oxinov shared cyberpunk design tokens, brand assets, and UI primitives",
+  "type": "module",
   "engines": {
     "node": ">=22"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./tokens.css": "./dist/tokens.css",
+    "./brand/*": "./dist/brand/*"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "lint": "echo 0"
+    "build": "tsc -p tsconfig.json && node dist/build-css.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsc -p tsconfig.json && node --test \"dist/**/*.test.js\"",
+    "lint": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
+    "@types/node": "22.20.4",
     "typescript": "5.9.3"
   }
 }
