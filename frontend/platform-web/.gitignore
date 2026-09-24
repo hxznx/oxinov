@@ -1,0 +1,7 @@
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.env.local
+# Copied from @oxinov/design-system at build time.
+public/brand/

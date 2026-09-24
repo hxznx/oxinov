@@ -148,6 +148,34 @@ jobs:
       - run: pnpm --filter @oxinov/platform-api test:integration
       - run: pnpm --filter @oxinov/platform-api build
 
+  platform-web:
+    # Account portal (app.oxinov.com): sealed-session and redirect-safety unit tests, type check, build.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @oxinov/design-system build
+      - run: pnpm --filter @oxinov/platform-web test
+      - run: pnpm --filter @oxinov/platform-web typecheck
+      - name: Build (runtime settings are read at request time, not baked in)
+        env:
+          APP_URL: http://localhost:3001
+          OIDC_ISSUER: http://localhost:8080/realms/oxinov
+          OIDC_CLIENT_ID: oxinov-platform-web
+          OIDC_CLIENT_SECRET: ci-only-placeholder
+          PLATFORM_API_URL: http://localhost:4200
+          SESSION_SECRET: ci-only-placeholder-session-secret-0000
+        run: pnpm --filter @oxinov/platform-web build
+
   company-web:
     # oxinov.com static export: design tokens with contrast tests, site build, and page checks (FR-SITE-2101/2102/2105).
     runs-on: ubuntu-latest
