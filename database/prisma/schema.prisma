@@ -12,7 +12,7 @@
 // Money is stored as integer minor units plus an ISO 4217 currency. Timestamps are UTC.
 
 generator client {
-  provider = "prisma-client"
+  provider     = "prisma-client"
   output       = "../../backend/api/src/generated/prisma"
   moduleFormat = "cjs"
 }
@@ -47,7 +47,7 @@ model Tenant {
   createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  createdBy      UserProfile        @relation("TenantCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  createdBy      UserProfile            @relation("TenantCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
   memberships    TenantMembership[]
   programs       Program[]
   courses        Course[]
@@ -167,18 +167,18 @@ enum ProgramKind {
 }
 
 model Program {
-  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId     String      @map("tenant_id") @db.Uuid
-  slug         String      @db.VarChar(80)
-  name         String      @db.VarChar(160)
-  kind         ProgramKind
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String      @map("tenant_id") @db.Uuid
+  slug      String      @db.VarChar(80)
+  name      String      @db.VarChar(160)
+  kind      ProgramKind
   /// Study language as a BCP 47 tag, for example "ja" or "zh-Hant".
-  language     String?     @db.VarChar(16)
+  language  String?     @db.VarChar(16)
   /// Program-specific level such as "N5"; free text so non-JLPT programs can define their own.
-  level        String?     @db.VarChar(40)
-  position     Int         @default(0)
-  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  level     String?     @db.VarChar(40)
+  position  Int         @default(0)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   tenant     Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   courses    Course[]
@@ -240,25 +240,29 @@ model Course {
 }
 
 model CourseVersion {
-  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String              @map("tenant_id") @db.Uuid
-  courseId    String              @map("course_id") @db.Uuid
-  version     Int
-  status      CourseVersionStatus @default(DRAFT)
-  title       String              @db.VarChar(200)
-  summary     String              @db.VarChar(500)
-  description String              @default("")
+  id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String              @map("tenant_id") @db.Uuid
+  courseId       String              @map("course_id") @db.Uuid
+  version        Int
+  status         CourseVersionStatus @default(DRAFT)
+  title          String              @db.VarChar(200)
+  summary        String              @db.VarChar(500)
+  description    String              @default("")
   /// Language the course is taught in (BCP 47), independent of the studied language.
-  language    String              @db.VarChar(16)
-  outcomes    String[]            @default([])
-  publishedAt DateTime?           @map("published_at") @db.Timestamptz(3)
-  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt   DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  language       String              @db.VarChar(16)
+  outcomes       String[]            @default([])
+  publishedAt    DateTime?           @map("published_at") @db.Timestamptz(3)
+  /// When the author last sent this version for review (FR-COURSE-203).
+  submittedAt    DateTime?           @map("submitted_at") @db.Timestamptz(3)
+  /// Reviewer feedback from the last rejection; cleared on the next submission.
+  reviewFeedback String?             @map("review_feedback") @db.VarChar(2000)
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  course           Course    @relation("CourseVersions", fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
-  publishedFor     Course?   @relation("CoursePublishedVersion")
-  sections         Section[]
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course       Course    @relation("CourseVersions", fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  publishedFor Course?   @relation("CoursePublishedVersion")
+  sections     Section[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, courseId, version])
@@ -412,10 +416,10 @@ model Payment {
   createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  user         UserProfile  @relation(fields: [userId], references: [id], onDelete: Restrict)
-  course       Course       @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
-  entitlement  Entitlement?
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user        UserProfile  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  course      Course       @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  entitlement Entitlement?
 
   @@unique([tenantId, id])
   @@unique([provider, providerPaymentId])
@@ -458,26 +462,26 @@ enum QuestionStatus {
 }
 
 model Question {
-  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId        String         @map("tenant_id") @db.Uuid
-  programId       String         @map("program_id") @db.Uuid
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String         @map("tenant_id") @db.Uuid
+  programId   String         @map("program_id") @db.Uuid
   /// Blueprint section this question can fill, for example "vocabulary" or "grammar".
-  sectionKey      String         @map("section_key") @db.VarChar(40)
-  topic           String?        @db.VarChar(80)
-  difficulty      Int            @default(1) @db.SmallInt
-  type            QuestionType
-  status          QuestionStatus @default(ACTIVE)
-  version         Int            @default(1)
-  prompt          String
-  passage         String?
+  sectionKey  String         @map("section_key") @db.VarChar(40)
+  topic       String?        @db.VarChar(80)
+  difficulty  Int            @default(1) @db.SmallInt
+  type        QuestionType
+  status      QuestionStatus @default(ACTIVE)
+  version     Int            @default(1)
+  prompt      String
+  passage     String?
   /// [{ "id": "a", "text": "..." }] for choice questions; empty for FILL_BLANK.
-  choices         Json           @default("[]")
+  choices     Json           @default("[]")
   /// Choice IDs for choice questions, accepted strings for FILL_BLANK. Never sent to learners
   /// before release.
-  answerKey       Json           @map("answer_key")
-  explanation     String?
-  marks           Int            @default(1)
-  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  answerKey   Json           @map("answer_key")
+  explanation String?
+  marks       Int            @default(1)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
 
   tenant       Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   program      Program           @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
@@ -590,20 +594,20 @@ model ExamAttempt {
 
 /// Frozen copy of each question served in an attempt, so later edits never change history.
 model ExamAttemptItem {
-  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId       String    @map("tenant_id") @db.Uuid
-  attemptId      String    @map("attempt_id") @db.Uuid
-  questionId     String    @map("question_id") @db.Uuid
-  sectionKey     String    @map("section_key") @db.VarChar(40)
-  position       Int
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  attemptId    String    @map("attempt_id") @db.Uuid
+  questionId   String    @map("question_id") @db.Uuid
+  sectionKey   String    @map("section_key") @db.VarChar(40)
+  position     Int
   /// { type, prompt, passage, choices, marks, version } as served.
-  snapshot       Json
-  answerKey      Json      @map("answer_key")
-  explanation    String?
-  response       Json?
-  answeredAt     DateTime? @map("answered_at") @db.Timestamptz(3)
-  isCorrect      Boolean?  @map("is_correct")
-  marksAwarded   Int?      @map("marks_awarded")
+  snapshot     Json
+  answerKey    Json      @map("answer_key")
+  explanation  String?
+  response     Json?
+  answeredAt   DateTime? @map("answered_at") @db.Timestamptz(3)
+  isCorrect    Boolean?  @map("is_correct")
+  marksAwarded Int?      @map("marks_awarded")
 
   tenant   Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   attempt  ExamAttempt @relation(fields: [tenantId, attemptId], references: [tenantId, id], onDelete: Restrict)

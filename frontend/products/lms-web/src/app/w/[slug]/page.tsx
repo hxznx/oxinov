@@ -30,11 +30,18 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
             <p className="hud-label">// {workspace.name}</p>
             <h1 className="mt-2 text-4xl">Learn</h1>
           </div>
-          {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
-            <Link href={`${here}/people`} className="btn btn-secondary">
-              People and join codes
-            </Link>
-          ) : null}
+          <div className="flex flex-wrap gap-3">
+            {workspace.role !== 'LEARNER' ? (
+              <Link href={`${here}/teach`} className="btn btn-secondary">
+                Teach
+              </Link>
+            ) : null}
+            {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
+              <Link href={`${here}/people`} className="btn btn-secondary">
+                People and join codes
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         {active.length > 0 ? (

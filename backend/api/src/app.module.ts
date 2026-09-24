@@ -37,6 +37,8 @@ import { EnrollmentsController } from './learning/enrollments.controller';
 import { EnrollmentsService } from './learning/enrollments.service';
 import { MetricsService } from './observability/metrics.service';
 import { TenantGuard } from './tenancy/tenant.guard';
+import { AuthoringController } from './authoring/authoring.controller';
+import { AuthoringService } from './authoring/authoring.service';
 import { InviteRedemptionController, TenantInvitesController } from './tenants/invites.controller';
 import { InvitesService } from './tenants/invites.service';
 import { TenantsController } from './tenants/tenants.controller';
@@ -76,6 +78,7 @@ export class AppModule implements NestModule {
       TenantGuard,
       TenantsService,
       InvitesService,
+      AuthoringService,
       CatalogService,
       EnrollmentsService,
       ExamsService,
@@ -88,6 +91,7 @@ export class AppModule implements NestModule {
         TenantInvitesController,
         InviteRedemptionController,
         CatalogController,
+        AuthoringController,
         EnrollmentsController,
         ExamsController,
       ],

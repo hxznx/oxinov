@@ -1,0 +1,407 @@
+import { Injectable } from '@nestjs/common';
+import { DomainError, Errors } from '../common/errors';
+import type { AuthUser, TenantScope } from '../common/request';
+import { DatabaseContext, type Tx } from '../database/database-context.service';
+import { hasRole } from '../tenancy/roles';
+import type {
+  AuthoredCourseDto,
+  CreateLessonDto,
+  DraftDto,
+  ReorderDto,
+  UpdateDraftDto,
+  UpdateLessonDto,
+} from './authoring.dto';
+
+type EditableCourse = { id: string; createdByUserId: string; status: string; priceMinor: number; currency: string; publishedVersionId: string | null };
+type DraftVersion = { id: string; status: string; version: number };
+
+const courseSelect = { id: true, createdByUserId: true, status: true, priceMinor: true, currency: true, publishedVersionId: true } as const;
+
+const invalidOrder = () =>
+  new DomainError('VALIDATION_FAILED', 400, 'The new order must list every chapter and lesson of the draft exactly once.');
+
+/**
+ * Course authoring (FR-COURSE-201/203). Authors change a separate draft version while learners keep the
+ * published one. Instructors edit only their own courses; administrators edit, approve, and reject any
+ * course in their tenant. Approval swaps the published version in one transaction.
+ */
+@Injectable()
+export class AuthoringService {
+  constructor(private readonly db: DatabaseContext) {}
+
+  /** Courses the caller may edit, with the state of any open draft. */
+  listCourses(scope: TenantScope, user: AuthUser): Promise<AuthoredCourseDto[]> {
+    const admin = hasRole(scope.role, 'ADMIN');
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const courses = await tx.course.findMany({
+        where: { tenantId: scope.tenantId, ...(admin ? {} : { createdByUserId: user.userId }) },
+        select: {
+          id: true,
+          status: true,
+          createdByUserId: true,
+          updatedAt: true,
+          versions: { orderBy: { version: 'desc' }, take: 1, select: { title: true, status: true, updatedAt: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: 200,
+      });
+      return courses.map((course) => {
+        const latest = course.versions[0];
+        const open = latest && (latest.status === 'DRAFT' || latest.status === 'IN_REVIEW');
+        return {
+          courseId: course.id,
+          title: latest?.title ?? 'Untitled course',
+          courseStatus: course.status,
+          draftStatus: open ? latest.status : null,
+          mine: course.createdByUserId === user.userId,
+          updatedAt: latest && latest.updatedAt > course.updatedAt ? latest.updatedAt : course.updatedAt,
+        };
+      });
+    });
+  }
+
+  getDraft(scope: TenantScope, user: AuthUser, courseId: string): Promise<DraftDto> {
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const course = await this.editableCourse(tx, scope, user, courseId);
+      const draft = await this.openDraft(tx, scope.tenantId, courseId);
+      if (!draft) throw Errors.notFound('Draft');
+      return this.view(tx, scope, course, draft.id);
+    });
+  }
+
+  /** Opens the course for editing: returns the open draft, or copies the published version into a new one. */
+  startDraft(scope: TenantScope, user: AuthUser, courseId: string): Promise<{ draft: DraftDto; created: boolean }> {
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const course = await this.editableCourse(tx, scope, user, courseId);
+      const existing = await this.openDraft(tx, scope.tenantId, courseId);
+      if (existing) return { draft: await this.view(tx, scope, course, existing.id), created: false };
+
+      const source = await tx.courseVersion.findFirst({
+        where: { tenantId: scope.tenantId, courseId, ...(course.publishedVersionId ? { id: course.publishedVersionId } : {}) },
+        orderBy: { version: 'desc' },
+        include: { sections: { orderBy: { position: 'asc' }, include: { lessons: { orderBy: { position: 'asc' } } } } },
+      });
+      if (!source) throw Errors.notFound('Course');
+      const latest = await tx.courseVersion.aggregate({ where: { tenantId: scope.tenantId, courseId }, _max: { version: true } });
+
+      const draft = await tx.courseVersion.create({
+        data: {
+          tenantId: scope.tenantId,
+          courseId,
+          version: (latest._max.version ?? 0) + 1,
+          status: 'DRAFT',
+          title: source.title,
+          summary: source.summary,
+          description: source.description,
+          language: source.language,
+          outcomes: source.outcomes,
+        },
+      });
+      for (const section of source.sections) {
+        const copy = await tx.section.create({
+          data: { tenantId: scope.tenantId, courseVersionId: draft.id, title: section.title, position: section.position },
+        });
+        if (section.lessons.length > 0) {
+          await tx.lesson.createMany({
+            data: section.lessons.map((lesson) => ({
+              tenantId: scope.tenantId,
+              sectionId: copy.id,
+              title: lesson.title,
+              kind: lesson.kind,
+              position: lesson.position,
+              bodyMarkdown: lesson.bodyMarkdown,
+              isPreview: lesson.isPreview,
+              isRequired: lesson.isRequired,
+              durationSec: lesson.durationSec,
+            })),
+          });
+        }
+      }
+      await this.audit(tx, scope, user, 'course.draft.started', courseId, { version: draft.version });
+      return { draft: await this.view(tx, scope, course, draft.id), created: true };
+    });
+  }
+
+  updateDraft(scope: TenantScope, user: AuthUser, courseId: string, input: UpdateDraftDto): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, course, draft) => {
+      const { priceMinor, currency, ...details } = input;
+      if (Object.keys(details).length > 0) await tx.courseVersion.update({ where: { id: draft.id }, data: details });
+      if (priceMinor !== undefined || currency !== undefined) {
+        await tx.course.update({
+          where: { id: course.id },
+          data: { ...(priceMinor !== undefined ? { priceMinor } : {}), ...(currency !== undefined ? { currency } : {}) },
+        });
+      }
+    });
+  }
+
+  addSection(scope: TenantScope, user: AuthUser, courseId: string, title: string): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      const last = await tx.section.aggregate({ where: { tenantId: scope.tenantId, courseVersionId: draft.id }, _max: { position: true } });
+      await tx.section.create({
+        data: { tenantId: scope.tenantId, courseVersionId: draft.id, title, position: (last._max.position ?? 0) + 1 },
+      });
+    });
+  }
+
+  renameSection(scope: TenantScope, user: AuthUser, courseId: string, sectionId: string, title: string): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.draftSection(tx, scope.tenantId, draft.id, sectionId);
+      await tx.section.update({ where: { id: sectionId }, data: { title } });
+    });
+  }
+
+  /** Removes a chapter and its lessons from the draft; the published version is untouched. */
+  deleteSection(scope: TenantScope, user: AuthUser, courseId: string, sectionId: string): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.draftSection(tx, scope.tenantId, draft.id, sectionId);
+      await tx.lesson.deleteMany({ where: { tenantId: scope.tenantId, sectionId } });
+      await tx.section.delete({ where: { id: sectionId } });
+      const rest = await tx.section.findMany({ where: { tenantId: scope.tenantId, courseVersionId: draft.id }, orderBy: { position: 'asc' }, select: { id: true } });
+      await this.renumber(tx, 'section', rest.map((section) => section.id));
+    });
+  }
+
+  addLesson(scope: TenantScope, user: AuthUser, courseId: string, sectionId: string, input: CreateLessonDto): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.draftSection(tx, scope.tenantId, draft.id, sectionId);
+      const last = await tx.lesson.aggregate({ where: { tenantId: scope.tenantId, sectionId }, _max: { position: true } });
+      await tx.lesson.create({
+        data: {
+          tenantId: scope.tenantId,
+          sectionId,
+          title: input.title,
+          kind: input.kind ?? 'TEXT',
+          position: (last._max.position ?? 0) + 1,
+          bodyMarkdown: input.bodyMarkdown ?? '',
+          isPreview: input.isPreview ?? false,
+          isRequired: input.isRequired ?? true,
+          durationSec: input.durationSec ?? null,
+        },
+      });
+    });
+  }
+
+  updateLesson(scope: TenantScope, user: AuthUser, courseId: string, lessonId: string, input: UpdateLessonDto): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.draftLesson(tx, scope.tenantId, draft.id, lessonId);
+      await tx.lesson.update({ where: { id: lessonId }, data: input });
+    });
+  }
+
+  deleteLesson(scope: TenantScope, user: AuthUser, courseId: string, lessonId: string): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      const lesson = await this.draftLesson(tx, scope.tenantId, draft.id, lessonId);
+      await tx.lesson.delete({ where: { id: lessonId } });
+      const rest = await tx.lesson.findMany({ where: { tenantId: scope.tenantId, sectionId: lesson.sectionId }, orderBy: { position: 'asc' }, select: { id: true } });
+      await this.renumber(tx, 'lesson', rest.map((item) => item.id));
+    });
+  }
+
+  /** Applies a complete new order of chapters and lessons; lessons may move between chapters. */
+  reorder(scope: TenantScope, user: AuthUser, courseId: string, input: ReorderDto): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      const sections = await tx.section.findMany({
+        where: { tenantId: scope.tenantId, courseVersionId: draft.id },
+        select: { id: true, lessons: { select: { id: true } } },
+      });
+      const sectionIds = new Set(sections.map((section) => section.id));
+      const lessonIds = new Set(sections.flatMap((section) => section.lessons.map((lesson) => lesson.id)));
+      const wantedSections = input.sections.map((section) => section.id);
+      const wantedLessons = input.sections.flatMap((section) => section.lessonIds);
+      const sameSet = (wanted: string[], actual: Set<string>) =>
+        wanted.length === actual.size && new Set(wanted).size === wanted.length && wanted.every((id) => actual.has(id));
+      if (!sameSet(wantedSections, sectionIds) || !sameSet(wantedLessons, lessonIds)) throw invalidOrder();
+
+      // Positions are unique per chapter, so move everything to temporary negative slots first.
+      await this.park(tx, 'section', wantedSections);
+      await this.park(tx, 'lesson', wantedLessons);
+      for (const [index, section] of input.sections.entries()) {
+        await tx.section.update({ where: { id: section.id }, data: { position: index + 1 } });
+        for (const [lessonIndex, lessonId] of section.lessonIds.entries()) {
+          await tx.lesson.update({ where: { id: lessonId }, data: { sectionId: section.id, position: lessonIndex + 1 } });
+        }
+      }
+    });
+  }
+
+  /** Sends the draft for review (FR-COURSE-201: every chapter needs a lesson). */
+  submit(scope: TenantScope, user: AuthUser, courseId: string): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.assertComplete(tx, scope.tenantId, draft.id);
+      await tx.courseVersion.update({ where: { id: draft.id }, data: { status: 'IN_REVIEW', submittedAt: new Date(), reviewFeedback: null } });
+      await this.audit(tx, scope, user, 'course.review.submitted', courseId, { version: draft.version });
+    });
+  }
+
+  /** Takes a submitted draft back to make more changes. */
+  withdraw(scope: TenantScope, user: AuthUser, courseId: string): Promise<DraftDto> {
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const course = await this.editableCourse(tx, scope, user, courseId);
+      const draft = await this.openDraft(tx, scope.tenantId, courseId);
+      if (!draft) throw Errors.notFound('Draft');
+      if (draft.status !== 'IN_REVIEW') throw Errors.conflict('This draft is not waiting for review.');
+      await tx.courseVersion.update({ where: { id: draft.id }, data: { status: 'DRAFT' } });
+      return this.view(tx, scope, course, draft.id);
+    });
+  }
+
+  /** Publishes the draft: it becomes what learners see, and the previous version is kept as superseded. */
+  approve(scope: TenantScope, user: AuthUser, courseId: string): Promise<DraftDto> {
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const course = await this.editableCourse(tx, scope, user, courseId);
+      const draft = await this.openDraft(tx, scope.tenantId, courseId);
+      if (!draft) throw Errors.notFound('Draft');
+      await this.assertComplete(tx, scope.tenantId, draft.id);
+      const now = new Date();
+      if (course.publishedVersionId) {
+        await tx.courseVersion.update({ where: { id: course.publishedVersionId }, data: { status: 'SUPERSEDED' } });
+      }
+      await tx.courseVersion.update({ where: { id: draft.id }, data: { status: 'PUBLISHED', publishedAt: now, reviewFeedback: null } });
+      await tx.course.update({ where: { id: course.id }, data: { publishedVersionId: draft.id, status: 'PUBLISHED' } });
+      await this.audit(tx, scope, user, 'course.published', courseId, { version: draft.version });
+      return this.publishedView(tx, scope, course.id, draft.id);
+    });
+  }
+
+  reject(scope: TenantScope, user: AuthUser, courseId: string, reason: string): Promise<DraftDto> {
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const course = await this.editableCourse(tx, scope, user, courseId);
+      const draft = await this.openDraft(tx, scope.tenantId, courseId);
+      if (!draft || draft.status !== 'IN_REVIEW') throw Errors.conflict('Only a draft waiting for review can be sent back.');
+      await tx.courseVersion.update({ where: { id: draft.id }, data: { status: 'DRAFT', reviewFeedback: reason } });
+      await this.audit(tx, scope, user, 'course.review.rejected', courseId, { version: draft.version }, reason);
+      return this.view(tx, scope, course, draft.id);
+    });
+  }
+
+  // -------------------------------------------------------------------------------------------------
+
+  private ctx(scope: TenantScope, user: AuthUser) {
+    return { tenantId: scope.tenantId, userId: user.userId };
+  }
+
+  /** Runs an edit on the open draft, which must not be waiting for review, and returns the new state. */
+  private edit(
+    scope: TenantScope,
+    user: AuthUser,
+    courseId: string,
+    change: (tx: Tx, course: EditableCourse, draft: DraftVersion) => Promise<void>,
+  ): Promise<DraftDto> {
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const course = await this.editableCourse(tx, scope, user, courseId);
+      const draft = await this.openDraft(tx, scope.tenantId, courseId);
+      if (!draft) throw Errors.notFound('Draft');
+      if (draft.status !== 'DRAFT') throw Errors.conflict('This draft is waiting for review. Withdraw it to make changes.');
+      await change(tx, course, draft);
+      await tx.courseVersion.update({ where: { id: draft.id }, data: { updatedAt: new Date() } });
+      return this.view(tx, scope, await tx.course.findUniqueOrThrow({ where: { id: course.id }, select: courseSelect }), draft.id);
+    });
+  }
+
+  /** Instructors may edit only their own courses; administrators may edit any course in the tenant. */
+  private async editableCourse(tx: Tx, scope: TenantScope, user: AuthUser, courseId: string): Promise<EditableCourse> {
+    const course = await tx.course.findFirst({ where: { id: courseId, tenantId: scope.tenantId }, select: courseSelect });
+    if (!course) throw Errors.notFound('Course');
+    if (!hasRole(scope.role, 'ADMIN') && course.createdByUserId !== user.userId) {
+      throw Errors.forbidden('You can edit only your own courses.');
+    }
+    return course;
+  }
+
+  private openDraft(tx: Tx, tenantId: string, courseId: string): Promise<DraftVersion | null> {
+    return tx.courseVersion.findFirst({
+      where: { tenantId, courseId, status: { in: ['DRAFT', 'IN_REVIEW'] } },
+      orderBy: { version: 'desc' },
+      select: { id: true, status: true, version: true },
+    });
+  }
+
+  private async draftSection(tx: Tx, tenantId: string, draftId: string, sectionId: string) {
+    const section = await tx.section.findFirst({ where: { id: sectionId, tenantId, courseVersionId: draftId }, select: { id: true } });
+    if (!section) throw Errors.notFound('Chapter');
+    return section;
+  }
+
+  private async draftLesson(tx: Tx, tenantId: string, draftId: string, lessonId: string) {
+    const lesson = await tx.lesson.findFirst({
+      where: { id: lessonId, tenantId, section: { courseVersionId: draftId } },
+      select: { id: true, sectionId: true },
+    });
+    if (!lesson) throw Errors.notFound('Lesson');
+    return lesson;
+  }
+
+  private async assertComplete(tx: Tx, tenantId: string, draftId: string): Promise<void> {
+    const sections = await tx.section.findMany({ where: { tenantId, courseVersionId: draftId }, select: { _count: { select: { lessons: true } } } });
+    if (sections.length === 0 || sections.some((section) => section._count.lessons === 0)) {
+      throw Errors.conflict('Add at least one chapter, and at least one lesson in every chapter, before sending for review.');
+    }
+  }
+
+  private async park(tx: Tx, kind: 'section' | 'lesson', ids: string[]): Promise<void> {
+    for (const [index, id] of ids.entries()) {
+      if (kind === 'section') await tx.section.update({ where: { id }, data: { position: -(index + 1) } });
+      else await tx.lesson.update({ where: { id }, data: { position: -(index + 1) } });
+    }
+  }
+
+  private async renumber(tx: Tx, kind: 'section' | 'lesson', orderedIds: string[]): Promise<void> {
+    await this.park(tx, kind, orderedIds);
+    for (const [index, id] of orderedIds.entries()) {
+      if (kind === 'section') await tx.section.update({ where: { id }, data: { position: index + 1 } });
+      else await tx.lesson.update({ where: { id }, data: { position: index + 1 } });
+    }
+  }
+
+  private async view(tx: Tx, scope: TenantScope, course: EditableCourse, versionId: string): Promise<DraftDto> {
+    const version = await tx.courseVersion.findUniqueOrThrow({
+      where: { id: versionId },
+      include: { sections: { orderBy: { position: 'asc' }, include: { lessons: { orderBy: { position: 'asc' } } } } },
+    });
+    return {
+      courseId: course.id,
+      versionId: version.id,
+      version: version.version,
+      status: version.status,
+      courseStatus: course.status,
+      title: version.title,
+      summary: version.summary,
+      description: version.description,
+      language: version.language,
+      outcomes: version.outcomes,
+      priceMinor: course.priceMinor,
+      currency: course.currency,
+      reviewFeedback: version.reviewFeedback,
+      submittedAt: version.submittedAt,
+      hasPublishedVersion: course.publishedVersionId !== null,
+      canReview: hasRole(scope.role, 'ADMIN'),
+      sections: version.sections.map((section) => ({
+        id: section.id,
+        title: section.title,
+        position: section.position,
+        lessons: section.lessons.map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          kind: lesson.kind,
+          position: lesson.position,
+          bodyMarkdown: lesson.bodyMarkdown,
+          isPreview: lesson.isPreview,
+          isRequired: lesson.isRequired,
+          durationSec: lesson.durationSec,
+        })),
+      })),
+    };
+  }
+
+  private async publishedView(tx: Tx, scope: TenantScope, courseId: string, versionId: string): Promise<DraftDto> {
+    const course = await tx.course.findUniqueOrThrow({ where: { id: courseId }, select: courseSelect });
+    return this.view(tx, scope, course, versionId);
+  }
+
+  private audit(tx: Tx, scope: TenantScope, user: AuthUser, action: string, courseId: string, metadata: Record<string, number>, reason?: string) {
+    return tx.auditEvent.create({
+      data: { tenantId: scope.tenantId, actorUserId: user.userId, action, targetType: 'course', targetId: courseId, metadata, ...(reason ? { reason } : {}) },
+    });
+  }
+}

@@ -134,6 +134,46 @@ export interface Member {
   joinedAt: string;
 }
 
+export interface DraftLesson {
+  id: string;
+  title: string;
+  kind: string;
+  position: number;
+  bodyMarkdown: string;
+  isPreview: boolean;
+  isRequired: boolean;
+  durationSec: number | null;
+}
+
+export interface Draft {
+  courseId: string;
+  versionId: string;
+  version: number;
+  status: 'DRAFT' | 'IN_REVIEW' | 'PUBLISHED';
+  courseStatus: string;
+  title: string;
+  summary: string;
+  description: string;
+  language: string;
+  outcomes: string[];
+  priceMinor: number;
+  currency: string;
+  reviewFeedback: string | null;
+  submittedAt: string | null;
+  hasPublishedVersion: boolean;
+  canReview: boolean;
+  sections: { id: string; title: string; position: number; lessons: DraftLesson[] }[];
+}
+
+export interface AuthoredCourse {
+  courseId: string;
+  title: string;
+  courseStatus: string;
+  draftStatus: 'DRAFT' | 'IN_REVIEW' | null;
+  mine: boolean;
+  updatedAt: string;
+}
+
 export class EduApiError extends Error {
   constructor(
     readonly status: number,
@@ -203,6 +243,17 @@ export const eduApi = {
     request<Invite>(token, `${tenantPath(tenantId)}/invites/${encodeURIComponent(inviteId)}`, { method: 'DELETE' }),
   members: (token: string, tenantId: string) => request<Member[]>(token, `${tenantPath(tenantId)}/members`),
   redeemInvite: (token: string, code: string) => request<Workspace>(token, '/v1/invites/redeem', { method: 'POST', body: { code } }),
+  authoredCourses: (token: string, tenantId: string) => request<AuthoredCourse[]>(token, `${tenantPath(tenantId)}/authoring/courses`),
+  createCourse: (
+    token: string,
+    tenantId: string,
+    body: { slug: string; title: string; summary: string; language: string; priceMinor: number; currency: string },
+  ) => request<CourseSummary>(token, `${tenantPath(tenantId)}/courses`, { method: 'POST', body }),
+  draft: (token: string, tenantId: string, courseId: string) =>
+    request<Draft>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft`),
+  /** Draft editing call: `path` is relative to the course's draft, for example `/sections`. */
+  draftCall: (token: string, tenantId: string, courseId: string, method: 'POST' | 'PATCH' | 'PUT' | 'DELETE', path: string, body?: unknown) =>
+    request<Draft>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft${path}`, { method, body }),
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

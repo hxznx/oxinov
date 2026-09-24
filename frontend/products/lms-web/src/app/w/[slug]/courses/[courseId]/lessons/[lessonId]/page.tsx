@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { EduHeader } from '@/components/EduHeader';
+import { LessonMarkdown } from '@/components/LessonMarkdown';
 import { eduApi } from '@/lib/edu-api.ts';
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
@@ -12,8 +11,8 @@ type Props = { params: Promise<{ slug: string; courseId: string; lessonId: strin
 export const metadata: Metadata = { title: 'Lesson' };
 
 /**
- * Lesson reader (FR-PLAYER-401 text lessons). The API enforces entitlement and preview rules; Markdown is
- * rendered without raw HTML, and unsafe link protocols are dropped by react-markdown's URL filter.
+ * Lesson reader (FR-PLAYER-401 text lessons). The API enforces entitlement and preview rules; lesson text is
+ * rendered by LessonMarkdown (no raw HTML, unsafe link protocols dropped).
  */
 export default async function LessonPage({ params }: Props) {
   const { slug, courseId, lessonId } = await params;
@@ -48,18 +47,7 @@ export default async function LessonPage({ params }: Props) {
         </div>
 
         <article className="prose-ox card">
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              a: ({ href, children }) => (
-                <a href={href} {...(href?.startsWith('http') ? { rel: 'noopener noreferrer', target: '_blank' } : {})}>
-                  {children}
-                </a>
-              ),
-            }}
-          >
-            {lesson.bodyMarkdown}
-          </Markdown>
+          <LessonMarkdown>{lesson.bodyMarkdown}</LessonMarkdown>
         </article>
 
         <nav aria-label="Lessons" className="flex flex-wrap justify-between gap-3">
