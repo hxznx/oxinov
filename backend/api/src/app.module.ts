@@ -13,6 +13,7 @@ import { JWKS_RESOLVER, TokenVerifier } from './auth/token-verifier';
 import { CatalogController } from './catalog/catalog.controller';
 import { CatalogService } from './catalog/catalog.service';
 import { HttpExceptionFilter } from './common/http-exception.filter';
+import { RateLimitMiddleware, SecurityHeadersMiddleware } from './common/http-hardening.middleware';
 import { JsonLogger } from './common/json-logger';
 import { LOGGER } from './common/tokens';
 import { APP_CONFIG, type AppConfig } from './config/app-config';
@@ -83,6 +84,9 @@ export class AppModule implements NestModule {
   }
 
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(RequestContextMiddleware).forRoutes('*path');
+    // Request ID first so throttled responses still carry one.
+    consumer
+      .apply(RequestContextMiddleware, SecurityHeadersMiddleware, RateLimitMiddleware)
+      .forRoutes('*path');
   }
 }

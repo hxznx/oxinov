@@ -258,6 +258,8 @@ export class ExamsService {
     return this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
       const attempt = await this.loadOwnAttempt(tx, scope, user, attemptId);
       if (attempt.status !== 'IN_PROGRESS') throw Errors.attemptClosed();
+      // Access can be revoked mid-attempt (refund, removal); stop accepting answers (FR-CATALOG-303).
+      await this.assertCourseAccess(tx, scope, user, attempt.blueprint.courseId);
       // Late answers are rejected without writing; the next read or submit finalizes the attempt.
       if (attempt.deadlineAt.getTime() <= Date.now()) throw Errors.attemptExpired();
 
@@ -296,6 +298,9 @@ export class ExamsService {
     try {
       return await this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
         const loaded = await this.loadOwnAttempt(tx, scope, user, attemptId);
+        if (loaded.status === 'IN_PROGRESS') {
+          await this.assertCourseAccess(tx, scope, user, loaded.blueprint.courseId);
+        }
         const attempt = await this.expireIfDue(tx, loaded);
         if (attempt.status === 'EXPIRED') return this.toView(attempt);
         if (attempt.status !== 'IN_PROGRESS') throw Errors.attemptClosed();

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { AuthUser } from '../common/request';
 import { DatabaseContext } from '../database/database-context.service';
+import { Prisma } from '../generated/prisma/client';
 import type { VerifiedIdentity } from './token-verifier';
 
 /**
@@ -11,7 +12,19 @@ import type { VerifiedIdentity } from './token-verifier';
 export class IdentityService {
   constructor(private readonly db: DatabaseContext) {}
 
-  resolve(identity: VerifiedIdentity): Promise<AuthUser> {
+  async resolve(identity: VerifiedIdentity): Promise<AuthUser> {
+    try {
+      return await this.resolveOnce(identity);
+    } catch (error) {
+      // Two first requests from a new user raced to create the profile; the loser reads the winner's.
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        return this.resolveOnce(identity);
+      }
+      throw error;
+    }
+  }
+
+  private resolveOnce(identity: VerifiedIdentity): Promise<AuthUser> {
     return this.db.run({ authSubject: identity.subject }, async (tx) => {
       const existing = await tx.userProfile.findUnique({
         where: { authSubject: identity.subject },

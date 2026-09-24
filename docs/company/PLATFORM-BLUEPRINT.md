@@ -64,7 +64,7 @@ These are candidate product modules derived from the incorporation objectives. T
 
 | Pillar | Candidate module | Summary | Notes |
 | --- | --- | --- | --- |
-| Education | OxinovLMS | Courses, exams, assignments, certificates | Live product |
+| Education | OxinovLMS | Courses, exams, assignments, certificates | In development (first product) |
 | Education | Oxinov Academy | Bootcamps and professional training programs | Education approvals where applicable |
 | Education | Virtual Labs | Online practice environments for robotics, IoT, networking, and cloud | |
 | Education | [Oxinov Jobs](../products/JOBS.md) | Jobs, internships, and skill matching | Draft charter (ADR-010); absorbs the Internship and Fellowship Portal |

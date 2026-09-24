@@ -11,3 +11,5 @@ process.env.AUTH_DEV_JWT_SECRET = 'integration-test-secret-0123456789abcdef';
 process.env.AUTH_ISSUER = 'https://identity.test.oxinov.example';
 process.env.AUTH_JWKS_URL = 'https://identity.test.oxinov.example/.well-known/jwks.json';
 delete process.env.AUTH_AUDIENCE;
+// Suites send many requests from one address; http-hardening.e2e-spec.ts enables the limiter itself.
+process.env.RATE_LIMIT_PER_MINUTE = '0';

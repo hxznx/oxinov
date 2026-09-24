@@ -10,9 +10,11 @@ export interface AppConfig {
     readonly issuer?: string;
     readonly jwksUrl?: string;
     readonly audience?: string;
-    /** Local HS256 secret for development tokens. Never allowed in production. */
+    /** Local HS256 secret for development tokens. Allowed only in local and CI environments. */
     readonly devJwtSecret?: string;
   };
+  /** Requests per client per minute before 429 RATE_LIMITED; 0 disables the in-process limiter. */
+  readonly rateLimitPerMinute: number;
 }
 
 export const APP_CONFIG = Symbol('APP_CONFIG');
@@ -54,9 +56,19 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   if (devJwtSecret && devJwtSecret.length < 32) {
     errors.push('AUTH_DEV_JWT_SECRET must be at least 32 characters');
   }
-  const isProduction = nodeEnv === 'production' || environment === 'production';
-  if (isProduction && devJwtSecret) {
-    errors.push('AUTH_DEV_JWT_SECRET is not allowed in production');
+  // Development tokens and audience-free tokens are acceptable only on a developer machine or in CI.
+  const isDeployed = nodeEnv === 'production' || environment === 'staging' || environment === 'production';
+  if (isDeployed && devJwtSecret) {
+    errors.push('AUTH_DEV_JWT_SECRET is not allowed in staging or production');
+  }
+  // Each Oxinov product is its own OIDC client; a token issued for another product must fail (FR-ID-2207).
+  if (isDeployed && issuer && !audience) {
+    errors.push('AUTH_AUDIENCE is required in staging and production');
+  }
+
+  const rateLimitPerMinute = Number(optional(env, 'RATE_LIMIT_PER_MINUTE') ?? '600');
+  if (!Number.isInteger(rateLimitPerMinute) || rateLimitPerMinute < 0) {
+    errors.push('RATE_LIMIT_PER_MINUTE must be a non-negative integer');
   }
   if (!issuer && !devJwtSecret) {
     errors.push('Configure AUTH_ISSUER/AUTH_JWKS_URL, or AUTH_DEV_JWT_SECRET for local development');
@@ -73,5 +85,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     environment,
     databaseUrl: databaseUrl as string,
     auth: { issuer, jwksUrl, audience, devJwtSecret },
+    rateLimitPerMinute,
   };
 }

@@ -3,6 +3,7 @@ import { Errors } from '../common/errors';
 import type { AuthUser, TenantScope } from '../common/request';
 import { DatabaseContext } from '../database/database-context.service';
 import { Prisma } from '../generated/prisma/client';
+import { activeEntitlementWhere } from './access';
 
 export interface EnrollmentView {
   id: string;
@@ -88,14 +89,7 @@ export class EnrollmentsService {
         where: { tenantId: scope.tenantId, userId: user.userId },
         include: {
           course: { include: { publishedVersion: { select: { title: true } } } },
-          entitlements: {
-            where: {
-              revokedAt: null,
-              startsAt: { lte: now },
-              OR: [{ endsAt: null }, { endsAt: { gt: now } }],
-            },
-            select: { id: true },
-          },
+          entitlements: { where: activeEntitlementWhere(now), select: { id: true } },
         },
         orderBy: { enrolledAt: 'desc' },
       });
@@ -120,7 +114,7 @@ export class EnrollmentsService {
       where: { tenantId, userId, courseId, status: 'ACTIVE' },
       include: {
         course: { include: { publishedVersion: { select: { title: true } } } },
-        entitlements: { where: { revokedAt: null }, select: { id: true } },
+        entitlements: { where: activeEntitlementWhere(new Date()), select: { id: true } },
       },
     });
     if (!enrollment) return null;

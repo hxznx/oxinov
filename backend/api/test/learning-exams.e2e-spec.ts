@@ -210,4 +210,34 @@ describe('learning and exams', () => {
       expect(draft.status).toBe(404);
     });
   });
+
+  describe('access that ends during an attempt', () => {
+    it('reports no access and stops accepting answers once the entitlement period ends (FR-CATALOG-303)', async () => {
+      const headers = await bearer(SEED.users.bikash);
+      const started = await ctx.http.post(`${base}/exams/${SEED.practiceExam}/attempts`).set(headers);
+      expect(started.status).toBe(201);
+      const id = started.body.data.id as string;
+
+      await ownerQuery(
+        `UPDATE entitlements SET ends_at = now() - interval '1 second'
+          WHERE course_id = $1 AND user_id = (SELECT id FROM user_profiles WHERE auth_subject = $2)`,
+        [SEED.freeCourse, SEED.users.bikash],
+      );
+
+      const enrollment = await ctx.http.post(`${base}/courses/${SEED.freeCourse}/enrollments`).set(headers);
+      expect(enrollment.status).toBe(200);
+      expect(enrollment.body.data.hasAccess).toBe(false);
+
+      const save = await ctx.http
+        .put(`${base}/exam-attempts/${id}/answers`)
+        .set(headers)
+        .send({ answers: [{ itemId: started.body.data.items[0].id, response: { choiceIds: ['a'] } }] });
+      expect(save.status).toBe(403);
+      expect(save.body.error.code).toBe('NOT_ENTITLED');
+
+      const submit = await ctx.http.post(`${base}/exam-attempts/${id}/submit`).set(headers);
+      expect(submit.status).toBe(403);
+      expect(submit.body.error.code).toBe('NOT_ENTITLED');
+    });
+  });
 });

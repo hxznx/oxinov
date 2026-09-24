@@ -28,7 +28,7 @@ Record each decision with date, status, context, choice, consequences, and alter
 
 ## ADR-007: Identity token verification and local development tokens
 
-**Date:** 2026-09-24. **Status:** Accepted. The API verifies bearer tokens against an approved OIDC provider's JWKS (`AUTH_ISSUER`, `AUTH_JWKS_URL`, optional `AUTH_AUDIENCE`) without depending on a provider SDK. Only the subject, `email`, and `email_verified` claims are used by the current LMS slice; tenant roles always come from PostgreSQL. The provider client must supply the required verified-email claims before tenant creation can succeed. For local work and tests, HS256 tokens with issuer `oxinov-dev` are accepted when `AUTH_DEV_JWT_SECRET` is set; configuration refuses that secret when `NODE_ENV` or `DEPLOY_ENVIRONMENT` is `production`.
+**Date:** 2026-09-24. **Status:** Accepted. The API verifies bearer tokens against an approved OIDC provider's JWKS (`AUTH_ISSUER`, `AUTH_JWKS_URL`, optional `AUTH_AUDIENCE`) without depending on a provider SDK. Only the subject, `email`, and `email_verified` claims are used by the current LMS slice; tenant roles always come from PostgreSQL. The provider client must supply the required verified-email claims before tenant creation can succeed. For local work and tests, HS256 tokens with issuer `oxinov-dev` are accepted when `AUTH_DEV_JWT_SECRET` is set; configuration refuses that secret unless `DEPLOY_ENVIRONMENT` is `local` or `ci` (amended 2026-09-24 after review: staging was previously allowed). Staging and production also require `AUTH_AUDIENCE`, so a token issued for another Oxinov product is rejected (FR-ID-2207).
 
 ## ADR-008: Shared company control plane with independent product planes
 

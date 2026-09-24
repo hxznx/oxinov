@@ -12,9 +12,28 @@ describe('loadConfig', () => {
     expect(config.environment).toBe('local');
   });
 
-  it('refuses development tokens in production', () => {
-    expect(() => loadConfig({ ...valid, NODE_ENV: 'production' })).toThrow(/not allowed in production/);
-    expect(() => loadConfig({ ...valid, DEPLOY_ENVIRONMENT: 'production' })).toThrow(/not allowed in production/);
+  it('refuses development tokens outside local and CI', () => {
+    expect(() => loadConfig({ ...valid, NODE_ENV: 'production' })).toThrow(/not allowed in staging or production/);
+    expect(() => loadConfig({ ...valid, DEPLOY_ENVIRONMENT: 'production' })).toThrow(/not allowed in staging or production/);
+    expect(() => loadConfig({ ...valid, DEPLOY_ENVIRONMENT: 'staging' })).toThrow(/not allowed in staging or production/);
+    expect(loadConfig({ ...valid, DEPLOY_ENVIRONMENT: 'ci' }).auth.devJwtSecret).toBe(valid.AUTH_DEV_JWT_SECRET);
+  });
+
+  it('requires a token audience for deployed environments (FR-ID-2207)', () => {
+    const idp = {
+      DATABASE_URL: valid.DATABASE_URL,
+      AUTH_ISSUER: 'https://idp.example',
+      AUTH_JWKS_URL: 'https://idp.example/.well-known/jwks.json',
+    };
+    expect(() => loadConfig({ ...idp, DEPLOY_ENVIRONMENT: 'staging' })).toThrow(/AUTH_AUDIENCE is required/);
+    expect(() => loadConfig({ ...idp, NODE_ENV: 'production' })).toThrow(/AUTH_AUDIENCE is required/);
+    expect(loadConfig({ ...idp, DEPLOY_ENVIRONMENT: 'local' }).auth.audience).toBeUndefined();
+  });
+
+  it('validates the rate limit', () => {
+    expect(loadConfig(valid).rateLimitPerMinute).toBe(600);
+    expect(loadConfig({ ...valid, RATE_LIMIT_PER_MINUTE: '0' }).rateLimitPerMinute).toBe(0);
+    expect(() => loadConfig({ ...valid, RATE_LIMIT_PER_MINUTE: '-1' })).toThrow(/RATE_LIMIT_PER_MINUTE/);
   });
 
   it('requires an identity configuration and a database', () => {
@@ -34,7 +53,9 @@ describe('loadConfig', () => {
       DEPLOY_ENVIRONMENT: 'production',
       AUTH_ISSUER: 'https://idp.example',
       AUTH_JWKS_URL: 'https://idp.example/.well-known/jwks.json',
+      AUTH_AUDIENCE: 'oxinov-lms-api',
     });
     expect(config.auth.devJwtSecret).toBeUndefined();
+    expect(config.auth.audience).toBe('oxinov-lms-api');
   });
 });
