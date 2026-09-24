@@ -5,6 +5,7 @@ import { eduApi } from '@/lib/edu-api.ts';
 import { formatDuration, formatPrice } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { EnrollButton } from './EnrollButton';
+import { StartExamButton } from './StartExamButton';
 
 type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ locked?: string }> };
 
@@ -18,6 +19,8 @@ export default async function CoursePage({ params, searchParams }: Props) {
   const { token, workspace } = await workspaceContext(slug, here);
   const course = await load(here, () => eduApi.course(token, workspace.id, courseId));
   const { entitled } = course.access;
+  // The API lists exams only to people with course access (FR-ASSESS-501).
+  const exams = entitled ? await load(here, () => eduApi.exams(token, workspace.id, courseId)) : [];
   const lessons = course.curriculum.flatMap((section) => section.lessons);
   const firstLesson = lessons.find((lesson) => entitled || lesson.isPreview);
 
@@ -88,6 +91,37 @@ export default async function CoursePage({ params, searchParams }: Props) {
               ))}
             </ol>
           </section>
+
+          {exams.length > 0 ? (
+            <section aria-labelledby="exams-heading">
+              <h2 id="exams-heading" className="text-2xl">
+                Practice exams
+              </h2>
+              <p className="mt-1 text-sm text-muted">Practice scores are not official exam results.</p>
+              <ul className="mt-4 grid gap-4">
+                {exams.map((exam) => {
+                  const questions = exam.sections.reduce((sum, section) => sum + section.questionCount, 0);
+                  const attemptsLeft = exam.maxAttempts === null ? null : Math.max(exam.maxAttempts - exam.attemptsUsed, 0);
+                  return (
+                    <li key={exam.id} className="card grid gap-3">
+                      <div>
+                        <h3 className="text-xl">{exam.title}</h3>
+                        <p className="hud-label mt-1">
+                          // {questions} questions · {formatDuration(exam.timeLimitSec) ?? 'untimed'} · pass {exam.passPercent}%
+                          {attemptsLeft === null ? '' : ` · ${attemptsLeft} of ${exam.maxAttempts} attempts left`}
+                        </p>
+                      </div>
+                      {exam.inProgressAttemptId || attemptsLeft !== 0 ? (
+                        <StartExamButton slug={slug} tenantId={workspace.id} examId={exam.id} resume={Boolean(exam.inProgressAttemptId)} />
+                      ) : (
+                        <p className="text-muted">You have used every attempt for this exam.</p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ) : null}
         </div>
 
         <aside className="card h-fit lg:sticky lg:top-6" aria-label="Enrollment">

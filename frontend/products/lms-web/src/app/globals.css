@@ -19,6 +19,7 @@
   --color-on-neon: var(--ox-color-on-neon);
   --color-success: var(--ox-color-success);
   --color-warning: var(--ox-color-warning);
+  --color-danger: var(--ox-color-danger);
   --color-lms: var(--ox-color-product-lms);
   --color-market: var(--ox-color-product-market);
   --color-jobs: var(--ox-color-product-jobs);

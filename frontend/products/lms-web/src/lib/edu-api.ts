@@ -61,6 +61,59 @@ export interface Enrollment {
   hasAccess: boolean;
 }
 
+export type QuestionType = 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'FILL_BLANK';
+export type AnswerResponse = { choiceIds: string[] } | { text: string };
+
+export interface ExamSummary {
+  id: string;
+  title: string;
+  kind: string;
+  timeLimitSec: number;
+  passPercent: number;
+  maxAttempts: number | null;
+  attemptsUsed: number;
+  inProgressAttemptId: string | null;
+  sections: { sectionKey: string; title: string; questionCount: number }[];
+}
+
+export interface AttemptItem {
+  id: string;
+  position: number;
+  sectionKey: string;
+  type: QuestionType;
+  prompt: string;
+  passage: string | null;
+  choices: { id: string; text: string }[];
+  marks: number;
+  response: AnswerResponse | null;
+  /** Present after submission, subject to the exam's answer-release rule (FR-ASSESS-502). */
+  isCorrect?: boolean | null;
+  marksAwarded?: number | null;
+  answerKey?: string[];
+  explanation?: string | null;
+}
+
+export interface Attempt {
+  id: string;
+  examId: string;
+  examTitle: string;
+  attemptNumber: number;
+  status: 'IN_PROGRESS' | 'SUBMITTED' | 'EXPIRED' | string;
+  startedAt: string;
+  deadlineAt: string;
+  submittedAt: string | null;
+  remainingSec: number;
+  items: AttemptItem[];
+  result: {
+    score: number;
+    maxScore: number;
+    passed: boolean;
+    sectionBreakdown: { sectionKey: string; title: string; score: number; maxScore: number }[];
+    revision: number;
+    notice: string;
+  } | null;
+}
+
 export class EduApiError extends Error {
   constructor(
     readonly status: number,
@@ -112,4 +165,17 @@ export const eduApi = {
   enroll: (token: string, tenantId: string, courseId: string) =>
     request<Enrollment>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/enrollments`, { method: 'POST' }),
   myEnrollments: (token: string, tenantId: string) => request<Enrollment[]>(token, `${tenantPath(tenantId)}/me/enrollments`),
+  exams: (token: string, tenantId: string, courseId: string) =>
+    request<ExamSummary[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/exams`),
+  startAttempt: (token: string, tenantId: string, examId: string) =>
+    request<Attempt>(token, `${tenantPath(tenantId)}/exams/${encodeURIComponent(examId)}/attempts`, { method: 'POST' }),
+  attempt: (token: string, tenantId: string, attemptId: string) =>
+    request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}`),
+  saveAnswers: (token: string, tenantId: string, attemptId: string, answers: { itemId: string; response: AnswerResponse }[]) =>
+    request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/answers`, {
+      method: 'PUT',
+      body: { answers },
+    }),
+  submitAttempt: (token: string, tenantId: string, attemptId: string) =>
+    request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };
