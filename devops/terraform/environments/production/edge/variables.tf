@@ -4,10 +4,14 @@ variable "domain" {
   default     = "oxinov.com"
 }
 
-variable "github_repository" {
-  description = "owner/name of the repository allowed to deploy the website."
+variable "github_subject_prefix" {
+  description = <<-EOT
+    OIDC subject prefix of the repository allowed to deploy the website. The repository uses GitHub's
+    immutable subjects (owner and repository IDs), so a renamed or re-created repository cannot match.
+    Check with: gh api repos/hxznx/oxinov/actions/oidc/customization/sub
+  EOT
   type        = string
-  default     = "hxznx/oxinov"
+  default     = "repo:hxznx@181247152/oxinov@1381579182"
 }
 
 variable "github_environment" {

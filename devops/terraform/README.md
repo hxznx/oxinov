@@ -20,7 +20,7 @@ Terraform 1.16 and the AWS provider 6.x are pinned; commit `.terraform.lock.hcl`
 
 ## Company website deploys
 
-Every push to `main` that touches the site runs [`deploy-company-web.yml`](../../.github/workflows/deploy-company-web.yml). The GitHub `production` environment holds three non-secret variables taken from the edge stack outputs: `AWS_DEPLOY_ROLE_ARN`, `SITE_BUCKET` and `SITE_DISTRIBUTION_ID`. The role trusts only `repo:hxznx/oxinov:environment:production` and can only write the site bucket and invalidate its distribution. Old file versions are kept for 30 days for rollback.
+Every push to `main` that touches the site runs [`deploy-company-web.yml`](../../.github/workflows/deploy-company-web.yml). The GitHub `production` environment holds three non-secret variables taken from the edge stack outputs: `AWS_DEPLOY_ROLE_ARN`, `SITE_BUCKET` and `SITE_DISTRIBUTION_ID`. The role trusts only GitHub's immutable subject `repo:hxznx@181247152/oxinov@1381579182:environment:production` and can only write the site bucket and invalidate its distribution. Old file versions are kept for 30 days for rollback.
 
 ## Rebuilding the state bucket
 
