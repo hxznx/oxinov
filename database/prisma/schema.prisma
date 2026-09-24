@@ -64,6 +64,7 @@ model Tenant {
   attemptItems   ExamAttemptItem[]
   results        ExamResult[]
   auditEvents    AuditEvent[]
+  invites        TenantInvite[]
 
   @@map("tenants")
 }
@@ -86,6 +87,7 @@ model UserProfile {
   payments       Payment[]
   attempts       ExamAttempt[]
   auditEvents    AuditEvent[]
+  invitesCreated TenantInvite[]
 
   @@map("user_profiles")
 }
@@ -108,6 +110,28 @@ enum MembershipStatus {
   SUSPENDED
 
   @@map("membership_status")
+}
+
+/// Join code for a workspace (FR-AUTH-102, FR-TENANT): like a class code, shared by an administrator.
+/// Redeeming it creates a membership with `role`. Codes expire, can be limited, and can be revoked.
+model TenantInvite {
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String     @map("tenant_id") @db.Uuid
+  code            String     @unique @db.VarChar(16)
+  role            TenantRole
+  createdByUserId String     @map("created_by_user_id") @db.Uuid
+  expiresAt       DateTime   @map("expires_at") @db.Timestamptz(3)
+  maxUses         Int?       @map("max_uses")
+  useCount        Int        @default(0) @map("use_count")
+  revokedAt       DateTime?  @map("revoked_at") @db.Timestamptz(3)
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant    Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  createdBy UserProfile @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, createdAt])
+  @@map("tenant_invites")
 }
 
 model TenantMembership {

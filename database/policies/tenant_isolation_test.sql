@@ -143,6 +143,57 @@ BEGIN
         'Everest memberships visible to non-member';
 END $$;
 
+-- 10b. Join codes (tenant_invites): visible only inside their tenant, or by their exact code while
+-- redeeming; they can never grant ownership or be written into another tenant.
+SELECT set_config('app.tenant_id', 'aaaaaaaa-0000-4000-8000-000000000001', true),
+       set_config('app.user_id', '11111111-0000-4000-8000-000000000001', true),
+       set_config('app.invite_code', '', true);
+INSERT INTO tenant_invites (tenant_id, code, role, created_by_user_id, expires_at)
+VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'TESTC2DE', 'LEARNER', '11111111-0000-4000-8000-000000000001', now() + interval '1 day');
+DO $$
+BEGIN
+    BEGIN
+        INSERT INTO tenant_invites (tenant_id, code, role, created_by_user_id, expires_at)
+        VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'OWNERC2D', 'OWNER', '11111111-0000-4000-8000-000000000001', now() + interval '1 day');
+        RAISE EXCEPTION 'an invite granted ownership';
+    EXCEPTION WHEN check_violation THEN NULL;
+    END;
+    BEGIN
+        INSERT INTO tenant_invites (tenant_id, code, role, created_by_user_id, expires_at)
+        VALUES ('bbbbbbbb-0000-4000-8000-000000000001', 'CR2SSTNT', 'LEARNER', '11111111-0000-4000-8000-000000000001', now() + interval '1 day');
+        RAISE EXCEPTION 'invite written into another tenant';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+END $$;
+SELECT set_config('app.tenant_id', 'bbbbbbbb-0000-4000-8000-000000000001', true),
+       set_config('app.user_id', '11111111-0000-4000-8000-000000000004', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM tenant_invites WHERE tenant_id = 'aaaaaaaa-0000-4000-8000-000000000001') = 0,
+        'Sakura join codes visible from Everest';
+    ASSERT (SELECT count(*) FROM tenant_invites) = 0, 'join codes listable across tenants';
+END $$;
+SELECT set_config('app.tenant_id', '', true),
+       set_config('app.user_id', '11111111-0000-4000-8000-000000000005', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM tenant_invites) = 0, 'join codes visible without context';
+END $$;
+SELECT set_config('app.invite_code', 'WRNGC2DE', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM tenant_invites) = 0, 'a wrong code revealed an invite';
+END $$;
+SELECT set_config('app.invite_code', 'TESTC2DE', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM tenant_invites) = 1, 'the exact code should reveal exactly its invite';
+    BEGIN
+        UPDATE tenant_invites SET use_count = 0 WHERE code = 'TESTC2DE';
+        ASSERT NOT FOUND, 'a redeemer outside the tenant changed an invite';
+    END;
+END $$;
+
 ROLLBACK;
 
 -- 11. Context is transaction-local: nothing survives on this pooled connection.

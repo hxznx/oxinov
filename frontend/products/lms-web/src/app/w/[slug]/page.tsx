@@ -25,9 +25,16 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
     <>
       <EduHeader signedIn workspace={workspace} />
       <main id="main" className="mx-auto grid max-w-6xl gap-10 px-4 py-10">
-        <div>
-          <p className="hud-label">// {workspace.name}</p>
-          <h1 className="mt-2 text-4xl">Learn</h1>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="hud-label">// {workspace.name}</p>
+            <h1 className="mt-2 text-4xl">Learn</h1>
+          </div>
+          {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
+            <Link href={`${here}/people`} className="btn btn-secondary">
+              People and join codes
+            </Link>
+          ) : null}
         </div>
 
         {active.length > 0 ? (

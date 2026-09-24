@@ -114,6 +114,26 @@ export interface Attempt {
   } | null;
 }
 
+export interface Invite {
+  id: string;
+  code: string;
+  role: TenantRole;
+  expiresAt: string;
+  maxUses: number | null;
+  useCount: number;
+  status: 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
+  createdAt: string;
+}
+
+export interface Member {
+  userId: string;
+  displayName: string | null;
+  email: string | null;
+  role: TenantRole;
+  status: string;
+  joinedAt: string;
+}
+
 export class EduApiError extends Error {
   constructor(
     readonly status: number,
@@ -176,6 +196,13 @@ export const eduApi = {
       method: 'PUT',
       body: { answers },
     }),
+  invites: (token: string, tenantId: string) => request<Invite[]>(token, `${tenantPath(tenantId)}/invites`),
+  createInvite: (token: string, tenantId: string, body: { role: TenantRole; expiresInDays?: number; maxUses?: number }) =>
+    request<Invite>(token, `${tenantPath(tenantId)}/invites`, { method: 'POST', body }),
+  revokeInvite: (token: string, tenantId: string, inviteId: string) =>
+    request<Invite>(token, `${tenantPath(tenantId)}/invites/${encodeURIComponent(inviteId)}`, { method: 'DELETE' }),
+  members: (token: string, tenantId: string) => request<Member[]>(token, `${tenantPath(tenantId)}/members`),
+  redeemInvite: (token: string, code: string) => request<Workspace>(token, '/v1/invites/redeem', { method: 'POST', body: { code } }),
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

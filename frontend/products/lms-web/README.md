@@ -12,9 +12,11 @@ The older `frontend/web/` placeholder stays until a dedicated clean-up removes i
 | `/w/{space}` course catalogue with search and "Continue learning" | FR-CATALOG-301, FR-ANALYTICS-801 |
 | `/w/{space}/courses/{id}` outcomes, curriculum with locked and preview lessons, price, free enrollment | FR-CATALOG-302, FR-CATALOG-303 |
 | `/w/{space}/courses/{id}/lessons/{id}` Markdown lessons with previous and next navigation | FR-PLAYER-401 (text) |
+| `/join?code=…` and "Join with a code" on the home page | FR-AUTH-102 |
+| `/w/{space}/people` join codes (create, share, turn off) and the member list, for administrators | FR-AUTH-102, FR-TENANT |
 | `/w/{space}/attempts/{id}` timed practice and mock exams with autosave, auto-submit, results, and answer review | FR-ASSESS-501, FR-ASSESS-502, FR-EXAM-1204 |
 
-Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Next slices: invitations, then instructor authoring.
+Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Next slices: teacher editing of courses and lessons, then video and audio lessons.
 
 ## Run locally
 

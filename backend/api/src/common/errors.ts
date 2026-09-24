@@ -17,6 +17,7 @@ export type ErrorCode =
   | 'ATTEMPT_EXPIRED'
   | 'ATTEMPT_CLOSED'
   | 'EXAM_NOT_AVAILABLE'
+  | 'INVITE_INVALID'
   | 'RATE_LIMITED'
   | 'INTERNAL_ERROR';
 
@@ -51,4 +52,7 @@ export const Errors = {
     new DomainError('ATTEMPT_CLOSED', 409, 'This attempt has already been submitted.'),
   examNotAvailable: () =>
     new DomainError('EXAM_NOT_AVAILABLE', 409, 'This exam is not available.'),
+  /** One answer for unknown, expired, used-up, and revoked codes, so codes cannot be probed. */
+  inviteInvalid: () =>
+    new DomainError('INVITE_INVALID', 404, 'This join code is not valid or has expired.'),
 } as const;

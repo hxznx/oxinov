@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth.ts';
 import { eduApi, type TenantRole } from '@/lib/edu-api.ts';
 import { load } from '@/lib/guard.ts';
 import { CreateWorkspaceForm } from './CreateWorkspaceForm';
+import { JoinForm } from './JoinForm';
 
 const SIGN_IN_MESSAGES: Record<string, string> = {
   cancelled: 'Sign-in was cancelled.',
@@ -42,8 +43,8 @@ export default async function EduHome({ searchParams }: Props) {
               You have not joined a learning space yet
             </h2>
             <p className="mt-2 text-muted">
-              Ask your school or training centre to invite you with this email address. If you run a school, you can
-              create its space below.
+              Ask your school or training centre for its join code and enter it below. If you run a school, you can
+              create its space.
             </p>
           </section>
         ) : (
@@ -64,6 +65,14 @@ export default async function EduHome({ searchParams }: Props) {
             ))}
           </ul>
         )}
+
+        <section className="card max-w-2xl" aria-labelledby="join-heading">
+          <h2 id="join-heading" className="text-2xl">
+            Join with a code
+          </h2>
+          <p className="mt-2 text-muted">Your school or teacher gives you an 8-character code.</p>
+          <JoinForm />
+        </section>
 
         <section className="card max-w-2xl" aria-labelledby="create-heading">
           <h2 id="create-heading" className="text-2xl">

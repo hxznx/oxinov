@@ -25,3 +25,18 @@ export function suggestSlug(name: string): string {
     .slice(0, 63)
     .replace(/-+$/g, '');
 }
+
+/** Shows a join code in two readable halves: K7PX9QMD -> K7PX-9QMD. */
+export function displayCode(code: string): string {
+  return code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code;
+}
+
+/** Date in the workspace's time zone; an unknown zone name falls back to UTC instead of failing the page. */
+export function formatDate(value: string | Date, timeZone: string, locale = 'en'): string {
+  const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+  try {
+    return new Date(value).toLocaleDateString(locale, { ...options, timeZone });
+  } catch {
+    return new Date(value).toLocaleDateString(locale, { ...options, timeZone: 'UTC' });
+  }
+}

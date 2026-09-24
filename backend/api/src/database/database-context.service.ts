@@ -11,6 +11,8 @@ export interface DbContext {
   userId?: string;
   /** Identity-provider subject; used only while resolving the caller's profile. */
   authSubject?: string;
+  /** Join code being redeemed; lets row-level security reveal exactly that one invite. */
+  inviteCode?: string;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -36,7 +38,8 @@ export class DatabaseContext {
       await tx.$executeRaw`SELECT
         set_config('app.tenant_id', ${context.tenantId ?? ''}, true),
         set_config('app.user_id', ${context.userId ?? ''}, true),
-        set_config('app.auth_subject', ${context.authSubject ?? ''}, true)`;
+        set_config('app.auth_subject', ${context.authSubject ?? ''}, true),
+        set_config('app.invite_code', ${context.inviteCode ?? ''}, true)`;
       return work(tx);
     });
   }

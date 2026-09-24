@@ -37,6 +37,8 @@ import { EnrollmentsController } from './learning/enrollments.controller';
 import { EnrollmentsService } from './learning/enrollments.service';
 import { MetricsService } from './observability/metrics.service';
 import { TenantGuard } from './tenancy/tenant.guard';
+import { InviteRedemptionController, TenantInvitesController } from './tenants/invites.controller';
+import { InvitesService } from './tenants/invites.service';
 import { TenantsController } from './tenants/tenants.controller';
 import { TenantsService } from './tenants/tenants.service';
 
@@ -73,6 +75,7 @@ export class AppModule implements NestModule {
       { provide: IDENTITY_RESOLVER, useExisting: IdentityService },
       TenantGuard,
       TenantsService,
+      InvitesService,
       CatalogService,
       EnrollmentsService,
       ExamsService,
@@ -82,6 +85,8 @@ export class AppModule implements NestModule {
       controllers: [
         HealthController,
         TenantsController,
+        TenantInvitesController,
+        InviteRedemptionController,
         CatalogController,
         EnrollmentsController,
         ExamsController,

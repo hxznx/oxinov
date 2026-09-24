@@ -1,7 +1,7 @@
 // Unit tests for Oxinov Edu helpers. Run: pnpm --filter @oxinov/lms-web test
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { formatDuration, formatPrice, suggestSlug } from './format.ts';
+import { displayCode, formatDate, formatDuration, formatPrice, suggestSlug } from './format.ts';
 
 describe('prices', () => {
   it('shows free courses as Free and converts minor units by currency', () => {
@@ -27,5 +27,19 @@ describe('workspace addresses', () => {
     assert.equal(suggestSlug('Sakura Japanese School'), 'sakura-japanese-school');
     assert.equal(suggestSlug('  Everest -- Skills!! '), 'everest-skills');
     assert.match(suggestSlug('x'.repeat(80)), /^x{63}$/);
+  });
+});
+
+describe('join codes', () => {
+  it('splits eight-character codes for reading aloud', () => {
+    assert.equal(displayCode('K7PX9QMD'), 'K7PX-9QMD');
+    assert.equal(displayCode('SHORT'), 'SHORT');
+  });
+});
+
+describe('dates', () => {
+  it('uses the workspace time zone and survives an unknown one', () => {
+    assert.equal(formatDate('2026-09-24T20:00:00Z', 'Asia/Kathmandu'), 'Sep 25, 2026');
+    assert.equal(formatDate('2026-09-24T20:00:00Z', 'Not/AZone'), 'Sep 24, 2026');
   });
 });
