@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { currentSession } from '@/lib/current-session.ts';
+import { auth } from '@/lib/auth.ts';
 import { PlatformApiError, platformApi } from '@/lib/platform-api.ts';
 
 export interface WelcomeState {
@@ -18,7 +18,7 @@ const MESSAGES: Record<string, string> = {
 
 /** FR-ID-2205 / FR-POLICY-2404: submits the welcome answers or re-acceptance to api.oxinov.com. */
 export async function submitWelcome(_: WelcomeState, form: FormData): Promise<WelcomeState> {
-  const session = await currentSession('/welcome');
+  const session = await auth.currentSession('/welcome');
   if (!session) redirect('/auth/login?returnTo=%2Fwelcome');
 
   const accepted = form.getAll('policy').map((value) => {

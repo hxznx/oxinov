@@ -1,0 +1,115 @@
+/**
+ * Server-side client for the Oxinov Edu API (backend/api). The browser never calls it directly and never
+ * sees tokens; every call carries the signed-in person's Edu access token. Types mirror the API DTOs.
+ */
+export type TenantRole = 'LEARNER' | 'INSTRUCTOR' | 'ADMIN' | 'OWNER';
+
+export interface Workspace {
+  id: string;
+  slug: string;
+  name: string;
+  status: string;
+  primaryColor: string | null;
+  timeZone: string;
+  defaultLocale: string;
+  role: TenantRole;
+}
+
+export interface Price {
+  amountMinor: number;
+  currency: string;
+}
+
+export interface CourseSummary {
+  id: string;
+  slug: string;
+  status: string;
+  title: string;
+  summary: string;
+  price: Price;
+  programId: string | null;
+}
+
+export interface LessonOutline {
+  id: string;
+  title: string;
+  kind: string;
+  isPreview: boolean;
+  isRequired: boolean;
+  durationSec: number | null;
+}
+
+export interface CourseDetail extends CourseSummary {
+  description: string;
+  language: string;
+  outcomes: string[];
+  version: number;
+  curriculum: { id: string; title: string; lessons: LessonOutline[] }[];
+  access: { entitled: boolean; canAuthor: boolean };
+}
+
+export interface Lesson extends LessonOutline {
+  bodyMarkdown: string;
+}
+
+export interface Enrollment {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  status: string;
+  enrolledAt: string;
+  hasAccess: boolean;
+}
+
+export class EduApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+let baseUrl: string | undefined;
+function eduApiBaseUrl(): string {
+  if (baseUrl) return baseUrl;
+  const value = process.env.EDU_API_URL?.trim();
+  if (!value) throw new Error('EDU_API_URL is required (see frontend/products/lms-web/.env.example)');
+  return (baseUrl = value.replace(/\/$/, ''));
+}
+
+async function request<T>(token: string, path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
+  const response = await fetch(`${eduApiBaseUrl()}${path}`, {
+    method: init.method ?? 'GET',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: init.body ? JSON.stringify(init.body) : undefined,
+    cache: 'no-store',
+  });
+  const json = (await response.json().catch(() => ({}))) as { data?: T; error?: { code: string; message: string } };
+  if (!response.ok || json.data === undefined) {
+    throw new EduApiError(response.status, json.error?.code ?? 'UNAVAILABLE', json.error?.message ?? 'Oxinov Edu is unavailable. Try again shortly.');
+  }
+  return json.data;
+}
+
+const tenantPath = (tenantId: string) => `/v1/tenants/${encodeURIComponent(tenantId)}`;
+
+export const eduApi = {
+  workspaces: (token: string) => request<Workspace[]>(token, '/v1/tenants'),
+  createWorkspace: (token: string, body: { slug: string; name: string }) =>
+    request<Workspace>(token, '/v1/tenants', { method: 'POST', body }),
+  courses: (token: string, tenantId: string, q?: string) =>
+    request<CourseSummary[]>(token, `${tenantPath(tenantId)}/courses${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  course: (token: string, tenantId: string, courseId: string) =>
+    request<CourseDetail>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}`),
+  lesson: (token: string, tenantId: string, courseId: string, lessonId: string) =>
+    request<Lesson>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}`),
+  enroll: (token: string, tenantId: string, courseId: string) =>
+    request<Enrollment>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/enrollments`, { method: 'POST' }),
+  myEnrollments: (token: string, tenantId: string) => request<Enrollment[]>(token, `${tenantPath(tenantId)}/me/enrollments`),
+};

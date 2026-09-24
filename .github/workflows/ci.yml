@@ -149,7 +149,8 @@ jobs:
       - run: pnpm --filter @oxinov/platform-api build
 
   platform-web:
-    # Account portal (app.oxinov.com): sealed-session and redirect-safety unit tests, type check, build.
+    # Account portal (app.oxinov.com) and the shared @oxinov/web-auth sign-in package it uses:
+    # sealed-session, PKCE, redirect-safety and configuration unit tests, type checks, build.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -164,6 +165,8 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @oxinov/design-system build
+      - run: pnpm --filter @oxinov/web-auth test
+      - run: pnpm --filter @oxinov/web-auth typecheck
       - run: pnpm --filter @oxinov/platform-web test
       - run: pnpm --filter @oxinov/platform-web typecheck
       - name: Build (runtime settings are read at request time, not baked in)
@@ -175,6 +178,26 @@ jobs:
           PLATFORM_API_URL: http://localhost:4200
           SESSION_SECRET: ci-only-placeholder-session-secret-0000
         run: pnpm --filter @oxinov/platform-web build
+
+  lms-web:
+    # Oxinov Edu web app (edu.oxinov.com): helper unit tests, type check, build.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @oxinov/design-system build
+      - run: pnpm --filter @oxinov/lms-web test
+      - run: pnpm --filter @oxinov/lms-web typecheck
+      - run: pnpm --filter @oxinov/lms-web build
 
   company-web:
     # oxinov.com static export: design tokens with contrast tests, site build, and page checks (FR-SITE-2101/2102/2105).

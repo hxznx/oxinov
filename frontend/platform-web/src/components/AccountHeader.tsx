@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import type { Product } from '@/lib/platform-api.ts';
+import { productUrl } from '@/lib/product-url.ts';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
-
-const productUrl = (address: string) => `https://${address}`;
 
 /** Shared Oxinov shell for app.oxinov.com: logo, app launcher, theme, and account actions (FR-PORTAL-3102). */
 export function AccountHeader({ products = [], signedIn }: { products?: Product[]; signedIn: boolean }) {
@@ -22,7 +21,7 @@ export function AccountHeader({ products = [], signedIn }: { products?: Product[
               <ul className="card absolute right-0 z-20 mt-2 grid w-64 gap-2" aria-label="Oxinov apps">
                 {products.map((product) => (
                   <li key={product.key}>
-                    <a href={productUrl(product.address)} className="block no-underline hover:text-brand">
+                    <a href={productUrl(product)} className="block no-underline hover:text-brand">
                       <span style={{ color: `var(--ox-color-product-${product.key})` }}>{product.name}</span>
                       <span className="hud-label block">{product.address}</span>
                     </a>

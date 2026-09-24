@@ -2,10 +2,10 @@ import { createHash } from 'node:crypto';
 import { EncryptJWT, jwtDecrypt } from 'jose';
 
 /**
- * Tokens stay on the server side of the portal (backend-for-frontend, docs/architecture/IDENTITY-AND-ACCESS.md):
+ * Tokens stay on the server side of the web app (backend-for-frontend, docs/architecture/IDENTITY-AND-ACCESS.md):
  * they are sealed with AES-256-GCM into an HttpOnly cookie that the browser cannot read or alter.
  */
-export interface PortalSession {
+export interface WebSession {
   subject: string;
   accessToken: string;
   refreshToken: string;
@@ -21,8 +21,6 @@ export interface SignInTransaction {
   returnTo: string;
 }
 
-export const SESSION_COOKIE = 'ox_session';
-export const TRANSACTION_COOKIE = 'ox_signin';
 /** Session cookie lifetime; Keycloak's 30-day idle session remains the real limit. */
 export const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 export const TRANSACTION_MAX_AGE_SECONDS = 10 * 60;
@@ -51,11 +49,11 @@ async function unseal<T>(sealed: string | undefined, secret: string, purpose: st
   }
 }
 
-export const sealSession = (session: PortalSession, secret: string) =>
+export const sealSession = (session: WebSession, secret: string) =>
   seal(session, secret, 'session', SESSION_MAX_AGE_SECONDS);
 
-export async function unsealSession(sealed: string | undefined, secret: string): Promise<PortalSession | null> {
-  const value = await unseal<PortalSession>(sealed, secret, 'session');
+export async function unsealSession(sealed: string | undefined, secret: string): Promise<WebSession | null> {
+  const value = await unseal<WebSession>(sealed, secret, 'session');
   return value && typeof value.accessToken === 'string' && typeof value.refreshToken === 'string' ? value : null;
 }
 

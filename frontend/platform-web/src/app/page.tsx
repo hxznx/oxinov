@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { AccountHeader } from '@/components/AccountHeader';
-import { currentSession } from '@/lib/current-session.ts';
+import { auth } from '@/lib/auth.ts';
 import { PlatformApiError, platformApi, type Account, type Entitlement, type Product } from '@/lib/platform-api.ts';
 import { productUrl } from '@/lib/product-url.ts';
 
@@ -20,7 +20,7 @@ const TRUST_LABEL: Record<Account['trustLevel'], string> = {
 type Props = { searchParams: Promise<{ signin?: string }> };
 
 export default async function AccountHome({ searchParams }: Props) {
-  const session = await currentSession('/');
+  const session = await auth.currentSession('/');
   if (!session) return <SignedOut message={SIGN_IN_MESSAGES[(await searchParams).signin ?? '']} />;
 
   let account: Account;

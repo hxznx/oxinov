@@ -1,6 +1,6 @@
 import type { NextConfig } from 'next';
 
-// app.oxinov.com runs as a Node server (container) because it holds sessions and calls APIs.
+// edu.oxinov.com runs as a Node server (container) because it holds sessions and calls the Edu API.
 const config: NextConfig = {
   output: 'standalone',
   // Shared TypeScript source packages are compiled by Next.js.

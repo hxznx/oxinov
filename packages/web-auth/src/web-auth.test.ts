@@ -1,8 +1,8 @@
-// Unit tests for the portal security core. Run: pnpm --filter @oxinov/platform-web test
+// Unit tests for the shared web sign-in core. Run: pnpm --filter @oxinov/web-auth test
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { loadWebAuthConfig } from './config.ts';
 import { codeChallenge, randomToken } from './pkce.ts';
-import { productUrl } from './product-url.ts';
 import { safeReturnTo } from './return-to.ts';
 import { sealSession, sealTransaction, unsealSession, unsealTransaction } from './session.ts';
 
@@ -34,20 +34,6 @@ describe('return-to protection', () => {
   });
 });
 
-describe('app launcher', () => {
-  const edu = { key: 'lms', address: 'edu.oxinov.com' };
-
-  it('uses the public address unless a local override exists for that product', () => {
-    assert.equal(productUrl(edu, undefined), 'https://edu.oxinov.com');
-    assert.equal(productUrl(edu, 'market=http://localhost:3005'), 'https://edu.oxinov.com');
-    assert.equal(productUrl(edu, 'market=http://localhost:3005, lms=http://localhost:3002/'), 'http://localhost:3002');
-  });
-
-  it('ignores overrides that are not web addresses', () => {
-    assert.equal(productUrl(edu, 'lms=javascript:alert(1)'), 'https://edu.oxinov.com');
-  });
-});
-
 describe('sealed cookies', () => {
   it('round-trips a session', async () => {
     const sealed = await sealSession(session, secret);
@@ -71,5 +57,31 @@ describe('sealed cookies', () => {
     const transaction = await sealTransaction({ state: 's', verifier: 'v', nonce: 'n', returnTo: '/' }, secret);
     assert.equal(await unsealSession(transaction, secret), null);
     assert.equal((await unsealTransaction(transaction, secret))?.state, 's');
+  });
+});
+
+describe('configuration', () => {
+  const env = {
+    APP_URL: 'https://edu.oxinov.com/',
+    OIDC_ISSUER: 'https://id.oxinov.com/realms/oxinov/',
+    OIDC_CLIENT_ID: 'oxinov-edu-web',
+    OIDC_CLIENT_SECRET: 'client-secret',
+    SESSION_SECRET: secret,
+  };
+
+  it('gives each app its own cookie names and secure cookies over HTTPS', () => {
+    const config = loadWebAuthConfig('oxedu', env);
+    assert.equal(config.sessionCookie, 'oxedu_session');
+    assert.equal(config.transactionCookie, 'oxedu_signin');
+    assert.equal(config.appUrl, 'https://edu.oxinov.com');
+    assert.equal(config.issuer, 'https://id.oxinov.com/realms/oxinov');
+    assert.equal(config.secureCookies, true);
+    assert.equal(loadWebAuthConfig('ox', { ...env, APP_URL: 'http://localhost:3001' }).secureCookies, false);
+  });
+
+  it('refuses missing values, short session secrets, and unsafe cookie prefixes', () => {
+    assert.throws(() => loadWebAuthConfig('ox', { ...env, OIDC_CLIENT_SECRET: ' ' }), /OIDC_CLIENT_SECRET is required/);
+    assert.throws(() => loadWebAuthConfig('ox', { ...env, SESSION_SECRET: 'short' }), /at least 32/);
+    assert.throws(() => loadWebAuthConfig('Ox-Session;', env), /cookiePrefix/);
   });
 });

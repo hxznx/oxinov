@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AccountHeader } from '@/components/AccountHeader';
-import { requireSession } from '@/lib/current-session.ts';
+import { auth } from '@/lib/auth.ts';
 import { platformApi } from '@/lib/platform-api.ts';
 import { WelcomeForm } from './WelcomeForm';
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Welcome' };
 
 /** FR-ID-2205: the one welcome screen on first sign-in; also used for re-acceptance (FR-POLICY-2404). */
 export default async function WelcomePage() {
-  const session = await requireSession('/welcome');
+  const session = await auth.requireSession('/welcome');
   const account = await platformApi.me(session.accessToken);
   if (!account.welcomeRequired && account.outstandingPolicies.length === 0) redirect('/');
   const mode = account.welcomeRequired ? 'welcome' : 'update';

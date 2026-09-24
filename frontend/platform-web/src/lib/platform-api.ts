@@ -1,4 +1,4 @@
-import { portalConfig } from './config.ts';
+import { platformApiBaseUrl } from './config.ts';
 
 /** Server-side client for api.oxinov.com. The browser never calls it directly or sees tokens. */
 export interface Account {
@@ -37,7 +37,7 @@ export class PlatformApiError extends Error {
 }
 
 async function request<T>(path: string, init: { token?: string; method?: string; body?: unknown } = {}): Promise<T> {
-  const response = await fetch(`${portalConfig().platformApiUrl}${path}`, {
+  const response = await fetch(`${platformApiBaseUrl()}${path}`, {
     method: init.method ?? 'GET',
     headers: {
       Accept: 'application/json',
