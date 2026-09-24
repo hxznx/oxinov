@@ -82,6 +82,12 @@ Consequences: AI work depends on the platform backend, named owners, an approved
 
 Consequences: DNS records, the OIDC client, redirect URIs, and TLS certificates use `edu.oxinov.com` when they are created; no existing deployment needs migration. Documentation uses "Oxinov Edu" for the product and keeps `lms` only in technical identifiers. Alternatives considered: "Oxinov LMS" and "Oxinov Learn".
 
+## ADR-016: Keycloak sign-in implementation for ADR-011
+
+**Date:** 2026-09-24. **Status:** Accepted (owner decisions of 2026-09-24). Keycloak (26.7.x, pinned by digest) at `id.oxinov.com` implements ADR-011 as follows. Email one-time codes use the community `for-keycloak/email-otp-authenticator` extension, pinned to the build for our Keycloak minor version and configured for six digits, a 10-minute expiry, and single use; its source is security-reviewed before production, and a small in-house authenticator replaces it if the review fails. The browser flow is Cookie, then Identity Provider Redirector, then a forms sub-flow of Username Form and Email OTP Form, with no password executor anywhere. Google is the first identity provider with Trust Email and forced sync; Google accounts whose email is not verified are refused with guidance to use an email code (FR-ID-2201). When a Google sign-in matches an existing Oxinov account by email, the first-broker-login flow links it only after the person confirms by an emailed link (Verify Existing Account By Email); silent automatic linking is not used. Staff use a separate `oxinov-staff` realm without self-registration and with mandatory passkeys or OTP (FR-ID-2209). Code-sending is rate-limited per email and per source at the edge, and realm brute-force detection is on.
+
+Consequences: a Java extension enters the identity deployment and must be upgraded with Keycloak; linking needs one email round trip; the platform API trusts only verified-email tokens for activation (FR-ID-2205). Alternatives considered: building our own authenticator first (slower; kept as fallback), launching Google-only (excludes people without Google accounts), and automatic linking (Keycloak warns against it and has an open defect).
+
 ## Pending
 
 Choose company-platform product owners, AWS account and operations owners, identity operations model, final production sizing, Nepal and international payment providers, SIEM hosting/retention/on-call ownership, AI pilot owners/model aliases/approved data/budgets, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).

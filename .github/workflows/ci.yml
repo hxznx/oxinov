@@ -27,6 +27,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: ci-only-placeholder
           APP_DB_PASSWORD: ci-only-placeholder
+          PLATFORM_APP_DB_PASSWORD: ci-only-placeholder
           REDIS_PASSWORD: ci-only-placeholder
           MINIO_ROOT_USER: ci-only-placeholder
           MINIO_ROOT_PASSWORD: ci-only-placeholder
@@ -97,6 +98,52 @@ jobs:
       - run: pnpm --filter @oxinov/lms-api db:test-policies
       - run: pnpm --filter @oxinov/lms-api test:integration
       - run: pnpm --filter @oxinov/lms-api build
+
+  platform-api:
+    # Platform control plane (api.oxinov.com): accounts, policies, entitlements with PostgreSQL RLS.
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: oxinov_platform_test
+          POSTGRES_USER: oxinov
+          POSTGRES_PASSWORD: ci-only-owner
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U oxinov -d oxinov_platform_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_platform_test
+      DATABASE_URL: postgresql://oxinov_platform_app:ci-only-app@localhost:5432/oxinov_platform_test
+      TEST_MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_platform_test
+      TEST_DATABASE_URL: postgresql://oxinov_platform_app:ci-only-app@localhost:5432/oxinov_platform_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @oxinov/server-kit build
+      - run: pnpm --filter @oxinov/platform-api prisma:generate
+      - run: pnpm --filter @oxinov/platform-api typecheck
+      - run: pnpm --filter @oxinov/platform-api lint
+      - name: Apply migrations with Prisma and check the schema has not drifted
+        run: |
+          pnpm --filter @oxinov/platform-api exec prisma migrate deploy
+          pnpm --filter @oxinov/platform-api exec prisma migrate diff --from-config-datasource --to-schema ../../database/platform/prisma/schema.prisma --exit-code
+      - name: Give the request role a login for tests
+        run: psql "$MIGRATION_DATABASE_URL" -c "ALTER ROLE oxinov_platform_app LOGIN PASSWORD 'ci-only-app'"
+      - run: pnpm --filter @oxinov/platform-api db:seed
+      - run: pnpm --filter @oxinov/platform-api db:test-policies
+      - run: pnpm --filter @oxinov/platform-api test:integration
+      - run: pnpm --filter @oxinov/platform-api build
 
   company-web:
     # oxinov.com static export: design tokens with contrast tests, site build, and page checks (FR-SITE-2101/2102/2105).

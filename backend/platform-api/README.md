@@ -1,12 +1,35 @@
-# Oxinov Platform API (`backend/platform-api`)
+# Oxinov platform API (`backend/platform-api`)
 
-Central control plane service served at `api.oxinov.com`.
+Control plane for the one Oxinov account at `api.oxinov.com` (ADR-008, ADR-011). It owns accounts, policy acceptance, the product catalogue, and entitlements. Products never read its database; they call this API.
 
-## Scope
-- User directory, auth brokering, and session token verification.
-- Organization hierarchy, memberships, and invitations.
-- Progressive trust levels (T0 through T4) and policy acceptance records.
-- Product entitlement catalogue, quota checks, and usage limits.
-- Central Payments Ledger (eSewa / Khalti verification, prepaid credits, marketplace escrow accounts).
-- Shared KYC review and document verification pipeline.
-- Audit event dispatch and security telemetry.
+## Endpoints (v1)
+
+| Method and path | Access | Requirement | Purpose |
+| --- | --- | --- | --- |
+| `GET /v1/products` | Public | FR-PORTAL-3102 | Launched products for the app launcher |
+| `GET /v1/policies/current` | Public | FR-POLICY-2401 | Current policy versions |
+| `GET /v1/me` | Signed in | FR-ID-2205, FR-ID-2206 | The account; created as `PENDING_WELCOME` on first sign-in |
+| `POST /v1/me/welcome` | Signed in, verified email | FR-ID-2205, FR-PLAN-2602 | Country, age confirmation, and acceptance of current sign-up policies; activates the account and grants member access |
+| `POST /v1/me/policy-acceptances` | Signed in | FR-POLICY-2404 | Accept new material policy versions |
+| `GET /v1/me/entitlements` | Active account, current policies | FR-PLAN-2603 | Active entitlement keys, such as `lms.member` |
+| `GET /health/live`, `/health/ready`, `/metrics` | Private network | NFR-12 | Probes and Prometheus metrics |
+
+Errors use the shared envelope. Platform-specific codes: `POLICY_ACCEPTANCE_REQUIRED` (403, `details.policies`), `POLICY_VERSION_OUTDATED` (409), `ACCOUNT_SUSPENDED` (403), `EMAIL_NOT_VERIFIED` (403).
+
+## Data protection
+
+The API connects as `oxinov_platform_app`, which cannot bypass row-level security. A person sees only their own account, acceptances, entitlements, and audit history. Acceptances and audit history are append-only, catalogues are read-only, and a request can grant only free member access, to itself, for launched products (`database/platform/migrations/20260924100200_owner_isolation`).
+
+## Local development
+
+```bash
+cp backend/platform-api/.env.example backend/platform-api/.env   # set local passwords
+pnpm --filter @oxinov/server-kit build
+pnpm --filter @oxinov/platform-api prisma:generate
+pnpm --filter @oxinov/platform-api db:migrate
+pnpm --filter @oxinov/platform-api db:seed
+pnpm --filter @oxinov/platform-api db:test-policies
+pnpm --filter @oxinov/platform-api test:integration   # needs TEST_DATABASE_URL / TEST_MIGRATION_DATABASE_URL on a *_test database
+```
+
+Tokens come from `id.oxinov.com` (Keycloak, ADR-016). Tests sign their own RS256 tokens against a local key set.

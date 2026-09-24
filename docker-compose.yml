@@ -9,11 +9,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set POSTGRES_PASSWORD}
       # Password for the least-privilege API role, created on first volume initialisation.
       APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
+      # Password for the platform API request role; the platform database is created on first initialisation.
+      PLATFORM_APP_DB_PASSWORD: ${PLATFORM_APP_DB_PASSWORD:?set PLATFORM_APP_DB_PASSWORD in .env}
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
       - ./database/policies/local-app-role.sh:/docker-entrypoint-initdb.d/10-local-app-role.sh:ro
+      - ./database/platform/policies/local-app-role.sh:/docker-entrypoint-initdb.d/20-platform-app-role.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s

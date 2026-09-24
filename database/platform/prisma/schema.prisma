@@ -1,0 +1,164 @@
+// Oxinov Platform control plane — PostgreSQL system of record (`api.oxinov.com`).
+//
+// Owner isolation (FR-ID-2206, FR-POLICY-2402, FR-PLAN-2602):
+// - Person-owned rows carry an immutable `userId`; row-level security in the migrations lets a
+//   request read and write only rows of the signed-in person (app.user_id / app.auth_subject).
+// - The platform API connects as `oxinov_platform_app`, which cannot bypass RLS.
+// - Catalogues (Product, Policy) are global, read-only for the application role.
+// - PolicyAcceptance and AuditEvent are append-only for the application role.
+//
+// Timestamps are UTC. This database never stores passwords (ADR-011) or product data.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../../../backend/platform-api/src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AccountStatus {
+  /// Signed in but has not completed the welcome screen (FR-ID-2205).
+  PENDING_WELCOME
+  ACTIVE
+  SUSPENDED
+
+  @@map("account_status")
+}
+
+/// Progressive trust levels (ADR-011). T0 is a visitor without an account, so it is never stored.
+enum TrustLevel {
+  T1
+  T2
+  T3
+  T4
+
+  @@map("trust_level")
+}
+
+enum AcceptanceChannel {
+  WEB
+  ANDROID
+  IOS
+
+  @@map("acceptance_channel")
+}
+
+enum EntitlementSource {
+  /// Free member access granted on first sign-in to every launched product (FR-PLAN-2602).
+  MEMBER
+  PLAN
+  GRANT
+
+  @@map("entitlement_source")
+}
+
+/// One Oxinov account per person, keyed by an internal ID and never by email (FR-ID-2206).
+model UserAccount {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  /// Immutable subject claim from id.oxinov.com.
+  authSubject    String        @unique @map("auth_subject") @db.VarChar(255)
+  email          String?       @db.VarChar(320)
+  emailVerified  Boolean       @default(false) @map("email_verified")
+  displayName    String?       @map("display_name") @db.VarChar(120)
+  /// ISO 3166-1 alpha-2 country code chosen on the welcome screen.
+  country        String?       @db.Char(2)
+  status         AccountStatus @default(PENDING_WELCOME)
+  trustLevel     TrustLevel    @default(T1) @map("trust_level")
+  ageConfirmedAt DateTime?     @map("age_confirmed_at") @db.Timestamptz(3)
+  welcomedAt     DateTime?     @map("welcomed_at") @db.Timestamptz(3)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  acceptances  PolicyAcceptance[]
+  entitlements Entitlement[]
+  auditEvents  AuditEvent[]
+
+  @@map("user_accounts")
+}
+
+/// Published policy versions (FR-POLICY-2401). Rows are added by migrations or operators, never by requests.
+model Policy {
+  id               String   @db.VarChar(40)
+  version          Int
+  title            String   @db.VarChar(160)
+  url              String   @db.VarChar(255)
+  /// Material versions require re-acceptance before the next protected action (FR-POLICY-2404).
+  material         Boolean  @default(true)
+  /// Accepted on the welcome screen by every member (Terms and Privacy).
+  requiredForSignup Boolean @default(false) @map("required_for_signup")
+  effectiveAt      DateTime @map("effective_at") @db.Timestamptz(3)
+
+  acceptances PolicyAcceptance[]
+
+  @@id([id, version])
+  @@map("policies")
+}
+
+/// Append-only acceptance records (FR-POLICY-2402).
+model PolicyAcceptance {
+  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String            @map("user_id") @db.Uuid
+  policyId      String            @map("policy_id") @db.VarChar(40)
+  policyVersion Int               @map("policy_version")
+  acceptedAt    DateTime          @default(now()) @map("accepted_at") @db.Timestamptz(3)
+  channel       AcceptanceChannel
+  locale        String            @db.VarChar(16)
+
+  user   UserAccount @relation(fields: [userId], references: [id], onDelete: Restrict)
+  policy Policy      @relation(fields: [policyId, policyVersion], references: [id, version], onDelete: Restrict)
+
+  @@unique([userId, policyId, policyVersion])
+  @@map("policy_acceptances")
+}
+
+/// Product catalogue (FR-OPS-3302). A product is launched only after its release gate is recorded.
+model Product {
+  key                   String    @id @db.VarChar(20)
+  name                  String    @db.VarChar(80)
+  address               String    @db.VarChar(120)
+  launched              Boolean   @default(false)
+  releaseGateRecordedAt DateTime? @map("release_gate_recorded_at") @db.Timestamptz(3)
+
+  entitlements Entitlement[]
+
+  @@map("products")
+}
+
+/// Entitlement keys granted to a person (FR-PLAN-2602, FR-PLAN-2603). Products check keys, not plans.
+model Entitlement {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String            @map("user_id") @db.Uuid
+  productKey     String            @map("product_key") @db.VarChar(20)
+  /// For example `lms.member`; one active row per person and key (partial unique index in migration).
+  entitlementKey String            @map("entitlement_key") @db.VarChar(80)
+  source         EntitlementSource
+  startsAt       DateTime          @default(now()) @map("starts_at") @db.Timestamptz(3)
+  endsAt         DateTime?         @map("ends_at") @db.Timestamptz(3)
+  revokedAt      DateTime?         @map("revoked_at") @db.Timestamptz(3)
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user    UserAccount @relation(fields: [userId], references: [id], onDelete: Restrict)
+  product Product     @relation(fields: [productKey], references: [key], onDelete: Restrict)
+
+  @@index([userId])
+  @@map("entitlements")
+}
+
+/// Append-only audit history of account actions.
+model AuditEvent {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorUserId String?  @map("actor_user_id") @db.Uuid
+  action      String   @db.VarChar(120)
+  targetType  String   @map("target_type") @db.VarChar(80)
+  targetId    String?  @map("target_id") @db.VarChar(120)
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  actor UserAccount? @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([actorUserId, createdAt])
+  @@map("audit_events")
+}

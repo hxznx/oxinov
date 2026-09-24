@@ -1,11 +1,13 @@
-# Platform Database Assets (`database/platform`)
+# Platform database (`database/platform`)
 
-PostgreSQL schema, Prisma schema, numbered migrations, deterministic seeds, and Row-Level Security policies for the Oxinov Platform Control Plane (`api.oxinov.com`).
+PostgreSQL schema for the Oxinov platform control plane, used only by `backend/platform-api`.
 
-## Tables & Domains
-- `users`: Universal identity, authentication provider links, trust level, email verification.
-- `organizations` & `organization_members`: Multi-tenant organization hierarchy, roles, invitations.
-- `entitlements` & `subscriptions`: Plan ladder, feature flags, usage limits, metering records.
-- `payments_ledger` & `escrow_accounts`: Server-verified Khalti/eSewa transactions, escrow milestone holds.
-- `kyc_verifications`: Verification records, document metadata, audit history.
-- `policy_acceptances`: Immutable audit trail of legal terms accepted by users.
+| Path | Purpose |
+| --- | --- |
+| `prisma/schema.prisma` | Accounts, policy versions, append-only acceptances, product catalogue, entitlements, audit history |
+| `migrations/` | Numbered migrations: schema, owner isolation (RLS, `oxinov_platform_app` role, constraints), product catalogue |
+| `seeds/dev_seed.sql` | Local and test data only; never load into staging or production |
+| `policies/owner_isolation_test.sql` | Database-level isolation tests run as the application role |
+| `policies/local-app-role.sh` | Local Docker init: creates `oxinov_platform` and the request role login |
+
+Organizations, KYC, plans, and the payments ledger arrive in later Phase 2 slices, each with its own migration and isolation tests.

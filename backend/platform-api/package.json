@@ -2,24 +2,53 @@
   "name": "@oxinov/platform-api",
   "version": "0.1.0",
   "private": true,
-  "description": "Oxinov shared control plane API (api.oxinov.com) for identity, organizations, entitlements, KYC, and payments ledger",
+  "description": "Oxinov platform control plane API (api.oxinov.com): accounts, policies, product catalogue, entitlements",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "echo 0",
-    "start": "echo 0",
-    "lint": "echo 0",
-    "typecheck": "tsc --noEmit"
+    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "prisma:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "node scripts/run-sql.mjs ../../database/platform/seeds/dev_seed.sql",
+    "db:test-policies": "node scripts/run-sql.mjs ../../database/platform/policies/owner_isolation_test.sql --as-app",
+    "test": "jest --config jest.config.js --selectProjects unit",
+    "test:integration": "jest --config jest.config.js --selectProjects integration --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "11.2.6",
     "@nestjs/core": "11.2.6",
     "@nestjs/platform-express": "11.2.6",
-    "@oxinov/contracts": "workspace:*"
+    "@oxinov/server-kit": "workspace:*",
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.4",
+    "pg": "8.23.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
   },
   "devDependencies": {
-    "@types/node": "20.19.43",
-    "typescript": "5.9.3"
+    "@eslint/js": "9.39.5",
+    "@nestjs/testing": "11.2.6",
+    "@types/express": "5.0.6",
+    "@types/jest": "29.5.14",
+    "@types/node": "22.20.4",
+    "@types/pg": "8.23.1",
+    "@types/supertest": "6.0.3",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "dotenv": "17.4.2",
+    "eslint": "9.39.5",
+    "jest": "29.7.0",
+    "jose": "6.2.12",
+    "prisma": "7.10.0",
+    "supertest": "7.3.0",
+    "ts-jest": "29.4.13",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.1"
   }
 }
