@@ -26,8 +26,16 @@ COPY database/prisma/ ./database/prisma/
 COPY security/soc/event-schema.json ./security/soc/event-schema.json
 RUN pnpm --filter @oxinov/lms-api build
 RUN pnpm --filter @oxinov/lms-api --prod deploy /app/deploy
+# @prisma/client lists the Prisma CLI as an optional peer; the running API only loads
+# @prisma/client/runtime, so drop the CLI and its tooling dependencies from the image.
+RUN rm -rf /app/deploy/node_modules/prisma /app/deploy/node_modules/.pnpm/prisma@*     /app/deploy/node_modules/.pnpm/@prisma+config@* /app/deploy/node_modules/.pnpm/@prisma+studio-core@*     /app/deploy/node_modules/.pnpm/mysql2@* /app/deploy/node_modules/.pnpm/deepmerge-ts@*
 
-FROM base AS backend
+# Runtime images carry Node.js only: no npm, npx, corepack, yarn, or pnpm.
+FROM node:22-alpine AS runtime
+ENV NODE_ENV=production
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack     /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /opt/yarn* /usr/local/bin/yarn /usr/local/bin/yarnpkg
+
+FROM runtime AS backend
 WORKDIR /app/backend/api
 COPY --from=backend-build /app/deploy/ ./
 USER node
