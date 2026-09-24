@@ -1,5 +1,6 @@
 # Templates only: images, probes, resources, and secret references need
 # validation against implemented apps and the chosen Kubernetes provider.
+# Production runs on ECS Fargate (ADR-009); Kubernetes needs an ADR first.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,6 +13,11 @@ spec:
     metadata:
       labels: { app: oxinov-frontend }
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
       containers:
         - name: frontend
           image: registry.example.invalid/oxinov/frontend:replace-me
@@ -19,9 +25,17 @@ spec:
           envFrom: [{ configMapRef: { name: oxinov-config } }]
           readinessProbe:
             httpGet: { path: /health, port: 3000 }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
           resources:
             requests: { cpu: 100m, memory: 128Mi }
             limits: { cpu: 500m, memory: 512Mi }
+      volumes:
+        - { name: tmp, emptyDir: {} }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,6 +49,11 @@ spec:
     metadata:
       labels: { app: oxinov-backend }
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
       containers:
         - name: backend
           image: registry.example.invalid/oxinov/backend:replace-me
@@ -45,7 +64,17 @@ spec:
               valueFrom:
                 secretKeyRef: { name: oxinov-runtime, key: database-url }
           readinessProbe:
-            httpGet: { path: /health, port: 4000 }
+            httpGet: { path: /health/ready, port: 4000 }
+          livenessProbe:
+            httpGet: { path: /health/live, port: 4000 }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
           resources:
             requests: { cpu: 200m, memory: 256Mi }
             limits: { cpu: '1', memory: 1Gi }
+      volumes:
+        - { name: tmp, emptyDir: {} }

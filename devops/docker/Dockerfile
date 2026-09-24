@@ -20,6 +20,7 @@ ENV NODE_ENV=development
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY backend/api/package.json ./backend/api/package.json
 RUN pnpm install --frozen-lockfile --filter @oxinov/lms-api...
+COPY tsconfig.json ./tsconfig.json
 COPY backend/api/ ./backend/api/
 COPY database/prisma/ ./database/prisma/
 COPY security/soc/event-schema.json ./security/soc/event-schema.json
