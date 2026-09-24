@@ -3,7 +3,7 @@ apiVersion: 1
 providers:
   - name: Oxinov
     orgId: 1
-    folder: Oxinov LMS
+    folder: Oxinov Platform
     folderUid: oxinov-lms
     type: file
     disableDeletion: true

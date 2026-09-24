@@ -28,7 +28,7 @@ export async function createApp(options: AppModuleOptions): Promise<INestApplica
 
 export function buildOpenApi(app: INestApplication, version: string): OpenAPIObject {
   const config = new DocumentBuilder()
-    .setTitle('Oxinov LMS API')
+    .setTitle('Oxinov Edu API')
     .setDescription(
       'Versioned API for web and mobile clients. Tenant routes require an active membership. ' +
         'Errors use {"error":{"code","message","requestId"}}.',

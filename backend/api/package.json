@@ -2,7 +2,7 @@
   "name": "@oxinov/lms-api",
   "version": "0.1.0",
   "private": true,
-  "description": "Oxinov LMS NestJS REST/OpenAPI service",
+  "description": "Oxinov Edu (internal: LMS) NestJS REST/OpenAPI service",
   "license": "UNLICENSED",
   "files": [
     "dist"

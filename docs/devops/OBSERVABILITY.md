@@ -18,7 +18,7 @@ Configuration lives under `monitoring/`. Keep data sources, dashboards, and aler
 2. Run `docker compose --profile monitoring up -d`.
 3. Open Grafana at `http://localhost:3001`, Prometheus at `http://localhost:9090`, and Alertmanager at `http://localhost:9093`.
 4. In Prometheus, check **Status > Targets**. Prometheus, PostgreSQL, and Redis should be up.
-5. In Grafana, open **Oxinov LMS > Oxinov Platform Overview**.
+5. In Grafana, open **Oxinov Platform > Oxinov Platform Overview**.
 
 The application scrape targets are added when `backend/api`, `backend/worker`, `backend/chat`, and `frontend/web` expose `/metrics`; adding them earlier would generate false target-down alerts in the documentation-only scaffold.
 
