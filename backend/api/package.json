@@ -4,6 +4,9 @@
   "private": true,
   "description": "Oxinov LMS NestJS REST/OpenAPI service",
   "license": "UNLICENSED",
+  "files": [
+    "dist"
+  ],
   "engines": {
     "node": ">=22"
   },

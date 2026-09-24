@@ -83,8 +83,8 @@ Milestone build commands live in [prompts/](prompts/). Implement one milestone a
 | When | Command |
 | --- | --- |
 | Any documentation change | `python scripts/validate_project.py` |
-| `backend/api` change | `npm run typecheck`, `npm run lint`, `npm test` in `backend/api` |
-| Database or tenant-isolation change | `npm run db:migrate`, `npm run db:test-policies`, `npm run test:integration` in `backend/api` (needs PostgreSQL) |
+| `backend/api` change | `pnpm --filter @oxinov/lms-api typecheck`, `pnpm --filter @oxinov/lms-api lint`, `pnpm --filter @oxinov/lms-api test` from the repository root |
+| Database or tenant-isolation change | `pnpm lms:migrate`, `pnpm --filter @oxinov/lms-api db:test-policies`, `pnpm --filter @oxinov/lms-api test:integration` from the repository root (needs PostgreSQL) |
 
 CI runs the same checks on every push (`.github/workflows/ci.yml`). A change is not done while any required check fails.
 

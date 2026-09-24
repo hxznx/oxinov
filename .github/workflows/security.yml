@@ -35,5 +35,5 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
 
-  # CodeQL, pull-request dependency review, SBOM/provenance, and built-image
-  # scans are added once application manifests and images exist.
+  # The CI workflow builds and scans the LMS API image. CodeQL, pull-request
+  # dependency review, and SBOM/provenance remain release-gate work.

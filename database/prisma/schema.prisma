@@ -70,7 +70,7 @@ model Tenant {
 
 model UserProfile {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  /// Subject claim from the identity provider (Clerk user ID). Never an email address.
+  /// Immutable subject claim from the OIDC provider. Never an email address.
   authSubject   String   @unique @map("auth_subject") @db.VarChar(255)
   email         String?  @db.VarChar(320)
   emailVerified Boolean  @default(false) @map("email_verified")

@@ -19,7 +19,7 @@
 | Instructor revenue share, payout schedule, refund window, and disputes | Determines payout adapter design, reconciliation, and financial reports. |
 | Initial traffic, concurrency, target regions, and video quality | Finalizes performance, recovery, and cost targets. |
 | Upload limits, moderation rules, assignment late policy, and retention | Finalizes validation and operations. |
-| Transactional email provider and sender domain | Required for verification, password reset, and announcements. |
+| Transactional email provider and sender domain | Required for email one-time sign-in codes, verification, and announcements. |
 | B2B seats and Organization Manager launch timing | Optional scope needs separate acceptance criteria if selected. |
 | Launch course inventory and teaching languages for the interface | The platform supports all named programs; authors must still create or license each actual course and question bank. |
 | Official exam alignment and content licensing | Determines which exam patterns, sample questions, and branding can be used and when they must be updated. |

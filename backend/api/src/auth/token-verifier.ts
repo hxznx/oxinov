@@ -8,7 +8,7 @@ import {
 import { APP_CONFIG, type AppConfig } from '../config/app-config';
 
 export interface VerifiedIdentity {
-  /** Stable identity-provider subject (Clerk user ID). */
+  /** Stable identity-provider subject. Never an email address. */
   subject: string;
   /** Undefined when the token carries no such claim; stored values are then left unchanged. */
   email?: string;
@@ -25,12 +25,12 @@ function claimString(payload: JWTPayload, key: string): string | null {
 }
 
 /**
- * Verifies bearer tokens. Production uses the identity provider's JWKS (Clerk session tokens are
- * standard RS256 JWTs). Local development may also accept HS256 tokens from the LMS dev-token script;
- * configuration refuses that secret in production.
+ * Verifies standard bearer tokens through the configured OIDC provider's JWKS. Local development
+ * may also accept HS256 tokens from the LMS dev-token script; configuration refuses that secret in
+ * production.
  *
- * Email and verification status are read from `email` and `email_verified` claims. For Clerk,
- * add both to the session token template; without them, tenant creation is refused.
+ * Email and verification status are read from `email` and `email_verified` claims. Configure both
+ * as OIDC claims; without them, tenant creation is refused.
  */
 @Injectable()
 export class TokenVerifier {
