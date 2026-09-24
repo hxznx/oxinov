@@ -28,6 +28,9 @@ jobs:
           POSTGRES_PASSWORD: ci-only-placeholder
           APP_DB_PASSWORD: ci-only-placeholder
           PLATFORM_APP_DB_PASSWORD: ci-only-placeholder
+          KEYCLOAK_DB_PASSWORD: ci-only-placeholder
+          KEYCLOAK_ADMIN_USER: ci-only-placeholder
+          KEYCLOAK_ADMIN_PASSWORD: ci-only-placeholder
           REDIS_PASSWORD: ci-only-placeholder
           MINIO_ROOT_USER: ci-only-placeholder
           MINIO_ROOT_PASSWORD: ci-only-placeholder

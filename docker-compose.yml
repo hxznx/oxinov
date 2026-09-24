@@ -11,12 +11,14 @@ services:
       APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
       # Password for the platform API request role; the platform database is created on first initialisation.
       PLATFORM_APP_DB_PASSWORD: ${PLATFORM_APP_DB_PASSWORD:?set PLATFORM_APP_DB_PASSWORD in .env}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?set KEYCLOAK_DB_PASSWORD in .env}
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
       - ./database/policies/local-app-role.sh:/docker-entrypoint-initdb.d/10-local-app-role.sh:ro
       - ./database/platform/policies/local-app-role.sh:/docker-entrypoint-initdb.d/20-platform-app-role.sh:ro
+      - ./devops/keycloak/init-db.sh:/docker-entrypoint-initdb.d/30-keycloak.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
@@ -181,6 +183,43 @@ services:
       - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
+    networks: [private]
+
+  # Identity (id.oxinov.com) for local development: `docker compose --profile identity up -d --wait`,
+  # then `bash devops/keycloak/configure-realm.sh`. ADR-011, ADR-016.
+  keycloak:
+    profiles: [identity]
+    build:
+      context: devops/keycloak
+    image: oxinov/keycloak:local
+    command: ["start-dev", "--http-port=8080"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?set KEYCLOAK_DB_PASSWORD in .env}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:?set KEYCLOAK_ADMIN_USER in .env}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?set KEYCLOAK_ADMIN_PASSWORD in .env}
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "127.0.0.1:${KEYCLOAK_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && printf 'GET /health/ready HTTP/1.0\r\n\r\n' >&3 && grep -q 'HTTP/1.0 200' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    networks: [private]
+
+  # Catches every email locally (sign-in codes, confirmations). Web UI on http://localhost:8025.
+  mailpit:
+    profiles: [identity]
+    image: axllent/mailpit:v1.31.2@sha256:74d609a42ec279aa63c6b4622a6fa9b5408d1ad5b1d76a1c4be40a265ce0863d
+    ports:
+      - "127.0.0.1:${MAILPIT_PORT:-8025}:8025"
     networks: [private]
 
 networks:
