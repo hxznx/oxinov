@@ -106,6 +106,10 @@ describe('static export', () => {
     for (const address of ['support', 'billing', 'legal', 'security']) {
       assert.match(contact, new RegExp(`href="mailto:${address}@oxinov\\.com"`), `contact: ${address}@`);
     }
+    assert.match(contact, /href="tel:\+9779842572888"/);
+    assert.match(contact, /href="https:\/\/wa\.me\/9779842572888"/);
+    assert.match(text(contact), /Ward 8, Lalitpur/);
+    assert.match(text(contact), /24\/7/);
     assert.match(html('/security/'), /href="mailto:security@oxinov\.com"/);
     assert.match(html('/legal/privacy/'), /href="mailto:legal@oxinov\.com"/);
 

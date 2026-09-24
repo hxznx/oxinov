@@ -14,11 +14,14 @@ export const company = {
   securityEmail: 'security@oxinov.com' as string | null,
   legalEmail: 'legal@oxinov.com' as string | null,
   billingEmail: 'billing@oxinov.com' as string | null,
+  // E.164 number, also reachable on WhatsApp and WeChat.
+  phone: '+9779842572888' as string | null,
+  phoneDisplay: '+977 984-2572888',
+  officeAddress: 'Mahalaxmi Municipality, Ward 8, Lalitpur, Nepal' as string | null,
+  officeHours: '24/7' as string | null,
   // Owner to supply before launch (see frontend/company-web/README.md).
   careersEmail: null as string | null,
-  phone: null as string | null,
   streetAddress: null as string | null,
-  officeHours: null as string | null,
   registrationNumber: null as string | null,
 };
 

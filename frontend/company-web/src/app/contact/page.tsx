@@ -9,18 +9,24 @@ export const metadata: Metadata = {
 
 const toBeAnnounced = 'To be announced';
 
-type Row = { label: string; value: string; email?: boolean };
+type Row = { label: string; value: string; href?: string };
 
 export default function ContactPage() {
   const emailRow = (label: string, address: string | null): Row =>
-    address ? { label, value: address, email: true } : { label, value: toBeAnnounced };
+    address ? { label, value: address, href: `mailto:${address}` } : { label, value: toBeAnnounced };
+  const officeAddress = company.officeAddress ?? company.locality;
   const rows: Row[] = [
     emailRow('General enquiries and support', company.email),
     emailRow('Billing and subscriptions', company.billingEmail),
     emailRow('Legal and privacy', company.legalEmail),
     emailRow('Security reports', company.securityEmail),
-    { label: 'Phone', value: company.phone ?? toBeAnnounced },
-    { label: 'Address', value: company.streetAddress ? `${company.streetAddress}, ${company.locality}` : company.locality },
+    company.phone
+      ? { label: 'Phone and WeChat', value: company.phoneDisplay, href: `tel:${company.phone}` }
+      : { label: 'Phone', value: toBeAnnounced },
+    ...(company.phone
+      ? [{ label: 'WhatsApp', value: company.phoneDisplay, href: `https://wa.me/${company.phone.replace(/\D/g, '')}` }]
+      : []),
+    { label: 'Office', value: company.streetAddress ? `${company.streetAddress}, ${officeAddress}` : officeAddress },
     { label: 'Office hours', value: company.officeHours ?? toBeAnnounced },
   ];
   return (
@@ -30,10 +36,18 @@ export default function ContactPage() {
       </PageHeader>
       <div className="mx-auto max-w-6xl px-4 py-12">
         <dl className="card grid max-w-2xl gap-x-6 gap-y-3 sm:grid-cols-[14rem_1fr]">
-          {rows.map(({ label, value, email }) => (
+          {rows.map(({ label, value, href }) => (
             <div key={label} className="contents">
               <dt className="hud-label pt-1">{label}</dt>
-              <dd>{email ? <a href={`mailto:${value}`}>{value}</a> : value}</dd>
+              <dd>
+                {href ? (
+                  <a href={href} {...(href.startsWith('https:') ? { rel: 'noopener noreferrer', target: '_blank' } : {})}>
+                    {value}
+                  </a>
+                ) : (
+                  value
+                )}
+              </dd>
             </div>
           ))}
         </dl>
