@@ -31,3 +31,7 @@ security/evidence/*
 
 # Temporary agent worktrees
 .claude/worktrees/
+# Terraform local overrides (one-time bootstrap backend)
+*_override.tf
+.terraform.tfstate.lock.info
+*.tfplan

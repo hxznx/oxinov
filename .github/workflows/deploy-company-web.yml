@@ -1,0 +1,73 @@
+name: Deploy oxinov.com
+
+# Publishes the static company website to S3 behind CloudFront (devops/terraform/environments/production/edge).
+# AWS access is keyless: GitHub's OIDC token is exchanged for a short-lived role limited to this site.
+on:
+  push:
+    branches: [main]
+    paths:
+      - frontend/company-web/**
+      - packages/design-system/**
+      - pnpm-lock.yaml
+      - .github/workflows/deploy-company-web.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-company-web
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://oxinov.com
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @oxinov/design-system build
+      - run: pnpm --filter @oxinov/company-web build
+      - run: pnpm --filter @oxinov/company-web test
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-south-1
+
+      - name: Upload the site
+        env:
+          BUCKET: ${{ vars.SITE_BUCKET }}
+        working-directory: frontend/company-web/out
+        run: |
+          # Hashed build assets never change: cache for a year. Everything else is revalidated on each visit.
+          aws s3 sync _next/static "s3://$BUCKET/_next/static" --cache-control "public, max-age=31536000, immutable"
+          aws s3 sync . "s3://$BUCKET" --delete --exclude "_next/static/*" --cache-control "public, max-age=0, must-revalidate"
+
+      - name: Refresh the CDN
+        run: |
+          id=$(aws cloudfront create-invalidation --distribution-id "${{ vars.SITE_DISTRIBUTION_ID }}" --paths '/*' --query Invalidation.Id --output text)
+          aws cloudfront wait invalidation-completed --distribution-id "${{ vars.SITE_DISTRIBUTION_ID }}" --id "$id"
+
+      - name: Smoke test
+        run: |
+          for path in / /about/ /products/ /pricing/ /legal/privacy/; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://oxinov.com$path")
+            echo "$path $code"
+            [ "$code" = 200 ] || exit 1
+          done
+          curl -sI https://oxinov.com/ | grep -i '^strict-transport-security'

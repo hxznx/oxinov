@@ -197,6 +197,26 @@ jobs:
       - run: pnpm --filter @oxinov/company-web build
       - run: pnpm --filter @oxinov/company-web test
 
+  terraform:
+    # Infrastructure code: formatting, validation without cloud access, and the CloudFront router tests.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.16.2
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - run: terraform fmt -recursive -check devops/terraform
+      - name: Validate every stack
+        run: |
+          for stack in devops/terraform/bootstrap devops/terraform/environments/production/edge; do
+            terraform -chdir="$stack" init -backend=false -input=false
+            terraform -chdir="$stack" validate
+          done
+      - run: node --test devops/terraform/environments/production/edge/
+
   lms-api-image:
     needs: api
     runs-on: ubuntu-latest
