@@ -121,15 +121,17 @@ export async function deleteSection(form: FormData) {
   return act(form, (t) => eduApi.draftCall(t.token, t.tenantId, t.courseId, 'DELETE', `/sections/${id(form, 'sectionId')}`));
 }
 
-/** Adds a text lesson and opens it in the lesson editor. */
+/** Adds a text, video, or audio lesson and opens it in the lesson editor. */
 export async function addLesson(form: FormData) {
   const sectionId = id(form, 'sectionId');
   const title = String(form.get('title') ?? '').trim() || 'New lesson';
+  const requested = String(form.get('kind') ?? 'TEXT');
+  const kind = requested === 'VIDEO' || requested === 'AUDIO' ? requested : 'TEXT';
   let lessonId = '';
   return act(
     form,
     async (t) => {
-      const draft = await eduApi.draftCall(t.token, t.tenantId, t.courseId, 'POST', `/sections/${sectionId}/lessons`, { title });
+      const draft = await eduApi.draftCall(t.token, t.tenantId, t.courseId, 'POST', `/sections/${sectionId}/lessons`, { title, kind });
       const lessons = draft.sections.find((section) => section.id === sectionId)?.lessons ?? [];
       lessonId = lessons[lessons.length - 1]?.id ?? '';
     },

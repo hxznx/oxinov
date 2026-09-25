@@ -5,12 +5,13 @@ import { EduHeader } from '@/components/EduHeader';
 import { eduApi } from '@/lib/edu-api.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { LessonEditor } from './LessonEditor';
+import { MediaUploader } from './MediaUploader';
 
 export const metadata: Metadata = { title: 'Edit lesson' };
 
 type Props = { params: Promise<{ slug: string; courseId: string; lessonId: string }> };
 
-/** Lesson editor for a draft (FR-COURSE-202, text lessons). */
+/** Lesson editor for a draft: text, and for video and audio lessons the media file (FR-COURSE-202/205). */
 export default async function LessonEditorPage({ params }: Props) {
   const { slug, courseId, lessonId } = await params;
   const editor = `/w/${slug}/teach/${courseId}`;
@@ -34,6 +35,9 @@ export default async function LessonEditorPage({ params }: Props) {
           </p>
           <h1 className="mt-2 text-4xl">Edit lesson</h1>
         </div>
+        {lesson.kind === 'VIDEO' || lesson.kind === 'AUDIO' ? (
+          <MediaUploader kind={lesson.kind} hidden={{ slug, tenantId: workspace.id, courseId, lessonId }} current={lesson.media} />
+        ) : null}
         <LessonEditor hidden={{ slug, tenantId: workspace.id, courseId, lessonId }} lesson={lesson} />
         <p>
           <Link href={editor}>← Back to the course</Link>

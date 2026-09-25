@@ -42,7 +42,7 @@ export function LessonEditor({ hidden, lesson }: { hidden: Record<string, string
 
       <div className="grid gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="field-label mb-0">Lesson text</span>
+          <span className="field-label mb-0">{lesson.kind === 'TEXT' ? 'Lesson text' : 'Transcript or text alternative (required)'}</span>
           <div role="tablist" aria-label="Lesson text view" className="flex gap-2">
             {(['write', 'preview'] as const).map((name) => (
               <button
@@ -87,7 +87,7 @@ export function LessonEditor({ hidden, lesson }: { hidden: Record<string, string
         </label>
         <div>
           <label htmlFor="minutes" className="field-label">
-            Reading time (minutes)
+            {lesson.kind === 'TEXT' ? 'Reading time (minutes)' : 'Shown length (minutes, optional)'}
           </label>
           <input
             id="minutes"

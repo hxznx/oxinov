@@ -226,7 +226,14 @@ function Editor({
                       <div>
                         {locked ? lesson.title : <Link href={`${editor}/lessons/${lesson.id}`}>{lesson.title}</Link>}
                         <span className="hud-label ml-2">
-                          {[lesson.isPreview ? 'Preview' : null, lesson.isRequired ? null : 'Optional', formatDuration(lesson.durationSec), lesson.bodyMarkdown.trim() ? null : 'Empty']
+                          {[
+                            lesson.kind === 'VIDEO' ? 'Video' : lesson.kind === 'AUDIO' ? 'Audio' : null,
+                            lesson.kind !== 'TEXT' && lesson.media?.status !== 'READY' ? 'No file yet' : null,
+                            lesson.isPreview ? 'Preview' : null,
+                            lesson.isRequired ? null : 'Optional',
+                            formatDuration(lesson.durationSec ?? lesson.media?.durationSec ?? null),
+                            lesson.bodyMarkdown.trim() ? null : lesson.kind === 'TEXT' ? 'Empty' : 'No transcript',
+                          ]
                             .filter(Boolean)
                             .join(' · ')}
                         </span>
@@ -255,6 +262,14 @@ function Editor({
                     New lesson title
                   </label>
                   <input id={`new-lesson-${section.id}`} name="title" className="field flex-1" placeholder="New lesson title" maxLength={200} />
+                  <label htmlFor={`new-kind-${section.id}`} className="sr-only">
+                    Lesson type
+                  </label>
+                  <select id={`new-kind-${section.id}`} name="kind" className="field w-auto" defaultValue="TEXT">
+                    <option value="TEXT">Text</option>
+                    <option value="VIDEO">Video</option>
+                    <option value="AUDIO">Audio</option>
+                  </select>
                   <button type="submit" className="btn btn-secondary">
                     Add lesson
                   </button>

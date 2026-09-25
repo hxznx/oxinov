@@ -40,17 +40,24 @@ services:
       retries: 5
     networks: [private]
 
-  minio:
-    image: minio/minio:latest # Local only; pin a digest before production use.
-    command: server /data --console-address :9001
+  # S3-compatible object storage for local development (lesson media). Production uses Amazon S3.
+  # SeaweedFS replaces MinIO, whose images are no longer published. The access key pair is written to a
+  # config file inside the container at start-up, so no credential is stored in the repository.
+  object-storage:
+    image: chrislusf/seaweedfs:4.47@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        printf '{"identities":[{"name":"oxinov-local","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}]}'
+        "$$OBJECT_STORAGE_ACCESS_KEY" "$$OBJECT_STORAGE_SECRET_KEY" > /tmp/s3.json &&
+        exec weed server -dir=/data -ip.bind=0.0.0.0 -master.volumeSizeLimitMB=1024 -volume.max=0 -s3 -s3.port=8333 -s3.config=/tmp/s3.json
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in .env}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
+      OBJECT_STORAGE_ACCESS_KEY: ${OBJECT_STORAGE_ACCESS_KEY:?set OBJECT_STORAGE_ACCESS_KEY in .env}
+      OBJECT_STORAGE_SECRET_KEY: ${OBJECT_STORAGE_SECRET_KEY:?set OBJECT_STORAGE_SECRET_KEY in .env}
     ports:
-      - "127.0.0.1:${MINIO_API_PORT:-9000}:9000"
-      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
+      - "127.0.0.1:${OBJECT_STORAGE_PORT:-9000}:8333"
     volumes:
-      - minio_data:/data
+      - object_storage_data:/data
     networks: [private]
 
   backend:
@@ -227,7 +234,7 @@ networks:
 
 volumes:
   postgres_data:
-  minio_data:
+  object_storage_data:
   prometheus_data:
   alertmanager_data:
   grafana_data:

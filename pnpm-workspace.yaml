@@ -20,5 +20,7 @@ allowBuilds:
   prisma: true
 
 catalog:
+  '@aws-sdk/client-s3': 3.1139.0
+  '@aws-sdk/s3-request-presigner': 3.1139.0
   react-markdown: 10.1.0
   remark-gfm: 4.0.1

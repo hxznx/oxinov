@@ -25,9 +25,12 @@
     "openapi": "node dist/openapi.js",
     "test": "jest --config jest.config.js --selectProjects unit",
     "test:integration": "jest --config jest.config.js --selectProjects integration --runInBand",
-    "test:all": "jest --config jest.config.js --runInBand"
+    "test:all": "jest --config jest.config.js --runInBand",
+    "media:bucket": "node scripts/media-bucket.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
     "@nestjs/common": "11.2.6",
     "@nestjs/core": "11.2.6",
     "@nestjs/platform-express": "11.2.6",

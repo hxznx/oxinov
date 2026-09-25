@@ -65,6 +65,8 @@ model Tenant {
   results        ExamResult[]
   auditEvents    AuditEvent[]
   invites        TenantInvite[]
+  mediaAssets    MediaAsset[]
+  mediaProgress  MediaProgress[]
 
   @@map("tenants")
 }
@@ -88,6 +90,8 @@ model UserProfile {
   attempts       ExamAttempt[]
   auditEvents    AuditEvent[]
   invitesCreated TenantInvite[]
+  mediaUploaded  MediaAsset[]
+  mediaProgress  MediaProgress[]
 
   @@map("user_profiles")
 }
@@ -306,14 +310,79 @@ model Lesson {
   isPreview    Boolean    @default(false) @map("is_preview")
   isRequired   Boolean    @default(true) @map("is_required")
   durationSec  Int?       @map("duration_sec")
+  /// Video or audio for VIDEO and AUDIO lessons (FR-COURSE-202/205); shared by copied draft versions.
+  mediaAssetId String?    @map("media_asset_id") @db.Uuid
   createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
 
-  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  section Section @relation(fields: [tenantId, sectionId], references: [tenantId, id], onDelete: Restrict)
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  section    Section     @relation(fields: [tenantId, sectionId], references: [tenantId, id], onDelete: Restrict)
+  mediaAsset MediaAsset? @relation(fields: [tenantId, mediaAssetId], references: [tenantId, id], onDelete: Restrict)
 
   @@unique([tenantId, id])
   @@unique([tenantId, sectionId, position])
   @@map("lessons")
+}
+
+enum MediaKind {
+  VIDEO
+  AUDIO
+
+  @@map("media_kind")
+}
+
+enum MediaStatus {
+  UPLOADING
+  READY
+  FAILED
+
+  @@map("media_status")
+}
+
+/// An uploaded video or audio file in object storage (FR-COURSE-202/205). Browsers upload directly with
+/// a short-lived signed URL; the API checks the stored object before marking it READY.
+model MediaAsset {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String      @map("tenant_id") @db.Uuid
+  kind            MediaKind
+  status          MediaStatus @default(UPLOADING)
+  /// Object key; always prefixed with the tenant ID.
+  objectKey       String      @unique @map("object_key") @db.VarChar(300)
+  contentType     String      @map("content_type") @db.VarChar(100)
+  fileName        String      @map("file_name") @db.VarChar(255)
+  sizeBytes       BigInt      @map("size_bytes")
+  durationSec     Int?        @map("duration_sec")
+  createdByUserId String      @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  readyAt         DateTime?   @map("ready_at") @db.Timestamptz(3)
+
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  createdBy UserProfile     @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  lessons   Lesson[]
+  progress  MediaProgress[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId, createdAt])
+  @@map("media_assets")
+}
+
+/// Where a learner stopped and how much they have played (FR-PLAYER-402 resume and completion).
+model MediaProgress {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  mediaAssetId String    @map("media_asset_id") @db.Uuid
+  positionSec  Int       @default(0) @map("position_sec")
+  /// Seconds actually played (seeking ahead does not count), capped at the media duration.
+  watchedSec   Int       @default(0) @map("watched_sec")
+  completedAt  DateTime? @map("completed_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user       UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
+  mediaAsset MediaAsset  @relation(fields: [tenantId, mediaAssetId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, userId, mediaAssetId])
+  @@map("media_progress")
 }
 
 // ---------------------------------------------------------------------------

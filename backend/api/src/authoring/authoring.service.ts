@@ -113,6 +113,7 @@ export class AuthoringService {
               isPreview: lesson.isPreview,
               isRequired: lesson.isRequired,
               durationSec: lesson.durationSec,
+              mediaAssetId: lesson.mediaAssetId,
             })),
           });
         }
@@ -165,13 +166,16 @@ export class AuthoringService {
   addLesson(scope: TenantScope, user: AuthUser, courseId: string, sectionId: string, input: CreateLessonDto): Promise<DraftDto> {
     return this.edit(scope, user, courseId, async (tx, _course, draft) => {
       await this.draftSection(tx, scope.tenantId, draft.id, sectionId);
+      const kind = input.kind ?? 'TEXT';
+      if (input.mediaId) await this.readyMedia(tx, scope.tenantId, input.mediaId, kind);
       const last = await tx.lesson.aggregate({ where: { tenantId: scope.tenantId, sectionId }, _max: { position: true } });
       await tx.lesson.create({
         data: {
           tenantId: scope.tenantId,
           sectionId,
           title: input.title,
-          kind: input.kind ?? 'TEXT',
+          kind,
+          mediaAssetId: input.mediaId ?? null,
           position: (last._max.position ?? 0) + 1,
           bodyMarkdown: input.bodyMarkdown ?? '',
           isPreview: input.isPreview ?? false,
@@ -184,8 +188,13 @@ export class AuthoringService {
 
   updateLesson(scope: TenantScope, user: AuthUser, courseId: string, lessonId: string, input: UpdateLessonDto): Promise<DraftDto> {
     return this.edit(scope, user, courseId, async (tx, _course, draft) => {
-      await this.draftLesson(tx, scope.tenantId, draft.id, lessonId);
-      await tx.lesson.update({ where: { id: lessonId }, data: input });
+      const lesson = await this.draftLesson(tx, scope.tenantId, draft.id, lessonId);
+      const { mediaId, ...fields } = input;
+      if (mediaId) await this.readyMedia(tx, scope.tenantId, mediaId, lesson.kind);
+      await tx.lesson.update({
+        where: { id: lessonId },
+        data: { ...fields, ...(mediaId !== undefined ? { mediaAssetId: mediaId } : {}) },
+      });
     });
   }
 
@@ -326,17 +335,36 @@ export class AuthoringService {
   private async draftLesson(tx: Tx, tenantId: string, draftId: string, lessonId: string) {
     const lesson = await tx.lesson.findFirst({
       where: { id: lessonId, tenantId, section: { courseVersionId: draftId } },
-      select: { id: true, sectionId: true },
+      select: { id: true, sectionId: true, kind: true },
     });
     if (!lesson) throw Errors.notFound('Lesson');
     return lesson;
   }
 
   private async assertComplete(tx: Tx, tenantId: string, draftId: string): Promise<void> {
-    const sections = await tx.section.findMany({ where: { tenantId, courseVersionId: draftId }, select: { _count: { select: { lessons: true } } } });
-    if (sections.length === 0 || sections.some((section) => section._count.lessons === 0)) {
+    const sections = await tx.section.findMany({
+      where: { tenantId, courseVersionId: draftId },
+      select: { lessons: { select: { title: true, kind: true, bodyMarkdown: true, mediaAsset: { select: { status: true } } } } },
+    });
+    if (sections.length === 0 || sections.some((section) => section.lessons.length === 0)) {
       throw Errors.conflict('Add at least one chapter, and at least one lesson in every chapter, before sending for review.');
     }
+    // FR-COURSE-202: media lessons need their file and a transcript or other text alternative.
+    const incomplete = sections
+      .flatMap((section) => section.lessons)
+      .find((lesson) => lesson.kind !== 'TEXT' && (lesson.mediaAsset?.status !== 'READY' || !lesson.bodyMarkdown.trim()));
+    if (incomplete) {
+      throw Errors.conflict(`“${incomplete.title}” needs its ${incomplete.kind === 'VIDEO' ? 'video' : 'audio'} file and a transcript or text alternative before review.`);
+    }
+  }
+
+  /** A media file can be attached only when it is READY, in this tenant, and of the lesson's kind. */
+  private async readyMedia(tx: Tx, tenantId: string, mediaId: string, kind: string): Promise<void> {
+    if (kind === 'TEXT') throw Errors.conflict('Text lessons do not take a video or audio file.');
+    const asset = await tx.mediaAsset.findFirst({ where: { id: mediaId, tenantId }, select: { status: true, kind: true } });
+    if (!asset) throw Errors.notFound('Media');
+    if (asset.status !== 'READY') throw Errors.mediaNotUploaded();
+    if (asset.kind !== kind) throw Errors.conflict(`This lesson needs ${kind === 'VIDEO' ? 'a video' : 'an audio'} file.`);
   }
 
   private async park(tx: Tx, kind: 'section' | 'lesson', ids: string[]): Promise<void> {
@@ -357,7 +385,17 @@ export class AuthoringService {
   private async view(tx: Tx, scope: TenantScope, course: EditableCourse, versionId: string): Promise<DraftDto> {
     const version = await tx.courseVersion.findUniqueOrThrow({
       where: { id: versionId },
-      include: { sections: { orderBy: { position: 'asc' }, include: { lessons: { orderBy: { position: 'asc' } } } } },
+      include: {
+        sections: {
+          orderBy: { position: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { position: 'asc' },
+              include: { mediaAsset: { select: { id: true, status: true, fileName: true, durationSec: true } } },
+            },
+          },
+        },
+      },
     });
     return {
       courseId: course.id,
@@ -389,6 +427,7 @@ export class AuthoringService {
           isPreview: lesson.isPreview,
           isRequired: lesson.isRequired,
           durationSec: lesson.durationSec,
+          media: lesson.mediaAsset,
         })),
       })),
     };

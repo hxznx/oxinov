@@ -4,6 +4,7 @@ import type { AuthUser, TenantScope } from '../common/request';
 import { DatabaseContext, type Tx } from '../database/database-context.service';
 import type { Prisma } from '../generated/prisma/client';
 import { hasActiveEntitlement } from '../learning/access';
+import { ObjectStorage } from '../media/object-storage';
 import { canAuthor } from '../tenancy/roles';
 import type {
   CourseDetailDto,
@@ -24,7 +25,10 @@ type CourseWithVersions = Prisma.CourseGetPayload<{
 
 @Injectable()
 export class CatalogService {
-  constructor(private readonly db: DatabaseContext) {}
+  constructor(
+    private readonly db: DatabaseContext,
+    private readonly storage: ObjectStorage,
+  ) {}
 
   /**
    * Learners see published courses only (FR-CATALOG-301); instructors and administrators also see
@@ -126,9 +130,28 @@ export class CatalogService {
       const { versionId, entitled, author } = await this.loadVisibleCourse(tx, scope, user, courseId);
       const lesson = await tx.lesson.findFirst({
         where: { id: lessonId, tenantId: scope.tenantId, section: { courseVersionId: versionId } },
+        include: { mediaAsset: { select: { id: true, kind: true, status: true, contentType: true, objectKey: true, durationSec: true } } },
       });
       if (!lesson) throw Errors.notFound('Lesson');
       if (!lesson.isPreview && !entitled && !author) throw Errors.notEntitled();
+
+      // The playback URL is signed only now, after the access check above (FR-PLAYER-401).
+      let media: LessonDto['media'] = null;
+      if (lesson.mediaAsset?.status === 'READY' && this.storage.enabled) {
+        const progress = await tx.mediaProgress.findUnique({
+          where: { tenantId_userId_mediaAssetId: { tenantId: scope.tenantId, userId: user.userId, mediaAssetId: lesson.mediaAsset.id } },
+          select: { positionSec: true, completedAt: true },
+        });
+        media = {
+          id: lesson.mediaAsset.id,
+          kind: lesson.mediaAsset.kind,
+          contentType: lesson.mediaAsset.contentType,
+          url: await this.storage.presignPlayback(lesson.mediaAsset.objectKey),
+          durationSec: lesson.mediaAsset.durationSec,
+          resumeSec: progress?.positionSec ?? 0,
+          completed: progress?.completedAt != null,
+        };
+      }
       return {
         id: lesson.id,
         title: lesson.title,
@@ -137,6 +160,7 @@ export class CatalogService {
         isRequired: lesson.isRequired,
         durationSec: lesson.durationSec,
         bodyMarkdown: lesson.bodyMarkdown,
+        media,
       };
     });
   }

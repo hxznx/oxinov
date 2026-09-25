@@ -134,6 +134,17 @@ export class CourseDetailDto extends CourseSummaryDto {
   @ApiProperty({ type: CourseAccessDto }) access: CourseAccessDto;
 }
 
+export class LessonMediaDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ enum: ['VIDEO', 'AUDIO'] }) kind: string;
+  @ApiProperty() contentType: string;
+  @ApiProperty({ description: 'Short-lived signed playback URL, issued after the access check (FR-PLAYER-401).' }) url: string;
+  @ApiProperty({ nullable: true, type: Number }) durationSec: number | null;
+  @ApiProperty({ description: 'Where this learner stopped, in seconds (FR-PLAYER-402).' }) resumeSec: number;
+  @ApiProperty() completed: boolean;
+}
+
 export class LessonDto extends LessonOutlineDto {
   @ApiProperty() bodyMarkdown: string;
+  @ApiProperty({ type: LessonMediaDto, nullable: true }) media: LessonMediaDto | null;
 }

@@ -15,14 +15,15 @@ The older `frontend/web/` placeholder stays until a dedicated clean-up removes i
 | `/join?code=…` and "Join with a code" on the home page | FR-AUTH-102 |
 | `/w/{space}/people` join codes (create, share, turn off) and the member list, for administrators | FR-AUTH-102, FR-TENANT |
 | `/w/{space}/teach`, `/teach/{course}`, `/teach/{course}/lessons/{id}` teacher editing: courses, chapters, text lessons with preview, reordering, review and publishing | FR-COURSE-201, FR-COURSE-202 (text), FR-COURSE-203 |
+| Video and audio lessons: teacher upload with progress, player with speed, resume, completion, and transcript | FR-COURSE-202, FR-COURSE-205, FR-PLAYER-401, FR-PLAYER-402, FR-PLAYER-404 |
 | `/w/{space}/attempts/{id}` timed practice and mock exams with autosave, auto-submit, results, and answer review | FR-ASSESS-501, FR-ASSESS-502, FR-EXAM-1204 |
 
-Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Next slices: video and audio lessons, then the quiz builder.
+Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Next slices: the quiz builder, then assignments.
 
 ## Run locally
 
 1. Start the identity profile and run `bash devops/keycloak/configure-realm.sh` (creates the `oxinov-edu-web` client).
-2. Start the Edu API with `AUTH_ISSUER`, `AUTH_JWKS_URL`, and `AUTH_AUDIENCE=oxinov-lms-api`.
+2. Start the Edu API with `AUTH_ISSUER`, `AUTH_JWKS_URL`, and `AUTH_AUDIENCE=oxinov-lms-api`. For video and audio lessons, also run `docker compose up -d object-storage`, set the media settings in `backend/api/.env` (see its `.env.example`), and run `pnpm --filter @oxinov/lms-api media:bucket` once.
 3. Copy `.env.example` to `.env.local` and set `OIDC_CLIENT_SECRET` from Keycloak (Clients → `oxinov-edu-web` → Credentials) and a random `SESSION_SECRET`.
 4. `pnpm --filter @oxinov/lms-web dev` and open http://localhost:3002.
 

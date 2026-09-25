@@ -48,8 +48,36 @@ export interface CourseDetail extends CourseSummary {
   access: { entitled: boolean; canAuthor: boolean };
 }
 
+export interface LessonMedia {
+  id: string;
+  kind: 'VIDEO' | 'AUDIO';
+  contentType: string;
+  /** Short-lived signed playback URL. */
+  url: string;
+  durationSec: number | null;
+  resumeSec: number;
+  completed: boolean;
+}
+
 export interface Lesson extends LessonOutline {
   bodyMarkdown: string;
+  media: LessonMedia | null;
+}
+
+export interface UploadTicket {
+  mediaId: string;
+  uploadUrl: string;
+  headers: Record<string, string>;
+  expiresAt: string;
+}
+
+export interface MediaFile {
+  id: string;
+  kind: 'VIDEO' | 'AUDIO';
+  status: 'UPLOADING' | 'READY' | 'FAILED';
+  fileName: string;
+  sizeBytes: number;
+  durationSec: number | null;
 }
 
 export interface Enrollment {
@@ -143,6 +171,7 @@ export interface DraftLesson {
   isPreview: boolean;
   isRequired: boolean;
   durationSec: number | null;
+  media: { id: string; status: string; fileName: string; durationSec: number | null } | null;
 }
 
 export interface Draft {
@@ -254,6 +283,15 @@ export const eduApi = {
   /** Draft editing call: `path` is relative to the course's draft, for example `/sections`. */
   draftCall: (token: string, tenantId: string, courseId: string, method: 'POST' | 'PATCH' | 'PUT' | 'DELETE', path: string, body?: unknown) =>
     request<Draft>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft${path}`, { method, body }),
+  createUpload: (token: string, tenantId: string, body: { kind: 'VIDEO' | 'AUDIO'; contentType: string; sizeBytes: number; fileName: string }) =>
+    request<UploadTicket>(token, `${tenantPath(tenantId)}/media/uploads`, { method: 'POST', body }),
+  completeUpload: (token: string, tenantId: string, mediaId: string, durationSec: number) =>
+    request<MediaFile>(token, `${tenantPath(tenantId)}/media/${encodeURIComponent(mediaId)}/complete`, { method: 'POST', body: { durationSec } }),
+  saveProgress: (token: string, tenantId: string, mediaId: string, body: { positionSec: number; playedSec: number }) =>
+    request<{ positionSec: number; watchedSec: number; completed: boolean }>(token, `${tenantPath(tenantId)}/media/${encodeURIComponent(mediaId)}/progress`, {
+      method: 'PUT',
+      body,
+    }),
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

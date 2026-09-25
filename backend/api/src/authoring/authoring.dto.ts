@@ -16,8 +16,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-/** Lesson kinds authors can create today; video and audio arrive with media processing (FR-COURSE-202/205). */
-export const AUTHORABLE_LESSON_KINDS = ['TEXT'] as const;
+/** Lesson kinds authors can create (FR-COURSE-202/205). Video and audio lessons attach an uploaded media file. */
+export const AUTHORABLE_LESSON_KINDS = ['TEXT', 'VIDEO', 'AUDIO'] as const;
 
 export class UpdateDraftDto {
   @ApiPropertyOptional() @IsOptional() @IsString() @Length(3, 200) title?: string;
@@ -68,6 +68,11 @@ export class CreateLessonDto {
   @Length(0, 100_000)
   bodyMarkdown?: string;
 
+  @ApiPropertyOptional({ format: 'uuid', description: 'A READY media file of the same kind, for video and audio lessons.' })
+  @IsOptional()
+  @IsUUID()
+  mediaId?: string;
+
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isPreview?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isRequired?: boolean;
 
@@ -82,6 +87,10 @@ export class CreateLessonDto {
 export class UpdateLessonDto {
   @ApiPropertyOptional() @IsOptional() @IsString() @Length(1, 200) title?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() @Length(0, 100_000) bodyMarkdown?: string;
+  @ApiPropertyOptional({ format: 'uuid', nullable: true, description: 'Attach (or with null, detach) the lesson media.' })
+  @IsOptional()
+  @IsUUID()
+  mediaId?: string | null;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isPreview?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isRequired?: boolean;
   @ApiPropertyOptional({ nullable: true }) @IsOptional() @IsInt() @Min(1) @Max(86_400) durationSec?: number | null;
@@ -115,6 +124,8 @@ export class DraftLessonDto {
   @ApiProperty() isPreview: boolean;
   @ApiProperty() isRequired: boolean;
   @ApiProperty({ nullable: true, type: Number }) durationSec: number | null;
+  @ApiProperty({ nullable: true, description: 'Attached video or audio file.' })
+  media: { id: string; status: string; fileName: string; durationSec: number | null } | null;
 }
 
 export class DraftSectionDto {

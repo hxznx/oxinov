@@ -18,6 +18,9 @@ export type ErrorCode =
   | 'ATTEMPT_CLOSED'
   | 'EXAM_NOT_AVAILABLE'
   | 'INVITE_INVALID'
+  | 'MEDIA_UNAVAILABLE'
+  | 'MEDIA_NOT_UPLOADED'
+  | 'MEDIA_INVALID'
   | 'RATE_LIMITED'
   | 'INTERNAL_ERROR';
 
@@ -55,4 +58,9 @@ export const Errors = {
   /** One answer for unknown, expired, used-up, and revoked codes, so codes cannot be probed. */
   inviteInvalid: () =>
     new DomainError('INVITE_INVALID', 404, 'This join code is not valid or has expired.'),
+  mediaUnavailable: () =>
+    new DomainError('MEDIA_UNAVAILABLE', 503, 'Video and audio storage is not available right now.'),
+  mediaNotUploaded: () =>
+    new DomainError('MEDIA_NOT_UPLOADED', 409, 'The file has not finished uploading. Upload it again.'),
+  mediaInvalid: (message: string) => new DomainError('MEDIA_INVALID', 422, message),
 } as const;

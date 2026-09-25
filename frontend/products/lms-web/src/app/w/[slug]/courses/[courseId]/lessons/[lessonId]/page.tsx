@@ -5,6 +5,7 @@ import { LessonMarkdown } from '@/components/LessonMarkdown';
 import { eduApi } from '@/lib/edu-api.ts';
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
+import { MediaPlayer } from './MediaPlayer';
 
 type Props = { params: Promise<{ slug: string; courseId: string; lessonId: string }> };
 
@@ -46,9 +47,17 @@ export default async function LessonPage({ params }: Props) {
           ) : null}
         </div>
 
-        <article className="prose-ox card">
-          <LessonMarkdown>{lesson.bodyMarkdown}</LessonMarkdown>
-        </article>
+        {lesson.media ? <MediaPlayer media={lesson.media} tenantId={workspace.id} title={lesson.title} /> : null}
+        {lesson.kind !== 'TEXT' && !lesson.media ? (
+          <p className="notice">This {lesson.kind === 'VIDEO' ? 'video' : 'recording'} is not available right now. The transcript is below.</p>
+        ) : null}
+
+        {lesson.bodyMarkdown.trim() ? (
+          <article className="prose-ox card" aria-label={lesson.kind === 'TEXT' ? undefined : 'Transcript'}>
+            {lesson.kind === 'TEXT' ? null : <p className="hud-label">// Transcript</p>}
+            <LessonMarkdown>{lesson.bodyMarkdown}</LessonMarkdown>
+          </article>
+        ) : null}
 
         <nav aria-label="Lessons" className="flex flex-wrap justify-between gap-3">
           {previous ? (
