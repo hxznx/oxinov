@@ -203,6 +203,44 @@ export interface AuthoredCourse {
   updatedAt: string;
 }
 
+export interface QuizQuestion {
+  id: string;
+  type: QuestionType;
+  prompt: string;
+  passage: string | null;
+  choices: { id: string; text: string }[];
+  answerKey: string[];
+  explanation: string | null;
+  marks: number;
+  version: number;
+}
+
+export interface QuizSection {
+  id: string;
+  sectionKey: string;
+  title: string;
+  position: number;
+  questionCount: number;
+  available: number;
+}
+
+export interface Quiz {
+  id: string;
+  courseId: string;
+  title: string;
+  kind: 'PRACTICE' | 'MOCK';
+  status: 'DRAFT' | 'APPROVED' | 'RETIRED';
+  timeLimitMin: number;
+  passPercent: number;
+  maxAttempts: number | null;
+  answerRelease: 'AFTER_SUBMIT' | 'NEVER';
+  shuffleQuestions: boolean;
+  attempts: number;
+  editable: boolean;
+  sections: QuizSection[];
+  questions?: Record<string, QuizQuestion[]>;
+}
+
 export class EduApiError extends Error {
   constructor(
     readonly status: number,
@@ -292,6 +330,13 @@ export const eduApi = {
       method: 'PUT',
       body,
     }),
+  quizzes: (token: string, tenantId: string, courseId: string) => request<Quiz[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/quizzes`),
+  createQuiz: (token: string, tenantId: string, courseId: string, body: unknown) =>
+    request<Quiz>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/quizzes`, { method: 'POST', body }),
+  quiz: (token: string, tenantId: string, quizId: string) => request<Quiz>(token, `${tenantPath(tenantId)}/quizzes/${encodeURIComponent(quizId)}`),
+  /** Quiz builder call: `path` is relative to the quiz, for example `/sections`. */
+  quizCall: (token: string, tenantId: string, quizId: string, method: 'POST' | 'PATCH' | 'DELETE', path: string, body?: unknown) =>
+    request<Quiz>(token, `${tenantPath(tenantId)}/quizzes/${encodeURIComponent(quizId)}${path}`, { method, body }),
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

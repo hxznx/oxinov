@@ -13,8 +13,9 @@ import {
   submitForReview,
   withdrawFromReview,
 } from '@/app/teach-actions';
+import { createQuiz } from '@/app/quiz-actions';
 import { EduHeader } from '@/components/EduHeader';
-import { EduApiError, eduApi, type Draft } from '@/lib/edu-api.ts';
+import { EduApiError, eduApi, type Draft, type Quiz } from '@/lib/edu-api.ts';
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { courseState } from '@/lib/teach.ts';
@@ -44,6 +45,7 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
     if (!(caught instanceof EduApiError && caught.status === 404)) throw caught;
   }
 
+  const quizzes = await load(here, () => eduApi.quizzes(token, workspace.id, courseId));
   const hidden = { slug, tenantId: workspace.id, courseId };
   const Hidden = ({ extra = {} }: { extra?: Record<string, string> }) => (
     <>
@@ -97,6 +99,8 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
         ) : (
           <Editor draft={draft} slug={slug} hidden={hidden} Hidden={Hidden} />
         )}
+
+        <Quizzes quizzes={quizzes} editor={here} Hidden={Hidden} />
       </main>
     </>
   );
@@ -318,5 +322,63 @@ function MoveButton({
         {direction === 'up' ? '↑' : '↓'}
       </button>
     </form>
+  );
+}
+
+const QUIZ_STATUS: Record<Quiz['status'], string> = { DRAFT: 'Draft', APPROVED: 'Published', RETIRED: 'Closed' };
+
+/** Practice quizzes and mock exams for this course (FR-ASSESS-501). */
+function Quizzes({ quizzes, editor, Hidden }: { quizzes: Quiz[]; editor: string; Hidden: (props: { extra?: Record<string, string> }) => React.JSX.Element }) {
+  return (
+    <section aria-labelledby="quizzes-heading" className="grid gap-4">
+      <h2 id="quizzes-heading" className="text-2xl">
+        Quizzes and exams
+      </h2>
+      {quizzes.length === 0 ? <p className="card text-muted">No quizzes yet. Learners see published quizzes on the course page.</p> : null}
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {quizzes.map((quiz) => {
+          const questions = quiz.sections.reduce((sum, section) => sum + section.questionCount, 0);
+          return (
+            <li key={quiz.id}>
+              <Link href={`${editor}/quizzes/${quiz.id}`} className="card card-link block h-full">
+                <span className="text-xl">{quiz.title}</span>
+                <span className={`hud-label mt-1 block ${quiz.status === 'APPROVED' ? 'text-success' : ''}`}>
+                  // {QUIZ_STATUS[quiz.status]} · {quiz.kind === 'MOCK' ? 'Mock exam' : 'Practice'} · {questions} questions · {quiz.timeLimitMin} min
+                  {quiz.attempts > 0 ? ` · ${quiz.attempts} attempts` : ''}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <form action={createQuiz} className="card grid gap-3 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end">
+        <Hidden />
+        <div>
+          <label htmlFor="quiz-title" className="field-label">
+            New quiz title
+          </label>
+          <input id="quiz-title" name="title" className="field" placeholder="Chapter 1 check" maxLength={200} required minLength={3} />
+        </div>
+        <div>
+          <label htmlFor="quiz-kind" className="field-label">
+            Type
+          </label>
+          <select id="quiz-kind" name="kind" className="field" defaultValue="PRACTICE">
+            <option value="PRACTICE">Practice quiz</option>
+            <option value="MOCK">Mock exam</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="quiz-time" className="field-label">
+            Minutes
+          </label>
+          <input id="quiz-time" name="timeLimitMin" type="number" min={1} max={600} defaultValue={10} className="field w-24" />
+        </div>
+        <input type="hidden" name="passPercent" value="60" />
+        <button type="submit" className="btn btn-primary">
+          Create quiz
+        </button>
+      </form>
+    </section>
   );
 }

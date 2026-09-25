@@ -40,6 +40,8 @@ import { TenantGuard } from './tenancy/tenant.guard';
 import { AuthoringController } from './authoring/authoring.controller';
 import { AuthoringService } from './authoring/authoring.service';
 import { MediaController } from './media/media.controller';
+import { QuizzesController } from './quizzes/quizzes.controller';
+import { QuizzesService } from './quizzes/quizzes.service';
 import { MediaService } from './media/media.service';
 import { ObjectStorage } from './media/object-storage';
 import { InviteRedemptionController, TenantInvitesController } from './tenants/invites.controller';
@@ -84,6 +86,7 @@ export class AppModule implements NestModule {
       AuthoringService,
       ObjectStorage,
       MediaService,
+      QuizzesService,
       CatalogService,
       EnrollmentsService,
       ExamsService,
@@ -98,6 +101,7 @@ export class AppModule implements NestModule {
         CatalogController,
         AuthoringController,
         MediaController,
+        QuizzesController,
         EnrollmentsController,
         ExamsController,
       ],
