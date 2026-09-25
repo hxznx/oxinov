@@ -17,9 +17,10 @@ The older `frontend/web/` placeholder stays until a dedicated clean-up removes i
 | `/w/{space}/teach`, `/teach/{course}`, `/teach/{course}/lessons/{id}` teacher editing: courses, chapters, text lessons with preview, reordering, review and publishing | FR-COURSE-201, FR-COURSE-202 (text), FR-COURSE-203 |
 | Video and audio lessons: teacher upload with progress, player with speed, resume, completion, and transcript | FR-COURSE-202, FR-COURSE-205, FR-PLAYER-401, FR-PLAYER-402, FR-PLAYER-404 |
 | `/w/{space}/teach/{course}/quizzes/{id}` quiz builder: settings, sections drawing random questions, four question types, publish, close, copy | FR-ASSESS-501, FR-ASSESS-502 |
+| Assignments: learners hand in text, links, and files with drafts and deadlines; teachers grade with feedback and revision requests | FR-ASSESS-503 |
 | `/w/{space}/attempts/{id}` timed practice and mock exams with autosave, auto-submit, results, and answer review | FR-ASSESS-501, FR-ASSESS-502, FR-EXAM-1204 |
 
-Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Next slices: assignments with file upload and grading, then personal notes.
+Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Next slices: personal lesson notes, then books and PDF resources.
 
 ## Run locally
 

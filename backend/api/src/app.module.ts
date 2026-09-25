@@ -39,6 +39,8 @@ import { MetricsService } from './observability/metrics.service';
 import { TenantGuard } from './tenancy/tenant.guard';
 import { AuthoringController } from './authoring/authoring.controller';
 import { AuthoringService } from './authoring/authoring.service';
+import { AssignmentsLearningController, AssignmentsTeachingController } from './assignments/assignments.controller';
+import { AssignmentsService } from './assignments/assignments.service';
 import { MediaController } from './media/media.controller';
 import { QuizzesController } from './quizzes/quizzes.controller';
 import { QuizzesService } from './quizzes/quizzes.service';
@@ -87,6 +89,7 @@ export class AppModule implements NestModule {
       ObjectStorage,
       MediaService,
       QuizzesService,
+      AssignmentsService,
       CatalogService,
       EnrollmentsService,
       ExamsService,
@@ -102,6 +105,8 @@ export class AppModule implements NestModule {
         AuthoringController,
         MediaController,
         QuizzesController,
+        AssignmentsTeachingController,
+        AssignmentsLearningController,
         EnrollmentsController,
         ExamsController,
       ],

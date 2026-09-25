@@ -194,6 +194,59 @@ BEGIN
     END;
 END $$;
 
+-- 10c. Assignment work: a learner sees only their own submission and revisions, cannot write another
+-- learner's rows, and cannot grade; teaching staff of the tenant can read and grade.
+SELECT set_config('app.invite_code', '', true),
+       set_config('app.tenant_id', 'aaaaaaaa-0000-4000-8000-000000000001', true),
+       set_config('app.user_id', '11111111-0000-4000-8000-000000000003', true);
+INSERT INTO assignments (id, tenant_id, course_id, title, status, created_by_user_id)
+VALUES ('cccccccc-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-000000000201',
+        'Policy test', 'PUBLISHED', '11111111-0000-4000-8000-000000000002');
+INSERT INTO assignment_submissions (id, tenant_id, assignment_id, user_id, status, revision_count)
+VALUES ('cccccccc-0000-4000-8000-000000000002', 'aaaaaaaa-0000-4000-8000-000000000001', 'cccccccc-0000-4000-8000-000000000001',
+        '11111111-0000-4000-8000-000000000003', 'SUBMITTED', 1);
+INSERT INTO submission_revisions (tenant_id, submission_id, user_id, revision, text, submitted_at)
+VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'cccccccc-0000-4000-8000-000000000002', '11111111-0000-4000-8000-000000000003', 1, 'my answer', now());
+DO $$
+BEGIN
+    UPDATE submission_revisions SET outcome = 'PASSED', score = 100 WHERE submission_id = 'cccccccc-0000-4000-8000-000000000002';
+    ASSERT NOT FOUND, 'a learner graded their own work';
+    BEGIN
+        INSERT INTO submission_revisions (tenant_id, submission_id, user_id, revision, text, submitted_at, outcome)
+        VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'cccccccc-0000-4000-8000-000000000002', '11111111-0000-4000-8000-000000000003', 2, 'x', now(), 'PASSED');
+        RAISE EXCEPTION 'a learner inserted a pre-graded revision';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+END $$;
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000005', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM assignment_submissions) = 0, 'another learner saw a submission';
+    ASSERT (SELECT count(*) FROM submission_revisions) = 0, 'another learner saw a revision';
+    UPDATE assignment_submissions SET draft_text = 'tampered';
+    ASSERT NOT FOUND, 'another learner changed a submission';
+    BEGIN
+        INSERT INTO assignment_submissions (tenant_id, assignment_id, user_id)
+        VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'cccccccc-0000-4000-8000-000000000001', '11111111-0000-4000-8000-000000000003');
+        RAISE EXCEPTION 'a learner created a submission for someone else';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+END $$;
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000002', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM submission_revisions) = 1, 'the instructor should see the submitted revision';
+    UPDATE submission_revisions SET outcome = 'PASSED' WHERE submission_id = 'cccccccc-0000-4000-8000-000000000002';
+    ASSERT FOUND, 'the instructor could not grade';
+END $$;
+SELECT set_config('app.tenant_id', 'bbbbbbbb-0000-4000-8000-000000000001', true),
+       set_config('app.user_id', '11111111-0000-4000-8000-000000000004', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM submission_revisions) = 0, 'another tenant saw assignment work';
+    ASSERT (SELECT count(*) FROM assignments WHERE id = 'cccccccc-0000-4000-8000-000000000001') = 0, 'another tenant saw an assignment';
+END $$;
+
 ROLLBACK;
 
 -- 11. Context is transaction-local: nothing survives on this pooled connection.

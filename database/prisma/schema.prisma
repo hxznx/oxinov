@@ -67,6 +67,9 @@ model Tenant {
   invites        TenantInvite[]
   mediaAssets    MediaAsset[]
   mediaProgress  MediaProgress[]
+  assignments    Assignment[]
+  submissions    AssignmentSubmission[]
+  revisions      SubmissionRevision[]
 
   @@map("tenants")
 }
@@ -81,17 +84,20 @@ model UserProfile {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  tenantsCreated Tenant[]           @relation("TenantCreatedBy")
-  memberships    TenantMembership[]
-  coursesCreated Course[]
-  enrollments    Enrollment[]
-  entitlements   Entitlement[]
-  payments       Payment[]
-  attempts       ExamAttempt[]
-  auditEvents    AuditEvent[]
-  invitesCreated TenantInvite[]
-  mediaUploaded  MediaAsset[]
-  mediaProgress  MediaProgress[]
+  tenantsCreated     Tenant[]               @relation("TenantCreatedBy")
+  memberships        TenantMembership[]
+  coursesCreated     Course[]
+  enrollments        Enrollment[]
+  entitlements       Entitlement[]
+  payments           Payment[]
+  attempts           ExamAttempt[]
+  auditEvents        AuditEvent[]
+  invitesCreated     TenantInvite[]
+  mediaUploaded      MediaAsset[]
+  mediaProgress      MediaProgress[]
+  assignmentsCreated Assignment[]
+  submissions        AssignmentSubmission[]
+  gradedRevisions    SubmissionRevision[]   @relation("RevisionGrader")
 
   @@map("user_profiles")
 }
@@ -235,6 +241,7 @@ model Course {
   entitlements     Entitlement[]
   payments         Payment[]
   blueprints       ExamBlueprint[]
+  assignments      Assignment[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, slug])
@@ -383,6 +390,121 @@ model MediaProgress {
 
   @@unique([tenantId, userId, mediaAssetId])
   @@map("media_progress")
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+
+  @@map("assignment_status")
+}
+
+enum SubmissionStatus {
+  /// Started but never submitted; only the learner sees the draft.
+  DRAFT
+  SUBMITTED
+  REVISION_REQUESTED
+  PASSED
+  FAILED
+
+  @@map("submission_status")
+}
+
+/// Course work learners hand in as a file, a link, or text (FR-ASSESS-503).
+model Assignment {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String           @map("tenant_id") @db.Uuid
+  courseId        String           @map("course_id") @db.Uuid
+  title           String           @db.VarChar(200)
+  /// Markdown shown to learners.
+  instructions    String           @default("")
+  status          AssignmentStatus @default(DRAFT)
+  dueAt           DateTime?        @map("due_at") @db.Timestamptz(3)
+  allowLate       Boolean          @default(false) @map("allow_late")
+  acceptFile      Boolean          @default(true) @map("accept_file")
+  acceptUrl       Boolean          @default(false) @map("accept_url")
+  acceptText      Boolean          @default(true) @map("accept_text")
+  maxFileMb       Int              @default(25) @map("max_file_mb")
+  /// Optional points; grading is always passed, failed, or revision requested.
+  maxPoints       Int?             @map("max_points")
+  isRequired      Boolean          @default(true) @map("is_required")
+  createdByUserId String           @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course      Course                 @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  createdBy   UserProfile            @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  submissions AssignmentSubmission[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId, courseId])
+  @@map("assignments")
+}
+
+/// One learner's work on one assignment: a private draft plus the submitted revisions.
+model AssignmentSubmission {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String           @map("tenant_id") @db.Uuid
+  assignmentId     String           @map("assignment_id") @db.Uuid
+  userId           String           @map("user_id") @db.Uuid
+  status           SubmissionStatus @default(DRAFT)
+  draftText        String           @default("") @map("draft_text")
+  draftUrl         String?          @map("draft_url") @db.VarChar(2000)
+  draftFileKey     String?          @map("draft_file_key") @db.VarChar(400)
+  draftFileName    String?          @map("draft_file_name") @db.VarChar(255)
+  draftContentType String?          @map("draft_content_type") @db.VarChar(120)
+  draftSizeBytes   BigInt?          @map("draft_size_bytes")
+  /// Upload waiting for its completion check (key, type, and declared size).
+  pendingFileKey   String?          @map("pending_file_key") @db.VarChar(400)
+  pendingFileName  String?          @map("pending_file_name") @db.VarChar(255)
+  pendingType      String?          @map("pending_type") @db.VarChar(120)
+  pendingSizeBytes BigInt?          @map("pending_size_bytes")
+  revisionCount    Int              @default(0) @map("revision_count")
+  lastSubmittedAt  DateTime?        @map("last_submitted_at") @db.Timestamptz(3)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  assignment Assignment           @relation(fields: [tenantId, assignmentId], references: [tenantId, id], onDelete: Restrict)
+  user       UserProfile          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  revisions  SubmissionRevision[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, assignmentId, userId])
+  @@map("assignment_submissions")
+}
+
+/// A submitted version and the teacher's decision on it; every revision is kept (FR-ASSESS-503).
+model SubmissionRevision {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String            @map("tenant_id") @db.Uuid
+  submissionId   String            @map("submission_id") @db.Uuid
+  /// The learner who owns the submission (for row-level security).
+  userId         String            @map("user_id") @db.Uuid
+  revision       Int
+  text           String            @default("")
+  url            String?           @db.VarChar(2000)
+  fileKey        String?           @map("file_key") @db.VarChar(400)
+  fileName       String?           @map("file_name") @db.VarChar(255)
+  contentType    String?           @map("content_type") @db.VarChar(120)
+  sizeBytes      BigInt?           @map("size_bytes")
+  submittedAt    DateTime          @map("submitted_at") @db.Timestamptz(3)
+  late           Boolean           @default(false)
+  outcome        SubmissionStatus?
+  feedback       String?
+  score          Int?
+  gradedByUserId String?           @map("graded_by_user_id") @db.Uuid
+  gradedAt       DateTime?         @map("graded_at") @db.Timestamptz(3)
+
+  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  submission AssignmentSubmission @relation(fields: [tenantId, submissionId], references: [tenantId, id], onDelete: Restrict)
+  gradedBy   UserProfile?         @relation("RevisionGrader", fields: [gradedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, submissionId, revision])
+  @@map("submission_revisions")
 }
 
 // ---------------------------------------------------------------------------

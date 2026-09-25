@@ -241,6 +241,64 @@ export interface Quiz {
   questions?: Record<string, QuizQuestion[]>;
 }
 
+export type SubmissionStatus = 'DRAFT' | 'SUBMITTED' | 'REVISION_REQUESTED' | 'PASSED' | 'FAILED';
+
+export interface Assignment {
+  id: string;
+  courseId: string;
+  title: string;
+  instructions: string;
+  status: 'DRAFT' | 'PUBLISHED' | 'CLOSED';
+  dueAt: string | null;
+  allowLate: boolean;
+  acceptFile: boolean;
+  acceptUrl: boolean;
+  acceptText: boolean;
+  maxFileMb: number;
+  maxPoints: number | null;
+  isRequired: boolean;
+  counts?: { submitted: number; toGrade: number };
+  myStatus?: SubmissionStatus | null;
+}
+
+export interface Revision {
+  revision: number;
+  text: string;
+  url: string | null;
+  file: { name: string; sizeBytes: number; downloadUrl: string | null } | null;
+  submittedAt: string;
+  late: boolean;
+  outcome: SubmissionStatus | null;
+  feedback: string | null;
+  score: number | null;
+  gradedAt: string | null;
+}
+
+export interface MySubmission {
+  assignment: Assignment;
+  status: SubmissionStatus;
+  canEdit: boolean;
+  draft: { text: string; url: string | null; file: { name: string; sizeBytes: number } | null };
+  revisions: Revision[];
+}
+
+export interface SubmissionSummary {
+  id: string;
+  learner: { name: string | null; email: string | null };
+  status: SubmissionStatus;
+  revisions: number;
+  lastSubmittedAt: string | null;
+  late: boolean;
+}
+
+export interface SubmissionDetail {
+  id: string;
+  assignment: Assignment;
+  learner: { name: string | null; email: string | null };
+  status: SubmissionStatus;
+  revisions: Revision[];
+}
+
 export class EduApiError extends Error {
   constructor(
     readonly status: number,
@@ -337,6 +395,26 @@ export const eduApi = {
   /** Quiz builder call: `path` is relative to the quiz, for example `/sections`. */
   quizCall: (token: string, tenantId: string, quizId: string, method: 'POST' | 'PATCH' | 'DELETE', path: string, body?: unknown) =>
     request<Quiz>(token, `${tenantPath(tenantId)}/quizzes/${encodeURIComponent(quizId)}${path}`, { method, body }),
+  courseAssignments: (token: string, tenantId: string, courseId: string) =>
+    request<Assignment[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/assignments`),
+  manageAssignments: (token: string, tenantId: string, courseId: string) =>
+    request<Assignment[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/assignments/manage`),
+  createAssignment: (token: string, tenantId: string, courseId: string, body: unknown) =>
+    request<Assignment>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/assignments`, { method: 'POST', body }),
+  /** Teacher call on an assignment: '' (PATCH settings), '/publish', '/close'. */
+  assignmentCall: (token: string, tenantId: string, assignmentId: string, method: 'POST' | 'PATCH', path: string, body?: unknown) =>
+    request<Assignment>(token, `${tenantPath(tenantId)}/assignments/${encodeURIComponent(assignmentId)}${path}`, { method, body }),
+  assignmentSubmissions: (token: string, tenantId: string, assignmentId: string) =>
+    request<SubmissionSummary[]>(token, `${tenantPath(tenantId)}/assignments/${encodeURIComponent(assignmentId)}/submissions`),
+  submission: (token: string, tenantId: string, submissionId: string) =>
+    request<SubmissionDetail>(token, `${tenantPath(tenantId)}/submissions/${encodeURIComponent(submissionId)}`),
+  gradeSubmission: (token: string, tenantId: string, submissionId: string, body: unknown) =>
+    request<SubmissionDetail>(token, `${tenantPath(tenantId)}/submissions/${encodeURIComponent(submissionId)}/grade`, { method: 'POST', body }),
+  mySubmission: (token: string, tenantId: string, assignmentId: string) =>
+    request<MySubmission>(token, `${tenantPath(tenantId)}/assignments/${encodeURIComponent(assignmentId)}/mine`),
+  /** Learner call on their own work: '/draft' (PUT), '/upload', '/upload/complete', '/submit' (POST), '/file' (DELETE). */
+  mineCall: <T = MySubmission>(token: string, tenantId: string, assignmentId: string, method: 'POST' | 'PUT' | 'DELETE', path: string, body?: unknown) =>
+    request<T>(token, `${tenantPath(tenantId)}/assignments/${encodeURIComponent(assignmentId)}/mine${path}`, { method, body }),
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

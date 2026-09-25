@@ -47,6 +47,20 @@ export class ObjectStorage {
     return getSignedUrl(this.s3(), new GetObjectCommand({ Bucket: this.bucket, Key: key }), { expiresIn: PLAYBACK_URL_TTL_SEC });
   }
 
+  /** Signed download that always saves the file (never renders it inline), under its original name. */
+  presignDownload(key: string, fileName: string): Promise<string> {
+    const ascii = fileName.replace(/[^\x20-\x7e]/g, '_').replace(/["\\]/g, '_');
+    return getSignedUrl(
+      this.s3(),
+      new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        ResponseContentDisposition: `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+      }),
+      { expiresIn: PLAYBACK_URL_TTL_SEC },
+    );
+  }
+
   async head(key: string): Promise<{ sizeBytes: number } | null> {
     try {
       const result = await this.s3().send(new HeadObjectCommand({ Bucket: this.bucket, Key: key }));

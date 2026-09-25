@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { EduHeader } from '@/components/EduHeader';
 import { eduApi } from '@/lib/edu-api.ts';
+import { dueLabel, STATUS_LABEL, STATUS_TONE } from '@/lib/assignment.ts';
 import { formatDuration, formatPrice } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { EnrollButton } from './EnrollButton';
@@ -20,7 +21,12 @@ export default async function CoursePage({ params, searchParams }: Props) {
   const course = await load(here, () => eduApi.course(token, workspace.id, courseId));
   const { entitled } = course.access;
   // The API lists exams only to people with course access (FR-ASSESS-501).
-  const exams = entitled ? await load(here, () => eduApi.exams(token, workspace.id, courseId)) : [];
+  const [exams, assignments] = entitled
+    ? await Promise.all([
+        load(here, () => eduApi.exams(token, workspace.id, courseId)),
+        load(here, () => eduApi.courseAssignments(token, workspace.id, courseId)),
+      ])
+    : [[], []];
   const lessons = course.curriculum.flatMap((section) => section.lessons);
   const firstLesson = lessons.find((lesson) => entitled || lesson.isPreview);
 
@@ -91,6 +97,30 @@ export default async function CoursePage({ params, searchParams }: Props) {
               ))}
             </ol>
           </section>
+
+          {assignments.length > 0 ? (
+            <section aria-labelledby="assignments-heading">
+              <h2 id="assignments-heading" className="text-2xl">
+                Assignments
+              </h2>
+              <ul className="mt-4 grid gap-3">
+                {assignments.map((assignment) => {
+                  const status = assignment.myStatus ?? 'DRAFT';
+                  return (
+                    <li key={assignment.id}>
+                      <Link href={`${here}/assignments/${assignment.id}`} className="card card-link flex flex-wrap items-baseline justify-between gap-2">
+                        <span className="text-xl">{assignment.title}</span>
+                        <span className="flex flex-wrap gap-x-3 text-sm">
+                          <span className={STATUS_TONE[status]}>{STATUS_LABEL[status]}</span>
+                          <span className="text-muted">{assignment.status === 'CLOSED' ? 'Closed' : dueLabel(assignment.dueAt, workspace.timeZone)}</span>
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ) : null}
 
           {exams.length > 0 ? (
             <section aria-labelledby="exams-heading">

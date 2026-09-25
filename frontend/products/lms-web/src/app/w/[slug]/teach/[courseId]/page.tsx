@@ -14,8 +14,9 @@ import {
   withdrawFromReview,
 } from '@/app/teach-actions';
 import { createQuiz } from '@/app/quiz-actions';
+import { createAssignment } from '@/app/assignment-actions';
 import { EduHeader } from '@/components/EduHeader';
-import { EduApiError, eduApi, type Draft, type Quiz } from '@/lib/edu-api.ts';
+import { EduApiError, eduApi, type Assignment, type Draft, type Quiz } from '@/lib/edu-api.ts';
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { courseState } from '@/lib/teach.ts';
@@ -45,7 +46,10 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
     if (!(caught instanceof EduApiError && caught.status === 404)) throw caught;
   }
 
-  const quizzes = await load(here, () => eduApi.quizzes(token, workspace.id, courseId));
+  const [quizzes, assignments] = await Promise.all([
+    load(here, () => eduApi.quizzes(token, workspace.id, courseId)),
+    load(here, () => eduApi.manageAssignments(token, workspace.id, courseId)),
+  ]);
   const hidden = { slug, tenantId: workspace.id, courseId };
   const Hidden = ({ extra = {} }: { extra?: Record<string, string> }) => (
     <>
@@ -99,6 +103,8 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
         ) : (
           <Editor draft={draft} slug={slug} hidden={hidden} Hidden={Hidden} />
         )}
+
+        <Assignments assignments={assignments} editor={here} Hidden={Hidden} />
 
         <Quizzes quizzes={quizzes} editor={here} Hidden={Hidden} />
       </main>
@@ -377,6 +383,45 @@ function Quizzes({ quizzes, editor, Hidden }: { quizzes: Quiz[]; editor: string;
         <input type="hidden" name="passPercent" value="60" />
         <button type="submit" className="btn btn-primary">
           Create quiz
+        </button>
+      </form>
+    </section>
+  );
+}
+
+const ASSIGNMENT_STATUS: Record<Assignment['status'], string> = { DRAFT: 'Draft', PUBLISHED: 'Open', CLOSED: 'Closed' };
+
+/** Assignments for this course with work waiting to be graded (FR-ASSESS-503). */
+function Assignments({ assignments, editor, Hidden }: { assignments: Assignment[]; editor: string; Hidden: (props: { extra?: Record<string, string> }) => React.JSX.Element }) {
+  return (
+    <section aria-labelledby="assignments-heading" className="grid gap-4">
+      <h2 id="assignments-heading" className="text-2xl">
+        Assignments
+      </h2>
+      {assignments.length === 0 ? <p className="card text-muted">No assignments yet.</p> : null}
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {assignments.map((assignment) => (
+          <li key={assignment.id}>
+            <Link href={`${editor}/assignments/${assignment.id}`} className="card card-link block h-full">
+              <span className="text-xl">{assignment.title}</span>
+              <span className="hud-label mt-1 block">
+                // {ASSIGNMENT_STATUS[assignment.status]} · {assignment.counts?.submitted ?? 0} submitted
+              </span>
+              {assignment.counts?.toGrade ? <span className="mt-1 block text-warning">{assignment.counts.toGrade} waiting for grading</span> : null}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <form action={createAssignment} className="card flex flex-wrap items-end gap-2">
+        <Hidden />
+        <div className="flex-1">
+          <label htmlFor="assignment-title" className="field-label">
+            New assignment title
+          </label>
+          <input id="assignment-title" name="title" className="field" placeholder="Write a self-introduction" maxLength={200} required minLength={3} />
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Create assignment
         </button>
       </form>
     </section>
