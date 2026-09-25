@@ -321,6 +321,65 @@ export interface Note {
   updatedAt: string;
 }
 
+export interface StreamAuthor {
+  name: string;
+  /** Teaches this course or runs the school. */
+  teacher: boolean;
+}
+
+export interface HiddenPost {
+  reason: string;
+  at: string;
+}
+
+export interface Announcement {
+  id: string;
+  body: string;
+  author: StreamAuthor;
+  createdAt: string;
+  edited: boolean;
+}
+
+export interface Announcements {
+  canPost: boolean;
+  announcements: Announcement[];
+}
+
+export interface Answer {
+  id: string;
+  body: string;
+  author: StreamAuthor;
+  mine: boolean;
+  votes: number;
+  voted: boolean;
+  accepted: boolean;
+  hidden: HiddenPost | null;
+  createdAt: string;
+  edited: boolean;
+}
+
+export interface Question {
+  id: string;
+  /** The lesson in the current published version; null when the lesson was removed. */
+  lessonId: string | null;
+  lessonTitle: string;
+  body: string;
+  author: StreamAuthor;
+  mine: boolean;
+  acceptedAnswerId: string | null;
+  canAccept: boolean;
+  hidden: HiddenPost | null;
+  createdAt: string;
+  edited: boolean;
+  answers: Answer[];
+}
+
+export interface Questions {
+  /** The caller teaches the course and may hide posts. */
+  canModerate: boolean;
+  questions: Question[];
+}
+
 export class EduApiError extends Error {
   constructor(
     readonly status: number,
@@ -451,6 +510,23 @@ export const eduApi = {
       cache: 'no-store',
     });
     if (!response.ok) throw new EduApiError(response.status, 'UNAVAILABLE', 'The note could not be deleted.');
+  },
+  announcements: (token: string, tenantId: string, courseId: string) =>
+    request<Announcements>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/announcements`),
+  courseQuestions: (token: string, tenantId: string, courseId: string) =>
+    request<Questions>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/questions`),
+  lessonQuestions: (token: string, tenantId: string, courseId: string, lessonId: string) =>
+    request<Questions>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/questions`),
+  /** Class stream writes (FR-COMM-701/702); `path` is relative to the tenant. 204 responses resolve to null. */
+  streamCall: async (token: string, tenantId: string, method: 'POST' | 'PATCH' | 'PUT' | 'DELETE', path: string, body?: unknown): Promise<unknown> => {
+    if (method !== 'DELETE' || !path.startsWith('/announcements/')) return request<unknown>(token, `${tenantPath(tenantId)}${path}`, { method, body });
+    const response = await fetch(`${eduApiBaseUrl()}${tenantPath(tenantId)}${path}`, {
+      method,
+      headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new EduApiError(response.status, 'UNAVAILABLE', 'The announcement could not be deleted.');
+    return null;
   },
   startResourceUpload: (token: string, tenantId: string, courseId: string, body: { fileName: string; contentType: string; sizeBytes: number }) =>
     request<{ fileId: string; uploadUrl: string; headers: Record<string, string> }>(

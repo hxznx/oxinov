@@ -20,9 +20,10 @@ The older `frontend/web/` placeholder stays until a dedicated clean-up removes i
 | Assignments: learners hand in text, links, and files with drafts and deadlines; teachers grade with feedback and revision requests | FR-ASSESS-503 |
 | Private lesson notes with video moments, a course notes page, Markdown download, and print to PDF | FR-PLAYER-403 |
 | Books and resources on lessons: PDF, EPUB, Office, images, ZIP, and links; read PDFs in the browser or download | FR-COURSE-202, FR-COURSE-204 |
+| `/w/{space}/courses/{id}/stream` class stream: teacher announcements and every lesson question, plus Q&A under each lesson with best answers, upvotes, and teacher moderation | FR-COMM-701, FR-COMM-702 |
 | `/w/{space}/attempts/{id}` timed practice and mock exams with autosave, auto-submit, results, and answer review | FR-ASSESS-501, FR-ASSESS-502, FR-EXAM-1204 |
 
-Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Next slice: the class stream (announcements and lesson Q&A).
+Paid courses show that online payment is coming; they unlock only after a verified payment event (FR-CATALOG-303). Announcement emails and push notifications arrive with Amazon SES.
 
 ## Run locally
 

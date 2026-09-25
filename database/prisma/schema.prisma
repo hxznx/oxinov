@@ -73,6 +73,10 @@ model Tenant {
   lessonNotes     LessonNote[]
   resourceFiles   ResourceFile[]
   lessonResources LessonResource[]
+  announcements   CourseAnnouncement[]
+  lessonQuestions LessonQuestion[]
+  lessonAnswers   LessonAnswer[]
+  answerVotes     AnswerVote[]
 
   @@map("tenants")
 }
@@ -103,6 +107,10 @@ model UserProfile {
   gradedRevisions    SubmissionRevision[]   @relation("RevisionGrader")
   lessonNotes        LessonNote[]
   resourceFiles      ResourceFile[]
+  announcements      CourseAnnouncement[]
+  lessonQuestions    LessonQuestion[]       @relation("QuestionAuthor")
+  lessonAnswers      LessonAnswer[]         @relation("AnswerAuthor")
+  answerVotes        AnswerVote[]
 
   @@map("user_profiles")
 }
@@ -237,17 +245,19 @@ model Course {
   createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  tenant           Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  program          Program?        @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
-  publishedVersion CourseVersion?  @relation("CoursePublishedVersion", fields: [tenantId, publishedVersionId], references: [tenantId, id], onDelete: Restrict)
-  createdBy        UserProfile     @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
-  versions         CourseVersion[] @relation("CourseVersions")
+  tenant           Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  program          Program?             @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
+  publishedVersion CourseVersion?       @relation("CoursePublishedVersion", fields: [tenantId, publishedVersionId], references: [tenantId, id], onDelete: Restrict)
+  createdBy        UserProfile          @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  versions         CourseVersion[]      @relation("CourseVersions")
   enrollments      Enrollment[]
   entitlements     Entitlement[]
   payments         Payment[]
   blueprints       ExamBlueprint[]
   assignments      Assignment[]
   lessonNotes      LessonNote[]
+  announcements    CourseAnnouncement[]
+  lessonQuestions  LessonQuestion[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, slug])
@@ -588,6 +598,90 @@ model LessonResource {
   @@unique([tenantId, id])
   @@index([tenantId, lessonId])
   @@map("lesson_resources")
+}
+
+/// A teacher's post to everyone in a course (FR-COMM-702), shown in the course stream.
+model CourseAnnouncement {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String    @map("tenant_id") @db.Uuid
+  courseId  String    @map("course_id") @db.Uuid
+  authorId  String    @map("author_id") @db.Uuid
+  body      String
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  editedAt  DateTime? @map("edited_at") @db.Timestamptz(3)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course Course      @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  author UserProfile @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, courseId, createdAt])
+  @@map("course_announcements")
+}
+
+/// A learner's question on a lesson (FR-COMM-701); follows the lesson across versions by lineage.
+model LessonQuestion {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  courseId         String    @map("course_id") @db.Uuid
+  lessonLineageId  String    @map("lesson_lineage_id") @db.Uuid
+  lessonTitle      String    @map("lesson_title") @db.VarChar(200)
+  authorId         String    @map("author_id") @db.Uuid
+  body             String
+  acceptedAnswerId String?   @map("accepted_answer_id") @db.Uuid
+  hiddenAt         DateTime? @map("hidden_at") @db.Timestamptz(3)
+  hiddenReason     String?   @map("hidden_reason") @db.VarChar(500)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  editedAt         DateTime? @map("edited_at") @db.Timestamptz(3)
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course  Course         @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  author  UserProfile    @relation("QuestionAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  answers LessonAnswer[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId, courseId, lessonLineageId])
+  @@map("lesson_questions")
+}
+
+model LessonAnswer {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  questionId   String    @map("question_id") @db.Uuid
+  authorId     String    @map("author_id") @db.Uuid
+  body         String
+  hiddenAt     DateTime? @map("hidden_at") @db.Timestamptz(3)
+  hiddenReason String?   @map("hidden_reason") @db.VarChar(500)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  editedAt     DateTime? @map("edited_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  question LessonQuestion @relation(fields: [tenantId, questionId], references: [tenantId, id], onDelete: Restrict)
+  author   UserProfile    @relation("AnswerAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  votes    AnswerVote[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId, questionId])
+  @@map("lesson_answers")
+}
+
+/// One upvote per person per answer; removing the row undoes it (FR-COMM-701).
+model AnswerVote {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  answerId  String   @map("answer_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  answer LessonAnswer @relation(fields: [tenantId, answerId], references: [tenantId, id], onDelete: Restrict)
+  user   UserProfile  @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, answerId, userId])
+  @@map("answer_votes")
 }
 
 // ---------------------------------------------------------------------------

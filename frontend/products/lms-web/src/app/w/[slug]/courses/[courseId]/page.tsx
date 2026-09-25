@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { EduHeader } from '@/components/EduHeader';
-import { eduApi } from '@/lib/edu-api.ts';
+import { EduApiError, eduApi } from '@/lib/edu-api.ts';
 import { dueLabel, STATUS_LABEL, STATUS_TONE } from '@/lib/assignment.ts';
-import { formatDuration, formatPrice } from '@/lib/format.ts';
+import { formatDate, formatDuration, formatPrice } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { EnrollButton } from './EnrollButton';
 import { StartExamButton } from './StartExamButton';
@@ -27,6 +27,15 @@ export default async function CoursePage({ params, searchParams }: Props) {
         load(here, () => eduApi.courseAssignments(token, workspace.id, courseId)),
       ])
     : [[], []];
+  // The class stream is for people with course access and the course's teachers (FR-COMM-702).
+  const stream =
+    entitled || course.access.canAuthor
+      ? await eduApi.announcements(token, workspace.id, courseId).catch((error: unknown) => {
+          if (error instanceof EduApiError && (error.status === 403 || error.status === 404)) return null;
+          throw error;
+        })
+      : null;
+  const latest = stream?.announcements[0];
   const lessons = course.curriculum.flatMap((section) => section.lessons);
   const firstLesson = lessons.find((lesson) => entitled || lesson.isPreview);
 
@@ -42,6 +51,29 @@ export default async function CoursePage({ params, searchParams }: Props) {
             <h1 className="mt-2 text-4xl">{course.title}</h1>
             <p className="mt-3 text-lg text-muted">{course.summary}</p>
           </div>
+
+          {stream ? (
+            <section aria-labelledby="stream-heading" className="card grid gap-2">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <h2 id="stream-heading" className="text-2xl">
+                  Latest announcement
+                </h2>
+                <Link href={`${here}/stream`} className="text-sm">
+                  Class stream →
+                </Link>
+              </div>
+              {latest ? (
+                <>
+                  <p className="text-sm text-muted">
+                    {latest.author.name} · {formatDate(latest.createdAt, workspace.timeZone)}
+                  </p>
+                  <p className="line-clamp-4 whitespace-pre-line break-words">{latest.body}</p>
+                </>
+              ) : (
+                <p className="text-muted">{stream.canPost ? 'Nothing posted yet. Share news with the class from the stream.' : 'No announcements yet.'}</p>
+              )}
+            </section>
+          ) : null}
 
           {course.outcomes.length > 0 ? (
             <section aria-labelledby="outcomes-heading" className="card">
@@ -168,6 +200,9 @@ export default async function CoursePage({ params, searchParams }: Props) {
             {entitled ? (
               <>
                 <p className="notice">You are enrolled.</p>
+                <Link href={`${here}/stream`} className="btn btn-secondary justify-center">
+                  Class stream
+                </Link>
                 <Link href={`${here}/notes`} className="btn btn-secondary justify-center">
                   My notes
                 </Link>

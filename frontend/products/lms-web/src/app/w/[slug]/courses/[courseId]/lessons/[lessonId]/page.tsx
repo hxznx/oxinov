@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { EduHeader } from '@/components/EduHeader';
 import { LessonMarkdown } from '@/components/LessonMarkdown';
-import { eduApi } from '@/lib/edu-api.ts';
+import { EduApiError, eduApi } from '@/lib/edu-api.ts';
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { formatBytes } from '@/lib/assignment.ts';
 import { resourceLabel } from '@/lib/resources.ts';
+import { LessonQuestions } from './LessonQuestions';
 import { MediaPlayer } from './MediaPlayer';
 import { NotesPanel } from './NotesPanel';
 
@@ -28,6 +29,16 @@ export default async function LessonPage({ params }: Props) {
     load(here, () => eduApi.lesson(token, workspace.id, courseId, lessonId), `${courseHref}?locked=1`),
     load(here, () => eduApi.lessonNotes(token, workspace.id, courseId, lessonId), `${courseHref}?locked=1`),
   ]);
+
+  // Discussion is for people with course access; free previews show none (FR-COMM-701). A teacher
+  // who does not teach this course gets 403, so the panel is simply left out.
+  const questions =
+    course.access.entitled || course.access.canAuthor
+      ? await eduApi.lessonQuestions(token, workspace.id, courseId, lesson.id).catch((error: unknown) => {
+          if (error instanceof EduApiError && (error.status === 403 || error.status === 404)) return null;
+          throw error;
+        })
+      : null;
 
   const open = course.curriculum.flatMap((section) => section.lessons).filter((item) => course.access.entitled || item.isPreview);
   const index = open.findIndex((item) => item.id === lesson.id);
@@ -108,6 +119,18 @@ export default async function LessonPage({ params }: Props) {
           path={here}
           notesPage={`${courseHref}/notes`}
         />
+
+        {questions ? (
+          <LessonQuestions
+            tenantId={workspace.id}
+            courseId={courseId}
+            lessonId={lesson.id}
+            thread={questions}
+            path={here}
+            timeZone={workspace.timeZone}
+            streamPage={`${courseHref}/stream`}
+          />
+        ) : null}
 
         <nav aria-label="Lessons" className="flex flex-wrap justify-between gap-3">
           {previous ? (

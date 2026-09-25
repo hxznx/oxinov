@@ -278,6 +278,74 @@ BEGIN
     ASSERT (SELECT count(*) FROM lesson_notes) = 0, 'the tenant owner read a learner note';
 END $$;
 
+-- 10e. Class stream: only staff post announcements; learners post as themselves, cannot edit or hide
+-- other people's questions, and vote only as themselves; other tenants see nothing.
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000003', true);
+DO $$
+BEGIN
+    BEGIN
+        INSERT INTO course_announcements (tenant_id, course_id, author_id, body)
+        VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-000000000201', '11111111-0000-4000-8000-000000000003', 'learner announcement');
+        RAISE EXCEPTION 'a learner posted an announcement';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+    BEGIN
+        INSERT INTO lesson_questions (tenant_id, course_id, lesson_lineage_id, lesson_title, author_id, body)
+        VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-000000000201', gen_random_uuid(), 'x',
+                '11111111-0000-4000-8000-000000000005', 'asked as someone else');
+        RAISE EXCEPTION 'a question was posted as another learner';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+END $$;
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000002', true);
+INSERT INTO course_announcements (tenant_id, course_id, author_id, body)
+VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-000000000201', '11111111-0000-4000-8000-000000000002', 'Class on Friday');
+INSERT INTO lesson_questions (id, tenant_id, course_id, lesson_lineage_id, lesson_title, author_id, body)
+VALUES ('eeeeeeee-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-000000000201',
+        gen_random_uuid(), 'Policy lesson', '11111111-0000-4000-8000-000000000002', 'teacher question');
+INSERT INTO lesson_answers (id, tenant_id, question_id, author_id, body)
+VALUES ('eeeeeeee-0000-4000-8000-000000000002', 'aaaaaaaa-0000-4000-8000-000000000001', 'eeeeeeee-0000-4000-8000-000000000001',
+        '11111111-0000-4000-8000-000000000002', 'teacher answer');
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000003', true);
+INSERT INTO answer_votes (tenant_id, answer_id, user_id)
+VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'eeeeeeee-0000-4000-8000-000000000002', '11111111-0000-4000-8000-000000000003');
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM course_announcements) = 1, 'the learner should read announcements';
+    UPDATE lesson_questions SET hidden_at = now(), hidden_reason = 'learner hid it';
+    ASSERT NOT FOUND, 'a learner hid another person''s question';
+    UPDATE course_announcements SET body = 'changed';
+    ASSERT NOT FOUND, 'a learner edited an announcement';
+    DELETE FROM course_announcements;
+    ASSERT NOT FOUND, 'a learner deleted an announcement';
+    BEGIN
+        INSERT INTO answer_votes (tenant_id, answer_id, user_id)
+        VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'eeeeeeee-0000-4000-8000-000000000002', '11111111-0000-4000-8000-000000000005');
+        RAISE EXCEPTION 'a vote was cast for another learner';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+    BEGIN
+        DELETE FROM lesson_questions;
+        RAISE EXCEPTION 'questions can be deleted';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+END $$;
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000002', true);
+DO $$
+BEGIN
+    DELETE FROM answer_votes;
+    ASSERT NOT FOUND, 'a teacher removed a learner''s vote';
+    UPDATE lesson_answers SET hidden_at = now(), hidden_reason = 'moderated';
+    ASSERT FOUND, 'staff should be able to hide an answer';
+END $$;
+SELECT set_config('app.tenant_id', 'bbbbbbbb-0000-4000-8000-000000000001', true),
+       set_config('app.user_id', '11111111-0000-4000-8000-000000000004', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM course_announcements) + (SELECT count(*) FROM lesson_questions)
+         + (SELECT count(*) FROM lesson_answers) + (SELECT count(*) FROM answer_votes) = 0, 'another tenant read the class stream';
+END $$;
+
 ROLLBACK;
 
 -- 11. Context is transaction-local: nothing survives on this pooled connection.
