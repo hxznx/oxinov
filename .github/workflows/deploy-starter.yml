@@ -1,0 +1,145 @@
+name: Deploy starter server
+
+# Builds, scans, and publishes every Oxinov Edu service image, then deploys the release to the starter
+# server (ADR-017, devops/terraform/environments/production/starter) through Systems Manager.
+# AWS access is keyless: GitHub's OIDC token is exchanged for a short-lived role limited to these
+# image repositories and to running the deploy script on that one server.
+on:
+  workflow_dispatch:
+    inputs:
+      configure_realm:
+        description: Re-apply the sign-in realm settings (always done on the first deploy)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-starter
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ap-south-1
+  REGISTRY: 614130400110.dkr.ecr.ap-south-1.amazonaws.com
+  DEPLOY_ROLE: arn:aws:iam::614130400110:role/oxinov-starter-deploy
+  MEDIA_BUCKET: oxinov-edu-media-614130400110
+  BACKUP_BUCKET: oxinov-starter-backups-614130400110
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { repository: lms-api, dockerfile: devops/docker/Dockerfile, target: backend, context: . }
+          - { repository: platform-api, dockerfile: devops/docker/Dockerfile, target: platform-api, context: . }
+          - { repository: edu-web, dockerfile: devops/docker/Dockerfile, target: edu-web, context: . }
+          - { repository: platform-web, dockerfile: devops/docker/Dockerfile, target: platform-web, context: . }
+          - { repository: migrate, dockerfile: devops/docker/Dockerfile, target: migrate, context: . }
+          - { repository: mail-relay, dockerfile: devops/docker/Dockerfile, target: mail-relay, context: . }
+          - { repository: keycloak, dockerfile: devops/keycloak/Dockerfile, target: '', context: devops/keycloak }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.repository }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          target: ${{ matrix.target }}
+          load: true
+          tags: ${{ env.REGISTRY }}/oxinov/${{ matrix.repository }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.repository }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.repository }}
+      - name: Scan ${{ matrix.repository }}
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/oxinov/${{ matrix.repository }}:${{ github.sha }}
+          format: table
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Push ${{ matrix.repository }}
+        run: |
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$REGISTRY"
+          # Tags are immutable: re-running a deploy of the same commit reuses the pushed image.
+          if aws ecr describe-images --repository-name "oxinov/${{ matrix.repository }}" --image-ids imageTag=${{ github.sha }} >/dev/null 2>&1; then
+            echo "already pushed"
+          else
+            docker push "$REGISTRY/oxinov/${{ matrix.repository }}:${{ github.sha }}"
+          fi
+
+  deploy:
+    needs: images
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://edu.oxinov.com
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Run the deploy script on the server
+        env:
+          CONFIGURE_REALM: ${{ inputs.configure_realm && '1' || '0' }}
+        run: |
+          instance=$(aws ec2 describe-instances \
+            --filters Name=tag:Name,Values=oxinov-starter Name=instance-state-name,Values=running \
+            --query 'Reservations[0].Instances[0].InstanceId' --output text)
+          [ "$instance" != None ] || { echo "starter server not found"; exit 1; }
+
+          # The deploy files travel inside the command itself (no extra bucket or repository access).
+          mkdir -p bundle/devops/keycloak
+          cp devops/starter/compose.yml devops/starter/Caddyfile devops/starter/postgres-init.sh \
+             devops/starter/deploy.sh devops/starter/backup.sh bundle/
+          cp devops/keycloak/configure-realm.sh bundle/devops/keycloak/
+          payload=$(tar -C bundle -czf - . | base64 -w0)
+          [ "${#payload}" -lt 48000 ] || { echo "deploy bundle too large for one command"; exit 1; }
+
+          script="set -euo pipefail
+          mkdir -p /opt/oxinov && cd /opt/oxinov
+          echo '$payload' | base64 -d | tar -xzf - --no-same-owner
+          chmod 700 deploy.sh backup.sh
+          CONFIGURE_REALM=$CONFIGURE_REALM bash deploy.sh ${{ github.sha }} $REGISTRY $MEDIA_BUCKET $BACKUP_BUCKET"
+          params=$(jq -n --arg s "$script" '{commands: [$s], executionTimeout: ["2400"]}')
+          command=$(aws ssm send-command --instance-ids "$instance" --document-name AWS-RunShellScript \
+            --comment "deploy ${{ github.sha }}" --parameters "$params" --query Command.CommandId --output text)
+
+          for _ in $(seq 160); do
+            status=$(aws ssm get-command-invocation --command-id "$command" --instance-id "$instance" --query Status --output text 2>/dev/null || echo Pending)
+            case "$status" in Pending|InProgress|Delayed) sleep 15 ;; *) break ;; esac
+          done
+          aws ssm get-command-invocation --command-id "$command" --instance-id "$instance" \
+            --query '[StandardOutputContent, StandardErrorContent]' --output text
+          echo "deploy status: $status"
+          [ "$status" = Success ]
+
+      - name: Smoke test
+        run: |
+          check() {
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$1")
+            echo "$1 $code"
+            case "$code" in 2*|3*) ;; *) exit 1 ;; esac
+          }
+          check https://edu.oxinov.com/
+          check https://app.oxinov.com/
+          check https://id.oxinov.com/realms/oxinov/.well-known/openid-configuration
+          # The administration console must never be public.
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://id.oxinov.com/admin/)
+          echo "admin console $code"; [ "$code" = 404 ]
+          curl -sI https://edu.oxinov.com/ | grep -i '^strict-transport-security'

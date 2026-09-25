@@ -1,0 +1,30 @@
+#!/bin/bash
+# First boot of the starter server (ADR-017): Docker, a pinned Docker Compose, swap, and automatic
+# security updates. Applications arrive later through the deploy workflow over Systems Manager.
+set -euo pipefail
+
+dnf install -y docker dnf-automatic
+systemctl enable --now docker
+
+mkdir -p /usr/local/lib/docker/cli-plugins
+curl -fsSL -o /tmp/docker-compose \
+  "https://github.com/docker/compose/releases/download/${compose_version}/docker-compose-linux-x86_64"
+echo "${compose_sha256}  /tmp/docker-compose" | sha256sum -c -
+install -m 0755 /tmp/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
+rm -f /tmp/docker-compose
+
+# 2 GiB of swap absorbs short memory peaks (for example a Keycloak start during a deploy).
+if [ ! -f /swapfile ]; then
+  fallocate -l 2G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+  echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+swapon -a
+
+# Security updates only, applied daily without a reboot.
+sed -i 's/^upgrade_type.*/upgrade_type = security/; s/^apply_updates.*/apply_updates = yes/' /etc/dnf/automatic.conf
+systemctl enable --now dnf-automatic.timer
+
+mkdir -p /opt/oxinov
+chmod 700 /opt/oxinov

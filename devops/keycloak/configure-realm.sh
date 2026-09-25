@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
-# Configures the local `oxinov` realm on id.oxinov.com's Keycloak (ADR-011, ADR-016). Safe to re-run.
-# Usage, from the repository root after `docker compose --profile identity up -d --wait`:
+# Configures the `oxinov` realm on id.oxinov.com's Keycloak (ADR-011, ADR-016). Safe to re-run.
+# Local usage, from the repository root after `docker compose --profile identity up -d --wait`:
 #   bash devops/keycloak/configure-realm.sh
-# Local development only: staging and production realms are managed by reviewed infrastructure code.
+# The starter server (ADR-017) runs it from devops/starter/deploy.sh with SKIP_DOTENV=1, its own
+# COMPOSE_FILE, public URLs, the SMTP relay, and CLIENT_SECRETS_OUT to collect the web client secrets.
 set -euo pipefail
 # Git Bash on Windows rewrites container paths such as /opt/keycloak unless this is set.
 export MSYS_NO_PATHCONV=1
 cd "$(dirname "$0")/../.."
-set -a
-# shellcheck disable=SC1091
-. ./.env
-set +a
+if [ "${SKIP_DOTENV:-0}" != 1 ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . ./.env
+  set +a
+fi
 
 REALM=oxinov
 PORTAL_URL=${PLATFORM_WEB_URL:-http://localhost:3001}
 EDU_URL=${EDU_WEB_URL:-http://localhost:3002}
+SMTP_HOST=${SMTP_HOST:-mailpit}
+SMTP_PORT=${SMTP_PORT:-1025}
+SMTP_FROM=${SMTP_FROM:-no-reply@oxinov.test}
 
 kcadm() { docker compose exec -T keycloak /opt/keycloak/bin/kcadm.sh "$@"; }
 kc_login() {
@@ -157,4 +163,14 @@ web_client() {
 web_client oxinov-platform-web "$PORTAL_URL" oxinov-platform-api
 web_client oxinov-edu-web "$EDU_URL" oxinov-lms-api
 
-echo "Realm '$REALM' configured: sign-in at http://localhost:8080/realms/$REALM/account, email at http://localhost:8025"
+# Hands the confidential clients' secrets to the caller as `clientId=secret` lines (never printed).
+if [ -n "${CLIENT_SECRETS_OUT:-}" ]; then
+  : > "$CLIENT_SECRETS_OUT"
+  for client in oxinov-platform-web oxinov-edu-web; do
+    id=$(kc get clients -r "$REALM" -q "clientId=$client" --fields id --format csv --noquotes)
+    printf '%s=%s
+' "$client" "$(kc get "clients/$id/client-secret" -r "$REALM" --fields value --format csv --noquotes)" >> "$CLIENT_SECRETS_OUT"
+  done
+fi
+
+echo "Realm '$REALM' configured for $EDU_URL and $PORTAL_URL (email via $SMTP_HOST:$SMTP_PORT)"

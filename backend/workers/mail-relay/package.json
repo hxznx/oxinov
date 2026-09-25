@@ -1,0 +1,19 @@
+{
+  "name": "@oxinov/mail-relay",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private SMTP-to-Amazon-SES relay for the starter server; sends with the instance role, so no SMTP keys exist",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/main.mjs",
+    "test": "node --test src/relay.test.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sesv2": "catalog:",
+    "smtp-server": "catalog:"
+  }
+}

@@ -243,11 +243,49 @@ jobs:
       - run: terraform fmt -recursive -check devops/terraform
       - name: Validate every stack
         run: |
-          for stack in devops/terraform/bootstrap devops/terraform/environments/production/edge; do
+          for stack in devops/terraform/bootstrap devops/terraform/environments/production/edge devops/terraform/environments/production/starter; do
             terraform -chdir="$stack" init -backend=false -input=false
             terraform -chdir="$stack" validate
           done
       - run: node --test devops/terraform/environments/production/edge/site-router.test.mjs
+
+  starter:
+    # Starter server files (ADR-017): Compose file, shell scripts, and the SMTP-to-SES relay.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+          run_install: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile --filter @oxinov/mail-relay
+      - run: pnpm --filter @oxinov/mail-relay test
+      - name: Check the scripts and the Compose file
+        run: |
+          bash -n devops/starter/deploy.sh devops/starter/backup.sh devops/starter/postgres-init.sh devops/keycloak/configure-realm.sh
+          # Placeholder values only: Compose must accept the file as the deploy script renders it.
+          cat > devops/starter/.env <<'EOF'
+          IMAGE_TAG=ci
+          REGISTRY=registry.example
+          MEDIA_BUCKET=media
+          KEYCLOAK_ADMIN_USER=admin
+          POSTGRES_PASSWORD=x
+          APP_DB_PASSWORD=x
+          PLATFORM_APP_DB_PASSWORD=x
+          KEYCLOAK_DB_PASSWORD=x
+          KEYCLOAK_ADMIN_PASSWORD=x
+          EDU_SESSION_SECRET=x
+          PLATFORM_SESSION_SECRET=x
+          EDU_OIDC_CLIENT_SECRET=x
+          PLATFORM_OIDC_CLIENT_SECRET=x
+          EOF
+          docker compose -f devops/starter/compose.yml --profile tools config --quiet
+          rm devops/starter/.env
 
   lms-api-image:
     needs: api
