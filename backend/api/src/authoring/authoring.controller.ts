@@ -10,6 +10,10 @@ import {
   DraftDto,
   RejectDto,
   ReorderDto,
+  ResourceInputDto,
+  ResourceRenameDto,
+  ResourceUploadDto,
+  ResourceUploadTicketDto,
   SectionInputDto,
   UpdateDraftDto,
   UpdateLessonDto,
@@ -142,6 +146,63 @@ export class AuthoringController {
     @Body() body: ReorderDto,
   ): Draft {
     return { data: await this.authoring.reorder(scope, user, courseId, body) };
+  }
+
+  @Post('courses/:courseId/draft/resources/uploads')
+  @ApiOkResponse({ type: ResourceUploadTicketDto })
+  async startResourceUpload(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Body() body: ResourceUploadDto,
+  ): Promise<{ data: ResourceUploadTicketDto }> {
+    return { data: await this.authoring.startResourceUpload(scope, user, courseId, body) };
+  }
+
+  @Post('courses/:courseId/draft/resources/uploads/:fileId/complete')
+  @HttpCode(HttpStatus.OK)
+  async completeResourceUpload(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('fileId', ParseUUIDPipe) fileId: string,
+  ): Promise<{ data: { fileId: string; fileName: string } }> {
+    return { data: await this.authoring.completeResourceUpload(scope, user, courseId, fileId) };
+  }
+
+  @Post('courses/:courseId/draft/lessons/:lessonId/resources')
+  @ApiOkResponse({ type: DraftDto })
+  async addResource(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('lessonId', ParseUUIDPipe) lessonId: string,
+    @Body() body: ResourceInputDto,
+  ): Draft {
+    return { data: await this.authoring.addResource(scope, user, courseId, lessonId, body) };
+  }
+
+  @Patch('courses/:courseId/draft/resources/:resourceId')
+  @ApiOkResponse({ type: DraftDto })
+  async renameResource(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('resourceId', ParseUUIDPipe) resourceId: string,
+    @Body() body: ResourceRenameDto,
+  ): Draft {
+    return { data: await this.authoring.renameResource(scope, user, courseId, resourceId, body.title) };
+  }
+
+  @Delete('courses/:courseId/draft/resources/:resourceId')
+  @ApiOkResponse({ type: DraftDto })
+  async removeResource(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('resourceId', ParseUUIDPipe) resourceId: string,
+  ): Draft {
+    return { data: await this.authoring.removeResource(scope, user, courseId, resourceId) };
   }
 
   @Post('courses/:courseId/draft/submit')

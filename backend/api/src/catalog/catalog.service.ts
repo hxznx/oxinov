@@ -130,7 +130,13 @@ export class CatalogService {
       const { versionId, entitled, author } = await this.loadVisibleCourse(tx, scope, user, courseId);
       const lesson = await tx.lesson.findFirst({
         where: { id: lessonId, tenantId: scope.tenantId, section: { courseVersionId: versionId } },
-        include: { mediaAsset: { select: { id: true, kind: true, status: true, contentType: true, objectKey: true, durationSec: true } } },
+        include: {
+          mediaAsset: { select: { id: true, kind: true, status: true, contentType: true, objectKey: true, durationSec: true } },
+          resources: {
+            orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+            include: { file: { select: { objectKey: true, fileName: true, sizeBytes: true, contentType: true, status: true } } },
+          },
+        },
       });
       if (!lesson) throw Errors.notFound('Lesson');
       if (!lesson.isPreview && !entitled && !author) throw Errors.notEntitled();
@@ -161,8 +167,41 @@ export class CatalogService {
         durationSec: lesson.durationSec,
         bodyMarkdown: lesson.bodyMarkdown,
         media,
+        resources: await this.lessonResources(lesson.resources, entitled || author),
       };
     });
+  }
+
+  /** Free previews never expose course resources (FR-COURSE-204); files get short-lived signed links. */
+  private async lessonResources(
+    resources: {
+      id: string;
+      kind: string;
+      title: string;
+      url: string | null;
+      file: { objectKey: string; fileName: string; sizeBytes: bigint; contentType: string; status: string } | null;
+    }[],
+    allowed: boolean,
+  ): Promise<LessonDto['resources']> {
+    if (!allowed) return [];
+    const visible = resources.filter((resource) => resource.kind === 'LINK' || (resource.file?.status === 'READY' && this.storage.enabled));
+    return Promise.all(
+      visible.map(async (resource) => ({
+        id: resource.id,
+        kind: resource.kind,
+        title: resource.title,
+        url: resource.url,
+        file: resource.file
+          ? {
+              name: resource.file.fileName,
+              sizeBytes: Number(resource.file.sizeBytes),
+              contentType: resource.file.contentType,
+              downloadUrl: await this.storage.presignDownload(resource.file.objectKey, resource.file.fileName),
+              viewUrl: resource.file.contentType === 'application/pdf' ? await this.storage.presignInlinePdf(resource.file.objectKey) : null,
+            }
+          : null,
+      })),
+    );
   }
 
   /** Creates a DRAFT course with version 1 (FR-COURSE-201). Publication needs review later. */

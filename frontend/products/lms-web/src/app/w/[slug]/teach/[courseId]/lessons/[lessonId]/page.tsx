@@ -6,6 +6,7 @@ import { eduApi } from '@/lib/edu-api.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { LessonEditor } from './LessonEditor';
 import { MediaUploader } from './MediaUploader';
+import { ResourcesEditor } from './ResourcesEditor';
 
 export const metadata: Metadata = { title: 'Edit lesson' };
 
@@ -39,6 +40,7 @@ export default async function LessonEditorPage({ params }: Props) {
           <MediaUploader kind={lesson.kind} hidden={{ slug, tenantId: workspace.id, courseId, lessonId }} current={lesson.media} />
         ) : null}
         <LessonEditor hidden={{ slug, tenantId: workspace.id, courseId, lessonId }} lesson={lesson} />
+        <ResourcesEditor ids={{ slug, tenantId: workspace.id, courseId, lessonId }} resources={lesson.resources} />
         <p>
           <Link href={editor}>← Back to the course</Link>
         </p>

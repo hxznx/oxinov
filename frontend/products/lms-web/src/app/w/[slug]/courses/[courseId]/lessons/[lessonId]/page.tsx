@@ -5,6 +5,8 @@ import { LessonMarkdown } from '@/components/LessonMarkdown';
 import { eduApi } from '@/lib/edu-api.ts';
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
+import { formatBytes } from '@/lib/assignment.ts';
+import { resourceLabel } from '@/lib/resources.ts';
 import { MediaPlayer } from './MediaPlayer';
 import { NotesPanel } from './NotesPanel';
 
@@ -59,6 +61,42 @@ export default async function LessonPage({ params }: Props) {
             {lesson.kind === 'TEXT' ? null : <p className="hud-label">// Transcript</p>}
             <LessonMarkdown>{lesson.bodyMarkdown}</LessonMarkdown>
           </article>
+        ) : null}
+
+        {lesson.resources.length > 0 ? (
+          <section aria-labelledby="resources-heading" className="card grid gap-3">
+            <h2 id="resources-heading" className="text-2xl">
+              Books and resources
+            </h2>
+            <ul className="grid gap-2">
+              {lesson.resources.map((resource) => (
+                <li key={resource.id} className="flex flex-wrap items-center justify-between gap-2 border border-line p-3">
+                  <span>
+                    <span className="hud-label mr-2">{resource.kind === 'LINK' ? 'Link' : resourceLabel(resource.file?.contentType ?? '')}</span>
+                    {resource.title}
+                    {resource.file ? <span className="ml-2 text-sm text-muted">{formatBytes(resource.file.sizeBytes)}</span> : null}
+                  </span>
+                  <span className="flex flex-wrap gap-2">
+                    {resource.kind === 'LINK' && resource.url ? (
+                      <a href={resource.url} className="btn btn-secondary text-sm" rel="noopener noreferrer" target="_blank">
+                        Open link
+                      </a>
+                    ) : null}
+                    {resource.file?.viewUrl ? (
+                      <a href={resource.file.viewUrl} className="btn btn-secondary text-sm" rel="noopener noreferrer" target="_blank">
+                        Read
+                      </a>
+                    ) : null}
+                    {resource.file ? (
+                      <a href={resource.file.downloadUrl} className="btn btn-secondary text-sm">
+                        Download
+                      </a>
+                    ) : null}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
         ) : null}
 
         <NotesPanel

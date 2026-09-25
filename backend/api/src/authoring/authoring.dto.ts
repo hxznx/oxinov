@@ -126,6 +126,8 @@ export class DraftLessonDto {
   @ApiProperty({ nullable: true, type: Number }) durationSec: number | null;
   @ApiProperty({ nullable: true, description: 'Attached video or audio file.' })
   media: { id: string; status: string; fileName: string; durationSec: number | null } | null;
+  @ApiProperty({ description: 'Files and links attached to the lesson.' })
+  resources: { id: string; kind: string; title: string; url: string | null; file: { name: string; sizeBytes: number; contentType: string } | null }[];
 }
 
 export class DraftSectionDto {
@@ -162,4 +164,34 @@ export class AuthoredCourseDto {
   @ApiProperty({ nullable: true, enum: ['DRAFT', 'IN_REVIEW'] }) draftStatus: string | null;
   @ApiProperty() mine: boolean;
   @ApiProperty() updatedAt: Date;
+}
+
+export class ResourceUploadDto {
+  @ApiProperty() @IsString() @Length(1, 255) fileName: string;
+  @ApiProperty() @IsString() @Length(3, 120) contentType: string;
+  @ApiProperty() @IsInt() @Min(1) @Max(100 * 1024 * 1024) sizeBytes: number;
+}
+
+export class ResourceInputDto {
+  @ApiProperty() @IsString() @Length(1, 200) title: string;
+  @ApiPropertyOptional({ format: 'uuid', description: 'A checked uploaded file.' }) @IsOptional() @IsUUID() fileId?: string;
+  @ApiPropertyOptional({ description: 'Or a web link (http or https).' }) @IsOptional() @IsString() @Length(8, 2000) url?: string;
+}
+
+export class ResourceRenameDto {
+  @ApiProperty() @IsString() @Length(1, 200) title: string;
+}
+
+export class ResourceUploadTicketDto {
+  @ApiProperty({ format: 'uuid' }) fileId: string;
+  @ApiProperty() uploadUrl: string;
+  @ApiProperty() headers: Record<string, string>;
+}
+
+export class DraftResourceDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ enum: ['FILE', 'LINK'] }) kind: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ nullable: true, type: String }) url: string | null;
+  @ApiProperty({ nullable: true }) file: { name: string; sizeBytes: number; contentType: string } | null;
 }

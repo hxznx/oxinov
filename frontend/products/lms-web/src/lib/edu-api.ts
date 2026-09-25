@@ -59,9 +59,19 @@ export interface LessonMedia {
   completed: boolean;
 }
 
+export interface LessonResource {
+  id: string;
+  kind: 'FILE' | 'LINK';
+  title: string;
+  url: string | null;
+  file: { name: string; sizeBytes: number; contentType: string; downloadUrl: string; viewUrl: string | null } | null;
+}
+
 export interface Lesson extends LessonOutline {
   bodyMarkdown: string;
   media: LessonMedia | null;
+  /** Empty on free previews for people without course access. */
+  resources: LessonResource[];
 }
 
 export interface UploadTicket {
@@ -172,6 +182,7 @@ export interface DraftLesson {
   isRequired: boolean;
   durationSec: number | null;
   media: { id: string; status: string; fileName: string; durationSec: number | null } | null;
+  resources: { id: string; kind: 'FILE' | 'LINK'; title: string; url: string | null; file: { name: string; sizeBytes: number; contentType: string } | null }[];
 }
 
 export interface Draft {
@@ -441,6 +452,18 @@ export const eduApi = {
     });
     if (!response.ok) throw new EduApiError(response.status, 'UNAVAILABLE', 'The note could not be deleted.');
   },
+  startResourceUpload: (token: string, tenantId: string, courseId: string, body: { fileName: string; contentType: string; sizeBytes: number }) =>
+    request<{ fileId: string; uploadUrl: string; headers: Record<string, string> }>(
+      token,
+      `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft/resources/uploads`,
+      { method: 'POST', body },
+    ),
+  completeResourceUpload: (token: string, tenantId: string, courseId: string, fileId: string) =>
+    request<{ fileId: string; fileName: string }>(
+      token,
+      `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft/resources/uploads/${encodeURIComponent(fileId)}/complete`,
+      { method: 'POST' },
+    ),
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

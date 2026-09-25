@@ -144,7 +144,18 @@ export class LessonMediaDto {
   @ApiProperty() completed: boolean;
 }
 
+export class LessonResourceDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ enum: ['FILE', 'LINK'] }) kind: string;
+  @ApiProperty() title: string;
+  @ApiProperty({ nullable: true, type: String }) url: string | null;
+  @ApiProperty({ nullable: true, description: 'Short-lived links; viewUrl opens PDFs in the browser.' })
+  file: { name: string; sizeBytes: number; contentType: string; downloadUrl: string; viewUrl: string | null } | null;
+}
+
 export class LessonDto extends LessonOutlineDto {
   @ApiProperty() bodyMarkdown: string;
   @ApiProperty({ type: LessonMediaDto, nullable: true }) media: LessonMediaDto | null;
+  @ApiProperty({ type: [LessonResourceDto], description: 'Only for learners with course access and teachers; never on free previews (FR-COURSE-204).' })
+  resources: LessonResourceDto[];
 }

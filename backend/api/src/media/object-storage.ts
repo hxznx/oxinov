@@ -61,6 +61,15 @@ export class ObjectStorage {
     );
   }
 
+  /** Signed link that opens a PDF in the browser's viewer; only for PDFs, served from the storage domain. */
+  presignInlinePdf(key: string): Promise<string> {
+    return getSignedUrl(
+      this.s3(),
+      new GetObjectCommand({ Bucket: this.bucket, Key: key, ResponseContentDisposition: 'inline', ResponseContentType: 'application/pdf' }),
+      { expiresIn: PLAYBACK_URL_TTL_SEC },
+    );
+  }
+
   async head(key: string): Promise<{ sizeBytes: number } | null> {
     try {
       const result = await this.s3().send(new HeadObjectCommand({ Bucket: this.bucket, Key: key }));

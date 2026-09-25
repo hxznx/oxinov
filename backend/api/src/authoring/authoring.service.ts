@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { DomainError, Errors } from '../common/errors';
 import type { AuthUser, TenantScope } from '../common/request';
 import { DatabaseContext, type Tx } from '../database/database-context.service';
+import { safeFileName } from '../media/media-rules';
+import { ObjectStorage } from '../media/object-storage';
 import { hasRole } from '../tenancy/roles';
+import { resourceFileProblem, resourceLooksLike } from './resource-files';
 import type {
   AuthoredCourseDto,
   CreateLessonDto,
   DraftDto,
   ReorderDto,
+  ResourceInputDto,
+  ResourceUploadDto,
+  ResourceUploadTicketDto,
   UpdateDraftDto,
   UpdateLessonDto,
 } from './authoring.dto';
@@ -16,6 +23,8 @@ type EditableCourse = { id: string; createdByUserId: string; status: string; pri
 type DraftVersion = { id: string; status: string; version: number };
 
 const courseSelect = { id: true, createdByUserId: true, status: true, priceMinor: true, currency: true, publishedVersionId: true } as const;
+
+const invalidResource = (message: string) => new DomainError('VALIDATION_FAILED', 400, message);
 
 const invalidOrder = () =>
   new DomainError('VALIDATION_FAILED', 400, 'The new order must list every chapter and lesson of the draft exactly once.');
@@ -27,7 +36,10 @@ const invalidOrder = () =>
  */
 @Injectable()
 export class AuthoringService {
-  constructor(private readonly db: DatabaseContext) {}
+  constructor(
+    private readonly db: DatabaseContext,
+    private readonly storage: ObjectStorage,
+  ) {}
 
   /** Courses the caller may edit, with the state of any open draft. */
   listCourses(scope: TenantScope, user: AuthUser): Promise<AuthoredCourseDto[]> {
@@ -79,7 +91,9 @@ export class AuthoringService {
       const source = await tx.courseVersion.findFirst({
         where: { tenantId: scope.tenantId, courseId, ...(course.publishedVersionId ? { id: course.publishedVersionId } : {}) },
         orderBy: { version: 'desc' },
-        include: { sections: { orderBy: { position: 'asc' }, include: { lessons: { orderBy: { position: 'asc' } } } } },
+        include: {
+          sections: { orderBy: { position: 'asc' }, include: { lessons: { orderBy: { position: 'asc' }, include: { resources: true } } } },
+        },
       });
       if (!source) throw Errors.notFound('Course');
       const latest = await tx.courseVersion.aggregate({ where: { tenantId: scope.tenantId, courseId }, _max: { version: true } });
@@ -102,8 +116,10 @@ export class AuthoringService {
           data: { tenantId: scope.tenantId, courseVersionId: draft.id, title: section.title, position: section.position },
         });
         if (section.lessons.length > 0) {
+          const copies = section.lessons.map((lesson) => ({ lesson, id: randomUUID() }));
           await tx.lesson.createMany({
-            data: section.lessons.map((lesson) => ({
+            data: copies.map(({ lesson, id }) => ({
+              id,
               tenantId: scope.tenantId,
               sectionId: copy.id,
               title: lesson.title,
@@ -118,6 +134,18 @@ export class AuthoringService {
               lineageId: lesson.lineageId,
             })),
           });
+          const resources = copies.flatMap(({ lesson, id }) =>
+            lesson.resources.map((resource) => ({
+              tenantId: scope.tenantId,
+              lessonId: id,
+              kind: resource.kind,
+              title: resource.title,
+              resourceFileId: resource.resourceFileId,
+              url: resource.url,
+              position: resource.position,
+            })),
+          );
+          if (resources.length > 0) await tx.lessonResource.createMany({ data: resources });
         }
       }
       await this.audit(tx, scope, user, 'course.draft.started', courseId, { version: draft.version });
@@ -286,6 +314,94 @@ export class AuthoringService {
     });
   }
 
+  /** Step 1 of attaching a document: a signed upload URL for exactly this file (FR-COURSE-202). */
+  async startResourceUpload(scope: TenantScope, user: AuthUser, courseId: string, input: ResourceUploadDto): Promise<ResourceUploadTicketDto> {
+    if (!this.storage.enabled) throw Errors.mediaUnavailable();
+    const problem = resourceFileProblem(input.contentType, input.sizeBytes);
+    if (problem) throw Errors.mediaInvalid(problem);
+    const fileName = safeFileName(input.fileName);
+    const objectKey = `tenants/${scope.tenantId}/resources/${randomBytes(8).toString('hex')}/${fileName}`;
+    const file = await this.db.run(this.ctx(scope, user), async (tx) => {
+      await this.editableCourse(tx, scope, user, courseId);
+      return tx.resourceFile.create({
+        data: { tenantId: scope.tenantId, objectKey, contentType: input.contentType, fileName, sizeBytes: BigInt(input.sizeBytes), createdByUserId: user.userId },
+      });
+    });
+    return { fileId: file.id, uploadUrl: await this.storage.presignUpload(objectKey, input.contentType, input.sizeBytes), headers: { 'Content-Type': input.contentType } };
+  }
+
+  /** Step 2: the stored object must have the declared size and really be a document of that type. */
+  async completeResourceUpload(scope: TenantScope, user: AuthUser, courseId: string, fileId: string): Promise<{ fileId: string; fileName: string }> {
+    if (!this.storage.enabled) throw Errors.mediaUnavailable();
+    const ctx = this.ctx(scope, user);
+    const file = await this.db.run(ctx, async (tx) => {
+      await this.editableCourse(tx, scope, user, courseId);
+      const found = await tx.resourceFile.findFirst({ where: { id: fileId, tenantId: scope.tenantId, createdByUserId: user.userId } });
+      if (!found) throw Errors.notFound('File');
+      return found;
+    });
+    if (file.status === 'READY') return { fileId: file.id, fileName: file.fileName };
+    if (file.status === 'FAILED') throw Errors.mediaInvalid('This upload failed. Upload the file again.');
+    const stored = await this.storage.head(file.objectKey);
+    if (!stored) throw Errors.mediaNotUploaded();
+    if (stored.sizeBytes !== Number(file.sizeBytes) || !resourceLooksLike(file.contentType, await this.storage.prefix(file.objectKey))) {
+      await this.storage.remove(file.objectKey).catch(() => undefined);
+      await this.db.run(ctx, (tx) => tx.resourceFile.update({ where: { id: file.id }, data: { status: 'FAILED' } }));
+      throw Errors.mediaInvalid('This file does not match its type. Save it again as a PDF, EPUB, Office, image, text, or ZIP file.');
+    }
+    await this.db.run(ctx, (tx) => tx.resourceFile.update({ where: { id: file.id }, data: { status: 'READY' } }));
+    return { fileId: file.id, fileName: file.fileName };
+  }
+
+  /** Attaches a checked file or a web link to a draft lesson. */
+  addResource(scope: TenantScope, user: AuthUser, courseId: string, lessonId: string, input: ResourceInputDto): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.draftLesson(tx, scope.tenantId, draft.id, lessonId);
+      if (Boolean(input.fileId) === Boolean(input.url)) throw invalidResource('Attach either an uploaded file or a link.');
+      let url: string | null = null;
+      if (input.fileId) {
+        const file = await tx.resourceFile.findFirst({ where: { id: input.fileId, tenantId: scope.tenantId }, select: { status: true } });
+        if (!file) throw Errors.notFound('File');
+        if (file.status !== 'READY') throw Errors.mediaNotUploaded();
+      } else {
+        try {
+          const parsed = new URL((input.url ?? '').trim());
+          if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error('scheme');
+          url = parsed.toString();
+        } catch {
+          throw invalidResource('Enter a link that starts with https://');
+        }
+      }
+      const last = await tx.lessonResource.aggregate({ where: { tenantId: scope.tenantId, lessonId }, _max: { position: true } });
+      await tx.lessonResource.create({
+        data: {
+          tenantId: scope.tenantId,
+          lessonId,
+          kind: input.fileId ? 'FILE' : 'LINK',
+          title: input.title.trim(),
+          resourceFileId: input.fileId ?? null,
+          url,
+          position: (last._max.position ?? 0) + 1,
+        },
+      });
+    });
+  }
+
+  renameResource(scope: TenantScope, user: AuthUser, courseId: string, resourceId: string, title: string): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.draftResource(tx, scope.tenantId, draft.id, resourceId);
+      await tx.lessonResource.update({ where: { id: resourceId }, data: { title: title.trim() } });
+    });
+  }
+
+  /** Removes a resource from the draft; the published version keeps its own copy until the draft is approved. */
+  removeResource(scope: TenantScope, user: AuthUser, courseId: string, resourceId: string): Promise<DraftDto> {
+    return this.edit(scope, user, courseId, async (tx, _course, draft) => {
+      await this.draftResource(tx, scope.tenantId, draft.id, resourceId);
+      await tx.lessonResource.delete({ where: { id: resourceId } });
+    });
+  }
+
   // -------------------------------------------------------------------------------------------------
 
   private ctx(scope: TenantScope, user: AuthUser) {
@@ -343,6 +459,12 @@ export class AuthoringService {
     return lesson;
   }
 
+  private async draftResource(tx: Tx, tenantId: string, draftId: string, resourceId: string) {
+    const resource = await tx.lessonResource.findFirst({ where: { id: resourceId, tenantId, lesson: { section: { courseVersionId: draftId } } }, select: { id: true } });
+    if (!resource) throw Errors.notFound('Resource');
+    return resource;
+  }
+
   private async assertComplete(tx: Tx, tenantId: string, draftId: string): Promise<void> {
     const sections = await tx.section.findMany({
       where: { tenantId, courseVersionId: draftId },
@@ -393,7 +515,10 @@ export class AuthoringService {
           include: {
             lessons: {
               orderBy: { position: 'asc' },
-              include: { mediaAsset: { select: { id: true, status: true, fileName: true, durationSec: true } } },
+              include: {
+                mediaAsset: { select: { id: true, status: true, fileName: true, durationSec: true } },
+                resources: { orderBy: [{ position: 'asc' }, { createdAt: 'asc' }], include: { file: { select: { fileName: true, sizeBytes: true, contentType: true } } } },
+              },
             },
           },
         },
@@ -430,6 +555,13 @@ export class AuthoringService {
           isRequired: lesson.isRequired,
           durationSec: lesson.durationSec,
           media: lesson.mediaAsset,
+          resources: lesson.resources.map((resource) => ({
+            id: resource.id,
+            kind: resource.kind,
+            title: resource.title,
+            url: resource.url,
+            file: resource.file ? { name: resource.file.fileName, sizeBytes: Number(resource.file.sizeBytes), contentType: resource.file.contentType } : null,
+          })),
         })),
       })),
     };

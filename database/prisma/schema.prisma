@@ -47,30 +47,32 @@ model Tenant {
   createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  createdBy      UserProfile            @relation("TenantCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  memberships    TenantMembership[]
-  programs       Program[]
-  courses        Course[]
-  courseVersions CourseVersion[]
-  sections       Section[]
-  lessons        Lesson[]
-  enrollments    Enrollment[]
-  entitlements   Entitlement[]
-  payments       Payment[]
-  questions      Question[]
-  blueprints     ExamBlueprint[]
-  blueprintSects ExamBlueprintSection[]
-  attempts       ExamAttempt[]
-  attemptItems   ExamAttemptItem[]
-  results        ExamResult[]
-  auditEvents    AuditEvent[]
-  invites        TenantInvite[]
-  mediaAssets    MediaAsset[]
-  mediaProgress  MediaProgress[]
-  assignments    Assignment[]
-  submissions    AssignmentSubmission[]
-  revisions      SubmissionRevision[]
-  lessonNotes    LessonNote[]
+  createdBy       UserProfile            @relation("TenantCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  memberships     TenantMembership[]
+  programs        Program[]
+  courses         Course[]
+  courseVersions  CourseVersion[]
+  sections        Section[]
+  lessons         Lesson[]
+  enrollments     Enrollment[]
+  entitlements    Entitlement[]
+  payments        Payment[]
+  questions       Question[]
+  blueprints      ExamBlueprint[]
+  blueprintSects  ExamBlueprintSection[]
+  attempts        ExamAttempt[]
+  attemptItems    ExamAttemptItem[]
+  results         ExamResult[]
+  auditEvents     AuditEvent[]
+  invites         TenantInvite[]
+  mediaAssets     MediaAsset[]
+  mediaProgress   MediaProgress[]
+  assignments     Assignment[]
+  submissions     AssignmentSubmission[]
+  revisions       SubmissionRevision[]
+  lessonNotes     LessonNote[]
+  resourceFiles   ResourceFile[]
+  lessonResources LessonResource[]
 
   @@map("tenants")
 }
@@ -100,6 +102,7 @@ model UserProfile {
   submissions        AssignmentSubmission[]
   gradedRevisions    SubmissionRevision[]   @relation("RevisionGrader")
   lessonNotes        LessonNote[]
+  resourceFiles      ResourceFile[]
 
   @@map("user_profiles")
 }
@@ -327,9 +330,10 @@ model Lesson {
   lineageId    String     @default(dbgenerated("gen_random_uuid()")) @map("lineage_id") @db.Uuid
   createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
 
-  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  section    Section     @relation(fields: [tenantId, sectionId], references: [tenantId, id], onDelete: Restrict)
-  mediaAsset MediaAsset? @relation(fields: [tenantId, mediaAssetId], references: [tenantId, id], onDelete: Restrict)
+  tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  section    Section          @relation(fields: [tenantId, sectionId], references: [tenantId, id], onDelete: Restrict)
+  mediaAsset MediaAsset?      @relation(fields: [tenantId, mediaAssetId], references: [tenantId, id], onDelete: Restrict)
+  resources  LessonResource[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, sectionId, position])
@@ -535,6 +539,55 @@ model LessonNote {
   @@unique([tenantId, id])
   @@index([tenantId, userId, courseId, lessonLineageId])
   @@map("lesson_notes")
+}
+
+enum ResourceKind {
+  FILE
+  LINK
+
+  @@map("resource_kind")
+}
+
+/// An uploaded course document such as a PDF textbook or handout (FR-COURSE-202). Browsers upload it with
+/// a signed URL; the API checks the stored object before it can be attached to a lesson.
+model ResourceFile {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String      @map("tenant_id") @db.Uuid
+  status          MediaStatus @default(UPLOADING)
+  objectKey       String      @unique @map("object_key") @db.VarChar(300)
+  contentType     String      @map("content_type") @db.VarChar(120)
+  fileName        String      @map("file_name") @db.VarChar(255)
+  sizeBytes       BigInt      @map("size_bytes")
+  createdByUserId String      @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  createdBy UserProfile      @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  uses      LessonResource[]
+
+  @@unique([tenantId, id])
+  @@map("resource_files")
+}
+
+/// A file or link attached to one lesson of one course version; copied into new drafts with the lesson.
+model LessonResource {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String       @map("tenant_id") @db.Uuid
+  lessonId       String       @map("lesson_id") @db.Uuid
+  kind           ResourceKind
+  title          String       @db.VarChar(200)
+  resourceFileId String?      @map("resource_file_id") @db.Uuid
+  url            String?      @db.VarChar(2000)
+  position       Int
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  lesson Lesson        @relation(fields: [tenantId, lessonId], references: [tenantId, id], onDelete: Restrict)
+  file   ResourceFile? @relation(fields: [tenantId, resourceFileId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, lessonId])
+  @@map("lesson_resources")
 }
 
 // ---------------------------------------------------------------------------
