@@ -299,6 +299,17 @@ export interface SubmissionDetail {
   revisions: Revision[];
 }
 
+export interface Note {
+  id: string;
+  body: string;
+  timestampSec: number | null;
+  lessonTitle: string;
+  /** The lesson in the current published version; null when the lesson was removed. */
+  lessonId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export class EduApiError extends Error {
   constructor(
     readonly status: number,
@@ -415,6 +426,21 @@ export const eduApi = {
   /** Learner call on their own work: '/draft' (PUT), '/upload', '/upload/complete', '/submit' (POST), '/file' (DELETE). */
   mineCall: <T = MySubmission>(token: string, tenantId: string, assignmentId: string, method: 'POST' | 'PUT' | 'DELETE', path: string, body?: unknown) =>
     request<T>(token, `${tenantPath(tenantId)}/assignments/${encodeURIComponent(assignmentId)}/mine${path}`, { method, body }),
+  lessonNotes: (token: string, tenantId: string, courseId: string, lessonId: string) =>
+    request<Note[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/notes`),
+  courseNotes: (token: string, tenantId: string, courseId: string) => request<Note[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/notes`),
+  addNote: (token: string, tenantId: string, courseId: string, lessonId: string, body: { body: string; timestampSec: number | null }) =>
+    request<Note>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/notes`, { method: 'POST', body }),
+  updateNote: (token: string, tenantId: string, noteId: string, body: { body?: string; timestampSec?: number | null }) =>
+    request<Note>(token, `${tenantPath(tenantId)}/notes/${encodeURIComponent(noteId)}`, { method: 'PATCH', body }),
+  deleteNote: async (token: string, tenantId: string, noteId: string): Promise<void> => {
+    const response = await fetch(`${eduApiBaseUrl()}${tenantPath(tenantId)}/notes/${encodeURIComponent(noteId)}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!response.ok) throw new EduApiError(response.status, 'UNAVAILABLE', 'The note could not be deleted.');
+  },
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

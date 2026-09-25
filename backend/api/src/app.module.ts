@@ -42,6 +42,8 @@ import { AuthoringService } from './authoring/authoring.service';
 import { AssignmentsLearningController, AssignmentsTeachingController } from './assignments/assignments.controller';
 import { AssignmentsService } from './assignments/assignments.service';
 import { MediaController } from './media/media.controller';
+import { NotesController } from './notes/notes.controller';
+import { NotesService } from './notes/notes.service';
 import { QuizzesController } from './quizzes/quizzes.controller';
 import { QuizzesService } from './quizzes/quizzes.service';
 import { MediaService } from './media/media.service';
@@ -90,6 +92,7 @@ export class AppModule implements NestModule {
       MediaService,
       QuizzesService,
       AssignmentsService,
+      NotesService,
       CatalogService,
       EnrollmentsService,
       ExamsService,
@@ -107,6 +110,7 @@ export class AppModule implements NestModule {
         QuizzesController,
         AssignmentsTeachingController,
         AssignmentsLearningController,
+        NotesController,
         EnrollmentsController,
         ExamsController,
       ],

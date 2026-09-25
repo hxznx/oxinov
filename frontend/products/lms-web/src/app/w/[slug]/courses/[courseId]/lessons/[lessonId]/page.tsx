@@ -6,6 +6,7 @@ import { eduApi } from '@/lib/edu-api.ts';
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { MediaPlayer } from './MediaPlayer';
+import { NotesPanel } from './NotesPanel';
 
 type Props = { params: Promise<{ slug: string; courseId: string; lessonId: string }> };
 
@@ -20,9 +21,10 @@ export default async function LessonPage({ params }: Props) {
   const courseHref = `/w/${slug}/courses/${courseId}`;
   const here = `${courseHref}/lessons/${lessonId}`;
   const { token, workspace } = await workspaceContext(slug, here);
-  const [course, lesson] = await Promise.all([
+  const [course, lesson, notes] = await Promise.all([
     load(here, () => eduApi.course(token, workspace.id, courseId)),
     load(here, () => eduApi.lesson(token, workspace.id, courseId, lessonId), `${courseHref}?locked=1`),
+    load(here, () => eduApi.lessonNotes(token, workspace.id, courseId, lessonId), `${courseHref}?locked=1`),
   ]);
 
   const open = course.curriculum.flatMap((section) => section.lessons).filter((item) => course.access.entitled || item.isPreview);
@@ -58,6 +60,16 @@ export default async function LessonPage({ params }: Props) {
             <LessonMarkdown>{lesson.bodyMarkdown}</LessonMarkdown>
           </article>
         ) : null}
+
+        <NotesPanel
+          tenantId={workspace.id}
+          courseId={courseId}
+          lessonId={lesson.id}
+          notes={notes}
+          mediaKind={lesson.media ? lesson.media.kind : null}
+          path={here}
+          notesPage={`${courseHref}/notes`}
+        />
 
         <nav aria-label="Lessons" className="flex flex-wrap justify-between gap-3">
           {previous ? (

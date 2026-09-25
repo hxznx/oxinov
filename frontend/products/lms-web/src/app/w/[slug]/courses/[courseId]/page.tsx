@@ -168,6 +168,9 @@ export default async function CoursePage({ params, searchParams }: Props) {
             {entitled ? (
               <>
                 <p className="notice">You are enrolled.</p>
+                <Link href={`${here}/notes`} className="btn btn-secondary justify-center">
+                  My notes
+                </Link>
                 {firstLesson ? (
                   <Link href={`${here}/lessons/${firstLesson.id}`} className="btn btn-primary justify-center">
                     Start learning

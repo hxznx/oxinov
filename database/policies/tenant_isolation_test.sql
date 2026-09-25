@@ -247,6 +247,37 @@ BEGIN
     ASSERT (SELECT count(*) FROM assignments WHERE id = 'cccccccc-0000-4000-8000-000000000001') = 0, 'another tenant saw an assignment';
 END $$;
 
+-- 10d. Lesson notes are private to their owner: not even the course's teacher or the owner of the tenant
+-- can read or change them.
+SELECT set_config('app.tenant_id', 'aaaaaaaa-0000-4000-8000-000000000001', true),
+       set_config('app.user_id', '11111111-0000-4000-8000-000000000003', true);
+INSERT INTO lesson_notes (tenant_id, user_id, course_id, lesson_lineage_id, lesson_title, body)
+VALUES ('aaaaaaaa-0000-4000-8000-000000000001', '11111111-0000-4000-8000-000000000003', 'aaaaaaaa-0000-4000-8000-000000000201',
+        gen_random_uuid(), 'Policy lesson', 'private thought');
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM lesson_notes) = 1, 'the learner should see their note';
+    BEGIN
+        INSERT INTO lesson_notes (tenant_id, user_id, course_id, lesson_lineage_id, lesson_title, body)
+        VALUES ('aaaaaaaa-0000-4000-8000-000000000001', '11111111-0000-4000-8000-000000000005', 'aaaaaaaa-0000-4000-8000-000000000201',
+                gen_random_uuid(), 'x', 'written as someone else');
+        RAISE EXCEPTION 'a note was written for another learner';
+    EXCEPTION WHEN insufficient_privilege THEN NULL;
+    END;
+END $$;
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000002', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM lesson_notes) = 0, 'a teacher read a learner note';
+    DELETE FROM lesson_notes;
+    ASSERT NOT FOUND, 'a teacher deleted a learner note';
+END $$;
+SELECT set_config('app.user_id', '11111111-0000-4000-8000-000000000001', true);
+DO $$
+BEGIN
+    ASSERT (SELECT count(*) FROM lesson_notes) = 0, 'the tenant owner read a learner note';
+END $$;
+
 ROLLBACK;
 
 -- 11. Context is transaction-local: nothing survives on this pooled connection.

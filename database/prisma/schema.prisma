@@ -70,6 +70,7 @@ model Tenant {
   assignments    Assignment[]
   submissions    AssignmentSubmission[]
   revisions      SubmissionRevision[]
+  lessonNotes    LessonNote[]
 
   @@map("tenants")
 }
@@ -98,6 +99,7 @@ model UserProfile {
   assignmentsCreated Assignment[]
   submissions        AssignmentSubmission[]
   gradedRevisions    SubmissionRevision[]   @relation("RevisionGrader")
+  lessonNotes        LessonNote[]
 
   @@map("user_profiles")
 }
@@ -242,6 +244,7 @@ model Course {
   payments         Payment[]
   blueprints       ExamBlueprint[]
   assignments      Assignment[]
+  lessonNotes      LessonNote[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, slug])
@@ -319,6 +322,9 @@ model Lesson {
   durationSec  Int?       @map("duration_sec")
   /// Video or audio for VIDEO and AUDIO lessons (FR-COURSE-202/205); shared by copied draft versions.
   mediaAssetId String?    @map("media_asset_id") @db.Uuid
+  /// Stable identity of this lesson across course versions (copied into each new draft), so learner
+  /// data such as notes survives republishing.
+  lineageId    String     @default(dbgenerated("gen_random_uuid()")) @map("lineage_id") @db.Uuid
   createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
 
   tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
@@ -505,6 +511,30 @@ model SubmissionRevision {
   @@unique([tenantId, id])
   @@unique([tenantId, submissionId, revision])
   @@map("submission_revisions")
+}
+
+/// A learner's private note on a lesson, optionally at a video or audio moment (FR-PLAYER-403).
+/// Only its owner can read it; notes follow the lesson across course versions through its lineage.
+model LessonNote {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  courseId        String   @map("course_id") @db.Uuid
+  lessonLineageId String   @map("lesson_lineage_id") @db.Uuid
+  /// Lesson title when the note was last saved, for lists and exports.
+  lessonTitle     String   @map("lesson_title") @db.VarChar(200)
+  timestampSec    Int?     @map("timestamp_sec")
+  body            String
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user   UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
+  course Course      @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, userId, courseId, lessonLineageId])
+  @@map("lesson_notes")
 }
 
 // ---------------------------------------------------------------------------

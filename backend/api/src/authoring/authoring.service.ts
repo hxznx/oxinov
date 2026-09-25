@@ -114,6 +114,8 @@ export class AuthoringService {
               isRequired: lesson.isRequired,
               durationSec: lesson.durationSec,
               mediaAssetId: lesson.mediaAssetId,
+              // Same lesson in a new version: learner notes follow it.
+              lineageId: lesson.lineageId,
             })),
           });
         }
