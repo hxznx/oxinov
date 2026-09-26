@@ -56,6 +56,20 @@ if (existsSync(join(root, 'backend/products/lms-api/package-lock.json'))) {
   errors.push('Nested package-lock.json conflicts with the canonical root pnpm-lock.yaml');
 }
 
+// Nest keeps class identity per copy: a second @nestjs/core or @nestjs/common (for example after one
+// package moves to a new class-validator) makes shared guards unresolvable at startup.
+const lockfile = readFileSync(join(root, 'pnpm-lock.yaml'), 'utf8');
+for (const name of ['@nestjs/common', '@nestjs/core']) {
+  const variants = new Set(
+    [...lockfile.matchAll(new RegExp(`^  '${name}@([^']+)':$`, 'gm'))].map((match) => match[1]),
+  );
+  // The snapshots section lists each installed copy; the packages section adds the bare version once.
+  const copies = [...variants].filter((variant) => variant.includes('('));
+  if (copies.length > 1) {
+    errors.push(`pnpm-lock.yaml installs ${copies.length} copies of ${name}; align Nest's peers (class-validator, class-transformer) through the pnpm catalog`);
+  }
+}
+
 if (errors.length) {
   for (const error of errors) console.error(`ERROR: ${error}`);
   process.exit(1);

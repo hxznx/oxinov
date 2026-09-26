@@ -31,6 +31,8 @@
     "@types/node": "22.20.4",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
+    "class-transformer": "catalog:",
+    "class-validator": "catalog:",
     "jest": "29.7.0",
     "ts-jest": "29.4.13",
     "typescript": "5.9.3"
