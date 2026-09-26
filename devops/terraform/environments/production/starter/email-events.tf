@@ -1,5 +1,5 @@
-# Bounce and complaint handling for sign-in email (Amazon SES best practice; docs/marketing/SEO.md is
-# unrelated). Every message from oxinov.com goes through one configuration set that:
+# Bounce and complaint handling for sign-in email (Amazon SES best practice). Every message from
+# oxinov.com goes through one configuration set that:
 #   - suppresses addresses that hard-bounce or complain, so we never send to them again;
 #   - publishes bounce, complaint, reject, and rendering-failure events to an encrypted SNS topic that
 #     emails the operations mailbox; and

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { siteUrl } from '@/lib/seo';
+import { siteUrl } from '@/seo';
 
 // Generated once at build time for the static export.
 export const dynamic = 'force-static';

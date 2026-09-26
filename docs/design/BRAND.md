@@ -22,7 +22,7 @@ Naming rules:
 
 ## Brand strategy
 
-**Status:** Proposed 2026-09-26 for owner approval. Marketing and SEO plans build on it: [marketing](../marketing/MARKETING.md), [SEO](../marketing/SEO.md).
+**Status:** Proposed 2026-09-26 for owner approval. Marketing and SEO plans build on it: [marketing](../marketing/MARKETING.md), [SEO](../marketing/seo/README.md).
 
 Oxinov is a **global technology company** headquartered in Lalitpur. Its products are built for everyone, in every country, in **one language: English** (ADR-020). People who prefer another language read Oxinov through their browser's or device's built-in translation, so all Oxinov text is written to translate well. Local details that are not language (currency, payment method, time zone, date format) still follow the reader. The headquarters is part of the story, never a limit on who the products are for.
 
@@ -236,7 +236,7 @@ The website currently loads **5 families in 26 files (about 668 KB)** and preloa
 | Asset | Status | Needed for |
 | --- | --- | --- |
 | Logo files (6 SVG and PNG variants) | Done | Everything |
-| Social share images (1200 × 630) for the company and each product (short English text only) | Missing | Link previews on Facebook, WhatsApp, LinkedIn, X, LINE, and others (see [SEO](../marketing/SEO.md)) |
+| Social share images (1200 × 630) for the company and each product (short English text only) | Missing | Link previews on Facebook, WhatsApp, LinkedIn, X, LINE, and others (see [SEO](../marketing/seo/README.md)) |
 | Social profile set: avatar 400 × 400, Facebook cover 1640 × 624, YouTube banner 2560 × 1440 | Missing | Facebook, Instagram, TikTok, YouTube, LinkedIn |
 | Web app manifest and icons (192, 512, maskable) | Missing on the website | "Add to home screen" on Android |
 | Email signature and letterhead (Daylight colors) | Missing | Zoho mailboxes, invoices, proposals |

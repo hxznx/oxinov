@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
+import { noIndex } from '@/seo';
+
+export const metadata = { title: 'Page not found', ...noIndex };
 
 export default function NotFound() {
   return (

@@ -1,6 +1,6 @@
 # Marketing plan
 
-**Status:** Proposed 2026-09-26 for owner approval. **Owner:** founder. Builds on the [brand strategy](../design/BRAND.md#brand-strategy); search work is in [SEO](SEO.md). Nothing here is spent or published without the owner's approval.
+**Status:** Proposed 2026-09-26 for owner approval. **Owner:** founder. Builds on the [brand strategy](../design/BRAND.md#brand-strategy); search work is in [SEO](seo/README.md). Nothing here is spent or published without the owner's approval.
 
 Oxinov markets to **everyone, worldwide, in English only** (ADR-020). People who prefer another language read our pages, videos (auto-translated captions), and posts through their own translator, so all content is plain English that translates well. Currencies and payment methods follow the customer. We choose where to push harder by evidence (sign-ups, conversion, support capacity, payment coverage), not by a fixed home market.
 
@@ -33,7 +33,7 @@ All marketing is in English and reaches every country at once. Each quarter, loo
 
 | Channel | Why | First actions | Cost |
 | --- | --- | --- | --- |
-| **Website and search** | Free, compounding, global | See [SEO](SEO.md): product page, how-to articles, multilingual pages | Free |
+| **Website and search** | Free, compounding, global | See [SEO](seo/README.md): product page, how-to articles, comparison pages | Free |
 | **YouTube** | How-to videos rank worldwide and double as support | "Create a course in 10 minutes", "Run a mock exam online", with accurate English captions (viewers use auto-translated captions) | Free |
 | **LinkedIn** | Reaches institute owners, HR, and training managers everywhere | Company page, founder posts, case studies | Free; ads when proven |
 | **Direct outreach and demos** | Organisations buy through trust | Target list per wave; 20-minute video demos; free pilot for one class | Time only |

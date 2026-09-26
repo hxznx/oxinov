@@ -128,7 +128,7 @@ describe('static export', () => {
   });
 });
 
-// docs/marketing/SEO.md (technical fixes) and ADR-020 (one English site that translates well).
+// docs/marketing/seo/technical.md (code in src/seo) and ADR-020 (one English site that translates well).
 describe('search and sharing', () => {
   const site = 'https://oxinov.com';
   const meta = (page, attr, name) =>
@@ -178,6 +178,15 @@ describe('search and sharing', () => {
     const sitemap = readFileSync(join(out, 'sitemap.xml'), 'utf8');
     const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url);
     assert.deepEqual([...listed].sort(), routes.map((route) => `${site}${route}`).sort());
+    const priority = (route) => Number(new RegExp(`<loc>${site}${route}</loc>[\\s\\S]*?<priority>([\\d.]+)</priority>`).exec(sitemap)?.[1]);
+    assert.equal(priority('/'), 1, 'home page first');
+    assert.ok(priority('/products/') > priority('/legal/'), 'products above policies');
+  });
+
+  it('keeps the error page out of search results', () => {
+    const page = readFileSync(join(out, '404.html'), 'utf8');
+    assert.match(page, /<meta name="robots" content="noindex, follow"/);
+    assert.doesNotMatch(page, /<link rel="canonical"/);
   });
 
   it('offers a web app manifest with installable icons', () => {

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { pageMetadata } from '@/lib/seo';
+import { pageMetadata } from '@/seo';
 import { PageHeader } from '@/components/PageHeader';
 import { plans } from '@/content/site';
 

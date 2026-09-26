@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { pageMetadata, productsSchema } from '@/lib/seo';
-import { JsonLd } from '@/components/JsonLd';
+import { JsonLd, pageMetadata, productsSchema } from '@/seo';
 import { PageHeader } from '@/components/PageHeader';
 import { StatusBadge } from '@/components/StatusBadge';
 import { products } from '@/content/site';

@@ -2,14 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/StatusBadge';
 import { home, products } from '@/content/site';
-import { pageMetadata } from '@/lib/seo';
+import { defaultDescription, defaultTitle, pageMetadata } from '@/seo';
 
-export const metadata: Metadata = pageMetadata({
-  path: '/',
-  absoluteTitle: 'Oxinov — Software, services, and research',
-  description:
-    'Oxinov builds software, services, and research for people everywhere. Our first product, Oxinov Edu, is an online classroom for schools and teachers.',
-});
+export const metadata: Metadata = pageMetadata({ path: '/', absoluteTitle: defaultTitle, description: defaultDescription });
 
 export default function HomePage() {
   return (

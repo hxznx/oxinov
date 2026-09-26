@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Orbitron, Rajdhani } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { JsonLd } from '@/components/JsonLd';
 import { SiteFooter } from '@/components/SiteFooter';
 import { SiteHeader } from '@/components/SiteHeader';
 import { themeInitScript } from '@/components/ThemeToggle';
-import { organizationSchema, siteUrl, websiteSchema } from '@/lib/seo';
+import { JsonLd, organizationSchema, siteMetadata, websiteSchema } from '@/seo';
 import './globals.css';
 
 // next/font downloads these at build time and serves them from this site (self-hosted fonts). The site is
@@ -22,15 +21,8 @@ const rajdhani = Rajdhani({
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains', display: 'swap', preload: false });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: { default: 'Oxinov — Software, services, and research', template: '%s · Oxinov' },
-  description:
-    'Oxinov builds software, services, and research for people everywhere. Our first product, Oxinov Edu, is an online classroom for schools and teachers.',
-  applicationName: 'Oxinov',
-  icons: { icon: '/brand/oxinov-symbol.svg', apple: '/icons/apple-touch-icon.png' },
-  openGraph: { type: 'website', siteName: 'Oxinov', locale: 'en_US' },
-};
+// Search and sharing defaults live in src/seo (docs/marketing/seo).
+export const metadata: Metadata = siteMetadata;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const fonts = [orbitron, rajdhani, inter, jetbrains].map((font) => font.variable).join(' ');

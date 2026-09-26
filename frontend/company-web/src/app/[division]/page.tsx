@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { breadcrumbSchema, pageMetadata } from '@/lib/seo';
-import { JsonLd } from '@/components/JsonLd';
+import { JsonLd, breadcrumbSchema, pageMetadata } from '@/seo';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';

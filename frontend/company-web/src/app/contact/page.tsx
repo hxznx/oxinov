@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { officeSchema, pageMetadata } from '@/lib/seo';
-import { JsonLd } from '@/components/JsonLd';
+import { JsonLd, officeSchema, pageMetadata } from '@/seo';
 import { PageHeader } from '@/components/PageHeader';
 import { company } from '@/content/site';
 
