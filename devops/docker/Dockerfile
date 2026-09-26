@@ -66,25 +66,11 @@ COPY packages/web-auth/ ./packages/web-auth/
 COPY frontend/platform-web/ ./frontend/platform-web/
 RUN pnpm --filter @oxinov/design-system build && NODE_ENV=production pnpm --filter @oxinov/platform-web build
 
-# --- Migrations: Prisma CLI with both schemas; runs as a one-off container with the owner role --------
-FROM base AS migrate
-ENV NODE_ENV=development
+# --- Migrations: only the Prisma CLI (backend/workers/migrate) plus both schemas; runs as a Helm hook -----
+FROM base AS migrate-build
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-COPY backend/api/package.json ./backend/api/package.json
-COPY backend/platform-api/package.json ./backend/platform-api/package.json
-COPY packages/server-kit/package.json ./packages/server-kit/package.json
-RUN pnpm install --frozen-lockfile --filter @oxinov/lms-api --filter @oxinov/platform-api
-COPY backend/api/prisma.config.ts ./backend/api/prisma.config.ts
-COPY backend/platform-api/prisma.config.ts ./backend/platform-api/prisma.config.ts
-COPY database/prisma/ ./database/prisma/
-COPY database/migrations/ ./database/migrations/
-COPY database/platform/prisma/ ./database/platform/prisma/
-COPY database/platform/migrations/ ./database/platform/migrations/
-# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
-USER 1000:1000
-# EDU_MIGRATION_DATABASE_URL and PLATFORM_MIGRATION_DATABASE_URL are passed in by the deploy script.
-# The Prisma binary is called directly: pnpm would verify the whole workspace, which is only partly installed.
-CMD ["sh", "-c", "cd /app/backend/api && MIGRATION_DATABASE_URL=\"$EDU_MIGRATION_DATABASE_URL\" ./node_modules/.bin/prisma migrate deploy && cd /app/backend/platform-api && MIGRATION_DATABASE_URL=\"$PLATFORM_MIGRATION_DATABASE_URL\" ./node_modules/.bin/prisma migrate deploy"]
+COPY backend/workers/migrate/ ./backend/workers/migrate/
+RUN pnpm --filter @oxinov/migrate --prod deploy /app/deploy
 
 # --- Mail relay: SMTP from Keycloak to the Amazon SES API with the instance role (ADR-017) -----------
 FROM base AS mail-relay-build
@@ -143,6 +129,20 @@ HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3001/',{redirect:'manual'}).then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"
 CMD ["node", "frontend/platform-web/server.js"]
 
+FROM runtime AS migrate
+WORKDIR /app/migrate
+# No update checks or telemetry from the Prisma CLI in production.
+ENV CHECKPOINT_DISABLE=1 PRISMA_HIDE_UPDATE_MESSAGE=1
+COPY --from=migrate-build /app/deploy/ ./
+COPY database/prisma/ ./schemas/edu/
+COPY database/migrations/ ./schemas/edu/migrations/
+COPY database/platform/prisma/ ./schemas/platform/
+COPY database/platform/migrations/ ./schemas/platform/migrations/
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
+# EDU_MIGRATION_DATABASE_URL and PLATFORM_MIGRATION_DATABASE_URL come from the Helm hook.
+CMD ["./migrate.sh"]
+
 FROM runtime AS mail-relay
 WORKDIR /app
 COPY --from=mail-relay-build /app/deploy/ ./
@@ -153,7 +153,9 @@ CMD ["node", "src/main.mjs"]
 
 # --- Database backup: PostgreSQL client tools plus the AWS CLI, for the nightly CronJob (ADR-018) ------
 FROM postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873 AS backup
-RUN apk add --no-cache aws-cli
+# gosu only switches from root to postgres in the upstream entrypoint; this image always runs as postgres,
+# and gosu's old Go build carries HIGH and CRITICAL findings.
+RUN apk add --no-cache aws-cli && rm -f /usr/local/bin/gosu
 USER postgres
 CMD ["pg_dumpall", "--version"]
 

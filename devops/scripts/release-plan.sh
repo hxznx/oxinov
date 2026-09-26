@@ -30,7 +30,7 @@ inputs() {
     platform-api) echo '^(backend/platform-api/|packages/server-kit/|database/platform/prisma/|security/soc/event-schema\.json)' ;;
     edu-web) echo '^(frontend/products/lms-web/|packages/web-auth/|packages/design-system/)' ;;
     platform-web) echo '^(frontend/platform-web/|packages/web-auth/|packages/design-system/)' ;;
-    migrate) echo '^(database/migrations/|database/prisma/|database/platform/migrations/|database/platform/prisma/|backend/api/prisma\.config\.ts|backend/platform-api/prisma\.config\.ts)' ;;
+    migrate) echo '^(database/migrations/|database/prisma/|database/platform/migrations/|database/platform/prisma/|backend/workers/migrate/)' ;;
     mail-relay) echo '^backend/workers/mail-relay/' ;;
     keycloak) echo '^devops/keycloak/Dockerfile$' ;;
     # PostgreSQL client tools and the AWS CLI only; the Node.js inputs do not affect it.

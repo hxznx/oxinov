@@ -23,6 +23,15 @@ catalog:
   '@aws-sdk/client-s3': 3.1139.0
   '@aws-sdk/client-sesv2': 3.1139.0
   '@aws-sdk/s3-request-presigner': 3.1139.0
+  prisma: 7.10.0
   react-markdown: 10.1.0
   remark-gfm: 4.0.1
   smtp-server: 3.19.13
+
+# Security overrides for transitive dependencies (ADR-018 scan gate): patched releases of libraries the
+# Prisma CLI pulls in. Remove each once Prisma depends on a fixed version itself.
+overrides:
+  # CVE-2026-40345 (stack exhaustion); used by Prisma's config loader.
+  deepmerge-ts: 8.0.0
+  # GHSA-3f6p-5ww8-9rcr (auth plugin downgrade); bundled for Prisma's MySQL tooling, unused here.
+  mysql2: 3.22.0

@@ -1,0 +1,13 @@
+{
+  "name": "@oxinov/migrate",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Runs Prisma migrations for the Edu and platform databases; only the Prisma CLI, so the release image stays small and scan-clean (ADR-018)",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "prisma": "catalog:"
+  }
+}
