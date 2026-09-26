@@ -72,7 +72,7 @@ Separate security-event storage from application analytics. Use least-privilege 
 2. Implement and test the security-event schema in the API, worker, chat, and identity webhook paths.
 3. Send synthetic events to the selected SIEM and validate Sigma rules with synthetic events.
 4. Assign alert owners and exercise the cross-tenant, account-takeover, and payment-webhook runbooks.
-5. Enable a CloudTrail trail and GuardDuty (security roadmap items 1 and 2), then GuardDuty Runtime Monitoring or Falco for the Kubernetes nodes.
+5. CloudTrail and GuardDuty are enabled (2026-09-26); next, GuardDuty Runtime Monitoring or Falco for the Kubernetes nodes.
 6. Decide whether Wazuh endpoint/host monitoring is required.
 
 References: [OpenSearch Security Analytics](https://docs.opensearch.org/latest/security-analytics/), [GuardDuty Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html), [Falco runtime security](https://falco.org/docs/), [Wazuh components](https://documentation.wazuh.com/current/getting-started/components/index.html), and [GitHub CodeQL](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning).

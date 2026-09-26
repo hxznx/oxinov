@@ -21,7 +21,7 @@ Use the OWASP ASVS 5.0 Level 2 controls relevant to deployed features, the OWASP
 | Supply chain | Pinned versions with checksums or digests, one lockfile, pnpm build-script allow-list, immutable image tags, Trivy gates, Dependabot | In place; signed images and SBOMs are on the roadmap |
 | Data | Encryption at rest (EBS, S3, Kubernetes Secrets, KMS for email events); nightly backups and snapshots; no card numbers stored | In place |
 | Payments | Server-verified provider results, signed webhooks processed once, ledger without customer balances (ADR-013) | Required before checkout ships |
-| Audit and detection | Normalized security events (`security/soc/event-schema.json`) without sensitive payloads | Schema in place; production SIEM is on the roadmap |
+| Audit and detection | Normalized security events (`security/soc/event-schema.json`) without sensitive payloads; CloudTrail and GuardDuty for the AWS account | CloudTrail and GuardDuty live with email alerts; production SIEM is on the roadmap |
 
 ## Roadmap
 
@@ -30,8 +30,8 @@ Each item states its trigger and approximate monthly cost; none is enabled witho
 | # | Control | Why | Cost (approx.) | Trigger |
 | --- | --- | --- | --- | --- |
 | 0 | **Staff MFA (TOTP)** required for Keycloak administrators and platform operators | Stops takeover of privileged accounts | Free | **Now** |
-| 1 | **CloudTrail trail** for management events to an encrypted, lifecycle-managed S3 bucket (Terraform) | Keeps a tamper-evident record of every AWS API call beyond the 90-day console history | Under US$1 (one management-event trail is free; S3 storage only) | **Now** |
-| 2 | **GuardDuty** (foundational: CloudTrail, VPC flow, DNS) with findings emailed through SNS | Detects credential misuse, crypto-mining, and malicious traffic | About US$1–5 at current volume (30-day free trial shows the real figure) | **Now** |
+| 1 | **CloudTrail trail** for management events to an encrypted, lifecycle-managed S3 bucket (Terraform) | Keeps a tamper-evident record of every AWS API call beyond the 90-day console history | Under US$1 (one management-event trail is free; S3 storage only) | **Done 2026-09-26** (`starter/security.tf`) |
+| 2 | **GuardDuty** (foundational: CloudTrail, VPC flow, DNS) with findings emailed through SNS | Detects credential misuse, crypto-mining, and malicious traffic | About US$1–5 at current volume (30-day free trial shows the real figure) | **Done 2026-09-26**; findings of medium severity or higher are emailed |
 | 3 | Malware scanning of uploads (for example GuardDuty Malware Protection for S3) | Uploaded files are shared with other learners | Per GB scanned | Before public sign-up or first paying school |
 | 4 | Image signing (cosign keyless with GitHub OIDC) and SBOMs attached to each release | Proves images came from our pipeline | Free | With the next delivery change |
 | 5 | CodeQL and dependency review | Code-level vulnerability scanning | GitHub Advanced Security licence, or free if the repository becomes public | Owner decision |

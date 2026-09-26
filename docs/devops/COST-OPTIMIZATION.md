@@ -14,10 +14,11 @@ List prices for Mumbai (ap-south-1) on 2026-09-26, not billed amounts. Replace t
 | Public IPv4 address (Elastic IP) | One | US$3.65 |
 | EBS gp3 disk | 30 GB, encrypted | about US$2.75 |
 | EBS snapshots | 7 daily, incremental | about US$1–2 |
-| KMS customer-managed key | Email events | US$1 |
+| KMS customer-managed keys | Email events; security logs and alerts | US$2 |
+| CloudTrail (S3 storage) and GuardDuty | Account monitoring since 2026-09-26 (GuardDuty free for 30 days) | about US$1–5 |
 | Route 53 hosted zone and queries | `oxinov.com` | about US$0.60 |
 | S3 (website, media, backups), CloudFront, ECR, SES, SNS, CloudWatch alarms, Parameter Store | Low traffic | about US$1–3 |
-| **Total** | | **about US$40–48** |
+| **Total** | | **about US$42–53** |
 
 ## Already optimized
 

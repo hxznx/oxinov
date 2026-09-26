@@ -10,6 +10,6 @@
 | 3. Engagement | Class stream and lesson Q&A (done), announcement emails and push, live chat, analytics for teachers and administrators | **Started** |
 | 4. Mobile | React Native with Expo against the same API; Android internal testing, then store release (NFR-14) | Not started; the web app works in mobile browsers |
 | 5. AI | Governed AI gateway and staff-only pilots after the AI Phase 0 gate (ADR-014) | Not started |
-| 6. Launch readiness | Content rights, Playwright end-to-end, load, restore, security (staff MFA, CloudTrail, GuardDuty, penetration test), and accessibility testing; first school pilot; SES production access | **Next**: see [security roadmap](../security/SECURITY.md#roadmap) and [testing](../engineering/TESTING-STRATEGY.md#next) |
+| 6. Launch readiness | Content rights, Playwright end-to-end, load, restore, security (staff MFA, penetration test; CloudTrail and GuardDuty done), and accessibility testing; first school pilot; SES production access | **Next**: see [security roadmap](../security/SECURITY.md#roadmap) and [testing](../engineering/TESTING-STRATEGY.md#next) |
 
-Order of the next work: launch readiness items that block a first school (SES production access, staff MFA, CloudTrail and GuardDuty, end-to-end tests, restore test), then paid checkout and certificates, then mobile.
+Order of the next work: launch readiness items that block a first school (SES production access, staff MFA, end-to-end tests, restore test), then paid checkout and certificates, then mobile.

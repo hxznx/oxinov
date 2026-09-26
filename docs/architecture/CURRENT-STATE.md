@@ -49,8 +49,9 @@ There is no staging environment. Delivery changes are rehearsed on a throwaway l
 | Workloads | Non-root numeric users, no Linux capabilities, read-only root filesystems where possible, resource limits |
 | Data | Encrypted EBS, S3 (block public access), Kubernetes Secrets encrypted at rest, customer-managed KMS key for email events; tenant isolation in the API plus PostgreSQL row-level security, tested with two tenants |
 | Supply chain | Pinned versions with checksums or digests, immutable image tags, Trivy gates, Dependabot |
+| Account monitoring | CloudTrail (all regions, log-file validation, KMS-encrypted, 365 days in `oxinov-cloudtrail-614130400110`) and GuardDuty in Mumbai (foundational plus S3 data events and on-demand malware scans), both since 2026-09-26 (`starter/security.tf`); medium-or-higher findings and any CloudTrail tampering are emailed to the operations mailbox |
 | Recovery | Nightly `pg_dumpall` to S3 (30 days), daily encrypted disk snapshots (7 days), CloudWatch recover and reboot actions, automatic security updates |
-| Not yet in place | Staff MFA (TOTP) for administrators, CloudTrail trail with retention, GuardDuty, AWS Config, WAF, SIEM, CodeQL and dependency review (need GitHub Advanced Security); see the [security roadmap](../security/SECURITY.md#roadmap) for costs and triggers |
+| Not yet in place | Staff MFA (TOTP) for administrators, AWS Config, WAF, SIEM, CodeQL and dependency review (need GitHub Advanced Security); see the [security roadmap](../security/SECURITY.md#roadmap) for costs and triggers |
 
 ## Observability
 
@@ -73,7 +74,7 @@ Budget: US$50 a month, with Terraform-managed alerts at 85%, 100%, and forecast 
 ## Known gaps, in priority order
 
 1. SES production access (owner request pending), so sign-in email reaches any address.
-2. CloudTrail trail and GuardDuty (security roadmap; small monthly cost, owner approval).
+2. Staff MFA (TOTP) for Keycloak administrators.
 3. Single node: a host failure means minutes of downtime and restores lose up to 24 hours (ADR-017); acceptable until a paying school needs an availability commitment.
 4. No paid checkout, certificates, mobile apps, or worker and chat services yet ([backlog](../planning/TASKS.md)).
 5. Production metrics and tracing (OpenTelemetry, ADR-019 step 5).
