@@ -89,11 +89,13 @@ spec:
   valuesContent: |-
     ports:
       web:
-        redirections:
-          entryPoint:
-            to: websecure
-            scheme: https
-            permanent: true
+        # Traefik chart v40 (bundled with k3s v1.36) reads redirects under ports.web.http.
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+              permanent: true
       websecure:
         http3:
           enabled: false
