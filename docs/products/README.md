@@ -1,17 +1,36 @@
 # Oxinov product charters
 
+This is the company offering register, independent of technical folder layout. Use the
+[company library standard](../engineering/COMPANY-LIBRARY-STANDARD.md) and
+[product record template](PRODUCT-RECORD-TEMPLATE.md) for future software, service, hardware or content offerings.
+Research candidates remain in the research portfolio until approved for product transfer.
+
 Each Oxinov product plane has a charter before implementation starts. A charter records the owner, customer problem, scope, exclusions, data classification, regulatory review, architecture boundary, success metrics, and release gate status defined in the [company blueprint](../company/PLATFORM-BLUEPRINT.md).
 
 | Product | Address | Pillar | Origin | Charter status |
 | --- | --- | --- | --- | --- |
-| Oxinov Edu | `edu.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/02-FRD.md`) |
 | [Oxinov Commodity Market](COMMODITY-MARKET.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) expanded to all commodities & second-hand items ([Agri Market](AGRI-MARKET.md) superseded) | Draft |
+| Oxinov Edu | `edu.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/02-FRD.md`) |
 | [Oxinov Jobs](JOBS.md) | `jobs.oxinov.com` | Education | Flo Softwares concept (`hr-backend`, `hr-frontend`) | Draft |
 | [Oxinov Services Market](SERVICES-MARKET.md) | `services.oxinov.com` | Services | Flo Softwares concept (`service-platform`, `service-platform-frontend`) | Draft |
 
 A draft charter does not authorize scaffolding product folders, databases, or deployments. The product moves to implementation only after every release-gate item is resolved and recorded here. See [ADR-010](../architecture/ADR.md#adr-010-adopt-flo-softwares-marketplace-concepts-as-oxinov-product-planes) for the adoption rules that apply to all three Flo Softwares concepts.
 
 ## Shared rules for all products
+
+### Current implementation locations
+
+| Offering | Technical slug | Canonical implementation / evidence |
+| --- | --- | --- |
+| Commodity Market | `market` | Draft charter above; no application scaffold authorized |
+| Edu | `lms` | [Web](../../frontend/products/lms-web/README.md), [API](../../backend/api/README.md), [database](../../database/README.md), [release history](../planning/CHANGELOG.md) |
+| Jobs | `jobs` | Draft charter above; no application scaffold authorized |
+| Services Market | `services` | Draft charter above; no application scaffold authorized |
+
+These are location and charter records, not assertions that every release condition is satisfied.
+Future non-software offerings use the same register but do not require an application merely to exist.
+
+### Product plane rules
 
 - Every product has its own frontend, backend, and database following the [product plane template](../engineering/COMPANY-PROJECT-STRUCTURE.md#product-plane-template).
 - Users sign in once with their Oxinov account and reach every launched product without signing up again. Each charter lists the trust level and policy required for each action, per [identity and access](../architecture/IDENTITY-AND-ACCESS.md) and [platform policies](../company/PLATFORM-POLICIES.md).

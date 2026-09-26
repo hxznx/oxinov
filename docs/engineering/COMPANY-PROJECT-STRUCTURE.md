@@ -6,6 +6,10 @@ The current `frontend/web`, `frontend/mobile`, `backend/api`, `backend/worker`, 
 
 ## Target repository layout
 
+For different future offering types, stable product slugs, lifecycle tracking and external asset storage,
+follow the [company library standard](COMPANY-LIBRARY-STANDARD.md). The runtime layout below applies to
+software product planes; it does not require consulting, hardware or research initiatives to create web applications.
+
 The repository follows the company structure: **company** (public website) → **platform** (one account, identity, shared services) → **products** (independent product planes). Every product has its own frontend, backend, and database folder. Folders marked *after release gate* are created only when that product's charter in `docs/products/` is approved.
 
 ```text

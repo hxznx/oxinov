@@ -9,6 +9,8 @@
     "node": ">=22"
   },
   "scripts": {
+    "catalog:update": "python scripts/project_catalog.py",
+    "catalog:check": "python scripts/project_catalog.py --check",
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "format": "turbo run format",

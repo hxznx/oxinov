@@ -4,6 +4,12 @@ Documentation follows the company structure: **Oxinov Pvt. Ltd.** → **company 
 
 ## 1. Company
 
+For file navigation, start with the [project library](../PROJECT-LIBRARY.md),
+[complete alphabetical file catalog](engineering/FILE-CATALOG.md), and
+[current structure and placement rules](engineering/PROJECT-STRUCTURE.md).
+For future offerings, use the [company library and growth standard](engineering/COMPANY-LIBRARY-STANDARD.md)
+and [product record template](products/PRODUCT-RECORD-TEMPLATE.md).
+
 | Document | Purpose |
 | --- | --- |
 | [Platform blueprint](company/PLATFORM-BLUEPRINT.md) | Company layers, ten strategic pillars, domain plan, product portfolio, candidate modules, release gate |

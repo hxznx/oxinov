@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -274,6 +276,10 @@ def main() -> int:
     args = parser.parse_args()
     errors: list[str] = []
     check_docs(errors)
+    # NFR-12: keep the requested project library synchronized with repository paths.
+    catalog = subprocess.run([sys.executable, str(ROOT / "scripts/project_catalog.py"), "--check"], cwd=ROOT)
+    if catalog.returncode:
+        errors.append("Project file catalog is stale or could not be checked")
     if args.security:
         check_security(errors)
     if args.deploy:

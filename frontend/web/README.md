@@ -1,3 +1,5 @@
 # Web client
 
-Planned Next.js App Router application for tenant-aware catalogs, learning, authoring, and administration. Add the application `package.json` and source here during the foundation phase.
+Legacy placeholder retained for existing references and validation.
+The implemented Edu application is [frontend/products/lms-web](../products/lms-web/README.md).
+Do not create a second application here. See the [project library](../../PROJECT-LIBRARY.md).

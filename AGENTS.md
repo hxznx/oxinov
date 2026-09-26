@@ -8,14 +8,18 @@ The Oxinov repository holds the company platform of **Oxinov Pvt. Ltd.** and its
 
 | Layer | Address | State |
 | --- | --- | --- |
-| Company website | `oxinov.com` | Not built (Phase 1) |
-| Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Not built (Phase 2) |
-| Oxinov Edu | `edu.oxinov.com` | Partial backend in `backend/api`; must stay working |
+| Company website | `oxinov.com` | Source and deployment implemented |
+| Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Identity and portal foundation implemented; gateway folder remains planned |
+| Oxinov Edu | `edu.oxinov.com` | Web and API implemented in slices; must stay working |
 | Commodity Market, Jobs, Services Market | `market.`, `jobs.`, `services.oxinov.com` | Draft charters only; do not scaffold |
 
 Do not claim that an application, deployment, or integration works unless it was executed and verified.
 
 ## 2. Read before you change anything
+
+Use [PROJECT-LIBRARY.md](PROJECT-LIBRARY.md) for category navigation and the
+[file catalog](docs/engineering/FILE-CATALOG.md) for alphabetical paths. After adding,
+removing or renaming repository files, run `python scripts/project_catalog.py` before validation.
 
 Start with [docs/README.md](docs/README.md), the documentation map. Then read what matches the task:
 

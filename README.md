@@ -4,6 +4,9 @@ Company platform and product monorepo for Oxinov Pvt. Ltd. Oxinov Edu is the fir
 
 ## Start here
 
+Open the [project library](PROJECT-LIBRARY.md) to browse by category, or the
+[complete file catalog](docs/engineering/FILE-CATALOG.md) to find any repository file alphabetically.
+
 1. Use the [documentation map](docs/README.md). Read the [company platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS architecture](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [platform policies](docs/company/PLATFORM-POLICIES.md), and [company roadmap](docs/planning/COMPANY-PLATFORM-ROADMAP.md).
 2. For company AI work, read the [AI implementation strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI platform architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), and [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md).
 3. For Oxinov Edu work, read its [project brief](docs/00-PROJECT-BRIEF.md), [PRD](docs/01-PRD.md), [FRD](docs/02-FRD.md), and [NFR](docs/03-NFR.md).
@@ -16,9 +19,9 @@ Company platform and product monorepo for Oxinov Pvt. Ltd. Oxinov Edu is the fir
 
 | Layer | Address | Status |
 | --- | --- | --- |
-| Company website | `oxinov.com` | Planned (Phase 1) |
-| One Oxinov account and sign-in (Google or email code) | `id.oxinov.com` | Planned (Phase 2) |
-| Account portal and product launcher | `app.oxinov.com` | Planned (Phase 2) |
+| Company website | `oxinov.com` | Implemented; deployment workflow present |
+| One Oxinov account and sign-in (Google or email code) | `id.oxinov.com` | Identity configuration implemented; provider readiness depends on environment |
+| Account portal and product launcher | `app.oxinov.com` | Foundation implemented |
 | Oxinov Edu | `edu.oxinov.com` | First product, partially implemented |
 | [Oxinov Commodity Market](docs/products/COMMODITY-MARKET.md) | `market.oxinov.com` | Draft charter (all commodities & second-hand items) |
 | [Oxinov Jobs](docs/products/JOBS.md) | `jobs.oxinov.com` | Draft charter |
@@ -41,9 +44,9 @@ Each product has its own frontend, backend, and database; one Oxinov account sig
 
 ## Current state
 
-The implemented code is currently Oxinov Edu. Its first backend slice exists in `backend/api` (NestJS): workspaces, catalog, free-course enrollment, and server-graded timed exams, backed by the Prisma schema, numbered migrations, PostgreSQL row-level security, and a two-tenant JLPT N5 seed under `database/`. See [the API README](backend/api/README.md) for routes, local setup, and tests.
+Implemented applications include company-web, platform-web, platform-api, Edu web and the Edu API. Edu includes workspaces, catalog, free enrollment, authoring, media, quizzes, assignments, notes, resources and discussions. See [Edu web](frontend/products/lms-web/README.md) and [the API guide](backend/api/README.md) for scope and setup.
 
-The monorepo boundaries for the company website, account portal, shared control plane, and LMS product are established, but their application source is not implemented yet. Product-entitlement integration, LMS web and mobile apps, paid checkout, lesson progress, certificates, worker, and chat also remain unimplemented. Frontend, worker, and chat Docker targets and deployment manifests remain templates. No production deployment target is configured.
+The repository includes production Terraform, Kubernetes/Helm delivery, a mail relay and a migration runner. Paid checkout, certificates, native mobile and broader platform capabilities remain open. Planned gateway, chat and general worker folders are not implemented services. Current release health must be checked in CI and production; source presence alone is not verification. Use the [current structure](docs/engineering/PROJECT-STRUCTURE.md) for active paths and the [changelog](docs/planning/CHANGELOG.md) for recorded delivery evidence.
 
 ## Decisions still needed
 
