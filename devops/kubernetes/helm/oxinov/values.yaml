@@ -116,6 +116,9 @@ services:
     port: 3001
     replicas: 2
     host: app
+    # Sent as X-Robots-Tag: the account portal never appears in search results. Product apps leave it
+    # unset and decide page by page (edu.oxinov.com marks signed-in pages noindex itself).
+    robots: noindex, nofollow
     healthPath: /
     readyPath: /
     writablePaths: [/app/frontend/platform-web/.next/cache]
@@ -129,6 +132,7 @@ services:
     managementPort: 9000
     replicas: 1
     host: id
+    robots: noindex, nofollow
     healthPath: /health/live
     readyPath: /health/ready
     # Keycloak writes its caches and kcadm settings under /opt/keycloak.

@@ -46,6 +46,24 @@ else
   failures=$((failures + 1))
 fi
 
+# The account portal and sign-in never appear in search results (X-Robots-Tag from the ingress).
+robots_header() { # Traefik loads a new middleware a few seconds after the release.
+  local _
+  for _ in $(seq 12); do
+    curl -sI --max-time 20 "$1" | grep -qi '^x-robots-tag: noindex' && return 0
+    sleep 5
+  done
+  return 1
+}
+for url in "https://app.$DOMAIN/" "https://id.$DOMAIN/realms/oxinov/account/"; do
+  if robots_header "$url"; then
+    echo "ok   Kept out of search: $url"
+  else
+    echo "FAIL No X-Robots-Tag noindex header: $url"
+    failures=$((failures + 1))
+  fi
+done
+
 if curl -sI --max-time 20 "https://edu.$DOMAIN/" | grep -qi '^strict-transport-security'; then
   echo "ok   HSTS header"
 else

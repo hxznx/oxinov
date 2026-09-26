@@ -72,10 +72,15 @@ curl -fsSL --retry 3 -o "$native/helm.tgz" "https://get.helm.sh/helm-$HELM_VERSI
 echo "$HELM_SHA256  $work/helm.tgz" | sha256sum -c --quiet -
 tar -xzf "$work/helm.tgz" -C "$work"
 docker cp "$native/linux-amd64/helm" "$NAME:/bin/helm"
-rm -rf "$work"
 refs=()
 for image in "${CATALOG_SERVICES[@]}"; do refs+=("$REGISTRY/oxinov/$image:$TAG"); done
-docker save "${refs[@]}" | docker exec -i "$NAME" ctr -n k8s.io images import - >/dev/null
+# Through a file, not a pipe: from Git Bash, `docker save | docker exec -i ...` never delivers end of input
+# to docker.exe, so the import waits forever.
+docker save -o "$native/images.tar" "${refs[@]}"
+docker cp "$native/images.tar" "$NAME:/tmp/images.tar"
+docker exec "$NAME" ctr -n k8s.io images import /tmp/images.tar >/dev/null
+docker exec "$NAME" rm -f /tmp/images.tar
+rm -rf "$work"
 
 log "creating the namespace and application secret"
 docker exec "$NAME" kubectl create namespace oxinov >/dev/null
@@ -115,6 +120,18 @@ for _ in $(seq 12); do
   sleep 5
 done
 if [ "$home" = "https://app.oxinov.com/" ]; then echo "ok   Sign-in home redirects to the portal"; else echo "FAIL Sign-in home redirects to '$home'"; failures=$((failures + 1)); fi
+
+# Header names are case-insensitive; strip the CR of each HTTP header line before matching.
+robots_tag() { curl -skI --max-time 20 --resolve "$1:$HTTPS_PORT:127.0.0.1" "https://$1:$HTTPS_PORT/" | tr -d '\r' | sed -n 's/^[Xx]-[Rr]obots-[Tt]ag: //p'; }
+# Like the redirect, the header's middleware takes Traefik a few seconds to load.
+for _ in $(seq 12); do
+  robots=$(robots_tag app.oxinov.com)
+  [ "$robots" = "noindex, nofollow" ] && break
+  sleep 5
+done
+if [ "$robots" = "noindex, nofollow" ]; then echo "ok   Portal kept out of search"; else echo "FAIL Portal X-Robots-Tag is '$robots'"; failures=$((failures + 1)); fi
+edu_robots=$(robots_tag edu.oxinov.com)
+if [ -z "$edu_robots" ]; then echo "ok   Edu decides indexing page by page"; else echo "FAIL Edu got X-Robots-Tag '$edu_robots'"; failures=$((failures + 1)); fi
 
 log "configuring the realm through kubectl exec"
 admin=$(kube get secret oxinov-app -o jsonpath='{.data.KEYCLOAK_ADMIN_PASSWORD}' | base64 -d)
