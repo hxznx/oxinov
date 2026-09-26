@@ -17,7 +17,7 @@ AREAS = {
     "scripts": "Repository maintenance", "security": "Security and incident response",
 }
 RESERVED = {
-    "backend/chat", "backend/gateway", "backend/worker", "backend/workers/platform-worker",
+    "backend/products/lms-chat", "backend/gateway", "backend/products/lms-worker", "backend/workers/platform-worker",
     "devops/ansible", "frontend/mobile", "packages/auth", "packages/config",
     "packages/contracts", "packages/domain", "packages/observability",
     "packages/security-events", "packages/testing",
@@ -35,14 +35,10 @@ def inventory(root: Path = ROOT) -> list[str]:
 
 
 def state(folder: str) -> str:
-    if folder in {"backend/products/lms-api", "database/products/lms"}:
-        return "Migration target only; implementation remains at legacy paths."
-    if folder == "frontend/web":
-        return "Legacy placeholder; use frontend/products/lms-web."
     if folder in RESERVED:
         return "Reserved / planned; not an implemented application."
-    if folder in {"backend/api", "database/prisma", "database/migrations", "database/policies", "database/seeds"}:
-        return "Active Edu location; retained for compatibility."
+    if folder in {"backend/products", "database/products", "frontend/products", "docs/products"}:
+        return "Product shelf: one folder per product slug (see docs/products/README.md)."
     return "Repository content; consult its owning README for implementation status."
 
 

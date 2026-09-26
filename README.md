@@ -9,7 +9,7 @@ Open the [project library](PROJECT-LIBRARY.md) to browse by category, or the
 
 1. Use the [documentation map](docs/README.md). Read the [company platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS architecture](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [platform policies](docs/company/PLATFORM-POLICIES.md), and [company roadmap](docs/planning/COMPANY-PLATFORM-ROADMAP.md).
 2. For company AI work, read the [AI implementation strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI platform architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), and [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md).
-3. For Oxinov Edu work, read its [project brief](docs/00-PROJECT-BRIEF.md), [PRD](docs/01-PRD.md), [FRD](docs/02-FRD.md), and [NFR](docs/03-NFR.md).
+3. For Oxinov Edu work, read its [project brief](docs/products/lms/BRIEF.md), [PRD](docs/products/lms/PRD.md), [FRD](docs/requirements/LMS-FRD.md), and [NFR](docs/requirements/NFR.md).
 4. Coding agents follow [AGENTS.md](AGENTS.md), the [current structure](docs/engineering/PROJECT-STRUCTURE.md), and the [target company structure](docs/engineering/COMPANY-PROJECT-STRUCTURE.md). The reviewed [platform build command](prompts/BUILD-OXINOV-PLATFORM.md) and [AI foundation command](prompts/IMPLEMENT-AI-FOUNDATION.md) start approved milestones.
 5. Install Node.js 22 and pnpm 12.6.0, then run `pnpm install --frozen-lockfile` from the repository root.
 6. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis object-storage` after Docker is installed.
@@ -44,7 +44,7 @@ Each product has its own frontend, backend, and database; one Oxinov account sig
 
 ## Current state
 
-Implemented applications include company-web, platform-web, platform-api, Edu web and the Edu API. Edu includes workspaces, catalog, free enrollment, authoring, media, quizzes, assignments, notes, resources and discussions. See [Edu web](frontend/products/lms-web/README.md) and [the API guide](backend/api/README.md) for scope and setup.
+Implemented applications include company-web, platform-web, platform-api, Edu web and the Edu API. Edu includes workspaces, catalog, free enrollment, authoring, media, quizzes, assignments, notes, resources and discussions. See [Edu web](frontend/products/lms-web/README.md) and [the API guide](backend/products/lms-api/README.md) for scope and setup.
 
 The repository includes production Terraform, Kubernetes/Helm delivery, a mail relay and a migration runner. Paid checkout, certificates, native mobile and broader platform capabilities remain open. Planned gateway, chat and general worker folders are not implemented services. Current release health must be checked in CI and production; source presence alone is not verification. Use the [current structure](docs/engineering/PROJECT-STRUCTURE.md) for active paths and the [changelog](docs/planning/CHANGELOG.md) for recorded delivery evidence.
 

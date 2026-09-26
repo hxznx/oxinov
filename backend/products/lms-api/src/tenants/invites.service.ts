@@ -80,7 +80,7 @@ const workspaceSelect = {
 /**
  * Workspace join codes and the member list (FR-AUTH-102, FR-TENANT). Administrators create, list, and
  * revoke codes; any signed-in person with a verified email can redeem one. Row-level security lets a
- * redeemer read only the invite whose code they supplied (database/migrations/20260925000100_tenant_invites).
+ * redeemer read only the invite whose code they supplied (database/products/lms/migrations/20260925000100_tenant_invites).
  */
 @Injectable()
 export class InvitesService {

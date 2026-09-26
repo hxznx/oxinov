@@ -119,7 +119,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "media" {
   }
 }
 
-# Browsers upload straight to S3 and stream from it (same rules as backend/api/scripts/media-bucket.mjs).
+# Browsers upload straight to S3 and stream from it (same rules as backend/products/lms-api/scripts/media-bucket.mjs).
 resource "aws_s3_bucket_cors_configuration" "media" {
   bucket = aws_s3_bucket.media.id
   cors_rule {

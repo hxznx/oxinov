@@ -73,5 +73,5 @@ Do not manufacture owner names or approval dates. Use `Unassigned`, `Not approve
 
 ## Compatibility and rollback
 
-Edu's existing paths remain documented exceptions until a dedicated tested migration. Do not move shared documents while another agent is active.
+Edu follows this layout; its product record is [docs/products/lms](../products/lms/README.md). Do not move shared documents while another agent is active.
 This standard and template add navigation and operating guidance only. Rollback removes their register/map links and documents, then regenerates the catalog; no service or database migration is required.

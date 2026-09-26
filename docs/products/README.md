@@ -10,7 +10,7 @@ Each Oxinov product plane has a charter before implementation starts. A charter 
 | Product | Address | Pillar | Origin | Charter status |
 | --- | --- | --- | --- | --- |
 | [Oxinov Commodity Market](COMMODITY-MARKET.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) expanded to all commodities & second-hand items ([Agri Market](AGRI-MARKET.md) superseded) | Draft |
-| Oxinov Edu | `edu.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/02-FRD.md`) |
+| [Oxinov Edu](lms/README.md) | `edu.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/requirements/LMS-FRD.md`) |
 | [Oxinov Jobs](JOBS.md) | `jobs.oxinov.com` | Education | Flo Softwares concept (`hr-backend`, `hr-frontend`) | Draft |
 | [Oxinov Services Market](SERVICES-MARKET.md) | `services.oxinov.com` | Services | Flo Softwares concept (`service-platform`, `service-platform-frontend`) | Draft |
 
@@ -23,7 +23,7 @@ A draft charter does not authorize scaffolding product folders, databases, or de
 | Offering | Technical slug | Canonical implementation / evidence |
 | --- | --- | --- |
 | Commodity Market | `market` | Draft charter above; no application scaffold authorized |
-| Edu | `lms` | [Web](../../frontend/products/lms-web/README.md), [API](../../backend/api/README.md), [database](../../database/README.md), [release history](../planning/CHANGELOG.md) |
+| Edu | `lms` | [Product record](lms/README.md), [web](../../frontend/products/lms-web/README.md), [API](../../backend/products/lms-api/README.md), [database](../../database/products/lms/README.md), [release history](../planning/CHANGELOG.md) |
 | Jobs | `jobs` | Draft charter above; no application scaffold authorized |
 | Services Market | `services` | Draft charter above; no application scaffold authorized |
 

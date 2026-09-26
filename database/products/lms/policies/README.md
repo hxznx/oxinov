@@ -29,7 +29,7 @@ security (RLS). Every tenant-owned table must fail closed when tenant context is
 
 ## Adding a table
 
-1. Add `tenantId` plus `@@unique([tenantId, id])` in `database/prisma/schema.prisma`, and reference
+1. Add `tenantId` plus `@@unique([tenantId, id])` in `database/products/lms/prisma/schema.prisma`, and reference
    other tenant-owned tables through `(tenantId, …)` composite relations.
 2. In the same migration: `ENABLE` and `FORCE ROW LEVEL SECURITY`, create the `_tenant_isolation`
    policy, and `GRANT` only the privileges `oxinov_app` needs.

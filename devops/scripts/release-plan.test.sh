@@ -26,7 +26,7 @@ commit() {
 }
 field() { sed -n "s/^$1=//p"; }
 
-first=$(commit README.md backend/api/src/main.ts devops/keycloak/Dockerfile)
+first=$(commit README.md backend/products/lms-api/src/main.ts devops/keycloak/Dockerfile)
 
 # First deploy: no base, every service is built with the head tag.
 out=$(bash "$PLAN" "" "$first")
@@ -36,7 +36,7 @@ echo "$out" | sed -n '/^release<<EOF$/,/^EOF$/p' | sed '1d;$d' > release.env
 check "release records the deployed commit" "$first" "$(field DEPLOYED_SHA < release.env)"
 
 # An Edu API change rebuilds only the API; Keycloak keeps its tag.
-second=$(commit backend/api/src/stream.ts)
+second=$(commit backend/products/lms-api/src/stream.ts)
 out=$(bash "$PLAN" "$first" "$second" release.env)
 check "api change builds the api only" '["lms-api"]' "$(echo "$out" | field build)"
 check "keycloak keeps its tag" "$first" "$(echo "$out" | field TAG_KEYCLOAK)"
@@ -61,7 +61,7 @@ sixth=$(commit pnpm-lock.yaml)
 check "lockfile rebuilds node images" '["lms-api","platform-api","edu-web","platform-web","migrate","mail-relay"]' "$(bash "$PLAN" "$fifth" "$sixth" release.env | field build)"
 
 # A migration rebuilds the migrate image; a Keycloak change rebuilds Keycloak alone.
-seventh=$(commit database/migrations/20990101000000_x/migration.sql)
+seventh=$(commit database/products/lms/migrations/20990101000000_x/migration.sql)
 check "migration rebuilds migrate" '["migrate"]' "$(bash "$PLAN" "$sixth" "$seventh" release.env | field build)"
 eighth=$(commit devops/keycloak/Dockerfile)
 check "keycloak change rebuilds keycloak" '["keycloak"]' "$(bash "$PLAN" "$seventh" "$eighth" release.env | field build)"

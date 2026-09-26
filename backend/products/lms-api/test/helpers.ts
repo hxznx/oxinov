@@ -10,9 +10,9 @@ import { createApp } from '../src/app.factory';
 import { JsonLogger, type SecurityEvent } from '@oxinov/server-kit';
 import { loadConfig } from '../src/config/app-config';
 
-const ROOT = path.resolve(__dirname, '../../..');
+const ROOT = path.resolve(__dirname, '../../../..');
 
-/** Deterministic IDs from database/seeds/dev_seed.sql. */
+/** Deterministic IDs from database/products/lms/seeds/dev_seed.sql. */
 export const SEED = {
   sakura: 'aaaaaaaa-0000-4000-8000-000000000001',
   everest: 'bbbbbbbb-0000-4000-8000-000000000001',
@@ -70,11 +70,11 @@ export async function resetDatabase(): Promise<void> {
   await client.connect();
   try {
     await client.query('DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;');
-    const migrations = path.join(ROOT, 'database/migrations');
+    const migrations = path.join(ROOT, 'database/products/lms/migrations');
     for (const folder of readdirSync(migrations).filter((name) => /^\d{14}_/.test(name)).sort()) {
       await client.query(readFileSync(path.join(migrations, folder, 'migration.sql'), 'utf8'));
     }
-    await client.query(readFileSync(path.join(ROOT, 'database/seeds/dev_seed.sql'), 'utf8'));
+    await client.query(readFileSync(path.join(ROOT, 'database/products/lms/seeds/dev_seed.sql'), 'utf8'));
   } finally {
     await client.end();
   }

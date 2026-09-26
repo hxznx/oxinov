@@ -1,6 +1,6 @@
 -- Database-level tenant isolation tests (NFR-11, FR-TENANT-1605).
 -- Run as the application role against a migrated and seeded database:
---   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f database/policies/tenant_isolation_test.sql
+--   psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f database/products/lms/policies/tenant_isolation_test.sql
 -- Every check raises an exception on failure. All changes are rolled back.
 
 

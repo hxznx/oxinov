@@ -4,7 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "../../database/**", "../../security/soc/event-schema.json"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/database/**", "$TURBO_ROOT$/security/soc/event-schema.json"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "dev": {
@@ -19,7 +19,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "../../security/soc/event-schema.json"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/security/soc/event-schema.json"],
       "outputs": ["coverage/**"]
     },
     "test:integration": {

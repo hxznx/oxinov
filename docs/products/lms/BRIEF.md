@@ -1,6 +1,6 @@
 # Oxinov Edu project brief
 
-**Portfolio context:** Oxinov Edu is the first product on the wider [Oxinov company platform](company/PLATFORM-BLUEPRINT.md). This document defines the LMS product, not every Oxinov business objective.
+**Portfolio context:** Oxinov Edu is the first product on the wider [Oxinov company platform](../../company/PLATFORM-BLUEPRINT.md). This document defines the LMS product, not every Oxinov business objective.
 
 ## Vision
 

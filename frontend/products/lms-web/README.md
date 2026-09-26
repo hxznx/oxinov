@@ -1,8 +1,6 @@
 # Oxinov Edu web app (`edu.oxinov.com`)
 
-Next.js 16 app for learners, instructors, and school administrators ([Oxinov Edu FRD](../../../docs/02-FRD.md)). It signs people in with their one Oxinov account through [`@oxinov/web-auth`](../../../packages/web-auth/README.md) (client `oxinov-edu-web`, tokens for the `oxinov-lms-api` audience only) and calls the Edu API (`backend/api`) from the server. The browser never sees tokens and never calls the API directly; the API enforces tenant membership, roles, and course entitlement on every request.
-
-The older `frontend/web/` placeholder stays until a dedicated clean-up removes it.
+Next.js 16 app for learners, instructors, and school administrators ([Oxinov Edu FRD](../../../docs/requirements/LMS-FRD.md)). It signs people in with their one Oxinov account through [`@oxinov/web-auth`](../../../packages/web-auth/README.md) (client `oxinov-edu-web`, tokens for the `oxinov-lms-api` audience only) and calls the Edu API (`backend/products/lms-api`) from the server. The browser never sees tokens and never calls the API directly; the API enforces tenant membership, roles, and course entitlement on every request.
 
 ## What works today
 
@@ -28,7 +26,7 @@ Paid courses show that online payment is coming; they unlock only after a verifi
 ## Run locally
 
 1. Start the identity profile and run `bash devops/keycloak/configure-realm.sh` (creates the `oxinov-edu-web` client).
-2. Start the Edu API with `AUTH_ISSUER`, `AUTH_JWKS_URL`, and `AUTH_AUDIENCE=oxinov-lms-api`. For video and audio lessons, also run `docker compose up -d object-storage`, set the media settings in `backend/api/.env` (see its `.env.example`), and run `pnpm --filter @oxinov/lms-api media:bucket` once.
+2. Start the Edu API with `AUTH_ISSUER`, `AUTH_JWKS_URL`, and `AUTH_AUDIENCE=oxinov-lms-api`. For video and audio lessons, also run `docker compose up -d object-storage`, set the media settings in `backend/products/lms-api/.env` (see its `.env.example`), and run `pnpm --filter @oxinov/lms-api media:bucket` once.
 3. Copy `.env.example` to `.env.local` and set `OIDC_CLIENT_SECRET` from Keycloak (Clients → `oxinov-edu-web` → Credentials) and a random `SESSION_SECRET`.
 4. `pnpm --filter @oxinov/lms-web dev` and open http://localhost:3002.
 

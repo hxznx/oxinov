@@ -5,11 +5,11 @@
 **Status:** Draft for product review  
 **Audience:** Product, design, engineering, and QA  
 **Product:** Oxinov Edu (`edu.oxinov.com`), the first Oxinov product plane  
-**Standard:** [Oxinov requirements standard](requirements/README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
+**Standard:** [Oxinov requirements standard](README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
 
 ## 0. Platform dependencies
 
-Oxinov Edu runs on the shared Oxinov Platform. Sign-in, sessions, trust levels, policy acceptance, organizations, plans, entitlements, payments ledger, KYC, notifications, and privacy requests are defined in the [Platform FRD](requirements/PLATFORM-FRD.md) and are not redefined here. LMS tenant memberships, roles, instructor approval, courses, learning, exams, and results remain in this document and in the LMS database boundary. Where an LMS requirement below conflicts with a platform requirement, the platform requirement wins and the LMS requirement is marked **Superseded**.
+Oxinov Edu runs on the shared Oxinov Platform. Sign-in, sessions, trust levels, policy acceptance, organizations, plans, entitlements, payments ledger, KYC, notifications, and privacy requests are defined in the [Platform FRD](PLATFORM-FRD.md) and are not redefined here. LMS tenant memberships, roles, instructor approval, courses, learning, exams, and results remain in this document and in the LMS database boundary. Where an LMS requirement below conflicts with a platform requirement, the platform requirement wins and the LMS requirement is marked **Superseded**.
 
 ## 1. Purpose and scope
 
@@ -191,7 +191,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 
 ## Related documents
 
-Platform requirements: [Platform FRD](requirements/PLATFORM-FRD.md). Requirements standard: [requirements/README.md](requirements/README.md). Non-functional requirements: [03-NFR.md](03-NFR.md). Architecture and delivery rules: [architecture](architecture/ARCHITECTURE.md) and [engineering](engineering/CODING-STANDARDS.md). Acceptance journeys: [ACCEPTANCE-CRITERIA.md](planning/ACCEPTANCE-CRITERIA.md).
+Platform requirements: [Platform FRD](PLATFORM-FRD.md). Requirements standard: [requirements/README.md](README.md). Non-functional requirements: [NFR.md](NFR.md). Architecture and delivery rules: [architecture](../architecture/ARCHITECTURE.md) and [engineering](../engineering/CODING-STANDARDS.md). Acceptance journeys: [ACCEPTANCE-CRITERIA.md](../planning/ACCEPTANCE-CRITERIA.md).
 
 ## Subject and platform references
 

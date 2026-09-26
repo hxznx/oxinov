@@ -1,10 +1,10 @@
 # Non-functional requirements
 
-**Source:** Oxinov Edu FRD v1.3. Related: [FRD](02-FRD.md), [security](security/SECURITY.md), and [deployment](devops/DEPLOYMENT.md).
+**Source:** Oxinov Edu FRD v1.3. Related: [FRD](LMS-FRD.md), [security](../security/SECURITY.md), and [deployment](../devops/DEPLOYMENT.md).
 
 ## Requirements
 
-Numeric targets below are proposed acceptance targets. Confirm regions, traffic, and budget in [open decisions](planning/RISKS.md) before final approval.
+Numeric targets below are proposed acceptance targets. Confirm regions, traffic, and budget in [open decisions](../planning/RISKS.md) before final approval.
 
 | ID | Requirement and verification |
 | --- | --- |
@@ -23,7 +23,7 @@ Numeric targets below are proposed acceptance targets. Confirm regions, traffic,
 | NFR-13 AI governance | Log AI-generated drafts and approved actions by tenant and actor without storing secrets in prompts. Apply usage limits and human review gates; test that prompt injection cannot gain cross-tenant access or execute unapproved actions. |
 | NFR-14 Google Play readiness | Maintain a release build, signing credentials, stable Android package ID, version code, privacy policy, Data safety declarations, permissions rationale, content rating, billing compliance, and internal testing track. Target the current Google Play API level at release; as of September 2026, new submissions require Android 16 / API level 36 or higher. |
 | NFR-15 Security operations | Scan source, dependencies, secrets, containers, and infrastructure configuration in CI. Emit schema-valid security events for authentication, authorization, tenant isolation, privileged changes, payment abuse, malware, exports, and security-control changes. Send production events to a separately access-controlled SIEM, evaluate reviewed detections, and exercise incident runbooks in staging. Do not include secrets, raw bodies, private messages, exam answers, or raw AI prompts. Define severity ownership, response targets, retention, evidence custody, and notification escalation before launch. |
-| NFR-16 Human-centred usability | Link every material journey to an evidence-backed user need and test content or prototypes with intended users before build. Before release, benchmark the implemented end-to-end journey for unassisted task success, false completion, time, ease, confidence, error recovery, mobile and low-bandwidth behavior, required languages, and accessibility. Include disabled and assisted-digital users throughout the lifecycle. No unresolved critical usability or accessibility failure may ship. Continue outcome research after launch according to the [user-centred product standard](research/USER-CENTERED-PRODUCT-STANDARD.md). |
+| NFR-16 Human-centred usability | Link every material journey to an evidence-backed user need and test content or prototypes with intended users before build. Before release, benchmark the implemented end-to-end journey for unassisted task success, false completion, time, ease, confidence, error recovery, mobile and low-bandwidth behavior, required languages, and accessibility. Include disabled and assisted-digital users throughout the lifecycle. No unresolved critical usability or accessibility failure may ship. Continue outcome research after launch according to the [user-centred product standard](../research/USER-CENTERED-PRODUCT-STANDARD.md). |
 | NFR-17 Continuous delivery | Every push to `main` that passes CI reaches production automatically with no manual step (owner requirement, 2026-09-26). Only services whose inputs changed are rebuilt; lead time from merge to production is under 20 minutes at the 90th percentile. Releases are immutable, scanned, atomic, health-checked, and smoke-tested, and a failed release returns to the previous version automatically within 10 minutes. All AWS resources are Terraform-managed, all delivery stages are tested bash scripts, and releases are Helm upgrades on Kubernetes (k3s now, Amazon EKS at scale; ADR-018). Verify from workflow history (deploy frequency, lead time, change failure rate, time to restore) each month. |
 
 ## Standards

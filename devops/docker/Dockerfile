@@ -9,13 +9,13 @@ ENV NODE_ENV=production
 FROM base AS backend-build
 ENV NODE_ENV=development
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-COPY backend/api/package.json ./backend/api/package.json
+COPY backend/products/lms-api/package.json ./backend/products/lms-api/package.json
 COPY packages/server-kit/package.json ./packages/server-kit/package.json
 RUN pnpm install --frozen-lockfile --filter @oxinov/lms-api...
 COPY tsconfig.json ./tsconfig.json
 COPY packages/server-kit/ ./packages/server-kit/
-COPY backend/api/ ./backend/api/
-COPY database/prisma/ ./database/prisma/
+COPY backend/products/lms-api/ ./backend/products/lms-api/
+COPY database/products/lms/prisma/ ./database/products/lms/prisma/
 COPY security/soc/event-schema.json ./security/soc/event-schema.json
 RUN pnpm --filter @oxinov/server-kit build
 RUN pnpm --filter @oxinov/lms-api build
@@ -84,7 +84,7 @@ ENV NODE_ENV=production
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack     /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /opt/yarn* /usr/local/bin/yarn /usr/local/bin/yarnpkg
 
 FROM runtime AS backend
-WORKDIR /app/backend/api
+WORKDIR /app/backend/products/lms-api
 COPY --from=backend-build /app/deploy/ ./
 # Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
 USER 1000:1000
@@ -134,8 +134,8 @@ WORKDIR /app/migrate
 # No update checks or telemetry from the Prisma CLI in production.
 ENV CHECKPOINT_DISABLE=1 PRISMA_HIDE_UPDATE_MESSAGE=1
 COPY --from=migrate-build /app/deploy/ ./
-COPY database/prisma/ ./schemas/edu/
-COPY database/migrations/ ./schemas/edu/migrations/
+COPY database/products/lms/prisma/ ./schemas/edu/
+COPY database/products/lms/migrations/ ./schemas/edu/migrations/
 COPY database/platform/prisma/ ./schemas/platform/
 COPY database/platform/migrations/ ./schemas/platform/migrations/
 # Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
@@ -161,21 +161,21 @@ CMD ["pg_dumpall", "--version"]
 
 FROM base AS worker
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-COPY backend/worker/package.json ./backend/worker/package.json
+COPY backend/products/lms-worker/package.json ./backend/products/lms-worker/package.json
 RUN pnpm install --frozen-lockfile --filter @oxinov/lms-worker...
-COPY backend/worker/ ./backend/worker/
+COPY backend/products/lms-worker/ ./backend/products/lms-worker/
 RUN pnpm --filter @oxinov/lms-worker build
 # Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
 USER 1000:1000
-CMD ["node", "backend/worker/dist/main.js"]
+CMD ["node", "backend/products/lms-worker/dist/main.js"]
 
 FROM base AS chat
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-COPY backend/chat/package.json ./backend/chat/package.json
+COPY backend/products/lms-chat/package.json ./backend/products/lms-chat/package.json
 RUN pnpm install --frozen-lockfile --filter @oxinov/lms-chat...
-COPY backend/chat/ ./backend/chat/
+COPY backend/products/lms-chat/ ./backend/products/lms-chat/
 RUN pnpm --filter @oxinov/lms-chat build
 # Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
 USER 1000:1000
 EXPOSE 4001
-CMD ["node", "backend/chat/dist/main.js"]
+CMD ["node", "backend/products/lms-chat/dist/main.js"]

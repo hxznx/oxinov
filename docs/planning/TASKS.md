@@ -11,7 +11,7 @@
 | 0 | Draft and legally review Oxinov Terms, Privacy, Acceptable Use, and product-role policies | Published policy versions at `oxinov.com/legal/*` in English and Nepali, with owner and review date recorded |
 | 0 | Configure Google sign-in and email one-time codes at `id.oxinov.com` with SSO across platform-web and LMS | Google and email sign-in, verified-email-only linking, welcome and policy acceptance screen, sign-out everywhere, rate-limit and security-event tests |
 | 0 | Build the platform identity/organization/entitlement vertical slice | OIDC sign-in, organization isolation tests, product launcher, OpenAPI contracts, migrations, audit/security events, backups, metrics, traces, and rollback evidence |
-| 0 | Scaffold frontend/web, frontend/mobile, backend/api, backend/worker, and backend/chat | Local builds and health endpoints. **backend/api done** (health, readiness, metrics); others open |
+| 0 | Scaffold frontend/web, frontend/mobile, backend/products/lms-api, backend/products/lms-worker, and backend/products/lms-chat | Local builds and health endpoints. **backend/products/lms-api done** (health, readiness, metrics); others open |
 | 0 | Start PostgreSQL/Redis/MinIO via Compose and create migrations | Reproducible setup; data persists restart. **Migrations and seed done** |
 | 0 | Implement tenant creation, membership, RLS, and domain routing | Two-tenant positive and negative tests. **Done except subdomain/custom-domain routing and invitations** |
 | 0 | Instrument services and provision Prometheus, Alertmanager, exporters, and Grafana | Healthy scrape targets, dashboard loads, rules validate, and a synthetic alert reaches its staging receiver |

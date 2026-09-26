@@ -4,8 +4,8 @@
 // - Every tenant-owned model has an immutable `tenantId` and a composite unique key
 //   (tenantId, id). Relations between tenant-owned models reference that composite key, so
 //   PostgreSQL rejects cross-tenant foreign keys.
-// - Row-level security policies live in the numbered migrations under database/migrations/
-//   (see database/policies/README.md). The API connects as `oxinov_app`, which cannot bypass RLS.
+// - Row-level security policies live in the numbered migrations under database/products/lms/migrations/
+//   (see database/products/lms/policies/README.md). The API connects as `oxinov_app`, which cannot bypass RLS.
 // - Global registries (Tenant, UserProfile, ProviderEvent) have no tenantId column of their own
 //   except ProviderEvent, which records the resolved tenant for traceability.
 //
@@ -13,7 +13,7 @@
 
 generator client {
   provider     = "prisma-client"
-  output       = "../../backend/api/src/generated/prisma"
+  output       = "../../../../backend/products/lms-api/src/generated/prisma"
   moduleFormat = "cjs"
 }
 

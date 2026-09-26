@@ -1,9 +1,9 @@
 # Database
 
 PostgreSQL is the transactional system of record. The approved target separates the shared
-`platform/` database from independently owned `products/` databases. Existing `prisma/`,
-`migrations/`, `seeds/`, and `policies/` assets belong to Oxinov Edu and remain at their legacy
-paths until a dedicated migration updates the API, Docker, CI, and tests together.
+`platform/` database from independently owned `products/<slug>/` databases, each with the same
+`prisma/`, `migrations/`, `seeds/` and `policies/` shelves. Oxinov Edu's database is
+[products/lms](products/lms/README.md).
 
 Every tenant-owned product record and operation carries and verifies `tenant_id`. Services use
 only their owned database or schema and communicate across boundaries through versioned APIs and

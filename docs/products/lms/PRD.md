@@ -1,6 +1,6 @@
 # Oxinov Edu product requirements document
 
-**Status:** Draft for product review. **Portfolio:** Oxinov Edu is the first product on the [Oxinov company platform](company/PLATFORM-BLUEPRINT.md). **Source:** [project brief](00-PROJECT-BRIEF.md) and [FRD](02-FRD.md).
+**Status:** Draft for product review. **Portfolio:** Oxinov Edu is the first product on the [Oxinov company platform](../../company/PLATFORM-BLUEPRINT.md). **Source:** [project brief](BRIEF.md) and [FRD](../../requirements/LMS-FRD.md).
 
 ## Personas and jobs
 
@@ -23,8 +23,8 @@
 
 ## Scope and release sequencing
 
-All numbered FRD requirements are target scope. The [roadmap](planning/ROADMAP.md) proposes staged delivery; it does not remove target scope. Live classes and offline downloads are not yet specified. Actual course material and official-exam licensing require separate content work.
+All numbered FRD requirements are target scope. The [roadmap](../../planning/ROADMAP.md) proposes staged delivery; it does not remove target scope. Live classes and offline downloads are not yet specified. Actual course material and official-exam licensing require separate content work.
 
 ## Acceptance
 
-Use the [acceptance journeys](planning/ACCEPTANCE-CRITERIA.md) and [NFR](03-NFR.md). Open product decisions are listed in [RISKS.md](planning/RISKS.md).
+Use the [acceptance journeys](../../planning/ACCEPTANCE-CRITERIA.md) and [NFR](../../requirements/NFR.md). Open product decisions are listed in [RISKS.md](../../planning/RISKS.md).

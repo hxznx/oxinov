@@ -9,7 +9,7 @@
 --
 -- Identity subjects use the "dev|" prefix and only work with the development token issuer.
 -- Apply after migrations with the migration (owner) role:
---   psql "$MIGRATION_DATABASE_URL" -v ON_ERROR_STOP=1 -f database/seeds/dev_seed.sql
+--   psql "$MIGRATION_DATABASE_URL" -v ON_ERROR_STOP=1 -f database/products/lms/seeds/dev_seed.sql
 -- Context is set before each block so the script also works where FORCE RLS applies to the owner.
 
 BEGIN;

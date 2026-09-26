@@ -35,8 +35,9 @@ class CatalogTests(unittest.TestCase):
 
     def test_status_and_role_do_not_call_placeholders_implemented(self):
         self.assertIn("Reserved", state("backend/gateway"))
-        self.assertIn("Migration target", state("backend/products/lms-api"))
-        self.assertIn("Legacy placeholder", state("frontend/web"))
+        self.assertIn("Reserved", state("backend/products/lms-worker"))
+        self.assertIn("Product shelf", state("backend/products"))
+        self.assertNotIn("Reserved", state("backend/products/lms-api"))
         self.assertEqual(role("feature.e2e-spec.ts"), "Test / verification")
         self.assertEqual(role("feature.spec.ts"), "Test / verification")
 

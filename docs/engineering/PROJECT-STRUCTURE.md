@@ -9,24 +9,21 @@ For future product types and lifecycle registration, follow the [company library
 frontend/
   company-web/      implemented public company site
   platform-web/     implemented account portal
-  products/lms-web/ implemented Edu web application
-  web/              legacy placeholder; do not add application source here
-  mobile/           planned mobile application
+  products/
+    lms-web/        implemented Edu web application
+  mobile/           planned mobile clients (mobile/<slug>/)
 backend/
-  api/              implemented Edu API; retained legacy location
   platform-api/     implemented platform API foundation
-  products/lms-api/ target-path documentation only
+  products/
+    lms-api/        implemented Edu API
+    lms-worker/     planned Edu background jobs
+    lms-chat/       planned Edu realtime gateway
   workers/          mail-relay and migrate implemented; platform-worker planned
   gateway/          planned gateway boundary
-  worker/           planned Edu background jobs
-  chat/             planned Edu realtime gateway
 database/
   platform/         separate platform schema, migrations, policies and seeds
-  products/lms/     target-path documentation only
-  prisma/           Edu Prisma schema and client configuration
-  migrations/       reviewed, numbered database migrations
-  seeds/            deterministic development/test seed data
-  policies/         PostgreSQL RLS and database policy definitions
+  products/
+    lms/            Edu database: prisma/, migrations/, seeds/, policies/
 devops/
   docker/           application Dockerfile and Docker guidance
   keycloak/         identity image and realm configuration
@@ -66,15 +63,14 @@ Inspect the implemented packages before introducing overlapping abstractions int
 - Group API code by feature under its `src/`, keeping controllers, DTOs, services and rules together. Integration tests live in `test/`; focused tests may sit beside their implementation.
 - Web routes live in `src/app/`. Route-specific components stay beside their route; reusable application components live in `src/components/`, helpers and API access in `src/lib/`.
 - Use lowercase hyphenated folder names, framework filenames such as `page.tsx`, and existing React component and uppercase documentation conventions. Alphabetize indexes; do not rename runtime paths just for visual ordering.
-- Keep migrations immutable and timestamp-ordered. Edu data currently uses the root database subfolders, while platform data uses `database/platform/`.
+- Keep migrations immutable and timestamp-ordered. Platform data uses `database/platform/`; each product uses `database/products/<slug>/` with the same subfolders.
 - Shared packages never import applications. Frontends never import database clients. Each backend uses only its own database; cross-product access uses APIs or events.
 - Executable GitHub workflows belong in `.github/workflows/`; infrastructure and scripts in `devops/`; explanatory operating guides in `docs/devops/`.
 - Organize documents by subject and link every document from `docs/README.md`. Local temporary files belong in ignored `.tmp/`.
 
 ## Transition and maintenance
 
-The Edu API and database legacy paths are intentional. Migrate them only with imports, workspace, Docker, CI and tests updated together, coordinating with other active agents.
-Do not create future product folders before release approval.
+Oxinov Edu moved to the product-plane paths on 2026-09-26; no legacy locations remain. New products copy the same shape (see the [product plane template](COMPANY-PROJECT-STRUCTURE.md#product-plane-template)). Do not create future product folders before release approval.
 
 This library milestone supports NFR-12 maintainability without changing product behavior.
 Each repository file must appear once in the generated catalog; deleted paths disappear and ignored local files stay excluded.

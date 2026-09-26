@@ -32,11 +32,28 @@ services, hardware, content and research fit without duplicating shared files.
 | `scripts/` | Repository maintenance and validation | [Maintenance](#maintenance) |
 | `security/` | Events, detections and incident procedures | [Security](security/README.md) |
 
+## Find work by product
+
+Every product uses one technical slug and the same shelves, so a new product is found the same way as Edu:
+
+| Shelf | Path pattern | Oxinov Edu (`lms`) |
+| --- | --- | --- |
+| Product record | `docs/products/<slug>/README.md` | [docs/products/lms](docs/products/lms/README.md) |
+| Requirements | `docs/requirements/<SLUG>-FRD.md` | [LMS-FRD.md](docs/requirements/LMS-FRD.md) |
+| Web client | `frontend/products/<slug>-web/` | [lms-web](frontend/products/lms-web/README.md) |
+| API | `backend/products/<slug>-api/` | [lms-api](backend/products/lms-api/README.md) |
+| Worker, realtime | `backend/products/<slug>-worker/`, `<slug>-chat/` | planned |
+| Database | `database/products/<slug>/` | [lms](database/products/lms/README.md) |
+
+Shared company layers sit beside the products: `frontend/company-web` and `frontend/platform-web`,
+`backend/platform-api` and `backend/workers/`, `database/platform/`, and `packages/`.
+The [product register](docs/products/README.md) lists every offering, including those without software.
+
 ## Find work by subject
 
 | Subject | Open |
 | --- | --- |
-| Assignments, courses, exams, media, notes and discussions | [Edu API](backend/api/README.md), [Edu web](frontend/products/lms-web/README.md) |
+| Assignments, courses, exams, media, notes and discussions | [Edu product record](docs/products/lms/README.md), [Edu API](backend/products/lms-api/README.md), [Edu web](frontend/products/lms-web/README.md) |
 | Branding and tokens | [Design system](packages/design-system/README.md) |
 | Company website | [Company web](frontend/company-web/README.md) |
 | Database changes | [Migration strategy](docs/data/MIGRATION-STRATEGY.md) |

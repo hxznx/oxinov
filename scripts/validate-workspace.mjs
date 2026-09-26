@@ -30,10 +30,10 @@ if (!/^pnpm@\d+\.\d+\.\d+$/.test(rootManifest.packageManager ?? '')) {
   errors.push('Root package.json must pin an exact pnpm version');
 }
 
-const lmsManifestPath = join(root, 'backend/api/package.json');
+const lmsManifestPath = join(root, 'backend/products/lms-api/package.json');
 const lmsManifest = JSON.parse(readFileSync(lmsManifestPath, 'utf8'));
 if (lmsManifest.name !== '@oxinov/lms-api') {
-  errors.push('The legacy backend/api workspace must be identified as @oxinov/lms-api');
+  errors.push('The Edu API workspace (backend/products/lms-api) must be identified as @oxinov/lms-api');
 }
 
 for (const forbidden of [
@@ -52,7 +52,7 @@ for (const forbidden of [
   }
 }
 
-if (existsSync(join(root, 'backend/api/package-lock.json'))) {
+if (existsSync(join(root, 'backend/products/lms-api/package-lock.json'))) {
   errors.push('Nested package-lock.json conflicts with the canonical root pnpm-lock.yaml');
 }
 

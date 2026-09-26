@@ -18,7 +18,7 @@ async function main(): Promise<void> {
   const logger = new JsonLogger({ service: 'api', environment: config.environment, version: config.serviceVersion }, () => undefined);
   const app = await createApp({ config, logger });
   const document = buildOpenApi(app, config.serviceVersion);
-  const target = path.resolve(__dirname, '../../../packages/contracts/openapi.json');
+  const target = path.resolve(__dirname, '../../../../packages/contracts/openapi.json');
   writeFileSync(target, `${JSON.stringify(document, null, 2)}\n`);
   await app.close();
   process.stdout.write(`OpenAPI written to ${target}\n`);

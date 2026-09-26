@@ -98,7 +98,7 @@ jobs:
       - name: Apply migrations with Prisma and check the schema has not drifted
         run: |
           pnpm --filter @oxinov/lms-api exec prisma migrate deploy
-          pnpm --filter @oxinov/lms-api exec prisma migrate diff --from-config-datasource --to-schema ../../database/prisma/schema.prisma --exit-code
+          pnpm --filter @oxinov/lms-api exec prisma migrate diff --from-config-datasource --to-schema ../../../database/products/lms/prisma/schema.prisma --exit-code
       - name: Give the request role a login for tests
         run: psql "$MIGRATION_DATABASE_URL" -c "ALTER ROLE oxinov_app LOGIN PASSWORD 'ci-only-app'"
       - run: pnpm --filter @oxinov/lms-api db:seed

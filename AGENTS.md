@@ -27,7 +27,7 @@ Start with [docs/README.md](docs/README.md), the documentation map. Then read wh
 | --- | --- |
 | Any change | This file, [README.md](README.md), [platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [requirements standard](docs/requirements/README.md) |
 | Platform feature (sign-in, trust, policies, plans, payments, KYC, portal) | [Platform FRD](docs/requirements/PLATFORM-FRD.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [policies](docs/company/PLATFORM-POLICIES.md), [subscription model](docs/company/SUBSCRIPTION-MODEL.md) |
-| Oxinov Edu feature | [LMS FRD](docs/02-FRD.md), [NFR](docs/03-NFR.md), [LMS architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
+| Oxinov Edu feature | [LMS FRD](docs/requirements/LMS-FRD.md), [NFR](docs/requirements/NFR.md), [LMS architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
 | Other product | Its charter in [docs/products/](docs/products/README.md); build nothing until its release gate is approved |
 | Website or any UI | [brand](docs/design/BRAND.md), [design system](docs/design/DESIGN-SYSTEM.md), [accessibility](docs/design/ACCESSIBILITY.md), [user-centred product standard](docs/research/USER-CENTERED-PRODUCT-STANDARD.md) |
 | AI feature | [AI strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md) |
@@ -99,7 +99,7 @@ Milestone build commands live in [prompts/](prompts/). Implement one milestone a
 | When | Command |
 | --- | --- |
 | Any documentation change | `python scripts/validate_project.py` |
-| `backend/api` change | `pnpm --filter @oxinov/lms-api typecheck`, `pnpm --filter @oxinov/lms-api lint`, `pnpm --filter @oxinov/lms-api test` from the repository root |
+| `backend/products/lms-api` change | `pnpm --filter @oxinov/lms-api typecheck`, `pnpm --filter @oxinov/lms-api lint`, `pnpm --filter @oxinov/lms-api test` from the repository root |
 | Database or tenant-isolation change | `pnpm lms:migrate`, `pnpm --filter @oxinov/lms-api db:test-policies`, `pnpm --filter @oxinov/lms-api test:integration` from the repository root (needs PostgreSQL) |
 | Terraform change | `terraform fmt -recursive devops/terraform`, `terraform validate` in the stack, then a saved `terraform plan` shown to the owner before any apply |
 | Delivery scripts, chart, or workflows | `bash devops/scripts/check-delivery.sh` (shellcheck, release-planner tests, `helm lint`, `kubeconform`) |

@@ -20,7 +20,7 @@ Configuration lives under `monitoring/`. Keep data sources, dashboards, and aler
 4. In Prometheus, check **Status > Targets**. Prometheus, PostgreSQL, and Redis should be up.
 5. In Grafana, open **Oxinov Platform > Oxinov Platform Overview**.
 
-The application scrape targets are added when `backend/api`, `backend/worker`, `backend/chat`, and `frontend/web` expose `/metrics`; adding them earlier would generate false target-down alerts in the documentation-only scaffold.
+The application scrape targets are added when `backend/products/lms-api`, `backend/products/lms-worker`, `backend/products/lms-chat`, and `frontend/products/lms-web` expose `/metrics`; adding them earlier would generate false target-down alerts in the documentation-only scaffold.
 
 ## Application instrumentation contract
 
@@ -72,7 +72,7 @@ Every production alert needs:
 - a staging test proving the notification route works;
 - a review after incidents to adjust noisy or missing signals.
 
-Track the proposed 99.9% availability and one-second API p95 target from `docs/03-NFR.md`. Finalize service-level indicators and the error-budget policy after launch traffic and regions are approved.
+Track the proposed 99.9% availability and one-second API p95 target from `docs/requirements/NFR.md`. Finalize service-level indicators and the error-budget policy after launch traffic and regions are approved.
 
 ## Logs, traces, and production operation
 

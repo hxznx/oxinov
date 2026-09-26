@@ -2,7 +2,7 @@
 
 ## Migration rule
 
-The current `frontend/web`, `frontend/mobile`, `backend/api`, `backend/worker`, `backend/chat`, and `database/` implementation belongs to Oxinov Edu. Keep it working while the platform foundation is added. Move or rename existing code only in a dedicated migration with import, Docker, CI, and test updates in the same change.
+Oxinov Edu now lives at its product-plane paths (`frontend/products/lms-web`, `backend/products/lms-api`, `database/products/lms`). Any later move or rename happens only in a dedicated migration with import, Docker, CI, and test updates in the same change.
 
 ## Target repository layout
 
@@ -97,5 +97,5 @@ Every product plane has the same shape so teams and coding agents can move betwe
 1. Add `company-web`, `platform-web`, `platform-api`, and the platform database without moving LMS code.
 2. Establish shared OIDC, contracts, configuration, observability, security events, and design tokens.
 3. Connect the existing LMS to platform identities and entitlements through APIs.
-4. Rename the existing LMS folders to the target product paths only after contract tests and container builds protect the migration.
+4. Rename the existing LMS folders to the target product paths once container builds and CI protect the migration. **Done 2026-09-26.**
 5. Add future product folders only when their product charter and release gate are approved.

@@ -1,5 +1,5 @@
 /**
- * Server-side client for the Oxinov Edu API (backend/api). The browser never calls it directly and never
+ * Server-side client for the Oxinov Edu API (backend/products/lms-api). The browser never calls it directly and never
  * sees tokens; every call carries the signed-in person's Edu access token. Types mirror the API DTOs.
  */
 export type TenantRole = 'LEARNER' | 'INSTRUCTOR' | 'ADMIN' | 'OWNER';

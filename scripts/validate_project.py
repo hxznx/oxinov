@@ -23,7 +23,7 @@ REQUIRED = [
     "devops/kubernetes/helm/oxinov/values.yaml", "devops/kubernetes/scripts/deploy.sh",
     "devops/kubernetes/scripts/bootstrap-node.sh", "devops/kubernetes/README.md",
     "devops/README.md", "devops/docker/README.md",
-    "docs/00-PROJECT-BRIEF.md", "docs/01-PRD.md", "docs/02-FRD.md", "docs/03-NFR.md",
+    "docs/products/lms/BRIEF.md", "docs/products/lms/PRD.md", "docs/requirements/LMS-FRD.md", "docs/requirements/NFR.md",
     "docs/README.md", "docs/company/PLATFORM-BLUEPRINT.md",
     "docs/company/PLATFORM-POLICIES.md", "docs/company/SUBSCRIPTION-MODEL.md",
     "docs/company/AI-IMPLEMENTATION-STRATEGY.md",
@@ -66,14 +66,14 @@ REQUIRED = [
     "docs/planning/TASKS.md", "docs/planning/ACCEPTANCE-CRITERIA.md",
     "docs/planning/RISKS.md", "docs/planning/CHANGELOG.md",
     "frontend/README.md", "frontend/company-web/README.md", "frontend/platform-web/README.md",
-    "frontend/products/lms-web/README.md", "frontend/web/README.md", "frontend/mobile/README.md",
+    "frontend/products/lms-web/README.md", "frontend/mobile/README.md", "docs/products/lms/README.md",
     "backend/README.md", "backend/gateway/README.md", "backend/platform-api/README.md",
     "backend/workers/platform-worker/README.md", "backend/products/lms-api/README.md",
-    "backend/api/README.md", "backend/worker/README.md", "backend/chat/README.md",
+    "backend/products/lms-api/README.md", "backend/products/lms-worker/README.md", "backend/products/lms-chat/README.md",
     "database/README.md", "database/platform/README.md", "database/products/lms/README.md",
-    "database/prisma/README.md",
-    "database/migrations/README.md", "database/seeds/README.md",
-    "database/policies/README.md", "packages/auth/README.md", "packages/config/README.md",
+    "database/products/lms/prisma/README.md",
+    "database/products/lms/migrations/README.md", "database/products/lms/seeds/README.md",
+    "database/products/lms/policies/README.md", "packages/auth/README.md", "packages/config/README.md",
     "packages/contracts/README.md", "packages/design-system/README.md",
     "packages/observability/README.md", "packages/security-events/README.md",
     "packages/testing/README.md", "packages/domain/README.md", "monitoring/README.md",
@@ -111,7 +111,7 @@ def check_docs(errors: list[str]) -> None:
         elif not path.read_bytes().strip():
             errors.append(f"Empty: {relative}")
 
-    frd = ROOT / "docs/02-FRD.md"
+    frd = ROOT / "docs/requirements/LMS-FRD.md"
     if frd.is_file():
         text = frd.read_text(encoding="utf-8")
         ids = re.findall(r"(?m)^\*\*(FR-[A-Z]+-\d{3,4})", text)
@@ -120,7 +120,7 @@ def check_docs(errors: list[str]) -> None:
 
     # Requirement IDs are unique across every FRD in the company (docs/requirements/README.md).
     all_ids: list[str] = []
-    for path in [frd, *sorted((ROOT / "docs/requirements").glob("*-FRD.md"))]:
+    for path in sorted((ROOT / "docs/requirements").glob("*-FRD.md")):
         if path.is_file():
             all_ids += re.findall(r"(?m)^\*\*(FR-[A-Z]+-\d{3,4})", path.read_text(encoding="utf-8"))
     duplicates = sorted({i for i in all_ids if all_ids.count(i) > 1})
@@ -257,11 +257,10 @@ def check_security(errors: list[str]) -> None:
 
 def check_deploy(errors: list[str]) -> None:
     applications = {
-        "frontend/web": ROOT / "frontend" / "web" / "package.json",
         "frontend/mobile": ROOT / "frontend" / "mobile" / "package.json",
-        "backend/api": ROOT / "backend" / "api" / "package.json",
-        "backend/worker": ROOT / "backend" / "worker" / "package.json",
-        "backend/chat": ROOT / "backend" / "chat" / "package.json",
+        "backend/products/lms-api": ROOT / "backend" / "products" / "lms-api" / "package.json",
+        "backend/products/lms-worker": ROOT / "backend" / "products" / "lms-worker" / "package.json",
+        "backend/products/lms-chat": ROOT / "backend" / "products" / "lms-chat" / "package.json",
     }
     for name, manifest in applications.items():
         if not manifest.is_file():
