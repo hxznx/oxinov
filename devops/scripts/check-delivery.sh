@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Every delivery check in one command, identical locally and in CI (ADR-018):
 #   bash devops/scripts/check-delivery.sh
-# Runs: shellcheck on all delivery scripts, the release-planner tests, Helm lint, rendered-manifest validation
+# Runs: executable bits, shellcheck on all delivery scripts, the release-planner tests, Helm lint, rendered-manifest validation
 # against the Kubernetes schema, and Terraform formatting. Tools run in pinned containers, so the only
 # requirements are Docker and bash.
 set -euo pipefail
@@ -19,6 +19,17 @@ CHART=devops/kubernetes/helm/oxinov
 
 step() { printf '\n== %s\n' "$*"; }
 run() { docker run --rm -v "$HOST_ROOT:/src" -w /src "$@"; }
+
+step "executable bits"
+# Git on Windows ignores file modes; a script stored as 100644 fails when an image or runner executes it.
+# (Database init scripts are sourced by the postgres entrypoint, so they are not in this list.)
+bad=$(git ls-files -s -- 'devops/scripts/*' 'devops/kubernetes/scripts/*' 'devops/keycloak/configure-realm.sh' 'backend/workers/*/*.sh'   | awk '$1 != "100755" {print $4}')
+if [ -n "$bad" ]; then
+  echo "not executable in git (fix: git update-index --chmod=+x <file>):"
+  echo "$bad"
+  exit 1
+fi
+echo "all scripts executable"
 
 step "shellcheck"
 mapfile -t scripts < <(ls devops/scripts/*.sh devops/scripts/oxctl devops/kubernetes/scripts/*.sh devops/keycloak/configure-realm.sh)

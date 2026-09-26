@@ -141,7 +141,7 @@ COPY database/platform/migrations/ ./schemas/platform/migrations/
 # Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
 USER 1000:1000
 # EDU_MIGRATION_DATABASE_URL and PLATFORM_MIGRATION_DATABASE_URL come from the Helm hook.
-CMD ["./migrate.sh"]
+CMD ["sh", "./migrate.sh"]
 
 FROM runtime AS mail-relay
 WORKDIR /app
