@@ -33,7 +33,7 @@ Oxinov's audience is **global** and its only language is **English** (ADR-020). 
 | Fonts | Devanagari font removed (ADR-020); preloaded fonts cut from about 372 KB (10 files) to 59 KB (2 files) |
 | Global copy | Site title, headline, mission, and page copy describe a company for people everywhere; the Lalitpur headquarters stays as a fact |
 
-Still open: Search Console and Bing verification (DNS records in Terraform), business profiles, FAQ data (when pricing has FAQs), and an approved tagline for the site title.
+Still open: Search Console and Bing verification (Terraform ready, see below), business profiles, FAQ data (when pricing has FAQs), and an approved tagline for the site title.
 
 ## Technical fixes (engineering, in `frontend/company-web`)
 
@@ -67,6 +67,15 @@ Target clusters, all in English (validate worldwide volumes in Search Console an
 | Company | "Oxinov", "Oxinov Edu" | Home, About, profiles |
 
 **Content rules:** one clear topic per page; the answer in the first paragraph; plain global English that translates well; original screenshots and videos with English captions; examples from many countries; link articles to the product page; update yearly. Comparison pages stay factual and dated.
+
+## Verifying ownership with search engines
+
+Terraform publishes the verification value as an apex TXT record (`search_verification_txt` in the `edge` stack), next to the Zoho and SPF values, which stay unchanged.
+
+1. In [Google Search Console](https://search.google.com/search-console), add a **Domain** property for `oxinov.com` and copy the TXT value `google-site-verification=…`.
+2. Add it to `search_verification_txt` in `devops/terraform/environments/production/edge/variables.tf` (the value is public, so it can be committed), run `terraform plan`, and apply after the owner's "yes apply". The plan must show one added TXT value and nothing else.
+3. Click **Verify** in Search Console (DNS can take a few minutes), then submit `https://oxinov.com/sitemap.xml`.
+4. In [Bing Webmaster Tools](https://www.bing.com/webmasters), choose **Import from Google Search Console**; no DNS record is needed.
 
 ## Off-site
 

@@ -1,16 +1,21 @@
 # Staff email for oxinov.com on Zoho Mail (zoho.com data centre). Automatic product email (sign-in codes,
 # receipts) will use Amazon SES from no-reply@oxinov.com and is added with the platform launch.
 
-# Apex TXT values: Zoho domain ownership proof and SPF (only Zoho may send as @oxinov.com; soft-fail others).
+# Apex TXT values: Zoho domain ownership proof, SPF (only Zoho may send as @oxinov.com; soft-fail others),
+# and search engine ownership proofs. Route 53 holds one TXT record set per name, so every apex TXT value
+# lives here.
 resource "aws_route53_record" "apex_txt" {
   zone_id = aws_route53_zone.main.zone_id
   name    = var.domain
   type    = "TXT"
   ttl     = 300
-  records = [
-    "zoho-verification=zb30003091.zmverify.zoho.com",
-    "v=spf1 include:zoho.com ~all",
-  ]
+  records = concat(
+    [
+      "zoho-verification=zb30003091.zmverify.zoho.com",
+      "v=spf1 include:zoho.com ~all",
+    ],
+    var.search_verification_txt,
+  )
 }
 
 resource "aws_route53_record" "mx" {

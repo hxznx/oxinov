@@ -19,3 +19,22 @@ variable "github_environment" {
   type        = string
   default     = "production"
 }
+
+variable "search_verification_txt" {
+  description = <<-EOT
+    Search engine domain-ownership values published as apex TXT records (docs/marketing/SEO.md).
+    Google Search Console: add oxinov.com as a Domain property, copy its TXT value
+    ("google-site-verification=..."), add it here, and apply. Bing Webmaster Tools then imports the
+    verified site from Google Search Console, so it needs no record. These values are public in DNS.
+  EOT
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition = alltrue([
+      for value in var.search_verification_txt :
+      can(regex("^google-site-verification=[A-Za-z0-9_-]{20,100}$", value))
+    ])
+    error_message = "Each value must look like google-site-verification=<token> as shown by Google Search Console."
+  }
+}

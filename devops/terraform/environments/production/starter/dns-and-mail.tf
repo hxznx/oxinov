@@ -28,10 +28,14 @@ resource "aws_route53_record" "caa" {
 # Company mailboxes stay on Zoho (edge stack); SES only sends from no-reply@.
 resource "aws_sesv2_email_identity" "domain" {
   email_identity = var.domain
+  # Every message uses the bounce and complaint handling in email-events.tf.
+  configuration_set_name = aws_sesv2_configuration_set.transactional.configuration_set_name
 
   dkim_signing_attributes {
     next_signing_key_length = "RSA_2048_BIT"
   }
+
+  depends_on = [aws_iam_role_policy.server]
 }
 
 resource "aws_route53_record" "ses_dkim" {

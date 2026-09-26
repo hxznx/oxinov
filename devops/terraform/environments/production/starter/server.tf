@@ -56,9 +56,17 @@ data "aws_iam_policy_document" "server" {
   }
 
   statement {
-    sid       = "SendSignInEmail"
-    actions   = ["ses:SendEmail", "ses:SendRawEmail"]
-    resources = [aws_sesv2_email_identity.domain.arn]
+    sid     = "SendSignInEmail"
+    actions = ["ses:SendEmail", "ses:SendRawEmail"]
+    # SES authorizes every identity involved in a send: the sender's (oxinov.com), the identity's default
+    # configuration set (email-events.tf), and, while the account is in the SES sandbox, each recipient's
+    # verified identity. So any identity is allowed, but only with the sender fixed to no-reply@ by the
+    # ses:FromAddress condition below. ARNs are spelled out so the identity can depend on this policy:
+    # the permission lands before the identity starts using the configuration set.
+    resources = [
+      "arn:aws:ses:${local.region}:${local.account_id}:identity/*",
+      aws_sesv2_configuration_set.transactional.arn,
+    ]
     condition {
       test     = "StringEquals"
       variable = "ses:FromAddress"
