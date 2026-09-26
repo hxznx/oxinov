@@ -18,11 +18,17 @@ Edit the catalog, not this page. The image of each service is `oxinov/<service>`
 
 ## Adding a service
 
-1. Add the source folder on its product shelf ([placement rules](PROJECT-STRUCTURE.md)) and a Dockerfile target.
-2. Add an entry to `services.yaml`, then run `python scripts/service_catalog.py`.
-3. Add the Helm `services:` entry named after `workload`, and map `helm_tag` in the chart.
-4. Plan and apply the starter Terraform stack: it creates the ECR repository from the catalog.
-5. Push. The release planner builds and deploys the new image like every other service.
+Run `oxctl new-service <product> <api|web|worker>` (try `--dry-run` first). It creates `<product>-<kind>` on
+its product shelf ([placement rules](PROJECT-STRUCTURE.md)) as a small standard-library Node.js service with
+health endpoints and a test, adds its Dockerfile stage, `services.yaml` entry and Helm entry (with network
+access: web public, API from the product's web app, worker none), and regenerates this page. The product
+needs a record in `docs/products/<product>/` first, so the release gate still applies. Then:
+
+1. `pnpm install` to add the package to the lockfile, and run its test.
+2. Plan and apply the starter Terraform stack: it creates the ECR repository from the catalog (and add a
+   public host to `var.hosts` for its DNS record).
+3. Push. The release planner builds and deploys the new image like every other service.
+4. Grow the code into the product stack (NestJS with `@oxinov/server-kit`, or Next.js) as it needs more.
 
 `python scripts/service_catalog.py --check` (run by `scripts/validate_project.py` in CI) fails when a derived
 file is stale, a path, Dockerfile target or chart entry is missing, or a port or host disagrees with the chart.

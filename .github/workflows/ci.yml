@@ -23,7 +23,7 @@ jobs:
         run: python scripts/validate_project.py
       - name: Test the file and service catalog tools
         working-directory: scripts
-        run: python -m unittest test_project_catalog test_service_catalog
+        run: python -m unittest test_project_catalog test_service_catalog test_new_service
       - name: Validate monorepo boundaries and release gates
         run: node scripts/validate-workspace.mjs
       - name: Validate Docker Compose syntax

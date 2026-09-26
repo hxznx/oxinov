@@ -2,6 +2,7 @@
 
     python scripts/service_catalog.py           regenerate the derived files
     python scripts/service_catalog.py --check   fail when they are stale or the catalog disagrees with the repo
+    python scripts/service_catalog.py --list    print every service
 
 Derived files: devops/scripts/services.sh (sourced by the delivery scripts), .github/CODEOWNERS, and
 docs/engineering/SERVICE-CATALOG.md. Standard library only, so it runs anywhere Python 3.9+ does.
@@ -173,11 +174,16 @@ def render_docs(catalog: dict) -> str:
                      f"{s['workload'] or 'none'} | {s['port'] or '-'} | {host} | {s['owner']} |")
     lines += [
         "", "## Adding a service", "",
-        "1. Add the source folder on its product shelf ([placement rules](PROJECT-STRUCTURE.md)) and a Dockerfile target.",
-        "2. Add an entry to `services.yaml`, then run `python scripts/service_catalog.py`.",
-        "3. Add the Helm `services:` entry named after `workload`, and map `helm_tag` in the chart.",
-        "4. Plan and apply the starter Terraform stack: it creates the ECR repository from the catalog.",
-        "5. Push. The release planner builds and deploys the new image like every other service.", "",
+        "Run `oxctl new-service <product> <api|web|worker>` (try `--dry-run` first). It creates `<product>-<kind>` on",
+        "its product shelf ([placement rules](PROJECT-STRUCTURE.md)) as a small standard-library Node.js service with",
+        "health endpoints and a test, adds its Dockerfile stage, `services.yaml` entry and Helm entry (with network",
+        "access: web public, API from the product's web app, worker none), and regenerates this page. The product",
+        "needs a record in `docs/products/<product>/` first, so the release gate still applies. Then:", "",
+        "1. `pnpm install` to add the package to the lockfile, and run its test.",
+        "2. Plan and apply the starter Terraform stack: it creates the ECR repository from the catalog (and add a",
+        "   public host to `var.hosts` for its DNS record).",
+        "3. Push. The release planner builds and deploys the new image like every other service.",
+        "4. Grow the code into the product stack (NestJS with `@oxinov/server-kit`, or Next.js) as it needs more.", "",
         "`python scripts/service_catalog.py --check` (run by `scripts/validate_project.py` in CI) fails when a derived",
         "file is stale, a path, Dockerfile target or chart entry is missing, or a port or host disagrees with the chart.", "",
     ]
@@ -276,14 +282,25 @@ def check(catalog: dict, root: Path = ROOT) -> list[str]:
 
 
 def main() -> int:
+    return main_with(None)
+
+
+def main_with(argv: list[str] | None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--check", action="store_true")
-    args = parser.parse_args()
+    parser.add_argument("--list", action="store_true", help="print every service and exit")
+    args = parser.parse_args(argv)
     try:
         catalog = load()
     except ValueError as error:
         print(f"ERROR: {error}")
         return 1
+    if args.list:
+        print(f"{'SERVICE':<14} {'PRODUCT':<9} {'KIND':<9} {'PORT':<5} {'HOST':<18} SOURCE")
+        for name, s in catalog["services"].items():
+            host = f"{s['host']}.oxinov.com" if s["host"] else "internal"
+            print(f"{name:<14} {s['product']:<9} {s['kind']:<9} {str(s['port'] or '-'):<5} {host:<18} {s['path']}")
+        return 0
     errors = check(catalog)
     for relative, render in OUTPUTS.items():
         expected = render(catalog) if not errors else None

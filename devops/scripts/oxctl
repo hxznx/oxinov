@@ -39,6 +39,12 @@ Cluster and server
   backup                     Run the database backup job now (dump to S3)
   backups [n]                List the newest database dumps (default 10)
 
+Services
+  new-service <product> <api|web|worker> [--port N] [--host NAME] [--dry-run]
+                             Scaffold <product>-<kind>: code, Dockerfile stage, services.yaml and Helm entries
+                             (the product needs a record in docs/products/<product>/)
+  services                   The service catalog: every service, its product, port, and host
+
 Infrastructure
   plan                       terraform plan for the starter stack (never applies)
   cost                       Month-to-date AWS cost and the budget
@@ -49,6 +55,17 @@ need() { command -v "$1" >/dev/null || { echo "oxctl needs $1 on PATH" >&2; exit
 instance() { starter_instance; }
 remote() { ssm_run "$(instance)" "cd /opt/oxinov && $1" "${2:-600}"; }
 valid_service() { [[ " $SERVICES " == *" $1 "* ]] || { echo "unknown service '$1' (one of: $SERVICES)" >&2; exit 2; }; }
+
+# Python 3 for the catalog tools (Windows often has only `python`; its `python3` may be a Store stub).
+python_cmd() {
+  local candidate
+  for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null && "$candidate" -c 'import sys; sys.exit(sys.version_info < (3, 9))' 2>/dev/null; then
+      echo "$candidate"; return
+    fi
+  done
+  echo "oxctl needs Python 3.9 or newer" >&2; exit 1
+}
 
 cmd=${1:-help}
 shift || true
@@ -110,6 +127,13 @@ case $cmd in
   backups)
     aws s3 ls s3://oxinov-starter-backups-614130400110/database/ --recursive --human-readable \
       | sort | tail -n "${1:-10}"
+    ;;
+  new-service)
+    [ $# -ge 2 ] || { usage; exit 2; }
+    "$(python_cmd)" "$ROOT/scripts/new_service.py" "$@"
+    ;;
+  services)
+    "$(python_cmd)" "$ROOT/scripts/service_catalog.py" --list
     ;;
   plan)
     need terraform

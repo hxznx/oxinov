@@ -34,7 +34,17 @@ def inventory(root: Path = ROOT) -> list[str]:
                   key=lambda p: (p.casefold(), p))
 
 
+def _service_paths() -> set[str]:
+    try:
+        from service_catalog import load
+        return {s["path"] for s in load()["services"].values()}
+    except (ImportError, OSError, ValueError, KeyError):
+        return set()
+
+
 def state(folder: str) -> str:
+    if folder in _service_paths():
+        return "Deployable service registered in services.yaml (see docs/engineering/SERVICE-CATALOG.md)."
     if folder in RESERVED:
         return "Reserved / planned; not an implemented application."
     if folder in {"backend/products", "database/products", "frontend/products", "docs/products"}:

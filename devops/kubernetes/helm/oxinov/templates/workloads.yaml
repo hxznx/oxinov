@@ -133,4 +133,31 @@ spec:
     matchLabels:
       app.kubernetes.io/name: {{ $name }}
 {{- end }}
+{{- if and $.Values.networkPolicy.enabled $svc.allowFrom }}
+---
+# Who may call this service: `public` (through the ingress) or the listed workloads. Services without
+# allowFrom rely on the shared policies in platform.yaml (default deny).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ printf "%s-ingress" $name }}
+  labels:
+    {{- include "oxinov.labels" $ | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+  policyTypes: [Ingress]
+  ingress:
+    {{- if has "public" $svc.allowFrom }}
+    - {}
+    {{- else }}
+    - from:
+        - podSelector:
+            matchExpressions:
+              - { key: app.kubernetes.io/name, operator: In, values: {{ toJson $svc.allowFrom }} }
+      ports:
+        - { port: {{ $svc.port }} }
+    {{- end }}
+{{- end }}
 {{- end }}

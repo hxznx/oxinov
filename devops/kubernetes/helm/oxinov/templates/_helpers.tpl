@@ -98,4 +98,8 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 - { name: MAIL_FROM, value: {{ $root.Values.mail.from | quote }} }
 - { name: AWS_REGION, value: {{ $root.Values.media.region | quote }} }
 {{- end }}
+{{- /* Plain settings from the service's values entry (services scaffolded by `oxctl new-service`). */}}
+{{- range $key, $value := .svc.env }}
+- { name: {{ $key }}, value: {{ $value | toString | quote }} }
+{{- end }}
 {{- end -}}

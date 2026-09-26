@@ -109,6 +109,10 @@ Scale triggers and the EKS path are in the roadmap.
 
 ## Adding a service
 
+Start with `oxctl new-service <product> <api|web|worker>`: it performs steps 1 and 2 for a small
+standard-library service (see the [service catalog](../../docs/engineering/SERVICE-CATALOG.md#adding-a-service)).
+By hand:
+
 1. Register it in the root [`services.yaml`](../../services.yaml) (product, owner, source path, build recipe,
    inputs, Helm tag, workload, port, host) and run `python scripts/service_catalog.py`. The release planner,
    deploy workflow, `deploy.sh`, rehearsal, `oxctl`, CODEOWNERS and the
