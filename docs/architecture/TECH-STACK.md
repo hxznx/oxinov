@@ -1,51 +1,36 @@
-# Technology stack
+# Technology stack: Oxinov Edu
 
-**Scope:** Oxinov Edu product stack. Cross-product choices are defined in the [company platform stack](COMPANY-TECH-STACK.md). **Status:** Proposed baseline; record changes in [ADR.md](ADR.md).
+**Scope:** the Oxinov Edu product. Company-wide choices are in the [company stack](COMPANY-TECH-STACK.md); what runs today is in [CURRENT-STATE.md](CURRENT-STATE.md). **Updated:** 2026-09-26 (ADR-017, ADR-018, ADR-021). Record changes in [ADR.md](ADR.md).
 
-## Recommended implementation stack
+PostgreSQL is the system of record. Add any other data technology only for a documented need, with an owner, backup policy, and tenant-isolation design. Versions are pinned exactly (pnpm strict catalog, image digests).
 
-Use this concrete starting architecture. PostgreSQL is the mandatory transactional system of record for the LMS. Choose any additional data technology only for a documented need, with a clear owner, backup policy, and tenant-isolation design. Pin exact package and container image versions when implementation begins.
-
-| Layer | Choice | Responsibility |
+| Layer | Today | Next step and trigger |
 | --- | --- | --- |
-| Frontend container | Next.js App Router, React, TypeScript in its own Docker image | Tenant-aware catalog, authoring, player, dashboards, and server-rendered pages. It calls the backend API and does not connect directly to PostgreSQL. |
-| Backend container | NestJS and TypeScript in a separate Docker image | Versioned REST/OpenAPI endpoints, tenant resolution, validation, authorization, business rules, billing webhooks, and mobile APIs. |
-| Worker container | TypeScript worker in a separate Docker image | Retryable email, AI generation, media metadata, result, and certificate jobs; idempotent handlers and tenant context. |
-| Mobile build | React Native with Expo and TypeScript | Android and iOS apps call the same backend API and follow the same tenant and domain rules. Mobile binaries are built and signed in a mobile build pipeline; they run on devices, not in Docker. |
-| Web UI | Tailwind CSS and shadcn/ui | Responsive web layout and accessible controls; mobile uses native React Native components. |
-| Chat container | Dedicated Node.js WebSocket gateway | Cross-device conversations and unread state; persist messages in PostgreSQL and use Redis only for delivery fanout. |
-| PostgreSQL | PostgreSQL with Prisma migrations; Docker with a persistent volume locally and Amazon RDS for PostgreSQL in AWS | Canonical records, tenant-scoped full-text search, transactions, and audit history. Production uses Multi-AZ where required, encrypted backups, isolated data subnets, and tested restore procedures. |
-| Redis container | Redis with no authoritative business records | Queue coordination, cache, rate limits, and chat fanout. Loss of Redis must not erase course, payment, or result records. |
-| Identity | Provider-neutral OpenID Connect; Keycloak is the company-platform default | Oxinov single sign-on with Google, Apple, or email one-time codes and no customer passwords (ADR-011), MFA for staff and administrators, and sessions. Keep tenant memberships, roles, and ownership in PostgreSQL. The existing generic JWKS verifier remains compatible with another approved OIDC provider. |
-| Payments | Provider adapter and internal ledger; evaluate Khalti and eSewa first for the Nepal entity, and Stripe only for an eligible entity/market; store billing where required for mobile | Keep tenant SaaS subscriptions distinct from learner course purchases and instructor payouts. Verify provider status server-side and normalize purchases into one entitlement ledger. |
-| Video | Mux Video | Direct upload, adaptive HLS, and signed playback for paid lessons. |
-| Files | Private S3-compatible object storage; MinIO container for local development | Attachments, submissions, and certificates; issue time-limited download URLs after tenant and role checks. Do not store video binaries or user uploads in PostgreSQL. |
-| Notifications | Transactional email provider, Web Push API, and native push integration | Account email, course announcements, chat and result alerts, and opted-in browser or mobile push. Select the email and native push providers before implementation. |
-| AI integration | Provider adapter behind backend-authorized commands | Generate tenant-scoped drafts and proposed actions without giving the model direct database, shell, payment, or publishing privileges. |
-| Metrics and dashboards | Prometheus, PostgreSQL/Redis exporters, Alertmanager, and Grafana | Scrape bounded-cardinality operational metrics, evaluate alert rules, route notifications, and display version-controlled dashboards. Keep monitoring endpoints on private networks. |
-| Security engineering and SOC | GitHub CodeQL/dependency review, Trivy, GuardDuty Runtime Monitoring for ECS Fargate, OpenSearch Security Analytics with Sigma, and optional Falco for later EKS/EC2; Wazuh optional for managed endpoints/hosts | Scan code, dependencies, secrets, images, and IaC; collect normalized security events; detect and investigate threats; run incident procedures. Keep security storage and access separate from product analytics and operational metrics. |
+| Web app (`frontend/products/lms-web`) | Next.js 16 App Router, React 19, TypeScript 5.9, Tailwind CSS 4 with `@oxinov/design-system` tokens; server components and server actions call the API from the server, so the browser never holds tokens (`@oxinov/web-auth`) | Generated OpenAPI client (ADR-019 step 6); Playwright end-to-end tests for the critical journeys |
+| API (`backend/products/lms-api`) | NestJS 11, Prisma 7, class-validator DTOs, versioned REST with generated OpenAPI (`packages/contracts/openapi.json`), `@oxinov/server-kit` for hardening, health, readiness, and metrics | OpenTelemetry traces (ADR-019 step 5); backward-compatibility check on the OpenAPI contract in CI |
+| Database | PostgreSQL 18 (`database/products/lms`), Prisma migrations applied by the `migrate` hook job, row-level security with a non-bypass request role, tenant context per transaction (ADR-006) | Amazon RDS at scale-out (ADR-018) |
+| Lesson media | Private S3 with presigned upload and playback URLs; player with speed, resume, completion, and transcripts | HLS through MediaConvert or Mux with signed playback when adaptive streaming is needed (ADR-021) |
+| Files and resources | Private S3 (PDF, EPUB, Office, images, ZIP) with tenant-checked downloads | Upload malware scanning (security roadmap #3) |
+| Identity | One Oxinov account through Keycloak (OIDC); email one-time code now; Google and Apple sign-in per ADR-011 when configured | Staff MFA (TOTP) |
+| Email | Amazon SES through `mail-relay` | Announcement and notification emails |
+| Background work | None yet: exam auto-submit happens on read and on submit; no queue | `lms-worker` with SQS when retries, schedules, or bulk email need it (ADR-021) |
+| Realtime chat | Not built; class stream and lesson Q&A use normal requests | `lms-chat` WebSocket gateway when live chat is approved |
+| Mobile | Not built; the web app works in mobile browsers | React Native with Expo against the same API (NFR-14) |
+| Payments | Not built: paid courses show that payment is coming and unlock only after a verified payment event | Provider adapter and ledger (Khalti, eSewa, and an international provider) |
+| AI | Not built | Governed AI gateway (ADR-014, [AI architecture](AI-PLATFORM-ARCHITECTURE.md)) |
+| Tests | Jest unit and PostgreSQL integration tests (two-tenant denial), media tests against S3-compatible storage, web unit tests, static-export tests | Playwright end-to-end, contract, load, and restore tests ([testing strategy](../engineering/TESTING-STRATEGY.md)) |
 
-External embeds cannot provide the same access and progress guarantees as hosted video. Hosted Mux video is the default for paid lessons. If embeds are approved, show their limits in the authoring UI and do not promise protected playback or exact watch-percentage tracking.
+## Tenancy
 
-Core records include `Tenant`, `TenantConfigVersion`, `TenantDomain`, `TenantMembership`, `TenantPlan`, `UserProfile`, `InstructorApproval`, `Program`, `SkillField`, `Course`, `CourseVersion`, `Section`, `Lesson`, `Recording`, `Enrollment`, `Entitlement`, `Payment`, `Subscription`, `LessonProgress`, `Question`, `ExamBlueprint`, `ExamAttempt`, `ExamResult`, `AssignmentSubmission`, `Certificate`, `DiscussionPost`, `ChatConversation`, `ChatMessage`, `Announcement`, `AIJob`, and `AuditEvent`. All tenant-owned records carry `tenant_id`. Tenant-scoped unique constraints enforce one active enrollment per learner/course, one certificate per learner/course, and one processed purchase event per provider event ID.
-
-Use one shared PostgreSQL instance and tenant-scoped tables with PostgreSQL row-level security as the default. Application code must also check tenant membership before opening a tenant data operation. Set database tenant context for each transaction and verify it cannot leak across pooled connections. Request paths must not use a database role that bypasses row-level security. A dedicated PostgreSQL database for a customer is an optional deployment tier if isolation, residency, or scale requires it; the application API and tenant rules remain the same.
+One shared PostgreSQL database with tenant-scoped tables, application membership checks, and PostgreSQL row-level security (ADR-006). The request role cannot bypass RLS, tenant context is transaction-local, and tests cover allowed and denied cross-tenant paths. A dedicated database per customer is an optional tier that needs an ADR.
 
 ## Implementation references
 
 - [Next.js App Router](https://nextjs.org/docs/app)
 - [NestJS modules](https://docs.nestjs.com/modules)
-- [Docker Compose startup health checks](https://docs.docker.com/compose/how-tos/startup-order/)
-- [Docker Compose production configuration](https://docs.docker.com/compose/how-tos/production/)
+- [Prisma with PostgreSQL](https://www.prisma.io/docs/orm/overview/databases/postgresql)
+- [PostgreSQL row-level security](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
+- [Amazon S3 presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html)
 - [Expo Android App Bundle submission](https://docs.expo.dev/submit/android/)
 - [Khalti payment gateway](https://docs.khalti.com/)
 - [eSewa payment API](https://developer.esewa.com.np/)
-- [Stripe global availability](https://stripe.com/global)
-- [Mux secure video playback](https://www.mux.com/docs/guides/secure-video-playback)
-- [Prometheus metric naming](https://prometheus.io/docs/practices/naming/)
-- [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/)
-- [OpenSearch Security Analytics](https://docs.opensearch.org/latest/security-analytics/)
-- [Falco runtime security](https://falco.org/docs/)
-- [GuardDuty Runtime Monitoring](https://docs.aws.amazon.com/guardduty/latest/ug/runtime-monitoring.html)
-- [Wazuh components](https://documentation.wazuh.com/current/getting-started/components/index.html)
-- [GitHub CodeQL](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning)

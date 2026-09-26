@@ -2,29 +2,30 @@
 
 ## Selected baseline
 
-| Area | Technology | Decision |
+**Updated:** 2026-09-26. "Today" is verified in production or CI ([CURRENT-STATE.md](CURRENT-STATE.md)); "Target" is where each area goes when its trigger in the [DevOps roadmap](../devops/ROADMAP.md) or ADR-021 is met.
+
+| Area | Today | Target |
 | --- | --- | --- |
-| Monorepo | pnpm workspaces and Turborepo | Keep TypeScript applications and shared packages in one reviewable repository while preserving deployable boundaries. |
-| Public website and portals | Next.js App Router, React, TypeScript, Tailwind CSS, and shared accessible components | Support search-friendly public content and authenticated product portals with one frontend skill set. |
-| Product mobile apps | React Native with Expo and TypeScript | Build Android and iOS clients against the same versioned APIs. Create a mobile app per product only when the product needs one. |
-| Backend | NestJS with strict TypeScript | Implement domain modules, REST/OpenAPI APIs, WebSockets, workers, validation, and provider adapters. |
-| API style | REST and OpenAPI first | Keep public contracts explicit, generate clients, and avoid GraphQL until a measured client need exists. |
-| Identity | OIDC contract with Keycloak as the default implementation | Provide company-wide SSO, MFA, organizations, identity brokering, and separate application clients. A managed OIDC provider is allowed through an ADR. |
-| Transaction data | PostgreSQL and Prisma | Use transactional consistency, migrations, JSON where justified, full-text search initially, and row-level security for multi-tenant tables. |
-| Cache queues and realtime fanout | Redis with BullMQ | Store only rebuildable or retryable state; never make Redis the source of truth. |
-| Events | Transactional outbox first; NATS JetStream when justified | Avoid dual-write loss and premature event-platform operations. Consumers are idempotent and contracts are versioned. |
-| Files | S3-compatible object storage; MinIO locally | Store uploads, documents, media derivatives, and exports outside PostgreSQL with private access. |
-| Search | PostgreSQL search first; OpenSearch when search scale or analytics requires it | Avoid operating a second search store before product needs justify it. |
-| Generative AI | Provider-neutral AI gateway with Amazon Bedrock first, model aliases, Guardrails, prompt versions, structured outputs, RAG, evaluation, budgets, and human approval | Centralize tenant authorization, data policy, safety, cost, audit, and shutdown. Keep model IDs out of domain code and prevent direct database, shell, secret, payment, publishing, or account access. |
-| Predictive and edge ML | Amazon SageMaker AI when custom training is justified; AWS IoT Greengrass for approved edge inference | Use for vision, anomaly detection, forecasting, predictive maintenance, agriculture, and robotics pilots. Keep deterministic physical safety controls outside language models. |
-| Payments | Internal provider adapter and ledger; Khalti and eSewa candidates for Nepal | Separate product rules from providers. Add Stripe only for an eligible operating entity and market. |
-| Observability | OpenTelemetry Collector, Prometheus, Alertmanager, Loki, Tempo, and Grafana | Correlate metrics, logs, and traces and keep operational telemetry portable. |
-| Security operations | CodeQL, dependency review, Trivy, GuardDuty Runtime Monitoring for ECS Fargate, OpenSearch Security Analytics, and Sigma; Falco optional for later EKS/EC2 | Cover source, supply chain, images, infrastructure, runtime, AWS activity, security events, detections, and incidents. |
-| Local delivery | Docker Compose | Give developers and coding agents reproducible dependencies and service profiles. |
-| Production delivery | AWS Mumbai, GitHub Actions OIDC, Amazon ECR, ECS Fargate, and Terraform | Build once, promote immutable images, use short-lived deployment credentials, and add EKS only through an approved scaling decision. |
-| Production data | Amazon RDS for PostgreSQL, ElastiCache, and private S3 buckets | Use managed high availability, backups, encryption, lifecycle rules, and isolated data subnets. PostgreSQL, Redis, and MinIO remain containerized for local development. |
-| Edge and networking | Route 53, CloudFront, AWS WAF, Application Load Balancer, and separate environment VPCs | Keep application and data tiers private and expose only the controlled edge and load-balancing path. |
-| Secrets | AWS Secrets Manager, KMS, and workload IAM roles | Keep secrets and long-lived AWS keys outside Git, images, repository variables, prompts, and application logs. |
+| Monorepo | pnpm 12.6 workspaces (strict catalog, one lockfile) and Turborepo; Node.js 22; TypeScript 5.9 | Same; Turborepo `--affected` runs in CI |
+| Websites and portals | Next.js 16 App Router, React 19, Tailwind CSS 4, shared `@oxinov/design-system`; `oxinov.com` is a static export on S3 and CloudFront | Same; Playwright end-to-end tests |
+| Mobile apps | None yet | React Native with Expo per product when the product needs one |
+| Backend | NestJS 11 with strict TypeScript, class-validator, `@oxinov/server-kit` | Same; OpenTelemetry in `server-kit` (ADR-019) |
+| API style | REST with generated OpenAPI; APIs reachable only from the web apps' servers | Versioned public APIs with generated clients and a compatibility check in CI |
+| Identity | Keycloak 26 (OIDC) at `id.oxinov.com`, email one-time code, one account for every product (ADR-011, ADR-016) | Google and Apple sign-in, staff MFA, organizations |
+| Transaction data | PostgreSQL 18 in the cluster with Prisma 7 migrations and row-level security; one database and role pair per plane | Amazon RDS for PostgreSQL |
+| Cache, queues, realtime | None (ADR-021) | SQS workers first; Redis-compatible cache only for measured hot reads; WebSocket gateway for chat |
+| Events between products | None yet (one product) | Transactional outbox to SNS with an SQS queue per consumer (ADR-019) |
+| Files and media | Private S3 with presigned URLs; SeaweedFS locally | HLS delivery through CloudFront when needed (ADR-021) |
+| Search | PostgreSQL | OpenSearch only when search scale or analytics requires it |
+| Generative AI | None yet | Provider-neutral AI gateway with Amazon Bedrock first (ADR-014) |
+| Payments | None yet | Provider adapter and internal ledger; Khalti and eSewa for Nepal, an international provider for other markets |
+| Observability | CloudWatch alarms, Kubernetes health checks, release smoke test, JSON logs; Prometheus, Alertmanager, and Grafana configuration checked in CI and run locally | OpenTelemetry metrics and traces with a right-sized or hosted backend |
+| Security operations | Trivy (images, repository, secrets, IaC), Dependabot, pinned digests, security-event schema | CloudTrail trail, GuardDuty, image signing, CodeQL, WAF, SIEM ([security roadmap](../security/SECURITY.md#roadmap)) |
+| Local delivery | Docker Compose (PostgreSQL, SeaweedFS object storage, Keycloak, Mailpit, and a monitoring profile; its Redis service is not used by any app yet) and a throwaway local k3s for delivery rehearsal | Same |
+| Production delivery | AWS Mumbai; one k3s node on EC2 with Helm 4; GitHub Actions with OIDC; ECR with immutable tags; automatic deploy of every green `main` (ADR-018, NFR-17) | Amazon EKS with the same chart, a staging namespace, and GitOps (Argo CD) |
+| Infrastructure as code | Terraform 1.16 for every AWS resource, S3 state with lockfile | Same, with per-product accounts for regulated products |
+| Edge and networking | Route 53, CloudFront for the website, Traefik with Let's Encrypt on the node, security group open on 80/443 only, no NAT gateway | CloudFront and AWS WAF in front of every app, load balancer, private subnets |
+| Secrets | SSM Parameter Store SecureStrings, encrypted Kubernetes Secrets, instance and OIDC roles (no long-lived keys) | Secrets Manager where rotation is required |
 
 ## Version policy
 
@@ -51,6 +52,8 @@ Use the current supported stable release when a component is first implemented, 
 - [AWS Bedrock or SageMaker decision guide](https://docs.aws.amazon.com/decision-guides/latest/decision-guides/bedrock-or-sagemaker.html)
 - [AWS VPC planning](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-getting-started.html)
 - [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/)
+- [k3s documentation](https://docs.k3s.io/)
+- [Helm 4](https://helm.sh/docs/)
 - [Khalti payment gateway](https://docs.khalti.com/)
 - [eSewa payment API](https://developer.esewa.com.np/)
 - [Stripe global availability](https://stripe.com/global)

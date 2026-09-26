@@ -4,9 +4,9 @@
 
 AWS is the production cloud for Oxinov Platform. Use Asia Pacific Mumbai (`ap-south-1`) as the primary region. Use Asia Pacific Hyderabad (`ap-south-2`) initially for encrypted backup copies and a documented recovery path; do not pay for active multi-region compute until recovery objectives or measured business risk require it.
 
-The selection must still be verified with latency measurements from the Nepal networks used by target customers before production launch. A material routing problem can change the primary AWS region through an ADR without changing the application architecture.
+The selection must still be verified with latency measurements from the networks used by target customers (the audience is global; CloudFront serves the website worldwide) before production launch. A material routing problem can change the primary AWS region through an ADR without changing the application architecture.
 
-> **Launch hosting (ADR-017, ADR-018):** until a scale trigger in the [DevOps roadmap](../devops/ROADMAP.md) is met, Oxinov runs on one k3s node on the starter server (`devops/terraform/environments/production/starter`), deployed with the shared Helm chart; runbook in `devops/kubernetes/README.md`. The layout below remains the target it moves to, with Amazon EKS as the runtime instead of ECS Fargate (ADR-018).
+> **Launch hosting (ADR-017, ADR-018):** until a scale trigger in the [DevOps roadmap](../devops/ROADMAP.md) is met, Oxinov runs on one k3s node on the starter server (`devops/terraform/environments/production/starter`), deployed with the shared Helm chart; runbook in `devops/kubernetes/README.md`. The layout below remains the target it moves to, with Amazon EKS as the runtime instead of ECS Fargate (ADR-018). What runs today, and which managed services wait for a trigger (Redis, Secrets Manager, staging, production Prometheus, WAF), is recorded in [CURRENT-STATE.md](CURRENT-STATE.md) and ADR-021; costs are in [cost optimization](../devops/COST-OPTIMIZATION.md).
 
 ## AWS account structure
 

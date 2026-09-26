@@ -58,7 +58,7 @@ Covers the Oxinov platform (sign-in, account portal, shared services), Oxinov Ed
 | Threat | Primary control | Verification |
 | --- | --- | --- |
 | Lost container or host | Durable managed data stores, encrypted backups, restore drills | Recovery exercise |
-| Leaked secrets in source repositories | Secret scanning in CI, Secrets Manager, rotation on exposure | CI gate and rotation drill |
+| Leaked secrets in source repositories | Secret scanning in CI (Trivy), Parameter Store SecureStrings, rotation on exposure | CI gate and rotation drill |
 
 ## Detection coverage
 

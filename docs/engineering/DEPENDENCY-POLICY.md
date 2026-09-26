@@ -1,11 +1,12 @@
 # Dependency policy
 
-Pin direct versions and commit lockfiles when apps are added. Prefer maintained packages with clear licenses, release history, and security support. A new service or database needs an ADR covering need, cost, isolation, recovery, and operational owner.
+**Updated:** 2026-09-26.
 
-The TypeScript monorepo uses the exact pnpm version in the root `package.json` and one root
-`pnpm-lock.yaml`; nested npm, Yarn, or pnpm lockfiles are not allowed. New packages wait at least
-the configured maturity period unless a reviewed exception is recorded. Dependency lifecycle
-scripts are denied by default and are enabled or explicitly denied under `allowBuilds` in
-`pnpm-workspace.yaml`; review any new build-script request before installation.
-
-CI scans dependencies and container images. Review high-severity findings before release; document accepted exceptions with owner and expiry. Avoid duplicate libraries that solve the same problem without a demonstrated need.
+- **One package manager and lockfile:** the exact pnpm version in the root `package.json` and one root `pnpm-lock.yaml`; nested npm, Yarn, or pnpm lockfiles are not allowed.
+- **Strict catalog:** shared versions live once in `pnpm-workspace.yaml` (`catalogMode: strict`) so every package uses the same version (for example one `@nestjs/core`).
+- **Exact pins:** exact versions in manifests; container images pinned by digest; downloaded tools verified by SHA-256; GitHub Actions pinned to a version.
+- **Build scripts denied by default:** dependency lifecycle scripts run only when listed under `allowBuilds`; review any new request before installing.
+- **Maturity:** new package versions wait the configured maturity period unless a reviewed exception is recorded.
+- **Updates:** Dependabot opens grouped weekly pull requests for npm, GitHub Actions, Docker, and Terraform; CI must pass before merge. Major upgrades read the release notes and migration guide first.
+- **Vulnerabilities:** Trivy fails on HIGH or CRITICAL findings that have a fix. Fix by upgrading; an unavoidable upstream finding gets a written, expiring entry in that image's `.trivyignore`.
+- **Choosing a package:** maintained, clear licence, release history, security support, and no duplicate of something already in use. A new service or database needs an ADR covering need, cost, isolation, recovery, and owner.

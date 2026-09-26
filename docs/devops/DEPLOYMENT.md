@@ -1,18 +1,33 @@
 # Deployment architecture
 
-> **Today (ADR-017, ADR-018):** production is one k3s node on the starter EC2 server in Mumbai, deployed
-> automatically from every green `main` with the shared Helm chart; PostgreSQL runs in the cluster on the
-> encrypted disk, files are in private S3, and email goes through Amazon SES. Runbook:
-> [devops/kubernetes/README.md](../../devops/kubernetes/README.md); pipeline: [CI/CD](CI-CD.md). The
-> architecture below is the scale-out target, with Amazon EKS replacing ECS Fargate (ADR-018); the images,
-> chart, and scripts move unchanged when a roadmap trigger is met.
+**Updated:** 2026-09-26 (ADR-017, ADR-018, ADR-021). Runbook: [devops/kubernetes/README.md](../../devops/kubernetes/README.md). Pipeline: [CI/CD](CI-CD.md). Rollback: [ROLLBACK.md](ROLLBACK.md). Current facts: [CURRENT-STATE.md](../architecture/CURRENT-STATE.md).
 
-Docker images package the company web, platform web, product web, APIs, workers, and realtime services. Docker Compose remains the local developer entry point and runs PostgreSQL, Redis, MinIO, and optional monitoring containers. Production deploys application images to Amazon ECS on Fargate in AWS Mumbai; PostgreSQL moves to Amazon RDS, Redis-compatible workloads move to ElastiCache, and files move to private Amazon S3. See the [AWS cloud architecture](../architecture/AWS-CLOUD-ARCHITECTURE.md).
+## Today: one k3s node, deployed on every green `main`
 
-CloudFront and AWS WAF protect the public edge. An Application Load Balancer routes to private ECS tasks. Route 53 and AWS Certificate Manager manage approved domains and certificates. Production databases, caches, workers, identity services, exporter endpoints, and application metric endpoints have no public IP address. Security groups authorize explicit service-to-service paths.
+| Part | How it works |
+| --- | --- |
+| Server | EC2 `t3a.medium` in Mumbai (`devops/terraform/environments/production/starter`), encrypted gp3 disk, Elastic IP, security group open on 80/443 only, no SSH (Systems Manager), IMDSv2 |
+| Kubernetes | k3s with Traefik (HTTP to HTTPS, Let's Encrypt), local-path storage, network policies, and encrypted Secrets; installed and converged by `devops/kubernetes/scripts/bootstrap-node.sh` before every release |
+| Services | The eight services in [`services.yaml`](../engineering/SERVICE-CATALOG.md), packaged by the shared Helm chart `devops/kubernetes/helm/oxinov` (`values-production.yaml` sizes it for 4 GiB) |
+| Data | PostgreSQL StatefulSet on the encrypted disk; files in private S3; nightly dump to S3 and daily disk snapshots |
+| Website | `oxinov.com` is a static export in S3 behind CloudFront, deployed by `deploy-company-web.yml` (`production/edge` stack) |
+| Images | Built by GitHub Actions, scanned with Trivy, pushed to ECR with immutable commit-SHA tags; the chart is published to ECR as an OCI artifact |
+| Access | GitHub Actions assumes a deploy role through OIDC and runs the deploy script on the node through Systems Manager |
 
-GitHub Actions builds immutable images, scans them, pushes them to Amazon ECR, and assumes environment-specific deployment roles through OpenID Connect. Terraform owns AWS accounts after bootstrap, VPCs, subnets, routing, endpoints, security groups, ECR, ECS, load balancing, CloudFront/WAF, Route 53, RDS, ElastiCache, S3, Secrets Manager/KMS, backups, monitoring integrations, and alarms. A reviewed saved plan and environment approval precede production apply.
+A release: CI passes on `main` → `release-plan.sh` picks changed images → build, scan, push → `deploy.sh` on the node: bootstrap check, `helm upgrade --rollback-on-failure --wait` with the `migrate` hook first → public checks through Traefik → smoke test from GitHub → automatic rollback on any failure (NFR-17).
 
-The local `monitoring` profile runs Prometheus, Alertmanager, Grafana, and database/cache exporters. Production uses Amazon Managed Service for Prometheus and Amazon Managed Grafana or another documented compatible deployment while preserving version-controlled metric names, rules, and dashboards. The Helm chart in `devops/kubernetes/helm/oxinov` is the production packaging today (k3s) and at scale (EKS).
+## At scale: Amazon EKS
 
-The SOC platform is deployed separately from the application and operational monitoring plane. Production deployment must provide private/encrypted event ingestion, analyst MFA and RBAC, retention/residency controls, immutable administrative audit, tested alert delivery, and protected evidence storage. Initial ECS Fargate runtime coverage uses GuardDuty Runtime Monitoring. Falco is considered for later EKS/EC2 workloads and must not add host capabilities to the local application Compose profile.
+When a trigger in the [DevOps roadmap](ROADMAP.md) is met, the same images, chart, and scripts move to Amazon EKS across two Availability Zones with RDS for PostgreSQL, a load balancer, CloudFront and AWS WAF in front of the apps, private subnets, and GitOps (Argo CD). Staging and preview environments arrive earlier, in roadmap Phase 4. Terraform owns all of it; a reviewed saved plan and the owner's "yes apply" precede every production change.
+
+## Local and rehearsal
+
+Docker Compose is the developer entry point ([local setup](DEV-SETUP.md)). Delivery changes are rehearsed with `bash devops/scripts/check-delivery.sh` and, for the chart or node scripts, `bash devops/kubernetes/scripts/rehearse-local.sh`, a throwaway local k3s with the production versions (install, routes, realm, and a forced rollback).
+
+## Monitoring and security operations
+
+Production uses CloudWatch alarms, Kubernetes health checks, and the release smoke test; the Prometheus and Grafana configuration runs locally until OpenTelemetry arrives (ADR-021, [observability](OBSERVABILITY.md)). The SOC pipeline stays separate from operational monitoring; its first production steps are a CloudTrail trail and GuardDuty ([security roadmap](../security/SECURITY.md#roadmap)).
+
+## Known stale item
+
+`.github/workflows/deploy.yml` ("Deployment preflight (deployment not configured)", `environment: staging`) predates the production pipeline; it is due for removal or retargeting.

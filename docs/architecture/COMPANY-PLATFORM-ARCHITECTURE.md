@@ -1,5 +1,7 @@
 # Oxinov company platform architecture
 
+> **Target architecture.** Today one k3s node runs the platform and Oxinov Edu (ADR-017, ADR-018, ADR-021); see [CURRENT-STATE.md](CURRENT-STATE.md). How products are added and isolated is decided in ADR-019.
+
 ## Architecture choice
 
 Build a multi-product platform with a shared control plane and independently owned product planes. Start as a modular monorepo with a small number of deployable applications. Preserve module and data boundaries so a high-growth product can be extracted without redesigning every product.

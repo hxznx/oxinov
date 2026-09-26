@@ -23,7 +23,7 @@ Related: [ADR-017 starter hosting and ADR-019 multi-product architecture](../arc
 | Rehearsal | `rehearse-local.sh` proves install, migrations, routes, realm, and a forced rollback on local k3s before production |
 | Infrastructure as code | Terraform: state bootstrap, `edge` (DNS, website, email records), `starter` (server, backups, ECR, S3, DNS, SES, deploy role, budget) |
 | Company website | Continuous deployment to S3 and CloudFront on every push |
-| Cost control | Budget US$50/month in Terraform (alerts at 85% and 100% actual, 100% forecast) |
+| Cost control | Budget US$50/month in Terraform (alerts at 85% and 100% actual, 100% forecast); line items and next savings in [cost optimization](COST-OPTIMIZATION.md) |
 
 ## Phase 1 — Go live with continuous deployment (now)
 
