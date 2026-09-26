@@ -112,8 +112,15 @@ apply() {
     -f chart/oxinov/values-production.yaml "${args[@]}" \
     --rollback-on-failure --wait=watcher --timeout 20m --history-max 10
 
-  if [ "$(param EDU_OIDC_CLIENT_SECRET)" = "" ] || [ "${CONFIGURE_REALM:-0}" = 1 ]; then
+  # The realm is (re)applied on the first release, on request, and whenever configure-realm.sh changed:
+  # its fingerprint is kept in a ConfigMap, so a realm change deploys like any other change.
+  local realm_hash applied_hash
+  realm_hash=$(sha256sum devops/keycloak/configure-realm.sh | cut -c1-64)
+  applied_hash=$(kubectl -n "$NAMESPACE" get configmap oxinov-realm -o jsonpath='{.data.script-sha256}' 2>/dev/null || true)
+  if [ -z "$(param EDU_OIDC_CLIENT_SECRET)" ] || [ "${CONFIGURE_REALM:-0}" = 1 ] || [ "$realm_hash" != "$applied_hash" ]; then
     configure_realm
+    kubectl -n "$NAMESPACE" create configmap oxinov-realm --from-literal=script-sha256="$realm_hash" \
+      --dry-run=client -o yaml | kubectl apply -f - >/dev/null
   fi
 
   if verify; then

@@ -79,9 +79,9 @@ kc update "realms/$REALM" \
   -s ssoSessionMaxLifespan=7776000 \
   -s revokeRefreshToken=true \
   -s refreshTokenMaxReuse=0 \
-  -s smtpServer.host=mailpit \
-  -s smtpServer.port=1025 \
-  -s smtpServer.from=no-reply@oxinov.test \
+  -s "smtpServer.host=$SMTP_HOST" \
+  -s "smtpServer.port=$SMTP_PORT" \
+  -s "smtpServer.from=$SMTP_FROM" \
   -s smtpServer.fromDisplayName=Oxinov
 
 # --- Browser flow: cookie, or Google redirect, or email then a six-digit email code. No password form.
