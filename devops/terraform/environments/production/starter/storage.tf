@@ -4,6 +4,8 @@ locals {
   repositories = ["lms-api", "platform-api", "edu-web", "platform-web", "migrate", "mail-relay", "keycloak", "backup"]
 }
 
+# Accepted: AWS-owned key is enough for public-source images; revisit with ADR-009.
+#trivy:ignore:AWS-0033
 resource "aws_ecr_repository" "app" {
   for_each             = toset(local.repositories)
   name                 = "oxinov/${each.key}"
@@ -14,17 +16,23 @@ resource "aws_ecr_repository" "app" {
   }
 
   encryption_configuration {
-    encryption_type = "AES256" #trivy:ignore:AVD-AWS-0033 AWS-owned key is enough for public-source images; revisit with ADR-009
+    encryption_type = "AES256"
   }
 }
 
 # The shared Helm chart (ADR-018), published as an OCI artifact with every release.
+# Accepted: chart packages are not secret; revisit with ADR-009.
+#trivy:ignore:AWS-0033
 resource "aws_ecr_repository" "charts" {
   name                 = "charts/oxinov"
   image_tag_mutability = "IMMUTABLE"
 
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
   encryption_configuration {
-    encryption_type = "AES256" #trivy:ignore:AVD-AWS-0033 chart packages are not secret; revisit with ADR-009
+    encryption_type = "AES256"
   }
 }
 
@@ -73,11 +81,14 @@ resource "aws_s3_bucket_ownership_controls" "media" {
   }
 }
 
+# Accepted until the review date: S3 managed encryption keeps signed browser uploads and playback simple;
+# a customer managed KMS key (about US$1 a month plus request costs and key grants) arrives with ADR-009.
+#trivy:ignore:AWS-0132:exp:2027-03-31
 resource "aws_s3_bucket_server_side_encryption_configuration" "media" {
   bucket = aws_s3_bucket.media.id
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256" #trivy:ignore:AVD-AWS-0132 SSE-S3 keeps signed browser uploads simple; KMS arrives with ADR-009
+      sse_algorithm = "AES256"
     }
     bucket_key_enabled = true
   }
@@ -164,11 +175,14 @@ resource "aws_s3_bucket_ownership_controls" "backups" {
   }
 }
 
+# Accepted until the review date: the dumps are private, versioned, and write-only for the server; a
+# customer managed KMS key arrives with ADR-009.
+#trivy:ignore:AWS-0132:exp:2027-03-31
 resource "aws_s3_bucket_server_side_encryption_configuration" "backups" {
   bucket = aws_s3_bucket.backups.id
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256" #trivy:ignore:AVD-AWS-0132 SSE-S3 is sufficient for the starter; KMS arrives with ADR-009
+      sse_algorithm = "AES256"
     }
     bucket_key_enabled = true
   }

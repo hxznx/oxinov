@@ -59,27 +59,33 @@ resource "aws_security_group" "server" {
   tags = { Name = "${local.name}-server" }
 }
 
+# Accepted: public website.
+#trivy:ignore:AWS-0107
 resource "aws_vpc_security_group_ingress_rule" "http" {
   security_group_id = aws_security_group.server.id
   description       = "HTTP for ACME challenges and redirects to HTTPS"
-  cidr_ipv4         = "0.0.0.0/0" #trivy:ignore:AVD-AWS-0107 public website
+  cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "tcp"
   from_port         = 80
   to_port           = 80
 }
 
+# Accepted: public website.
+#trivy:ignore:AWS-0107
 resource "aws_vpc_security_group_ingress_rule" "https" {
   security_group_id = aws_security_group.server.id
   description       = "HTTPS for edu, app, and id"
-  cidr_ipv4         = "0.0.0.0/0" #trivy:ignore:AVD-AWS-0107 public website
+  cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "tcp"
   from_port         = 443
   to_port           = 443
 }
 
+# Accepted: the server calls AWS and registries over the internet.
+#trivy:ignore:AWS-0104
 resource "aws_vpc_security_group_egress_rule" "all" {
   security_group_id = aws_security_group.server.id
   description       = "Image pulls, AWS APIs, OS updates, and certificate issuance"
-  cidr_ipv4         = "0.0.0.0/0" #trivy:ignore:AVD-AWS-0104 the server calls AWS and registries over the internet
+  cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
 }
