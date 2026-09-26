@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # oxctl: day-to-day operations for Oxinov production (the k3s node, ADR-018), from a laptop.
 # Needs the AWS CLI signed in (aws sso login), the Session Manager plugin for shell and tunnel, the
-# GitHub CLI for deploy and history, and jq. Run `oxctl help` for the commands.
+# GitHub CLI for deploy and history, and jq or Python 3. Run `oxctl help` for the commands.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"

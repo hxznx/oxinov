@@ -19,11 +19,28 @@ starter_instance() {
   echo "$id"
 }
 
+# Systems Manager parameters for one script, as JSON. Uses jq, or Python where jq is missing (common on
+# Windows laptops; a `python3` there may be the Microsoft Store stub, so each candidate is tried).
+ssm_params() {
+  if command -v jq >/dev/null; then
+    jq -n --arg s "$1" --arg t "$2" '{commands: [$s], executionTimeout: [$t]}'
+    return
+  fi
+  local python
+  for python in python3 python; do
+    if "$python" -c 'import sys, json; print(json.dumps({"commands": [sys.argv[1]], "executionTimeout": [sys.argv[2]]}))' "$1" "$2" 2>/dev/null; then
+      return
+    fi
+  done
+  echo "ssm-run.sh needs jq or Python 3" >&2
+  return 1
+}
+
 # ssm_run <instance> <shell script> [timeout seconds, default 600]
 # Runs the script as root, streams nothing while it runs, then prints its output and returns its status.
 ssm_run() {
   local instance=$1 script=$2 timeout=${3:-600} params command status
-  params=$(jq -n --arg s "$script" --arg t "$timeout" '{commands: [$s], executionTimeout: [$t]}')
+  params=$(ssm_params "$script" "$timeout") || return 1
   command=$(aws ssm send-command --instance-ids "$instance" --document-name AWS-RunShellScript \
     --comment "oxinov starter" --parameters "$params" --query Command.CommandId --output text)
   local deadline=$((SECONDS + timeout + 60))
