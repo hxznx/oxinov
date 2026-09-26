@@ -8,7 +8,7 @@ Public website of **Oxinov Pvt. Ltd.** at `oxinov.com`. It is a Next.js App Rout
 | --- | --- |
 | `/` | Home: headline, values, product status cards |
 | `/about/` | Company story, mission, vision |
-| `/products/` | Oxinov Edu (in development) and the three coming-soon products |
+| `/products/` and `/products/<slug>/` | Oxinov Edu (in development) and the three coming-soon products, each with its own page (features, audience, FAQ) |
 | `/divisions/` and `/<slug>/` | The ten divisions, each at `oxinov.com/<slug>` (education, ai, engineering, services, robotics, studio, agritech, space, research, production) |
 | `/pricing/` | The plan ladder; prices are published at launch |
 | `/careers/`, `/contact/`, `/security/` | Company contact routes |

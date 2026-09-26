@@ -13,6 +13,7 @@ const routes = [
   '/legal/terms/', '/legal/privacy/', '/legal/acceptable-use/', '/legal/cookies/',
   '/education/', '/ai/', '/engineering/', '/services/', '/robotics/', '/studio/', '/agritech/', '/space/',
   '/research/', '/production/',
+  '/products/edu/', '/products/commodity-market/', '/products/jobs/', '/products/services-market/',
 ];
 
 const fileFor = (route) => join(out, route, 'index.html');
@@ -168,6 +169,38 @@ describe('search and sharing', () => {
     for (const route of ['/education/', '/legal/privacy/']) {
       assert.ok(jsonLd(html(route)).some((item) => item['@type'] === 'BreadcrumbList'), `${route}: breadcrumbs`);
     }
+  });
+
+  it('gives each product its own page with application, breadcrumb, and FAQ data that match the page', () => {
+    for (const slug of ['edu', 'commodity-market', 'jobs', 'services-market']) {
+      const route = `/products/${slug}/`;
+      const page = html(route);
+      const data = jsonLd(page);
+      const app = data.find((item) => item['@type'] === 'SoftwareApplication');
+      assert.equal(app?.url, `${site}${route}`, `${route}: application`);
+      assert.ok(app.featureList.length >= 3, `${route}: features`);
+      assert.ok(!('offers' in app) && !('aggregateRating' in app), `${route}: no invented prices or ratings`);
+      assert.ok(data.some((item) => item['@type'] === 'BreadcrumbList'), `${route}: breadcrumbs`);
+      const faq = data.find((item) => item['@type'] === 'FAQPage');
+      const body = text(page).replace(/\s+/g, ' ');
+      for (const question of faq.mainEntity) assert.ok(body.includes(question.name.replace(/&/g, '&amp;')), `${route}: visible "${question.name}"`);
+      assert.match(html('/products/'), new RegExp(`href="${route}"`), `${route}: linked from products`);
+    }
+    assert.match(html('/products/edu/'), /href="https:\/\/edu\.oxinov\.com\/"/, 'Edu page opens the app');
+    assert.doesNotMatch(html('/products/jobs/'), /href="https:\/\/jobs\.oxinov\.com/, 'no link to an unreleased product');
+    const pricing = jsonLd(html('/pricing/')).find((item) => item['@type'] === 'FAQPage');
+    assert.ok(pricing?.mainEntity.length >= 3, 'pricing FAQ');
+  });
+
+  it('describes every division as a department of Oxinov and links its products', () => {
+    for (const slug of ['education', 'ai', 'agritech', 'space']) {
+      const division = jsonLd(html(`/${slug}/`)).find((item) => item['@type'] === 'Organization' && item['@id']?.endsWith('#division'));
+      assert.equal(division?.parentOrganization['@id'], `${site}/#organization`, `${slug}: parent`);
+    }
+    assert.match(html('/education/'), /href="\/products\/edu\/"/);
+    assert.match(html('/agritech/'), /href="\/products\/commodity-market\/"/);
+    const list = jsonLd(html('/divisions/')).find((item) => item['@type'] === 'ItemList');
+    assert.equal(list?.itemListElement.length, 10, 'divisions list');
   });
 
   it('publishes robots.txt and a sitemap that lists every page', () => {

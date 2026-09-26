@@ -17,13 +17,15 @@ oxinov.com is a static Next.js export served from S3 through CloudFront (HTTPS, 
 
 | Area | Before | Now |
 | --- | --- | --- |
-| Sitemap and robots | Missing | `sitemap.xml` lists all 23 public pages with priorities; `robots.txt` allows all and points to it |
+| Sitemap and robots | Missing | `sitemap.xml` lists all 27 public pages with priorities; `robots.txt` allows all and points to it |
 | Titles and descriptions | One default for every page; title described origin, not audience | Every page has a unique title and a unique 50–160 character description |
 | Canonical URLs | Not set | Every page |
 | Link previews (Open Graph, X) | Missing | Share image and titles on every page |
 | Structured data | Missing | See [structured-data.md](structured-data.md) |
 | Manifest and icons | Missing | 192, 512, maskable, and Apple touch icons |
 | Error page | Indexable | `noindex, follow` |
+| Products | One list page | A page per product with features, audience, FAQs, and structured data; linked from home, products, and its division |
+| Divisions | Isolated pages | Each describes itself as a department of Oxinov, links its products and the other divisions |
 | Fonts | 10 files, about 372 KB preloaded | 2 files, 59 KB preloaded; Latin only (brand T1–T3) |
 | Language | English, with a Devanagari font | English only; only the wordmark is `translate="no"`; `security.txt` prefers English |
 

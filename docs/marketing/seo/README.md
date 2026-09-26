@@ -24,17 +24,20 @@ Oxinov's audience is **global** and its only language is **English** (ADR-020). 
 | Sitemap, robots.txt, canonical URLs, unique descriptions, share image, manifest and icons | Live, tested in CI |
 | Structured data: Organization, WebSite, LocalBusiness, products, breadcrumbs | Live, tested in CI |
 | 404 page kept out of search (`noindex`) | Live, tested in CI |
+| Product pages `/products/<slug>/` for Oxinov Edu, Commodity Market, Jobs, and Services Market, with features, audience, FAQs, and application data | Live, tested in CI |
+| Division (department) pages described as departments of Oxinov, linked to their products and to each other | Live, tested in CI |
+| Pricing FAQ with FAQPage data | Live, tested in CI |
 | Preloaded fonts cut from 372 KB to 59 KB; English-only, translation-friendly markup | Live |
 | Google Search Console and Bing verification | **Waiting for the owner's verification value**; Terraform ready |
 | Google Business Profile for the Lalitpur office | **Owner** to claim |
 | Approved tagline for the home page title | **Owner** to choose ([brand](../../design/BRAND.md#brand-strategy)) |
-| Oxinov Edu product page, first articles, comparison pages | Planned ([content plan](content-plan.md)) |
+| First articles and comparison pages | Planned ([content plan](content-plan.md)) |
 | Social profiles in `sameAs` | Add each profile after it exists (`src/seo/config.ts`) |
 | Analytics | Not used; the site promises no tracking. Search Console gives search data without cookies |
 
 ## Order of work
 
 1. **Now:** verify Search Console and Bing, submit the sitemap ([search-console.md](search-console.md)); claim Google Business Profile.
-2. **Weeks 1–4:** Oxinov Edu product page; approved tagline as the home title; first comparison page.
-3. **Month 2 onward:** two English articles a month, tutorial videos with captions, FAQ data once pricing has FAQs.
+2. **Weeks 1–4:** approved tagline as the home title; real screenshots on the Edu product page; first comparison page.
+3. **Month 2 onward:** two English articles a month and tutorial videos with captions.
 4. **Monthly:** the review in [measurement.md](measurement.md). **Quarterly:** read key pages through browser translation in three languages and fix wording that translates badly.

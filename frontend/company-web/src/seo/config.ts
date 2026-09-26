@@ -26,3 +26,4 @@ export const socialProfiles: string[] = [];
 
 export const organizationId = `${siteUrl}/#organization`;
 export const websiteId = `${siteUrl}/#website`;
+export const divisionId = (slug: string) => `${siteUrl}/${slug}/#division`;

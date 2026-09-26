@@ -1,6 +1,6 @@
 // Every public page and how often search engines should revisit it (sitemap.xml, tests, breadcrumbs).
 import type { MetadataRoute } from 'next';
-import { divisions, legalDocs } from '@/content/site';
+import { divisions, legalDocs, products } from '@/content/site';
 
 type ChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>;
 type SitemapEntry = { path: string; priority: number; changeFrequency: ChangeFrequency };
@@ -15,6 +15,8 @@ const page = (path: string, priority: number, changeFrequency: ChangeFrequency =
 export const sitemapEntries: SitemapEntry[] = [
   page('/', 1, 'weekly'),
   page('/products/', 0.9, 'weekly'),
+  // The product people can use today ranks above the planned ones.
+  ...products.map((product) => page(`/products/${product.slug}/`, product.status === 'in-development' ? 0.9 : 0.7, 'weekly')),
   page('/pricing/', 0.8),
   page('/about/', 0.7),
   page('/divisions/', 0.7),

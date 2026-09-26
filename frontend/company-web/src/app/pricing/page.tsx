@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { pageMetadata } from '@/seo';
 import { PageHeader } from '@/components/PageHeader';
-import { plans } from '@/content/site';
+import { Faq } from '@/components/Faq';
+import { plans, pricingFaqs } from '@/content/site';
 
 export const metadata: Metadata = pageMetadata({
   path: '/pricing/',
@@ -27,6 +28,9 @@ export default function PricingPage() {
           </li>
         ))}
       </ul>
+      <div className="mx-auto max-w-6xl px-4 pb-12">
+        <Faq questions={pricingFaqs} title="Pricing questions" />
+      </div>
     </>
   );
 }

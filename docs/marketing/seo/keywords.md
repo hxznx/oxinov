@@ -6,8 +6,8 @@ All keywords are English and worldwide. Volumes and difficulty are **not yet mea
 
 | Cluster | Example searches | Intent | Target page | Priority |
 | --- | --- | --- | --- | --- |
-| Brand | "Oxinov", "Oxinov Edu" | Find us | Home, About, Edu page | 1 |
-| Online classroom software | "online classroom software", "LMS for small schools", "free LMS for teachers" | Choose a product | Edu product page | 1 |
+| Brand | "Oxinov", "Oxinov Edu", "Oxinov Jobs" | Find us | Home, About, `/products/<slug>/` | 1 |
+| Online classroom software | "online classroom software", "LMS for small schools", "free LMS for teachers" | Choose a product | `/products/edu/` | 1 |
 | Alternatives | "Google Classroom alternative", "Moodle alternative" | Compare | Comparison pages | 2 |
 | Exams and practice | "online mock exam maker", "create online quiz with timer", "practice test platform" | Do a task | Edu page sections; how-to articles | 2 |
 | Teaching how-to | "how to teach online", "how to run an online exam", "how to sell online courses" | Learn | Articles with tutorial videos | 3 |

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/StatusBadge';
 import { home, products } from '@/content/site';
-import { defaultDescription, defaultTitle, pageMetadata } from '@/seo';
+import { defaultDescription, defaultTitle, pageMetadata, productPath } from '@/seo';
 
 export const metadata: Metadata = pageMetadata({ path: '/', absoluteTitle: defaultTitle, description: defaultDescription });
 
@@ -51,7 +51,7 @@ export default function HomePage() {
             <li key={product.key} className="card" style={{ borderColor: `var(--ox-color-product-${product.key})` }}>
               <StatusBadge status={product.status} />
               <h3 className="mt-2 text-2xl" style={{ color: `var(--ox-color-product-${product.key})` }}>
-                {product.name}
+                <Link href={productPath(product)}>{product.name}</Link>
               </h3>
               <p className="mt-1 text-muted">{product.purpose}</p>
             </li>

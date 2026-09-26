@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { pageMetadata } from '@/seo';
+import { JsonLd, divisionsSchema, pageMetadata } from '@/seo';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -15,6 +15,7 @@ export const metadata: Metadata = pageMetadata({
 export default function DivisionsPage() {
   return (
     <>
+      <JsonLd data={divisionsSchema()} />
       <PageHeader label="Divisions" title="Ten divisions, one company">
         Education is our current focus. The other divisions are future initiatives that open only with a clear
         need, an owner, and the approvals they require.

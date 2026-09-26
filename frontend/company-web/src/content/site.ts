@@ -153,51 +153,195 @@ export const divisions: Division[] = [
   },
 ];
 
+export interface Question {
+  question: string;
+  answer: string;
+}
+
 export interface Product {
   key: 'lms' | 'market' | 'jobs' | 'services';
+  /** Page at oxinov.com/products/<slug>/. */
+  slug: string;
   name: string;
   address: string;
+  /** The division that owns the product (a slug from `divisions`). */
+  division: string;
   purpose: string;
   description: string;
   status: Status;
+  /** Page title in search results (60 characters or fewer, with the main keyword). */
+  searchTitle: string;
+  /** One or two sentences for search results (50–160 characters). */
+  summary: string;
+  audience: string[];
+  /** Launched products list working features; coming-soon products list planned ones. */
+  features: { title: string; body: string }[];
+  /** Shown on the product page and published as FAQPage data. Facts only. */
+  faqs: Question[];
 }
 
 export const products: Product[] = [
   {
     key: 'lms',
+    slug: 'edu',
     name: 'Oxinov Edu',
     address: 'edu.oxinov.com',
+    division: 'education',
     purpose: 'One place to run courses, exams, and learners.',
     description:
       'Oxinov Edu helps training providers run their own branded learning platform. Instructors can publish recorded lessons, chapter practice, mock exams, and assignments. Administrators can manage learners, results, and enrolments. It is designed for subjects such as Japanese, Korean, English, and IT. Learners will use it on the web and on mobile apps.',
     status: 'in-development',
+    searchTitle: 'Oxinov Edu: online classroom and LMS for schools',
+    summary:
+      'Oxinov Edu is an online classroom for schools and teachers: video lessons, timed mock exams, assignments, and class Q&A in one place.',
+    audience: ['Language schools', 'IT and coding training centres', 'Exam preparation institutes', 'Independent teachers'],
+    features: [
+      {
+        title: 'Courses and lessons',
+        body: 'Build courses from chapters and lessons. Publish text, video, and audio lessons with playback speed, resume, and transcripts.',
+      },
+      {
+        title: 'Timed practice and mock exams',
+        body: 'Create quizzes with four question types and sections that draw random questions. Attempts save as learners work, submit when time runs out, and show results with answer review.',
+      },
+      {
+        title: 'Assignments and grading',
+        body: 'Learners hand in text, links, and files before a deadline. Teachers grade with feedback or ask for a revision.',
+      },
+      {
+        title: 'Class stream and lesson Q&A',
+        body: 'Post announcements to the class. Learners ask questions under each lesson, vote on answers, and see the best answer marked.',
+      },
+      {
+        title: 'Notes, books, and resources',
+        body: 'Learners keep private notes linked to video moments and download them. Teachers attach PDFs, EPUB books, Office files, images, and links to lessons.',
+      },
+      {
+        title: 'Your own learning space',
+        body: 'Each school gets its own space with a course catalogue. Invite learners with join codes and give administrators, teachers, and learners their own roles.',
+      },
+    ],
+    faqs: [
+      {
+        question: 'What is Oxinov Edu?',
+        answer:
+          'Oxinov Edu is an online classroom and learning management system (LMS). Schools and teachers use it to run courses, lessons, timed mock exams, and assignments in one place.',
+      },
+      {
+        question: 'Who is Oxinov Edu for?',
+        answer:
+          'It is designed for training providers anywhere in the world, such as language schools, IT training centres, exam preparation institutes, and independent teachers.',
+      },
+      {
+        question: 'Can I run timed mock exams online?',
+        answer:
+          'Yes. Teachers set a time limit and build sections that draw random questions. Answers save automatically, the attempt submits when time runs out, and learners can review their answers.',
+      },
+      {
+        question: 'Is Oxinov Edu available now?',
+        answer:
+          'Oxinov Edu is in development. Its core features already work at edu.oxinov.com, and we add more with each release. Mobile apps are planned.',
+      },
+      {
+        question: 'How much does Oxinov Edu cost?',
+        answer:
+          'Prices are not published yet. Oxinov plans a Free plan with fair usage limits and paid plans for more. Prices will appear on the pricing page when they are set.',
+      },
+      {
+        question: 'Do I need a separate account?',
+        answer: 'No. You sign in with one Oxinov account, which will also work in every other Oxinov product as it launches.',
+      },
+    ],
   },
   {
     key: 'market',
+    slug: 'commodity-market',
     name: 'Oxinov Commodity Market',
     address: 'market.oxinov.com',
+    division: 'agritech',
     purpose: 'A verified marketplace for commodities and used equipment.',
     description:
       'Oxinov Commodity Market is planned as a marketplace for farm produce, raw materials, wholesale goods, and machinery. It will also cover second-hand equipment. Our aim is to give buyers and sellers verified listings, clear condition grading, and more open pricing. We are designing it to reduce the risk that comes with trading through long chains of middlemen.',
     status: 'coming-soon',
+    searchTitle: 'Oxinov Commodity Market: verified commodity trading',
+    summary:
+      'Oxinov Commodity Market is a planned marketplace for farm produce, raw materials, machinery, and used equipment, with verified listings.',
+    audience: ['Farmers and cooperatives', 'Wholesale buyers and traders', 'Sellers of machinery and used equipment'],
+    features: [
+      { title: 'Verified listings', body: 'Buyers and sellers are checked before they trade, so listings come from real people and businesses.' },
+      { title: 'Clear condition grading', body: 'Used equipment and goods carry a stated condition grade, so buyers know what they are getting.' },
+      { title: 'More open pricing', body: 'Prices are visible to both sides, reducing the risk of trading through long chains of middlemen.' },
+    ],
+    faqs: [
+      {
+        question: 'What will Oxinov Commodity Market sell?',
+        answer: 'It is planned for farm produce, raw materials, wholesale goods, commercial machinery, and second-hand equipment.',
+      },
+      {
+        question: 'When will Oxinov Commodity Market launch?',
+        answer: 'It is coming soon. It is planned as the next Oxinov product after Oxinov Edu, and no launch date is set yet.',
+      },
+    ],
   },
   {
     key: 'jobs',
+    slug: 'jobs',
     name: 'Oxinov Jobs',
     address: 'jobs.oxinov.com',
+    division: 'education',
     purpose: 'Connecting verified candidates with verified employers.',
     description:
       'Oxinov Jobs is planned to help employers find skilled people, and help learners find relevant work. Candidates will build profiles with their skills and experience. Employers will post jobs and manage applications. Candidates can show verified Oxinov Edu certificates. Matching will be explainable, and a person will always make the hiring decision.',
     status: 'coming-soon',
+    searchTitle: 'Oxinov Jobs: verified jobs and skill matching',
+    summary:
+      'Oxinov Jobs is a planned jobs platform that connects verified candidates, including Oxinov Edu learners, with verified employers.',
+    audience: ['Job seekers and learners', 'Employers and recruiters', 'Training providers placing graduates'],
+    features: [
+      { title: 'Skill profiles', body: 'Candidates build profiles with their skills and experience, and can show verified Oxinov Edu certificates.' },
+      { title: 'Jobs and applications', body: 'Employers post jobs and manage applications in one place.' },
+      { title: 'Explainable matching', body: 'Matches come with reasons, and a person always makes the hiring decision.' },
+    ],
+    faqs: [
+      {
+        question: 'How does Oxinov Jobs connect to Oxinov Edu?',
+        answer: 'Learners will be able to show verified Oxinov Edu certificates on their Oxinov Jobs profile, so employers can trust the skills they list.',
+      },
+      {
+        question: 'When will Oxinov Jobs launch?',
+        answer: 'It is coming soon, after Oxinov Edu and Oxinov Commodity Market. No launch date is set yet.',
+      },
+    ],
   },
   {
     key: 'services',
+    slug: 'services-market',
     name: 'Oxinov Services Market',
     address: 'services.oxinov.com',
+    division: 'services',
     purpose: 'Find and book verified local service providers.',
     description:
       'Oxinov Services Market is planned to help people and businesses find local help they can trust. Seekers will post a need or book a listed service. Providers will share their services, prices, and areas. After each booking, customers can leave a review. A report and dispute process will help resolve problems fairly.',
     status: 'coming-soon',
+    searchTitle: 'Oxinov Services Market: book verified local help',
+    summary:
+      'Oxinov Services Market is a planned app to find and book verified local service providers, with clear prices and genuine reviews.',
+    audience: ['People who need local help', 'Businesses that hire service providers', 'Independent providers and small firms'],
+    features: [
+      { title: 'Post a need or book a service', body: 'Describe what you need, or book a listed service directly.' },
+      { title: 'Verified providers', body: 'Providers share their services, prices, and areas, and are checked before they appear.' },
+      { title: 'Reviews and fair disputes', body: 'Customers review each booking, and a report and dispute process helps resolve problems fairly.' },
+    ],
+    faqs: [
+      {
+        question: 'How will Oxinov Services Market check providers?',
+        answer: 'Providers will be verified before they are listed, and only customers who made a booking can leave a review.',
+      },
+      {
+        question: 'When will Oxinov Services Market launch?',
+        answer: 'It is coming soon, after Oxinov Jobs. No launch date is set yet.',
+      },
+    ],
   },
 ];
 
@@ -207,6 +351,26 @@ export const statusLabel: Record<Status, string> = {
   future: 'Future initiative',
   'long-horizon': 'Long-term initiative',
 };
+
+/** Pricing questions, shown on /pricing/ and published as FAQPage data. Facts only; no prices until approved. */
+export const pricingFaqs: Question[] = [
+  {
+    question: 'Is there a free plan?',
+    answer: 'Yes. The Free plan will include the core features of every launched Oxinov product with fair usage limits. No card is required.',
+  },
+  {
+    question: 'When will prices be published?',
+    answer: 'Prices will be published on this page when the first Oxinov product opens, in US dollars and local currencies.',
+  },
+  {
+    question: 'Do I pay separately for each product?',
+    answer: 'No. Oxinov One is planned as one subscription that upgrades every launched product.',
+  },
+  {
+    question: 'How are team and school plans priced?',
+    answer: 'The Business plan is priced per seat and adds shared workspaces, an admin console, roles, invoices, and support. Enterprise plans are custom.',
+  },
+];
 
 /** Plan ladder from docs/company/SUBSCRIPTION-MODEL.md; prices are unapproved, so none are shown. */
 export const plans = [

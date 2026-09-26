@@ -5,5 +5,7 @@ export * from './metadata';
 export { JsonLd } from './JsonLd';
 export { organizationSchema, websiteSchema } from './schema/organization';
 export { officeSchema } from './schema/office';
-export { productsSchema } from './schema/products';
+export { productPath, productSchema, productsSchema } from './schema/products';
+export { divisionSchema, divisionsSchema } from './schema/divisions';
+export { faqSchema } from './schema/faq';
 export { breadcrumbSchema } from './schema/breadcrumbs';

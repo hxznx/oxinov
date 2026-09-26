@@ -10,7 +10,9 @@ Everything search engines and link previews read lives here. Pages import from `
 | `JsonLd.tsx` | Renders structured data safely into a page | Rarely |
 | `schema/organization.ts` | `Organization` and `WebSite`, on every page | Company facts change (they come from `src/content/site.ts`) |
 | `schema/office.ts` | `LocalBusiness` headquarters, on Contact | Office address, phone, or hours change |
-| `schema/products.ts` | Product `ItemList`, on Products | A product is added; prices or reviews become real |
+| `schema/products.ts` | Product `ItemList` on Products; full `SoftwareApplication` on each product page; `productPath()` | A product is added; prices or reviews become real |
+| `schema/divisions.ts` | Divisions `ItemList`; each division as a department `Organization` | Rarely (facts come from `divisions`) |
+| `schema/faq.ts` | `FAQPage`; rendered with the visible questions by `components/Faq.tsx` | Rarely |
 | `schema/breadcrumbs.ts` | `BreadcrumbList`, on nested pages | Rarely |
 | `schema/address.ts` | Headquarters postal address | Rarely |
 
