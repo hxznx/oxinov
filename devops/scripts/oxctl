@@ -9,7 +9,10 @@ ROOT="$(cd "$HERE/../.." && pwd)"
 source "$HERE/ssm-run.sh"
 
 REPO=${OXINOV_REPO:-hxznx/oxinov}
-SERVICES="postgres keycloak mail-relay edu-api platform-api edu-web platform-web"
+# Workloads come from services.yaml; the chart runs PostgreSQL itself.
+# shellcheck source=services.sh
+source "$HERE/services.sh"
+SERVICES="postgres ${CATALOG_WORKLOADS[*]}"
 # Commands on the node run against the cluster as root.
 K="KUBECONFIG=/etc/rancher/k3s/k3s.yaml /usr/local/bin/kubectl -n oxinov"
 
@@ -28,8 +31,7 @@ Release
 
 Cluster and server
   status                     Pods, release history, memory, disk, and the backup schedule
-  logs <service> [lines]     Recent logs of one service (services: postgres keycloak mail-relay
-                             edu-api platform-api edu-web platform-web)
+  logs <service> [lines]     Recent logs of one service (postgres or a workload in services.yaml)
   restart <service>          Rolling restart of one service
   events                     Recent Kubernetes warnings (failed pulls, evictions, probes)
   shell                      Interactive root shell (Session Manager, no SSH)

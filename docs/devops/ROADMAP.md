@@ -105,11 +105,11 @@ Runs alongside the phases above so each new product is cheap to add and cannot b
 | # | Improvement | When | Done when |
 |---|---|---|---|
 | 1 | **Release per plane:** `platform` and `edu` Helm releases in their own namespaces, with quotas and network policies | Now, with Phase 1–2 | A deliberately failing Edu release rolls back only Edu; sign-in and the portal stay up |
-| 2 | **Service catalog and golden path:** `services.yaml` drives the release planner, CI, chart values, and docs; `oxctl new-service` scaffolds a service | Now, with Phase 2 | Adding a service touches only its own folder and one catalog entry, and it deploys on the next push |
+| 2 | **Service catalog and golden path:** `services.yaml` drives the release planner, CI, chart values, and docs; `oxctl new-service` scaffolds a service | Now, with Phase 2. **Catalog done 2026-09-26** ([service catalog](../engineering/SERVICE-CATALOG.md)): planner, deploy workflow, `deploy.sh`, rehearsal, `oxctl`, ECR repositories, CODEOWNERS, and docs read it, and CI checks the chart against it; `oxctl new-service` is next | Adding a service touches only its own folder and one catalog entry, and it deploys on the next push |
 | 3 | **Events between products:** outbox tables, Amazon SNS topics, one SQS queue per consumer, dead-letter queues, all in Terraform | When Market starts | `account.created` and `entitlement.changed` reach a second product; a failed handler retries and lands in the dead-letter queue |
 | 4 | **Feature flags:** server-side flags per tenant, plan, or percentage behind OpenFeature | When Market starts | An unfinished feature ships to production switched off and is enabled for one tenant without a deploy |
 | 5 | **Shared observability:** OpenTelemetry in `@oxinov/server-kit` and the web apps; trace IDs across services | With Phase 3 | One request can be followed from the portal through sign-in to an API in a single trace |
-| 6 | **Contracts and ownership:** versioned OpenAPI with a compatibility check in CI and generated clients; `CODEOWNERS`; a service level per product | With Phase 2–3 | A breaking API change fails CI before merge |
+| 6 | **Contracts and ownership:** versioned OpenAPI with a compatibility check in CI and generated clients; `CODEOWNERS` (generated from the catalog, done); a service level per product | With Phase 2–3 | A breaking API change fails CI before merge |
 | 7 | **Cost and data isolation:** cost tags per product; a separate database instance and AWS account for regulated products | Tags now; isolation when Market launches | The monthly cost report shows each product; Market data sits outside the shared database |
 
 Keep each product one API (a modular monolith) until a measured need justifies splitting it.

@@ -1,0 +1,151 @@
+# Oxinov service catalog (ADR-019): the one place a deployable service is registered.
+#
+# Read by: devops/scripts/release-plan.sh, devops/kubernetes/scripts/deploy.sh, the deploy workflow,
+# rehearse-local.sh and oxctl (through the generated devops/scripts/services.sh), Terraform (ECR
+# repositories, yamldecode), .github/CODEOWNERS and docs/engineering/SERVICE-CATALOG.md (both generated).
+# After editing: python scripts/service_catalog.py   (then --check runs in CI).
+#
+# Fields
+#   product    platform, or a product slug from docs/products/README.md
+#   kind       api | web | worker | identity | job
+#   owner      GitHub handle that reviews changes (CODEOWNERS)
+#   path       source folder of the service
+#   build      dockerfile, optional context (default .) and target, optional trivyignore file, and
+#              node: true when the image is rebuilt on shared Node.js workspace changes
+#   inputs     paths the image is built from: "dir/" matches a folder, anything else one file
+#   helm_tag   Helm value that holds the image tag
+#   workload   Kubernetes Deployment name (a `services:` key in the chart), or none
+#   port, host internal port, and public host under oxinov.com (none when internal only)
+#
+# The image is always oxinov/<service name> in ECR. Keep this order: it is the release manifest order.
+# Keep to plain block YAML (no anchors or multi-line strings): scripts/service_catalog.py reads it
+# without third-party libraries.
+
+version: 1
+
+# Reviews anything a service entry does not claim (CODEOWNERS).
+default_owner: "@hxznx"
+
+services:
+  lms-api:
+    product: lms
+    kind: api
+    owner: "@hxznx"
+    path: backend/products/lms-api
+    build:
+      dockerfile: devops/docker/Dockerfile
+      target: backend
+      node: true
+    inputs: [backend/products/lms-api/, packages/server-kit/, database/products/lms/prisma/, security/soc/event-schema.json]
+    helm_tag: services.edu-api.tag
+    workload: edu-api
+    port: 4000
+    host: none
+
+  platform-api:
+    product: platform
+    kind: api
+    owner: "@hxznx"
+    path: backend/platform-api
+    build:
+      dockerfile: devops/docker/Dockerfile
+      target: platform-api
+      node: true
+    inputs: [backend/platform-api/, packages/server-kit/, database/platform/prisma/, security/soc/event-schema.json]
+    helm_tag: services.platform-api.tag
+    workload: platform-api
+    port: 4200
+    host: none
+
+  edu-web:
+    product: lms
+    kind: web
+    owner: "@hxznx"
+    path: frontend/products/lms-web
+    build:
+      dockerfile: devops/docker/Dockerfile
+      target: edu-web
+      node: true
+    inputs: [frontend/products/lms-web/, packages/web-auth/, packages/design-system/]
+    helm_tag: services.edu-web.tag
+    workload: edu-web
+    port: 3002
+    host: edu
+
+  platform-web:
+    product: platform
+    kind: web
+    owner: "@hxznx"
+    path: frontend/platform-web
+    build:
+      dockerfile: devops/docker/Dockerfile
+      target: platform-web
+      node: true
+    inputs: [frontend/platform-web/, packages/web-auth/, packages/design-system/]
+    helm_tag: services.platform-web.tag
+    workload: platform-web
+    port: 3001
+    host: app
+
+  # Applies every database's migrations once per release (Helm hook Job).
+  migrate:
+    product: platform
+    kind: job
+    owner: "@hxznx"
+    path: backend/workers/migrate
+    build:
+      dockerfile: devops/docker/Dockerfile
+      target: migrate
+      node: true
+    inputs: [database/products/lms/migrations/, database/products/lms/prisma/, database/platform/migrations/, database/platform/prisma/, backend/workers/migrate/]
+    helm_tag: migrations.tag
+    workload: none
+    port: none
+    host: none
+
+  mail-relay:
+    product: platform
+    kind: worker
+    owner: "@hxznx"
+    path: backend/workers/mail-relay
+    build:
+      dockerfile: devops/docker/Dockerfile
+      target: mail-relay
+      node: true
+    inputs: [backend/workers/mail-relay/]
+    helm_tag: services.mail-relay.tag
+    workload: mail-relay
+    port: 2525
+    host: none
+
+  keycloak:
+    product: platform
+    kind: identity
+    owner: "@hxznx"
+    path: devops/keycloak
+    build:
+      dockerfile: devops/keycloak/Dockerfile
+      context: devops/keycloak
+      trivyignore: devops/keycloak/.trivyignore
+      node: false
+    inputs: [devops/keycloak/Dockerfile]
+    helm_tag: services.keycloak.tag
+    workload: keycloak
+    port: 8080
+    host: id
+
+  # Nightly PostgreSQL dump to S3 (CronJob); PostgreSQL client tools and the AWS CLI only.
+  backup:
+    product: platform
+    kind: job
+    owner: "@hxznx"
+    path: devops/docker
+    build:
+      dockerfile: devops/docker/Dockerfile
+      target: backup
+      node: false
+    inputs: [devops/docker/Dockerfile]
+    helm_tag: backup.tag
+    workload: none
+    port: none
+    host: none

@@ -5,7 +5,8 @@ Documentation follows the company structure: **Oxinov Pvt. Ltd.** → **company 
 ## 1. Company
 
 For file navigation, start with the [project library](../PROJECT-LIBRARY.md),
-[complete alphabetical file catalog](engineering/FILE-CATALOG.md), and
+[complete alphabetical file catalog](engineering/FILE-CATALOG.md), the
+[service catalog](engineering/SERVICE-CATALOG.md) of every deployable service, and
 [current structure and placement rules](engineering/PROJECT-STRUCTURE.md).
 For future offerings, use the [company library and growth standard](engineering/COMPANY-LIBRARY-STANDARD.md)
 and [product record template](products/PRODUCT-RECORD-TEMPLATE.md).

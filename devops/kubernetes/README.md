@@ -17,6 +17,7 @@ NFR-17). AWS resources: `devops/terraform/environments/production/starter`. Dire
 | `scripts/bootstrap-node.sh` | Idempotent node setup: pinned k3s and Helm (SHA-256), Traefik with Let's Encrypt, secrets from Parameter Store, ECR pull secret |
 | `scripts/deploy.sh` | On the node: `apply`, `rollback`, `release`, `status` |
 | `../scripts/release-plan.sh` | Decides which images a push rebuilds (tested by `release-plan.test.sh`) |
+| `../scripts/services.sh` | Service list, build recipes and Helm tag keys, generated from the root `services.yaml` |
 | `../scripts/oxctl` | Operations from a laptop |
 | `../scripts/check-delivery.sh` | Every delivery check (shellcheck, planner tests, Helm lint, Kubernetes schema, Terraform format) |
 | `scripts/rehearse-local.sh` | Full release rehearsal on a throwaway local k3s: install, routes, realm, and a forced rollback |
@@ -108,10 +109,13 @@ Scale triggers and the EKS path are in the roadmap.
 
 ## Adding a service
 
-1. Add a Dockerfile target, a `services:` entry in `helm/oxinov/values.yaml` (and its size in
-   `values-production.yaml`), its environment in `templates/_helpers.tpl`, and network-policy rules.
-2. Teach `devops/scripts/release-plan.sh` its build inputs and `scripts/deploy.sh` its tag variable; add a
-   planner test.
-3. Add an ECR repository in Terraform (plan, then the owner's "yes apply").
+1. Register it in the root [`services.yaml`](../../services.yaml) (product, owner, source path, build recipe,
+   inputs, Helm tag, workload, port, host) and run `python scripts/service_catalog.py`. The release planner,
+   deploy workflow, `deploy.sh`, rehearsal, `oxctl`, CODEOWNERS and the
+   [service catalog page](../../docs/engineering/SERVICE-CATALOG.md) pick it up from there.
+2. Add a Dockerfile target, a `services:` entry in `helm/oxinov/values.yaml` named after the workload (and its
+   size in `values-production.yaml`), its environment in `templates/_helpers.tpl`, and network-policy rules.
+   `python scripts/service_catalog.py --check` fails until the chart and the catalog agree.
+3. Plan the starter Terraform stack: it creates the ECR repository from the catalog (then the owner's "yes apply").
 4. Run `bash devops/scripts/check-delivery.sh` and `bash devops/kubernetes/scripts/rehearse-local.sh`, then
    push. The next green `main` deploys it.

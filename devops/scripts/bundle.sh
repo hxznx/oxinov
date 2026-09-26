@@ -8,7 +8,7 @@ STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT
 
 mkdir -p "$STAGE/devops/keycloak"
-cp "$ROOT"/devops/kubernetes/scripts/{deploy.sh,bootstrap-node.sh} "$STAGE/"
+cp "$ROOT"/devops/kubernetes/scripts/{deploy.sh,bootstrap-node.sh} "$ROOT/devops/scripts/services.sh" "$STAGE/"
 cp "$ROOT/devops/keycloak/configure-realm.sh" "$STAGE/devops/keycloak/"
 if [ -n "${1:-}" ]; then cp "$1" "$STAGE/release.next.env"; fi
 

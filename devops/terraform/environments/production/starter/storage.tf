@@ -1,7 +1,8 @@
 # Container images, lesson media, and database dumps.
 
 locals {
-  repositories = ["lms-api", "platform-api", "edu-web", "platform-web", "migrate", "mail-relay", "keycloak", "backup"]
+  # One ECR repository per service in the catalog (services.yaml, ADR-019).
+  repositories = keys(yamldecode(file("${path.module}/../../../../../services.yaml")).services)
 }
 
 # Accepted: AWS-owned key is enough for public-source images; revisit with ADR-009.

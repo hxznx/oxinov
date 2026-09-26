@@ -7,7 +7,8 @@
 #   deploy.sh release                             print the running release (TAG_<SERVICE>=... lines)
 #   deploy.sh status                              pods, release history, node memory and disk
 #
-# release.next.env holds one image tag per service plus DEPLOYED_SHA (devops/scripts/release-plan.sh).
+# release.next.env holds one image tag per service plus DEPLOYED_SHA (devops/scripts/release-plan.sh);
+# the services come from services.yaml through the bundled services.sh.
 # `helm upgrade --rollback-on-failure` waits until every workload is healthy and rolls back by itself; the
 # public names are then checked through Traefik, and a failure there rolls back too.
 set -euo pipefail
@@ -26,27 +27,21 @@ log() { printf '%s deploy: %s\n' "$(date -u +%FT%TZ)" "$*"; }
 param() { aws ssm get-parameter --name "$PREFIX/$1" --with-decryption --query Parameter.Value --output text 2>/dev/null || true; }
 put_param() { aws ssm put-parameter --name "$PREFIX/$1" --type SecureString --value "$2" --overwrite >/dev/null; }
 
-# Release manifest variable -> Helm value holding that image tag.
-helm_key() {
-  case $1 in
-    TAG_LMS_API) echo 'services.edu-api.tag' ;;
-    TAG_PLATFORM_API) echo 'services.platform-api.tag' ;;
-    TAG_EDU_WEB) echo 'services.edu-web.tag' ;;
-    TAG_PLATFORM_WEB) echo 'services.platform-web.tag' ;;
-    TAG_KEYCLOAK) echo 'services.keycloak.tag' ;;
-    TAG_MAIL_RELAY) echo 'services.mail-relay.tag' ;;
-    TAG_MIGRATE) echo 'migrations.tag' ;;
-    TAG_BACKUP) echo 'backup.tag' ;;
-    DEPLOYED_SHA) echo 'global.deployedSha' ;;
-    *) return 1 ;;
-  esac
+# Services and the Helm value holding each image tag come from services.yaml (bundled services.sh).
+# shellcheck source=../../scripts/services.sh
+source ./services.sh
+helm_key() { catalog_helm_key "$1"; }
+manifest_vars() {
+  local service
+  for service in "${CATALOG_SERVICES[@]}"; do catalog_tag_var "$service"; done
+  echo DEPLOYED_SHA
 }
 
 release() {
   helm status "$RELEASE" -n "$NAMESPACE" >/dev/null 2>&1 || return 0
   local values
   values=$(helm get values "$RELEASE" -n "$NAMESPACE" -o json)
-  for var in TAG_LMS_API TAG_PLATFORM_API TAG_EDU_WEB TAG_PLATFORM_WEB TAG_KEYCLOAK TAG_MAIL_RELAY TAG_MIGRATE TAG_BACKUP DEPLOYED_SHA; do
+  for var in $(manifest_vars); do
     local value
     value=$(jq -r --arg path "$(helm_key "$var")" 'getpath($path | split(".")) // empty' <<<"$values")
     if [ -n "$value" ]; then echo "$var=$value"; fi

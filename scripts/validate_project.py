@@ -279,6 +279,10 @@ def main() -> int:
     catalog = subprocess.run([sys.executable, str(ROOT / "scripts/project_catalog.py"), "--check"], cwd=ROOT)
     if catalog.returncode:
         errors.append("Project file catalog is stale or could not be checked")
+    # ADR-019: services.yaml is the one service registry; derived files and the chart must agree with it.
+    services = subprocess.run([sys.executable, str(ROOT / "scripts/service_catalog.py"), "--check"], cwd=ROOT)
+    if services.returncode:
+        errors.append("Service catalog is inconsistent or its derived files are stale")
     if args.security:
         check_security(errors)
     if args.deploy:

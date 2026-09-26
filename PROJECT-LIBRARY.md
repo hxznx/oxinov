@@ -57,7 +57,7 @@ The [product register](docs/products/README.md) lists every offering, including 
 | Branding and tokens | [Design system](packages/design-system/README.md) |
 | Company website | [Company web](frontend/company-web/README.md) |
 | Database changes | [Migration strategy](docs/data/MIGRATION-STRATEGY.md) |
-| Deployment and rollback | [Production runbook](devops/kubernetes/README.md) |
+| Deployment and rollback | [Production runbook](devops/kubernetes/README.md), [service catalog](docs/engineering/SERVICE-CATALOG.md) |
 | Identity and accounts | [Keycloak](devops/keycloak/README.md), [web authentication](packages/web-auth/README.md), [platform API](backend/platform-api/README.md) |
 | Scope and priorities | [Requirements](docs/requirements/README.md), [backlog](docs/planning/TASKS.md) |
 | Recent changes | [Changelog](docs/planning/CHANGELOG.md) |

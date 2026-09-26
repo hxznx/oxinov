@@ -107,20 +107,12 @@ jobs:
       - name: Resolve the build recipe
         id: recipe
         run: |
-          case "${{ matrix.service }}" in
-            lms-api) target=backend ;;
-            keycloak) target='' ;;
-            backup) target=backup ;;
-            *) target="${{ matrix.service }}" ;;
-          esac
-          if [ "${{ matrix.service }}" = keycloak ]; then
-            echo "context=devops/keycloak" >> "$GITHUB_OUTPUT"; echo "file=devops/keycloak/Dockerfile" >> "$GITHUB_OUTPUT"
-            # Reviewed, expiring exceptions for upstream Keycloak libraries (see the file).
-            echo "ignore=devops/keycloak/.trivyignore" >> "$GITHUB_OUTPUT"
-          else
-            echo "context=." >> "$GITHUB_OUTPUT"; echo "file=devops/docker/Dockerfile" >> "$GITHUB_OUTPUT"
-            echo "ignore=" >> "$GITHUB_OUTPUT"
-          fi
+          # Dockerfile, context, target, and Trivy exceptions come from services.yaml.
+          source devops/scripts/services.sh
+          read -r file context target ignore <<<"$(catalog_build "${{ matrix.service }}")"
+          [ "$target" = - ] && target=''
+          [ "$ignore" = - ] && ignore=''
+          { echo "context=$context"; echo "file=$file"; echo "ignore=$ignore"; } >> "$GITHUB_OUTPUT"
           echo "target=$target" >> "$GITHUB_OUTPUT"
           echo "image=$REGISTRY/oxinov/${{ matrix.service }}:$RELEASE_SHA" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3

@@ -10,7 +10,7 @@
 #
 # A service is rebuilt only when a file it is built from changed, so an unrelated push never restarts
 # Keycloak or the database. With no base (first deploy) or FORCE_ALL=1, everything is rebuilt.
-# Tags map to Helm values in devops/kubernetes/scripts/deploy.sh.
+# Tags map to Helm values through services.yaml (helm_tag).
 # Services not rebuilt keep the tag from the current release file.
 set -euo pipefail
 
@@ -18,35 +18,19 @@ BASE=${1:-}
 HEAD=${2:?head sha}
 CURRENT=${3:-}
 
-SERVICES=(lms-api platform-api edu-web platform-web migrate mail-relay keycloak backup)
+# Services, their build inputs, and which share the Node.js workspace come from services.yaml.
+# shellcheck source=services.sh
+source "$(dirname "$0")/services.sh"
 
 # Inputs shared by every Node.js image built from devops/docker/Dockerfile.
 NODE_COMMON='^(devops/docker/Dockerfile|pnpm-lock\.yaml|pnpm-workspace\.yaml|package\.json|\.npmrc|tsconfig\.json|\.dockerignore)$'
 
-# Extended regular expressions of the paths each image is built from.
-inputs() {
-  case $1 in
-    lms-api) echo '^(backend/products/lms-api/|packages/server-kit/|database/products/lms/prisma/|security/soc/event-schema\.json)' ;;
-    platform-api) echo '^(backend/platform-api/|packages/server-kit/|database/platform/prisma/|security/soc/event-schema\.json)' ;;
-    edu-web) echo '^(frontend/products/lms-web/|packages/web-auth/|packages/design-system/)' ;;
-    platform-web) echo '^(frontend/platform-web/|packages/web-auth/|packages/design-system/)' ;;
-    migrate) echo '^(database/products/lms/migrations/|database/products/lms/prisma/|database/platform/migrations/|database/platform/prisma/|backend/workers/migrate/)' ;;
-    mail-relay) echo '^backend/workers/mail-relay/' ;;
-    keycloak) echo '^devops/keycloak/Dockerfile$' ;;
-    # PostgreSQL client tools and the AWS CLI only; the Node.js inputs do not affect it.
-    backup) echo '^devops/docker/Dockerfile$' ;;
-    *) echo "unknown service $1" >&2; return 1 ;;
-  esac
-}
-
 # Chart and node configuration that needs a deploy but no image build.
-CONFIG='^(devops/kubernetes/helm/|devops/kubernetes/scripts/|devops/keycloak/configure-realm\.sh$)'
-
-tag_var() { echo "TAG_$(echo "$1" | tr 'a-z-' 'A-Z_')"; }
+CONFIG='^(devops/kubernetes/helm/|devops/kubernetes/scripts/|devops/keycloak/configure-realm\.sh$|services\.yaml$|devops/scripts/services\.sh$)'
 
 current_tag() {
   [ -n "$CURRENT" ] && [ -f "$CURRENT" ] || return 0
-  sed -n "s/^$(tag_var "$1")=//p" "$CURRENT" | tail -1
+  sed -n "s/^$(catalog_tag_var "$1")=//p" "$CURRENT" | tail -1
 }
 
 all=0
@@ -59,21 +43,21 @@ fi
 
 build=()
 release=()
-for service in "${SERVICES[@]}"; do
+for service in "${CATALOG_SERVICES[@]}"; do
   tag=$(current_tag "$service")
   rebuild=0
   if [ "$all" = 1 ] || [ -z "$tag" ]; then
     rebuild=1
-  elif printf '%s\n' "$changed" | grep -Eq "$(inputs "$service")"; then
+  elif printf '%s\n' "$changed" | grep -Eq "$(catalog_inputs "$service")"; then
     rebuild=1
-  elif [ "$service" != keycloak ] && [ "$service" != backup ] && printf '%s\n' "$changed" | grep -Eq "$NODE_COMMON"; then
+  elif catalog_node "$service" && printf '%s\n' "$changed" | grep -Eq "$NODE_COMMON"; then
     rebuild=1
   fi
   if [ "$rebuild" = 1 ]; then
     build+=("$service")
     tag=$HEAD
   fi
-  release+=("$(tag_var "$service")=$tag")
+  release+=("$(catalog_tag_var "$service")=$tag")
 done
 
 deploy=false

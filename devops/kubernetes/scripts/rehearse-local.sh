@@ -30,9 +30,9 @@ for arg in "$@"; do
   esac
 done
 
-# Image -> Dockerfile target (Keycloak has its own Dockerfile).
-declare -A TARGETS=([lms-api]=backend [platform-api]=platform-api [edu-web]=edu-web [platform-web]=platform-web
-  [migrate]=migrate [mail-relay]=mail-relay [backup]=backup [keycloak]=keycloak)
+# Images and their Dockerfile, context, and target come from services.yaml.
+# shellcheck source=../../scripts/services.sh
+source devops/scripts/services.sh
 
 log() { printf '\n== %s\n' "$*"; }
 kube() { docker exec "$NAME" kubectl -n oxinov "$@"; }
@@ -49,12 +49,11 @@ failures=0
 
 if [ "$BUILD" = 1 ]; then
   log "building images"
-  for image in "${!TARGETS[@]}"; do
-    if [ "$image" = keycloak ]; then
-      docker build -q -t "$REGISTRY/oxinov/$image:$TAG" devops/keycloak >/dev/null
-    else
-      docker build -q -f devops/docker/Dockerfile --target "${TARGETS[$image]}" -t "$REGISTRY/oxinov/$image:$TAG" . >/dev/null
-    fi
+  for image in "${CATALOG_SERVICES[@]}"; do
+    read -r file context target _ <<<"$(catalog_build "$image")"
+    target_args=()
+    if [ "$target" != - ]; then target_args=(--target "$target"); fi
+    docker build -q -f "$file" "${target_args[@]}" -t "$REGISTRY/oxinov/$image:$TAG" "$context" >/dev/null
     echo "built $image"
   done
 fi
@@ -75,7 +74,7 @@ tar -xzf "$work/helm.tgz" -C "$work"
 docker cp "$native/linux-amd64/helm" "$NAME:/bin/helm"
 rm -rf "$work"
 refs=()
-for image in "${!TARGETS[@]}"; do refs+=("$REGISTRY/oxinov/$image:$TAG"); done
+for image in "${CATALOG_SERVICES[@]}"; do refs+=("$REGISTRY/oxinov/$image:$TAG"); done
 docker save "${refs[@]}" | docker exec -i "$NAME" ctr -n k8s.io images import - >/dev/null
 
 log "creating the namespace and application secret"

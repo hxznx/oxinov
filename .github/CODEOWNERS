@@ -1,0 +1,13 @@
+# Generated from services.yaml by scripts/service_catalog.py. Do not edit; edit services.yaml.
+# Later lines win: each service folder is reviewed by its owner, everything else by the default owner.
+
+*                             @hxznx
+/services.yaml                @hxznx
+/backend/platform-api/        @hxznx
+/backend/products/lms-api/    @hxznx
+/backend/workers/mail-relay/  @hxznx
+/backend/workers/migrate/     @hxznx
+/devops/docker/               @hxznx
+/devops/keycloak/             @hxznx
+/frontend/platform-web/       @hxznx
+/frontend/products/lms-web/   @hxznx
