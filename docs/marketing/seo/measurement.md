@@ -27,4 +27,5 @@ The website has no analytics or cookies. Search data comes from Search Console a
 
 | Month | Clicks | Impressions | Countries | Indexed pages | Notes |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10 | | | | | First month after verification |
+| 2026-09 | | | | | Search Console verified 2026-09-26; data starts within 2–3 days |
+| 2026-10 | | | | | First full month |

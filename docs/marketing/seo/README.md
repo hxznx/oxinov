@@ -28,7 +28,8 @@ Oxinov's audience is **global** and its only language is **English** (ADR-020). 
 | Division (department) pages described as departments of Oxinov, linked to their products and to each other | Live, tested in CI |
 | Pricing FAQ with FAQPage data | Live, tested in CI |
 | Preloaded fonts cut from 372 KB to 59 KB; English-only, translation-friendly markup | Live |
-| Google Search Console and Bing verification | Google TXT record published through Terraform (2026-09-26); owner clicks **Verify**, submits the sitemap, then imports into Bing |
+| Google Search Console | **Verified 2026-09-26** (Domain property, TXT record in Terraform). Next: sitemap submitted, second owner added |
+| Bing Webmaster Tools | Owner imports the site from Search Console |
 | Google Business Profile for the Lalitpur office | **Owner** to claim |
 | Approved tagline for the home page title | **Owner** to choose ([brand](../../design/BRAND.md#brand-strategy)) |
 | First articles and comparison pages | Planned ([content plan](content-plan.md)) |
@@ -37,7 +38,7 @@ Oxinov's audience is **global** and its only language is **English** (ADR-020). 
 
 ## Order of work
 
-1. **Now:** verify Search Console and Bing, submit the sitemap ([search-console.md](search-console.md)); claim Google Business Profile.
+1. **Now:** submit the sitemap, request indexing for key pages, import into Bing ([search-console.md](search-console.md)); claim Google Business Profile.
 2. **Weeks 1–4:** approved tagline as the home title; real screenshots on the Edu product page; first comparison page.
 3. **Month 2 onward:** two English articles a month and tutorial videos with captions.
 4. **Monthly:** the review in [measurement.md](measurement.md). **Quarterly:** read key pages through browser translation in three languages and fix wording that translates badly.
