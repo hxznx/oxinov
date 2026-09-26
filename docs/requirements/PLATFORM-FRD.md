@@ -6,6 +6,28 @@
 **Scope:** Company website (`oxinov.com`), identity (`id.oxinov.com`), account portal (`app.oxinov.com`), API gateway (`api.oxinov.com`), and the shared control-plane services used by every Oxinov product.
 **Standard:** [Oxinov requirements standard](README.md)
 
+## Implementation status (2026-09-26)
+
+Built and verified in production or CI. Requirements not listed are not built yet (or not yet verified); the per-requirement *Status* lines move to **Implemented** once the owner approves each FR. Source of truth for what runs: [current state](../architecture/CURRENT-STATE.md).
+
+| Requirement | State | Notes |
+| --- | --- | --- |
+| FR-SITE-2101 Company presence | Implemented | `oxinov.com` live; English only (ADR-020); product and division pages; SEO (NFR-19) |
+| FR-SITE-2102 Brand and themes | Implemented | Dark default and Daylight theme; design-system tokens |
+| FR-SITE-2103 Pricing page | Partly | Plan ladder and FAQ live; prices wait for approval |
+| FR-SITE-2104 Contact and security reports | Partly | Contact details and `security.txt` live; contact form waits for `api.oxinov.com` |
+| FR-SITE-2105 Cookie consent | Implemented | No trackers or non-essential cookies, so no banner is needed (tested) |
+| FR-ID-2202 Email one-time code | Implemented | Keycloak email code through SES (sandbox until production access) |
+| FR-ID-2201 Continue with Google | Partly | Flow scripted in `configure-realm.sh`; needs the owner's Google OAuth client |
+| FR-ID-2204 No customer passwords | Partly | Sign-in has no password form; password-free registration is in progress |
+| FR-ID-2205 First-sign-in welcome | Implemented | `app.oxinov.com/welcome` with policy acceptance |
+| FR-ID-2207 Single sign-on across products | Implemented | One Keycloak session for `app.` and `edu.` |
+| FR-ID-2209 Staff identities | Partly | Admin console not public; staff MFA (TOTP) open |
+| FR-POLICY-2401 Versioned policies | Partly | Policy pages live; text awaits legal review |
+| FR-POLICY-2402 Acceptance records | Implemented | `PolicyAcceptance` in the platform database |
+| FR-PLAN-2602 Automatic member access | Implemented | Granted on first sign-in (`accounts.service.ts`) |
+| FR-PORTAL-3101 Account home, FR-PORTAL-3102 App launcher | Implemented (foundation) | `app.oxinov.com` |
+
 ## 1. Purpose and scope
 
 The Oxinov Platform gives every person one Oxinov account that works across all launched Oxinov products, with simple sign-in, progressive verification, shared plans and billing, and consistent policies. Products own their workflows and data; the platform owns identity, trust, policies, organizations, entitlements, plans, payments ledger, KYC, notifications, messaging primitives, privacy requests, and the account portal.

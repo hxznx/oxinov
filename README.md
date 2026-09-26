@@ -1,6 +1,6 @@
 # Oxinov Platform
 
-Company platform and product monorepo for Oxinov Pvt. Ltd. Oxinov Edu is the first product: a cloud-hosted, multi-tenant learning platform covering JLPT N5-N1, SSW skills, languages, and IT. The target company platform adds the public `oxinov.com` website, shared identity, an account and product portal, cross-product organizations and entitlements, and independent product planes.
+Company platform and product monorepo for Oxinov Pvt. Ltd., building technology for people everywhere (English only, ADR-020). Oxinov Edu is the first product: a cloud-hosted, multi-tenant online classroom for schools and teachers, covering languages (such as JLPT N5–N1), SSW skills, IT, and exam preparation. The target company platform adds the public `oxinov.com` website, shared identity, an account and product portal, cross-product organizations and entitlements, and independent product planes.
 
 ## Start here
 
@@ -12,17 +12,17 @@ Open the [project library](PROJECT-LIBRARY.md) to browse by category, or the
 3. For Oxinov Edu work, read its [project brief](docs/products/lms/BRIEF.md), [PRD](docs/products/lms/PRD.md), [FRD](docs/requirements/LMS-FRD.md), and [NFR](docs/requirements/NFR.md).
 4. Coding agents follow [AGENTS.md](AGENTS.md), the [current structure](docs/engineering/PROJECT-STRUCTURE.md), and the [target company structure](docs/engineering/COMPANY-PROJECT-STRUCTURE.md). The reviewed [platform build command](prompts/BUILD-OXINOV-PLATFORM.md) and [AI foundation command](prompts/IMPLEMENT-AI-FOUNDATION.md) start approved milestones.
 5. Install Node.js 22 and pnpm 12.6.0, then run `pnpm install --frozen-lockfile` from the repository root.
-6. For local infrastructure, copy `.env.example` to `.env` and run `docker compose up -d postgres redis object-storage` after Docker is installed.
+6. For local infrastructure, follow the [local setup](docs/devops/DEV-SETUP.md): copy `.env.example` to `.env` and run `docker compose up -d postgres object-storage` (add `--profile identity` for Keycloak and Mailpit).
 7. Start local monitoring with `docker compose --profile monitoring up -d`. Open Grafana at `http://localhost:3001`, Prometheus at `http://localhost:9090`, and Alertmanager at `http://localhost:9093`.
 
 ## Company, platform, and products
 
 | Layer | Address | Status |
 | --- | --- | --- |
-| Company website | `oxinov.com` | Implemented; deployment workflow present |
-| One Oxinov account and sign-in (Google or email code) | `id.oxinov.com` | Identity configuration implemented; provider readiness depends on environment |
-| Account portal and product launcher | `app.oxinov.com` | Foundation implemented |
-| Oxinov Edu | `edu.oxinov.com` | First product, partially implemented |
+| Company website | `oxinov.com` | Live; deployed on every push to `main` |
+| One Oxinov account and sign-in | `id.oxinov.com` | Live with email one-time codes; Google sign-in needs the owner's OAuth client |
+| Account portal and product launcher | `app.oxinov.com` | Live, foundation |
+| Oxinov Edu | `edu.oxinov.com` | Live, in development |
 | [Oxinov Commodity Market](docs/products/COMMODITY-MARKET.md) | `market.oxinov.com` | Draft charter (all commodities & second-hand items) |
 | [Oxinov Jobs](docs/products/JOBS.md) | `jobs.oxinov.com` | Draft charter |
 | [Oxinov Services Market](docs/products/SERVICES-MARKET.md) | `services.oxinov.com` | Draft charter |
@@ -46,7 +46,7 @@ Each product has its own frontend, backend, and database; one Oxinov account sig
 
 Implemented applications include company-web, platform-web, platform-api, Edu web and the Edu API. Edu includes workspaces, catalog, free enrollment, authoring, media, quizzes, assignments, notes, resources and discussions. See [Edu web](frontend/products/lms-web/README.md) and [the API guide](backend/products/lms-api/README.md) for scope and setup.
 
-The repository includes production Terraform, Kubernetes/Helm delivery, a mail relay and a migration runner. Paid checkout, certificates, native mobile and broader platform capabilities remain open. Planned gateway, chat and general worker folders are not implemented services. Current release health must be checked in CI and production; source presence alone is not verification. Use the [current structure](docs/engineering/PROJECT-STRUCTURE.md) for active paths and the [changelog](docs/planning/CHANGELOG.md) for recorded delivery evidence.
+Production runs on one k3s node in AWS Mumbai, managed by Terraform and deployed automatically from every green `main` with automatic rollback (ADR-017, ADR-018); spend stays within US$50 a month. The verified picture (services, data, security controls, cost, and gaps) is in [current state](docs/architecture/CURRENT-STATE.md); open work is in the [backlog](docs/planning/TASKS.md). Paid checkout, certificates, native mobile, and broader platform capabilities remain open. Planned gateway, chat, and general worker folders are not implemented services. Source presence alone is not verification. Use the [current structure](docs/engineering/PROJECT-STRUCTURE.md) for active paths and the [changelog](docs/planning/CHANGELOG.md) for recorded delivery evidence.
 
 ## Decisions still needed
 

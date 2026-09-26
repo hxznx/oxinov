@@ -7,6 +7,27 @@
 **Product:** Oxinov Edu (`edu.oxinov.com`), the first Oxinov product plane  
 **Standard:** [Oxinov requirements standard](README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
 
+## Implementation status (2026-09-26)
+
+Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web README](../../frontend/products/lms-web/README.md#what-works-today) and [current state](../architecture/CURRENT-STATE.md)). Requirements not listed are not built yet; the per-requirement *Status* lines move to **Implemented** once the owner approves each FR.
+
+| Requirement | State | Notes |
+| --- | --- | --- |
+| FR-TENANT (spaces, membership, isolation) | Implemented | Spaces with roles; RLS; two-tenant denial tests. Branding, plans, and custom domains open |
+| FR-AUTH-102 Tenant roles | Partly | Join codes and member list; instructor-approval requests open |
+| FR-CATALOG-301 Catalogue and search | Implemented | With "Continue learning" |
+| FR-CATALOG-302 Course page | Implemented | Outcomes, curriculum, locked and preview lessons |
+| FR-CATALOG-303 Purchase and enrollment | Partly | Free enrollment; paid courses unlock only after a verified payment event, which is not built |
+| FR-COURSE-201, FR-COURSE-203 Authoring and review | Implemented | Chapters, lessons, reordering, review, publishing |
+| FR-COURSE-202, FR-COURSE-204, FR-COURSE-205 Lesson content, resources, media | Implemented | Text, video, audio, transcripts; PDF, EPUB, Office, images, ZIP, links (S3, ADR-021) |
+| FR-PLAYER-401 to FR-PLAYER-404 Player, progress, notes | Implemented | Speed, resume, completion; private notes with video moments |
+| FR-ASSESS-501, FR-ASSESS-502 Quizzes and exams | Implemented | Four question types, random sections, timed attempts with autosave and auto-submit, results, answer review |
+| FR-ASSESS-503 Assignments | Implemented | Text, links, files, deadlines, grading, revisions |
+| FR-EXAM-1204 Mock exam attempts | Implemented | Timed practice and mock exams |
+| FR-COMM-701, FR-COMM-702 Class stream and Q&A | Implemented | Announcements, lesson questions, best answers, votes, moderation |
+| FR-ANALYTICS-801 Learner progress | Partly | "Continue learning"; dashboards open |
+| FR-CERT-601, FR-CERT-602 Certificates | Not built | Next after payments |
+
 ## 0. Platform dependencies
 
 Oxinov Edu runs on the shared Oxinov Platform. Sign-in, sessions, trust levels, policy acceptance, organizations, plans, entitlements, payments ledger, KYC, notifications, and privacy requests are defined in the [Platform FRD](PLATFORM-FRD.md) and are not redefined here. LMS tenant memberships, roles, instructor approval, courses, learning, exams, and results remain in this document and in the LMS database boundary. Where an LMS requirement below conflicts with a platform requirement, the platform requirement wins and the LMS requirement is marked **Superseded**.

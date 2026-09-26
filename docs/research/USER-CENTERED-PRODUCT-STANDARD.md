@@ -84,7 +84,7 @@ Every critical journey considers:
 - new and experienced users;
 - Android, iOS, and relevant desktop browsers on representative low- and mid-range devices;
 - intermittent or throttled mobile networks and limited data budgets;
-- English, Nepali, and the product's required content languages;
+- English (the only interface language, ADR-020), use through browser translation, and the product's required content languages;
 - low digital confidence, limited literacy, and assisted-digital use;
 - screen reader, keyboard, zoom, reduced motion, dynamic text, color-vision, hearing, motor, cognitive, and time-accommodation needs;
 - individual versus organization use and switching between workspaces or roles; and
@@ -155,7 +155,7 @@ Start qualitative rounds small enough to learn and iterate quickly, but recruit 
 - Treat mobile and unstable connectivity as normal contexts, not edge cases.
 - Keep critical pages and actions usable on throttled 4G and able to recover after interruption.
 - Format NPR and other approved currencies, names, phone numbers, addresses, dates, and local units clearly.
-- Provide English and Nepali interface content at launch where required, with equivalent meaning and no machine-only legal or safety translations.
+- Write interface content in plain English that browser translation handles well (ADR-020); the English text of legal and safety content is binding, and its meaning is checked through translation in the main reader languages.
 - Keep the Daylight theme easy to select and remember for bright outdoor use. Dark-first branding must not make outdoor, low-vision, or long-reading tasks harder.
 
 ### Keep high-risk journeys calm
@@ -228,7 +228,7 @@ A material journey is ready for implementation or release only when the evidence
 - [ ] Intended users evaluated the content or prototype before build.
 - [ ] The implemented end-to-end journey was tested on representative devices and networks.
 - [ ] Disabled and assisted-digital users were included or an accountable, dated coverage plan is approved.
-- [ ] English, Nepali, and required product-language meaning is validated where applicable.
+- [ ] English meaning, browser-translated meaning in the main reader languages, and required content-language meaning are validated where applicable.
 - [ ] Task success, time, ease, confidence, false completion, recovery, and support impact are recorded.
 - [ ] No unresolved critical usability, accessibility, safety, privacy, security, payment, or tenant-isolation issue remains.
 - [ ] Analytics and feedback measure outcomes without collecting unnecessary personal data or unbounded identifiers.
@@ -241,7 +241,7 @@ A material journey is ready for implementation or release only when the evidence
 1. Appoint a product-research owner and a research contact for each active product or platform area.
 2. Create the first user-need register and identify the ten highest-risk shared and LMS journeys.
 3. Review existing analytics, support evidence, requirements, and assumptions; mark unsupported assumptions clearly.
-4. Recruit an initial panel that covers learners, tenant owners/instructors, mobile/low-bandwidth users, Nepali and English use, disability, and support needs.
+4. Recruit an initial panel that covers learners, tenant owners/instructors, mobile/low-bandwidth users, people reading through browser translation, disability, and support needs.
 5. Baseline five stable tasks: sign in, find and understand a course, enroll, resume learning, and complete/view an assessment result.
 
 ### Days 31-60: test and simplify

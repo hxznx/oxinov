@@ -1,12 +1,15 @@
-# Development roadmap
+# Development roadmap: Oxinov Edu
 
-**Scope:** Oxinov Edu delivery. Coordinate it with the [Oxinov company platform roadmap](COMPANY-PLATFORM-ROADMAP.md); platform identity and entitlements must not silently duplicate LMS tenant roles.
+**Scope:** Oxinov Edu delivery. Coordinate with the [company platform roadmap](COMPANY-PLATFORM-ROADMAP.md) and the [DevOps roadmap](../devops/ROADMAP.md); platform identity and entitlements must not duplicate Edu roles. **Updated:** 2026-09-26. These are phases, not promised dates; tasks and evidence are in the [backlog](TASKS.md), and what runs today is in [current state](../architecture/CURRENT-STATE.md).
 
-0. **Foundation:** repository, Docker infrastructure, PostgreSQL migrations, CI security scanning, OpenAPI, tenant identity, two-tenant isolation tests, security-event schema, private metrics endpoints, Prometheus rules, Alertmanager, and Grafana dashboards.
-1. **SaaS core:** workspace signup, branding, membership, plans, catalog, course authoring, and recorded media.
-2. **Learning:** enrollment, payments, lesson progress, assignments, chapter practice, mock exams, results, and certificates.
-3. **Mobile in parallel:** Expo shell and shared API from phase 0; add each learner/admin workflow alongside web work, then Android internal testing and store readiness.
-4. **Engagement and AI:** chat, notifications, AI-assisted draft creation, analytics, and administration.
-5. **Launch:** content licensing, load/recovery/security/accessibility testing, SIEM and GuardDuty Runtime Monitoring integration, SOC exercises, tenant pilot, and staged release; evaluate Falco if EKS/EC2 is introduced.
+| Phase | Scope | Status (2026-09-26) |
+| --- | --- | --- |
+| 0. Foundation | Monorepo, migrations, CI with security scanning, OpenAPI, tenant identity, two-tenant isolation tests, security-event schema, metrics endpoints, production deployment with automatic rollback | **Done** (production on k3s, ADR-018) |
+| 1. SaaS core | Learning spaces, join codes and members, catalogue, course authoring with review and publishing, recorded video and audio, books and resources | **Mostly done.** Open: space branding, plans, custom domains, email invitations |
+| 2. Learning and assessment | Enrollment, lesson progress, notes, quizzes and timed mock exams, assignments with grading, results; then payments and certificates | **In progress.** Done: free enrollment, notes, quizzes, exams, assignments, results. Open: paid checkout, certificates, text-lesson progress, question-bank authoring API |
+| 3. Engagement | Class stream and lesson Q&A (done), announcement emails and push, live chat, analytics for teachers and administrators | **Started** |
+| 4. Mobile | React Native with Expo against the same API; Android internal testing, then store release (NFR-14) | Not started; the web app works in mobile browsers |
+| 5. AI | Governed AI gateway and staff-only pilots after the AI Phase 0 gate (ADR-014) | Not started |
+| 6. Launch readiness | Content rights, Playwright end-to-end, load, restore, security (staff MFA, CloudTrail, GuardDuty, penetration test), and accessibility testing; first school pilot; SES production access | **Next**: see [security roadmap](../security/SECURITY.md#roadmap) and [testing](../engineering/TESTING-STRATEGY.md#next) |
 
-These are proposed phases, not promised dates. See [backlog](TASKS.md).
+Order of the next work: launch readiness items that block a first school (SES production access, staff MFA, CloudTrail and GuardDuty, end-to-end tests, restore test), then paid checkout and certificates, then mobile.

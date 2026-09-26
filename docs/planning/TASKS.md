@@ -1,32 +1,45 @@
 # Implementation backlog
 
-| Priority | Task | Acceptance evidence |
-| --- | --- | --- |
-| 0 | Approve the company platform blueprint, domain ownership, product owners, cloud/identity operations, and initial payment providers | Signed decision record, accountable owners, launch market, cost ceiling, DNS inventory, and external-account checklist |
-| 0 | Establish the R&D operating system and screen the first-wave portfolio without authorizing new product planes | Named sponsor, portfolio owner and reviewers; approved capacity ceiling and horizon mix; at most three G0-G1 project records with hypotheses, scorecards, data/IP reviews, time boxes, budgets, and stop thresholds |
-| 0 | Establish user research as the evidence foundation of every product | Named research owner; user-need register; representative participant and consent process; baseline for sign-in, discovery, enrollment, resume, and assessment-result tasks; severity-ranked findings; usability gate added to product and release reviews |
-| 0 | Complete AI Phase 0 governance and evidence for two staff pilots | Named owners; approved internal-knowledge and LMS-authoring pilot records; data/rights inventory; 50+ representative cases per pilot; Region/model/retention record; budget, quotas, stop thresholds, threat/data-flow review, kill switch, and incident owner |
-| 0 | Bootstrap AWS Organizations, security/log archive, non-production and production accounts, budgets, GitHub Actions OIDC, Terraform state, and Mumbai environment networks | Reviewed Terraform plans, non-overlapping VPCs, two-AZ staging/production topology, protected state, no long-lived CI keys, budget alerts, CloudTrail, Config, GuardDuty/Security Hub, and recovery-copy evidence |
-| 0 | Build the public company website and shared design-token foundation without moving LMS code | Accessible production build, approved content, legal routes, health checks, Docker target, CI, and deployment preview |
-| 0 | Draft and legally review Oxinov Terms, Privacy, Acceptable Use, and product-role policies | Published policy versions at `oxinov.com/legal/*` in English and Nepali, with owner and review date recorded |
-| 0 | Configure Google sign-in and email one-time codes at `id.oxinov.com` with SSO across platform-web and LMS | Google and email sign-in, verified-email-only linking, welcome and policy acceptance screen, sign-out everywhere, rate-limit and security-event tests |
-| 0 | Build the platform identity/organization/entitlement vertical slice | OIDC sign-in, organization isolation tests, product launcher, OpenAPI contracts, migrations, audit/security events, backups, metrics, traces, and rollback evidence |
-| 0 | Scaffold frontend/web, frontend/mobile, backend/products/lms-api, backend/products/lms-worker, and backend/products/lms-chat | Local builds and health endpoints. **backend/products/lms-api done** (health, readiness, metrics); others open |
-| 0 | Start PostgreSQL/Redis/MinIO via Compose and create migrations | Reproducible setup; data persists restart. **Migrations and seed done** |
-| 0 | Implement tenant creation, membership, RLS, and domain routing | Two-tenant positive and negative tests. **Done except subdomain/custom-domain routing and invitations** |
-| 0 | Instrument services and provision Prometheus, Alertmanager, exporters, and Grafana | Healthy scrape targets, dashboard loads, rules validate, and a synthetic alert reaches its staging receiver |
-| 0 | Enforce CI security scanning and implement the normalized security-event contract | High/critical gate, schema tests, sensitive-field tests, and sample events |
-| 1 | Implement catalog, courses, recorded media, enrollment, and payment | End-to-end paid learner journey. **Catalog read, draft course creation, and free enrollment done**; review/publish workflow, Mux media, provider-neutral checkout and verified payment processing open |
-| 1 | Implement question bank, mock exams, results, assignments | Timed attempt and grading tests. **Attempts, autosave, expiry, grading, and results done**; question authoring API, result revisions, worker auto-submit, and assignments open |
-| 1 | Add shared platform KYC (T3/T4), SMS phone verification (T2), messaging, and reviews primitives | Trust-level enforcement tests, audited KYC reviewer workflow, document access controls, retention jobs |
-| 1 | Confirm Flo Softwares rights and rotate their leaked secrets | Signed rights confirmation, rotated credentials, secret files removed from those repositories |
-| 1 | Build Android/iOS parity per module | Mobile flow tests and signed internal `.aab` |
-| 2 | Implement the governed AI gateway and two staff-only pilots after the Phase 0 gate | Provider-neutral contracts, Bedrock adapter, model aliases, prompts, guardrails, approved-source RAG, evaluation runner, budgets, metadata-only telemetry, Grafana/SOC coverage, two-tenant denial tests, and no publishing or state-changing model tools |
-| 2 | Add chat, notifications, later approved AI workflows, analytics, and admin tools | Role, tenant, evaluation, budget, and human-approval tests |
-| 2 | Integrate SIEM detections, incident routing, and GuardDuty Runtime Monitoring for ECS Fargate; evaluate Falco for later EKS/EC2 | Healthy runtime coverage, synthetic findings, alert routing, and three completed runbook exercises |
-| 2 | Oxinov Commodity Market first release after its release gate | Approved charter; `market-web`, `market-api`, `market-worker`, and `database/products/market` created; seller, buyer, escrow, inspection, and dispute journeys pass end to end |
-| 2 | Oxinov Jobs first release after its release gate | Approved charter; employer and candidate journeys pass end to end with LMS certificate display |
-| 2 | Oxinov Services Market first release after its release gate | Approved charter; seeker and provider booking journeys pass end to end |
-| 2 | Production deployment and launch content | Security, load, restore, store, and content review |
+**Updated:** 2026-09-26. Split each item into small issues with FR IDs before coding. Product decisions in [RISKS.md](RISKS.md) may change ordering. What runs today: [current state](../architecture/CURRENT-STATE.md).
 
-Split these into small issues with FR IDs before coding. Product decisions in [RISKS.md](RISKS.md) may change ordering.
+## Done (verified in CI or production)
+
+| Area | Evidence |
+| --- | --- |
+| Company website `oxinov.com` | Live on S3 and CloudFront; accessibility, link, status, and SEO tests in CI; product and division pages; Search Console and Bing verified |
+| Production platform | One k3s node in Mumbai via Terraform; every green `main` deploys automatically with rollback (ADR-018, NFR-17); budget alerts (NFR-18) |
+| One Oxinov account | Keycloak at `id.oxinov.com` with email one-time codes through SES; bounce and complaint handling |
+| Platform slice | Accounts, policy acceptance, product catalogue, entitlements, owner isolation (`platform-api`, `platform-web`) |
+| Edu tenancy | Spaces, members, join codes, row-level security, two-tenant allowed and denied tests |
+| Edu learning | Catalogue, authoring with review and publishing, video and audio lessons, resources, free enrollment, notes, quizzes, timed mock exams with autosave and auto-submit, assignments with grading, class stream and Q&A |
+| Security baseline | Trivy gates, Dependabot, pinned digests, security-event schema, keyless access, network policies |
+
+## Open, in priority order
+
+| Priority | Task | Acceptance evidence | Owner |
+| --- | --- | --- | --- |
+| 0 | Request SES production access | Sign-in code reaches an address that is not verified in SES | Founder |
+| 0 | Staff MFA (TOTP) for Keycloak administrators and operators | Admin sign-in requires a second factor; tested in rehearsal | Engineering |
+| 0 | CloudTrail trail and GuardDuty in Terraform ([security roadmap](../security/SECURITY.md#roadmap)) | Saved plan with monthly cost approved; findings reach the operations mailbox | Engineering, founder approval |
+| 0 | Remove or retarget the stale `.github/workflows/deploy.yml` preflight | Only live workflows remain | Engineering |
+| 0 | Playwright end-to-end tests for sign-in, join, enrol, lesson, timed exam, assignment | Run in CI on every push | Engineering |
+| 0 | Quarterly restore test from the nightly dump | Restored database passes smoke checks; time recorded against NFR-05 | Engineering |
+| 0 | Google sign-in in production | Google OAuth client created by the owner; flow in `configure-realm.sh` enabled; verified-email linking tested | Founder and engineering |
+| 0 | Legal review of Terms, Privacy, Acceptable Use, and product-role policies | Reviewed English versions at `oxinov.com/legal/*` (English is binding, ADR-020), with owner and review date | Founder |
+| 0 | Approve owners, launch markets, and payment providers | Decision record in [RISKS.md](RISKS.md) | Founder |
+| 1 | Paid checkout and verified payment processing (provider adapter and ledger) | End-to-end paid learner journey; webhook replay and idempotency tests | Engineering |
+| 1 | Certificates | Issue and public verification; one per learner and course | Engineering |
+| 1 | Space branding, plans, custom domains, email invitations | Tests per FR | Engineering |
+| 1 | Question-bank authoring API, result revisions, text-lesson progress | Tests per FR | Engineering |
+| 1 | Announcement emails and push notifications | Opt-in, retries, delivery status | Engineering |
+| 1 | OpenTelemetry in `server-kit` and web apps; one dashboard and error-rate alert per product (ADR-019 step 5) | Trace ID across portal, API, and sign-in | Engineering |
+| 1 | Cost: Compute Savings Plan decision; cost-allocation tags ([cost](../devops/COST-OPTIMIZATION.md)) | Owner decision recorded; tags visible in Cost Explorer | Founder, engineering |
+| 1 | Establish user research and the R&D operating system | Named owners; baseline tasks measured ([standard](../research/USER-CENTERED-PRODUCT-STANDARD.md)) | Founder |
+| 1 | Confirm Flo Softwares rights and rotate their leaked secrets | Signed rights confirmation; rotated credentials | Founder |
+| 2 | Mobile app (Expo) for Edu | Signed internal `.aab`; mobile flow tests (NFR-14) | Engineering |
+| 2 | AI Phase 0 governance, then the governed AI gateway and two staff pilots (ADR-014) | Per the [AI roadmap](AI-IMPLEMENTATION-ROADMAP.md) | Founder, engineering |
+| 2 | Live chat (`lms-chat`) and background worker (`lms-worker`) | When approved features need them (ADR-021) | Engineering |
+| 2 | Shared KYC (T3/T4), SMS verification (T2), messaging, and reviews primitives | Trust-level enforcement tests; audited reviewer workflow | Engineering |
+| 2 | Staging and preview environments ([DevOps roadmap](../devops/ROADMAP.md) Phase 4) | A bad commit is stopped before production | Engineering |
+| 2 | SIEM detections and incident routing ([SOC](../security/SOC.md)) | Synthetic findings routed; three runbook exercises | Engineering |
+| 3 | Oxinov Commodity Market, Jobs, and Services Market, each after its release gate | Approved charter; journeys pass end to end; per-plane Helm release (ADR-019) | Founder, engineering |

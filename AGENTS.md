@@ -8,12 +8,12 @@ The Oxinov repository holds the company platform of **Oxinov Pvt. Ltd.** and its
 
 | Layer | Address | State |
 | --- | --- | --- |
-| Company website | `oxinov.com` | Source and deployment implemented |
-| Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Identity and portal foundation implemented; gateway folder remains planned |
-| Oxinov Edu | `edu.oxinov.com` | Web and API implemented in slices; must stay working |
+| Company website | `oxinov.com` | Live (S3 + CloudFront); SEO in `frontend/company-web/src/seo` |
+| Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Identity (email code) and portal foundation live; gateway folder remains planned |
+| Oxinov Edu | `edu.oxinov.com` | Live, in development; must stay working |
 | Commodity Market, Jobs, Services Market | `market.`, `jobs.`, `services.oxinov.com` | Draft charters only; do not scaffold |
 
-Do not claim that an application, deployment, or integration works unless it was executed and verified.
+Do not claim that an application, deployment, or integration works unless it was executed and verified. What is verified today is recorded in [current state](docs/architecture/CURRENT-STATE.md); update it in the same change as any runtime, data, security, or cost change.
 
 ## 2. Read before you change anything
 
@@ -25,13 +25,16 @@ Start with [docs/README.md](docs/README.md), the documentation map. Then read wh
 
 | Task | Read first |
 | --- | --- |
-| Any change | This file, [README.md](README.md), [platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [requirements standard](docs/requirements/README.md) |
+| Any change | This file, [current state](docs/architecture/CURRENT-STATE.md), [README.md](README.md), [platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [requirements standard](docs/requirements/README.md) |
+| Frontend, backend, database, scripts | [coding standards](docs/engineering/CODING-STANDARDS.md), [testing strategy](docs/engineering/TESTING-STRATEGY.md), [database design](docs/data/DATABASE-DESIGN.md), [dependency policy](docs/engineering/DEPENDENCY-POLICY.md) |
+| Public website pages or search | [SEO](docs/marketing/seo/README.md), [`src/seo`](frontend/company-web/src/seo/README.md), NFR-19 |
+| Anything that costs money | [cost optimization](docs/devops/COST-OPTIMIZATION.md), NFR-18 |
 | Platform feature (sign-in, trust, policies, plans, payments, KYC, portal) | [Platform FRD](docs/requirements/PLATFORM-FRD.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [policies](docs/company/PLATFORM-POLICIES.md), [subscription model](docs/company/SUBSCRIPTION-MODEL.md) |
 | Oxinov Edu feature | [LMS FRD](docs/requirements/LMS-FRD.md), [NFR](docs/requirements/NFR.md), [LMS architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
 | Other product | Its charter in [docs/products/](docs/products/README.md); build nothing until its release gate is approved |
 | Website or any UI | [brand](docs/design/BRAND.md), [design system](docs/design/DESIGN-SYSTEM.md), [accessibility](docs/design/ACCESSIBILITY.md), [user-centred product standard](docs/research/USER-CENTERED-PRODUCT-STANDARD.md) |
 | AI feature | [AI strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md) |
-| Data, API, security, or infrastructure | [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), [ADRs](docs/architecture/ADR.md), [threat model](docs/security/THREAT-MODEL.md) |
+| Data, API, security, or infrastructure | [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), [ADRs](docs/architecture/ADR.md) (ADR-021 for today's baseline), [security baseline](docs/security/SECURITY.md), [threat model](docs/security/THREAT-MODEL.md) |
 | Research or experiment | [R&D operating system](docs/research/README.md) |
 
 Milestone build commands live in [prompts/](prompts/). Implement one milestone at a time.
@@ -58,7 +61,7 @@ Milestone build commands live in [prompts/](prompts/). Implement one milestone a
 - Releases are self-healing: `helm upgrade --rollback-on-failure --wait` (Helm 4) waits for health and rolls back on failure, and a failed node check or public smoke test rolls back too. Migrations run as a hook before new code starts and only move forward (expand, then contract), so an image rollback is always safe.
 - Containers run as numeric non-root users (uid/gid 1000; PostgreSQL 70) with no capabilities, read-only root filesystems where possible, realistic resource requests and limits, and deny-by-default network policies; only pods that call AWS may reach the instance metadata service.
 - Security gates are never weakened to ship: Trivy (HIGH/CRITICAL with fixes), Dependabot updates, and pinned versions with checksums or digests (CodeQL and dependency review once GitHub Advanced Security is approved). Fix by upgrading, not by ignoring; an unavoidable upstream finding gets a written, expiring entry in that image's `.trivyignore`.
-- Cost is a requirement: total AWS spend stays within the owner's budget (US$50 a month, Terraform `cost.tf`); no always-on spend without a roadmap trigger and the owner's approval; prefer the single k3s node, bundled components, and lifecycle rules over managed extras until the roadmap says otherwise.
+- Cost is a requirement (NFR-18): total AWS spend stays within the owner's budget (US$50 a month, Terraform `cost.tf`); state the monthly cost of any new resource in its plan and in [cost optimization](docs/devops/COST-OPTIMIZATION.md); no always-on spend without a roadmap trigger and the owner's approval; prefer the single k3s node, bundled components, and lifecycle rules over managed extras until the roadmap says otherwise.
 - Rehearse delivery changes before production: run `bash devops/scripts/check-delivery.sh`, and for chart or node-script changes `bash devops/kubernetes/scripts/rehearse-local.sh` (a throwaway local k3s with the production versions: install, routes, realm, and a forced rollback).
 - Access is keyless: GitHub OIDC roles and instance roles only; no SSH (Systems Manager), no long-lived AWS keys, and secrets live in Parameter Store and Kubernetes Secrets, never in Git or Terraform state.
 
@@ -74,6 +77,10 @@ Milestone build commands live in [prompts/](prompts/). Implement one milestone a
 ### AI
 - Route every AI feature through the backend AI gateway with model aliases, authorization before retrieval and every tool call, versioned prompts and evaluations, and metadata-only telemetry.
 - AI may propose drafts through typed, authorized actions. It never gets direct production SQL, shell, secrets, publishing, refund, payout, account or role change, or cross-tenant privileges.
+
+### Language and search
+- English only (ADR-020): every interface, email, policy, and page is plain English written for browser translation; `translate="no"` only on brand names and code. User content keeps full Unicode and right-to-left support.
+- Public website pages get their title, description, canonical URL, and structured data through `frontend/company-web/src/seo`; add every new page to `routes.ts` (NFR-19). Structured data never invents prices, ratings, or reviews.
 
 ### Content, privacy, and security
 - Do not copy official exam questions or imply official certification without rights. Mock results are practice results.
@@ -98,7 +105,8 @@ Milestone build commands live in [prompts/](prompts/). Implement one milestone a
 
 | When | Command |
 | --- | --- |
-| Any documentation change | `python scripts/validate_project.py` |
+| Any documentation change | `python scripts/validate_project.py` (every `docs/**/*.md` must be linked from `docs/README.md`) |
+| `frontend/company-web` change | `pnpm --filter @oxinov/company-web build` then `test` |
 | `backend/products/lms-api` change | `pnpm --filter @oxinov/lms-api typecheck`, `pnpm --filter @oxinov/lms-api lint`, `pnpm --filter @oxinov/lms-api test` from the repository root |
 | Database or tenant-isolation change | `pnpm lms:migrate`, `pnpm --filter @oxinov/lms-api db:test-policies`, `pnpm --filter @oxinov/lms-api test:integration` from the repository root (needs PostgreSQL) |
 | Terraform change | `terraform fmt -recursive devops/terraform`, `terraform validate` in the stack, then a saved `terraform plan` shown to the owner before any apply |
@@ -123,3 +131,5 @@ Several assistants may work in this repository at the same time.
 - Re-read a file immediately before editing it, and never revert changes you did not make.
 - Do not move or rename shared documents while another session is active; links and validators depend on paths.
 - Keep each change scoped to its task, and commit or push only when the person asks.
+- Commit only your own paths (`git commit -- <paths>`); never `git add -A`, `git stash`, or `git pull --autostash` in a shared checkout, because they capture other sessions' uncommitted work. Rebase or regenerate shared outputs (such as the file catalog) in a separate `git worktree`.
+- Before pushing, check that no production deploy is running (`gh run list --branch main`), because a red or busy `main` blocks everyone.
