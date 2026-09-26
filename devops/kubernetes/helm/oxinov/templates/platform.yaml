@@ -255,6 +255,25 @@ spec:
 {{- end }}
 {{- if .Values.ingress.enabled }}
 {{- $middleware := and .Values.ingress.securityHeaders (eq .Values.ingress.className "traefik") }}
+{{- $homeRedirect := and .Values.identity.homeRedirect .Values.services.keycloak.host (eq .Values.ingress.className "traefik") }}
+{{- $middlewares := list }}
+{{- if $middleware }}{{- $middlewares = append $middlewares (printf "%s-security-headers@kubernetescrd" .Release.Namespace) }}{{- end }}
+{{- if $homeRedirect }}{{- $middlewares = append $middlewares (printf "%s-identity-home@kubernetescrd" .Release.Namespace) }}{{- end }}
+{{- if $homeRedirect }}
+---
+# Only the bare sign-in address matches; every other host and path passes through unchanged. A middleware on
+# the shared route, not a separate route, so no Traefik router priority or empty backend is involved.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: identity-home
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  redirectRegex:
+    regex: {{ printf "^https?://%s\\.%s(:[0-9]+)?/?$" .Values.services.keycloak.host (.Values.global.domain | replace "." "\\.") | quote }}
+    replacement: {{ printf "https://%s.%s/" .Values.identity.homeRedirect .Values.global.domain | quote }}
+{{- end }}
 {{- if $middleware }}
 ---
 apiVersion: traefik.io/v1alpha1
@@ -283,8 +302,8 @@ metadata:
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-    {{- if $middleware }}
-    traefik.ingress.kubernetes.io/router.middlewares: {{ printf "%s-security-headers@kubernetescrd" .Release.Namespace }}
+    {{- if $middlewares }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ join "," $middlewares }}
     {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}

@@ -36,6 +36,9 @@ identity:
   adminUser: oxinov-admin
   # Only reachable through a Session Manager port forward (see the runbook).
   adminHostname: http://localhost:8080
+  # Keycloak's welcome page at the bare sign-in address (https://id.<domain>/) redirects to the private
+  # admin console; send people to the account portal on this subdomain instead (Traefik only; "" turns it off).
+  homeRedirect: app
 
 # PostgreSQL in the cluster while small (k3s local-path volume on the encrypted EBS disk, covered by daily
 # snapshots). Set enabled: false and point `host` at Amazon RDS when the roadmap says so.

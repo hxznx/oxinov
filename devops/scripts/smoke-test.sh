@@ -32,6 +32,20 @@ expect "Admin console hidden" "https://id.$DOMAIN/admin/" '^(404|503)$'
 expect "Master realm hidden" "https://id.$DOMAIN/realms/master/" '^(404|503)$'
 expect "HTTP redirects to HTTPS" "http://edu.$DOMAIN/" '^(301|308)$'
 
+# The bare sign-in address sends people to the account portal, never to Keycloak's admin console. The old
+# broken redirect was also a 302, so check the target; retry while Traefik loads a new middleware.
+for _ in $(seq 12); do
+  location=$(curl -sI --max-time 20 "https://id.$DOMAIN/" | tr -d '\r' | sed -n 's/^[Ll]ocation: //p' || true)
+  [ "$location" = "https://app.$DOMAIN/" ] && break
+  sleep 5
+done
+if [ "$location" = "https://app.$DOMAIN/" ]; then
+  echo "ok   Sign-in home redirects to the portal"
+else
+  echo "FAIL Sign-in home: https://id.$DOMAIN/ redirects to '$location', expected https://app.$DOMAIN/"
+  failures=$((failures + 1))
+fi
+
 if curl -sI --max-time 20 "https://edu.$DOMAIN/" | grep -qi '^strict-transport-security'; then
   echo "ok   HSTS header"
 else

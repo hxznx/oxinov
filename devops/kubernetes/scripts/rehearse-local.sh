@@ -106,6 +106,15 @@ check "Edu home" edu.oxinov.com / '^200$'
 check "Account portal" app.oxinov.com / '^200$'
 check "Admin console closed" id.oxinov.com /admin/ '^(404|503)$'
 check "Master realm closed" id.oxinov.com /realms/master/ '^(404|503)$'
+# The bare sign-in address redirects to the account portal (Traefik may take a few seconds to load it).
+# Read the Location header of a HEAD request: with MSYS_NO_PATHCONV, Windows curl cannot open /dev/null
+# and then leaves %{redirect_url} empty.
+for _ in $(seq 12); do
+  home=$(curl -skI --max-time 20 --resolve "id.oxinov.com:$HTTPS_PORT:127.0.0.1" "https://id.oxinov.com:$HTTPS_PORT/" | tr -d '\r' | sed -n 's/^[Ll]ocation: //p' || true)
+  [ "$home" = "https://app.oxinov.com/" ] && break
+  sleep 5
+done
+if [ "$home" = "https://app.oxinov.com/" ]; then echo "ok   Sign-in home redirects to the portal"; else echo "FAIL Sign-in home redirects to '$home'"; failures=$((failures + 1)); fi
 
 log "configuring the realm through kubectl exec"
 admin=$(kube get secret oxinov-app -o jsonpath='{.data.KEYCLOAK_ADMIN_PASSWORD}' | base64 -d)
