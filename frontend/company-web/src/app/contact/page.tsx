@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
+import { officeSchema, pageMetadata } from '@/lib/seo';
+import { JsonLd } from '@/components/JsonLd';
 import { PageHeader } from '@/components/PageHeader';
 import { company } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/contact/',
   title: 'Contact',
-  description: 'Contact Oxinov Pvt. Ltd. in Lalitpur, Nepal.',
-};
+  description:
+    'Contact Oxinov Pvt. Ltd. by email or phone. Support, billing, legal, and security contacts for customers and partners in every country.',
+});
 
 const toBeAnnounced = 'To be announced';
 
@@ -30,6 +34,7 @@ export default function ContactPage() {
   ];
   return (
     <>
+      <JsonLd data={officeSchema()} />
       <PageHeader label="Contact" title="Get in touch">
         We would like to hear from you. Tell us who you are and how we can help.
       </PageHeader>

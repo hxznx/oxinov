@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { legalDocs } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/legal/',
   title: 'Legal',
-  description: 'Oxinov policies: terms, privacy, acceptable use, and cookies.',
-};
+  description:
+    'Oxinov policies for every product and this website: Terms of Service, Privacy Policy, Acceptable Use and Community Policy, and Cookie Policy.',
+});
 
 export default function LegalIndexPage() {
   return (

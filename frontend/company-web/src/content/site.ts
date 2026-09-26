@@ -1,6 +1,6 @@
 /**
- * Public website copy (FR-SITE-2101). English is the source; a Nepali dictionary will mirror these
- * keys. Unknown company details are `null` and render as "to be announced" — never as placeholders.
+ * Public website copy (FR-SITE-2101). English only (ADR-020): write plain English that browser
+ * translation handles well. Unknown company details are `null` and render as "to be announced" — never as placeholders.
  */
 
 export type Status = 'in-development' | 'coming-soon' | 'future' | 'long-horizon';
@@ -25,7 +25,7 @@ export const company = {
 };
 
 export const home = {
-  headline: 'Technology built in Nepal, for real needs',
+  headline: 'Technology built for real needs, everywhere',
   subheadline:
     'Oxinov builds software, services, and research across ten divisions. We start with learning, then grow one tested product at a time.',
   values: [
@@ -44,7 +44,7 @@ export const about = {
     'Our work is organised into ten divisions. They cover education, AI, engineering, services, robotics, media, agriculture, space, research, and production. Education is our current focus. The other divisions are future initiatives. We will open each one only when it has a clear customer need, an owner, and the approvals it requires.',
     'Every product shares one Oxinov account, so people sign in once. We research user needs before we build and test with real users before we launch.',
   ],
-  mission: 'Build useful, trustworthy technology that solves real problems in Nepal and beyond.',
+  mission: 'Build useful, trustworthy technology that solves real problems for people everywhere.',
   vision: 'A connected set of Oxinov products that people and organisations rely on every day.',
 };
 
@@ -74,13 +74,13 @@ export const divisions: Division[] = [
     tagline: 'Practical AI tools for businesses.',
     status: 'future',
     description:
-      'Oxinov AI will explore tools that help businesses work with their documents, data, and language. We are interested in AI that supports people rather than replacing their judgement. Plans include business chat tools, document question-and-answer, and models for Nepali language, speech, and vision. Any AI feature we build will be reviewed for privacy and safety before release.',
-    focus: ['Document and business AI tools', 'Nepali language and speech models', 'Governed automation assistants'],
+      'Oxinov AI will explore tools that help businesses work with their documents, data, and language. We are interested in AI that supports people rather than replacing their judgement. Plans include business chat tools, document question-and-answer, and language, speech, and vision models, including for languages that current tools serve poorly. Any AI feature we build will be reviewed for privacy and safety before release.',
+    focus: ['Document and business AI tools', 'Language and speech models', 'Governed automation assistants'],
   },
   {
     slug: 'engineering',
     name: 'Oxinov Engineering',
-    tagline: 'Software and cloud work for Nepali businesses.',
+    tagline: 'Software and cloud work for businesses everywhere.',
     status: 'future',
     description:
       'Oxinov Engineering will offer software, cloud, and security work for organisations. We plan to help businesses run reliable systems and protect their data. Areas under consideration include business software such as ERP and CRM, cloud hosting support, and security reviews. Each area will start only after we confirm demand and complete any licensing review it needs.',
@@ -110,7 +110,7 @@ export const divisions: Division[] = [
     tagline: 'Production and localisation for education and culture.',
     status: 'future',
     description:
-      'Oxinov Media & Studio will explore production services for animation, video, music, and podcasts. We also plan dubbing and subtitling in Nepali and other languages. A media asset tool could help clients store and receive their files. Any streaming or broadcasting service is subject to regulatory approval and will not be offered until approval exists.',
+      'Oxinov Media & Studio will explore production services for animation, video, music, and podcasts. We also plan dubbing and subtitling in many languages. A media asset tool could help clients store and receive their files. Any streaming or broadcasting service is subject to regulatory approval and will not be offered until approval exists.',
     focus: ['Studio production projects', 'Dubbing and subtitling', 'Media file delivery for clients'],
   },
   {
@@ -187,7 +187,7 @@ export const products: Product[] = [
     address: 'jobs.oxinov.com',
     purpose: 'Connecting verified candidates with verified employers.',
     description:
-      'Oxinov Jobs is planned to help employers in Nepal find skilled people, and help learners find relevant work. Candidates will build profiles with their skills and experience. Employers will post jobs and manage applications. Candidates can show verified Oxinov Edu certificates. Matching will be explainable, and a person will always make the hiring decision.',
+      'Oxinov Jobs is planned to help employers find skilled people, and help learners find relevant work. Candidates will build profiles with their skills and experience. Employers will post jobs and manage applications. Candidates can show verified Oxinov Edu certificates. Matching will be explainable, and a person will always make the hiring decision.',
     status: 'coming-soon',
   },
   {
@@ -219,7 +219,7 @@ export const plans = [
 
 export const careers = {
   intro:
-    'Oxinov is an early-stage company in Lalitpur, Nepal. We are building our first product and planning the next ones. We look for people who write clearly, test their work, and care about the people who use it.',
+    'Oxinov is an early-stage company headquartered in Lalitpur, Nepal, building for people everywhere. We are building our first product and planning the next ones. We look for people who write clearly, test their work, and care about the people who use it.',
   skills: 'We expect to need skills in software engineering, design, user research, content, and operations. Open roles will be listed here when available.',
 };
 

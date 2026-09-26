@@ -127,3 +127,84 @@ describe('static export', () => {
     assert.match(page, /Daylight theme/);
   });
 });
+
+// docs/marketing/SEO.md (technical fixes) and ADR-020 (one English site that translates well).
+describe('search and sharing', () => {
+  const site = 'https://oxinov.com';
+  const meta = (page, attr, name) =>
+    new RegExp(`<meta ${attr}="${name.replace(/[:]/g, '\$&')}" content="([^"]*)"`).exec(page)?.[1];
+  const jsonLd = (page) =>
+    [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(([, json]) => JSON.parse(json));
+
+  it('gives every page a canonical URL, a useful description, and link-preview data', () => {
+    const descriptions = new Set();
+    for (const route of routes) {
+      const page = html(route);
+      assert.match(page, new RegExp(`<link rel="canonical" href="${site}${route}"`), `${route}: canonical`);
+      const description = meta(page, 'name', 'description');
+      assert.ok(description && description.length >= 50 && description.length <= 160, `${route}: description length ${description?.length}`);
+      assert.ok(!descriptions.has(description), `${route}: duplicate description`);
+      descriptions.add(description);
+      assert.equal(meta(page, 'property', 'og:url'), `${site}${route}`, `${route}: og:url`);
+      assert.ok(meta(page, 'property', 'og:title')?.includes('Oxinov'), `${route}: og:title`);
+      const image = meta(page, 'property', 'og:image');
+      assert.equal(image, `${site}/og/oxinov.png`, `${route}: og:image`);
+      assert.equal(meta(page, 'name', 'twitter:card'), 'summary_large_image', `${route}: twitter:card`);
+    }
+    assert.ok(existsSync(join(out, 'og', 'oxinov.png')), 'share image file');
+  });
+
+  it('describes the company in valid structured data on every page', () => {
+    for (const route of routes) {
+      const data = jsonLd(html(route));
+      const organization = data.find((item) => item['@type'] === 'Organization');
+      assert.ok(organization, `${route}: Organization`);
+      assert.equal(organization.url, site);
+      assert.equal(organization.contactPoint.availableLanguage, 'English');
+      assert.ok(data.every((item) => item['@context'] === 'https://schema.org'), `${route}: @context`);
+    }
+    assert.ok(jsonLd(html('/contact/')).some((item) => item['@type'] === 'LocalBusiness'), 'contact: office');
+    assert.ok(jsonLd(html('/products/')).some((item) => item['@type'] === 'ItemList'), 'products: list');
+    for (const route of ['/education/', '/legal/privacy/']) {
+      assert.ok(jsonLd(html(route)).some((item) => item['@type'] === 'BreadcrumbList'), `${route}: breadcrumbs`);
+    }
+  });
+
+  it('publishes robots.txt and a sitemap that lists every page', () => {
+    const robots = readFileSync(join(out, 'robots.txt'), 'utf8');
+    assert.match(robots, /^User-Agent: \*$/m);
+    assert.match(robots, /^Allow: \/$/m);
+    assert.match(robots, new RegExp(`^Sitemap: ${site}/sitemap\.xml$`, 'm'));
+    const sitemap = readFileSync(join(out, 'sitemap.xml'), 'utf8');
+    const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url);
+    assert.deepEqual([...listed].sort(), routes.map((route) => `${site}${route}`).sort());
+  });
+
+  it('offers a web app manifest with installable icons', () => {
+    const manifest = JSON.parse(readFileSync(join(out, 'manifest.webmanifest'), 'utf8'));
+    assert.equal(manifest.lang, 'en');
+    for (const icon of manifest.icons) assert.ok(existsSync(join(out, icon.src)), `icon ${icon.src}`);
+    assert.ok(manifest.icons.some((icon) => icon.purpose === 'maskable'), 'maskable icon');
+    assert.match(html('/'), /<link rel="manifest" href="\/manifest\.webmanifest"/);
+    assert.match(html('/'), /<link rel="apple-touch-icon" href="\/icons\/apple-touch-icon\.png"/);
+  });
+
+  it('stays readable through browser translation (ADR-020)', () => {
+    for (const route of routes) {
+      const page = html(route);
+      // Translators may translate everything except the brand name.
+      for (const [tag] of page.matchAll(/<[^>]+translate="no"[^>]*>[^<]*/g)) assert.match(tag, />\s*OXINOV\s*$/i, `${route}: ${tag}`);
+      assert.match(page, /translate="no"[^>]*>\s*OXINOV/, `${route}: brand name kept`);
+    }
+    const securityTxt = readFileSync(join(out, '.well-known', 'security.txt'), 'utf8');
+    assert.match(securityTxt, /^Preferred-Languages: en$/m);
+  });
+
+  it('keeps preloaded fonts within the budget and Latin only (brand typography T1-T3)', () => {
+    const page = html('/');
+    const preloaded = [...page.matchAll(/<link rel="preload" href="([^"]+\.woff2)"/g)].map(([, href]) => href);
+    const bytes = preloaded.reduce((sum, href) => sum + statSync(join(out, href)).size, 0);
+    assert.ok(bytes <= 150 * 1024, `preloaded fonts are ${Math.round(bytes / 1024)} KB (budget 150 KB)`);
+    assert.doesNotMatch(readFileSync(join(out, '..', 'src', 'app', 'layout.tsx'), 'utf8'), /Devanagari/);
+  });
+});

@@ -1,18 +1,21 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import { PageHeader } from '@/components/PageHeader';
 import { plans } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/pricing/',
   title: 'Pricing',
-  description: 'One Oxinov plan ladder across every product: Free, Plus, Pro, Business, and Enterprise.',
-};
+  description:
+    'One Oxinov plan ladder for every product: Free, Plus, Pro, Business, and Enterprise. Start free and upgrade only when you need more.',
+});
 
 export default function PricingPage() {
   return (
     <>
       <PageHeader label="Pricing" title="One plan ladder for every product">
-        Oxinov One will upgrade every launched product with one subscription. Prices in NPR will be published when the
-        first product opens.
+        Oxinov One will upgrade every launched product with one subscription. Prices in US dollars and local currencies will
+        be published when the first product opens.
       </PageHeader>
       <ul className="mx-auto grid max-w-6xl gap-4 px-4 py-12 sm:grid-cols-2 lg:grid-cols-5">
         {plans.map((plan) => (

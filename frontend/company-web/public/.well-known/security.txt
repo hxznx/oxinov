@@ -1,5 +1,5 @@
 Contact: mailto:security@oxinov.com
 Expires: 2027-09-24T00:00:00.000Z
-Preferred-Languages: en, ne
+Preferred-Languages: en
 Canonical: https://oxinov.com/.well-known/security.txt
 Policy: https://oxinov.com/security/

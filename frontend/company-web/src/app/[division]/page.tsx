@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { breadcrumbSchema, pageMetadata } from '@/lib/seo';
+import { JsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
@@ -17,7 +19,13 @@ type Props = { params: Promise<{ division: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { division: slug } = await params;
   const division = divisions.find((item) => item.slug === slug);
-  return division ? { title: division.name, description: division.tagline } : {};
+  return division
+    ? pageMetadata({
+        path: `/${division.slug}/`,
+        title: division.name,
+        description: `${division.tagline} See what ${division.name} plans to build and its current status.`,
+      })
+    : {};
 }
 
 export default async function DivisionPage({ params }: Props) {
@@ -26,6 +34,12 @@ export default async function DivisionPage({ params }: Props) {
   if (!division) notFound();
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: 'Divisions', path: '/divisions/' },
+          { name: division.name, path: `/${division.slug}/` },
+        ])}
+      />
       <PageHeader label="Division" title={division.name}>
         {division.tagline}
       </PageHeader>

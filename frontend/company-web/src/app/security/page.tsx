@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import { PageHeader } from '@/components/PageHeader';
 import { company } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/security/',
   title: 'Security',
-  description: 'How to report a security issue to Oxinov.',
-};
+  description:
+    'How to report a security issue in an Oxinov product or website: where to send it, what to include, and how quickly we respond.',
+});
 
 export default function SecurityPage() {
   return (

@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import { PageHeader } from '@/components/PageHeader';
 import { about } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/about/',
   title: 'About',
-  description: 'Oxinov Pvt. Ltd. is a technology company in Lalitpur, Nepal, building one tested product at a time.',
-};
+  description:
+    'Oxinov Pvt. Ltd. is a technology company headquartered in Lalitpur, Nepal, building useful, tested products for people everywhere.',
+});
 
 export default function AboutPage() {
   return (

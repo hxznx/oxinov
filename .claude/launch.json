@@ -9,6 +9,18 @@
         "dev"
       ],
       "port": 3000
+    },
+    {
+      "name": "company-web-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "3010",
+        "--directory",
+        "frontend/company-web/out"
+      ],
+      "port": 3010
     }
   ]
 }

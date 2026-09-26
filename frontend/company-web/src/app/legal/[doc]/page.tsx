@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { breadcrumbSchema, pageMetadata } from '@/lib/seo';
+import { JsonLd } from '@/components/JsonLd';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
@@ -15,7 +17,13 @@ type Props = { params: Promise<{ doc: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { doc: slug } = await params;
   const doc = legalDocs.find((item) => item.slug === slug);
-  return doc ? { title: doc.title, description: doc.summary } : {};
+  return doc
+    ? pageMetadata({
+        path: `/legal/${doc.slug}/`,
+        title: doc.title,
+        description: `${doc.summary} It applies to every Oxinov product and this website.`,
+      })
+    : {};
 }
 
 export default async function LegalDocPage({ params }: Props) {
@@ -24,6 +32,12 @@ export default async function LegalDocPage({ params }: Props) {
   if (!doc) notFound();
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: 'Legal', path: '/legal/' },
+          { name: doc.title, path: `/legal/${doc.slug}/` },
+        ])}
+      />
       <PageHeader label="Legal" title={doc.title}>
         {doc.summary}
       </PageHeader>
@@ -31,7 +45,7 @@ export default async function LegalDocPage({ params }: Props) {
         {/* Policy text needs Nepal counsel review before publication (docs/company/PLATFORM-POLICIES.md). */}
         <p>
           This policy is being prepared and reviewed by qualified counsel in Nepal. It will be published here, in
-          English and Nepali, before sign-in to any Oxinov product opens.
+          English, before sign-in to any Oxinov product opens.
         </p>
         {doc.slug === 'cookies' ? (
           <p>

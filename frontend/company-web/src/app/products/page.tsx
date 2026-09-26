@@ -1,17 +1,21 @@
 import type { Metadata } from 'next';
+import { pageMetadata, productsSchema } from '@/lib/seo';
+import { JsonLd } from '@/components/JsonLd';
 import { PageHeader } from '@/components/PageHeader';
 import { StatusBadge } from '@/components/StatusBadge';
 import { products } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/products/',
   title: 'Products',
   description:
-    'Oxinov Edu is in development; Oxinov Commodity Market, Oxinov Jobs, and Oxinov Services Market are coming soon.',
-};
+    'Oxinov Edu, the online classroom for schools and teachers, is in development. Oxinov Commodity Market, Jobs, and Services Market are coming soon.',
+});
 
 export default function ProductsPage() {
   return (
     <>
+      <JsonLd data={productsSchema()} />
       <PageHeader label="Products" title="Our products">
         One Oxinov account will work across every product as it launches.
       </PageHeader>

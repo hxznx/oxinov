@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import { PageHeader } from '@/components/PageHeader';
 import { careers, company } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/careers/',
   title: 'Careers',
-  description: 'Work with Oxinov in Lalitpur, Nepal.',
-};
+  description:
+    'Work with Oxinov, a technology company building software, services, and research for people everywhere. See what we look for and how to apply.',
+});
 
 export default function CareersPage() {
   return (

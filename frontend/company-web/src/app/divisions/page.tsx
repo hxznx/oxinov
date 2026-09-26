@@ -1,13 +1,16 @@
 import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/seo';
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { StatusBadge } from '@/components/StatusBadge';
 import { divisions } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
+  path: '/divisions/',
   title: 'Divisions',
-  description: 'The ten Oxinov divisions, from education to space. Education is our current focus.',
-};
+  description:
+    'The ten Oxinov divisions, from education and AI to robotics and space. Education is our current focus, starting with Oxinov Edu.',
+});
 
 export default function DivisionsPage() {
   return (

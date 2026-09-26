@@ -24,8 +24,8 @@
   --color-jobs: var(--ox-color-product-jobs);
   --color-services: var(--ox-color-product-services);
   --font-display: var(--font-orbitron), var(--ox-font-display);
-  --font-heading: var(--font-rajdhani), var(--font-devanagari), var(--ox-font-heading);
-  --font-sans: var(--font-inter), var(--font-devanagari), var(--ox-font-body);
+  --font-heading: var(--font-rajdhani), var(--ox-font-heading);
+  --font-sans: var(--font-inter), var(--ox-font-body);
   --font-mono: var(--font-jetbrains), var(--ox-font-mono);
 }
 
