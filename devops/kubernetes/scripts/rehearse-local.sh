@@ -144,6 +144,14 @@ KCADM_EXEC="docker exec -i $NAME kubectl -n oxinov exec -i deploy/keycloak --" S
 [ "$(wc -l < "$secrets" | tr -d ' ')" = 2 ] && echo "ok   client secrets returned" || { echo "FAIL client secrets"; failures=$((failures + 1)); }
 rm -f "$secrets"
 check "Sign-in discovery" id.oxinov.com /realms/oxinov/.well-known/openid-configuration '^200$'
+# Registration asks only for name and email (ADR-011): no password field on the real Register page.
+register=$(curl -sk --max-time 20 --resolve "id.oxinov.com:$HTTPS_PORT:127.0.0.1"   "https://id.oxinov.com:$HTTPS_PORT/realms/oxinov/protocol/openid-connect/registrations?client_id=oxinov-edu-web&response_type=code&scope=openid&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256&redirect_uri=https%3A%2F%2Fedu.oxinov.com%2Fauth%2Fcallback" || true)
+# grep reads the whole page (no -q): an early exit would fail the pipeline with SIGPIPE under pipefail.
+if printf '%s' "$register" | grep 'name="email"' >/dev/null && ! printf '%s' "$register" | grep 'type="password"' >/dev/null; then
+  echo "ok   Register asks for no password"
+else
+  echo "FAIL Register page: password field present or form missing"; failures=$((failures + 1))
+fi
 
 log "proving automatic rollback with a broken image"
 if INSTALL_TIMEOUT=3m install --set-string services.edu-api.tag=does-not-exist >/dev/null 2>&1; then

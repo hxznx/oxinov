@@ -29,13 +29,14 @@ kc_login() {
   kcadm config credentials --server http://localhost:8080 --realm master \
     --user "$KEYCLOAK_ADMIN_USER" --password "$KEYCLOAK_ADMIN_PASSWORD" >/dev/null
 }
-# Every kcadm call starts a JVM, so on a busy machine the run can outlast the admin session; log in again and retry once.
+# Every kcadm call starts a JVM, so on a busy machine the run can outlast the admin session or token; log in
+# again and retry once. (A 401 inside a condition would otherwise read as "not found" and take the wrong branch.)
 KC_ERR=$(mktemp)
 trap 'rm -f "$KC_ERR"' EXIT
 kc() {
   local out status=0
   out=$(kcadm "$@" 2>"$KC_ERR") || status=$?
-  if grep -q 'Session has expired' "$KC_ERR"; then
+  if grep -qE 'Session has expired|HTTP 401' "$KC_ERR"; then
     kc_login
     status=0
     out=$(kcadm "$@" 2>"$KC_ERR") || status=$?
@@ -44,11 +45,19 @@ kc() {
   if [ -n "$out" ]; then printf '%s\n' "$out"; fi
   return "$status"
 }
-flow_exists() { kc get authentication/flows -r "$REALM" --fields alias --format csv --noquotes | grep -qx "$1"; }
-# Prints the execution ID in flow $1 whose providerId or displayName is $2.
+# Readers in these pipelines consume all input: under `set -o pipefail`, `grep -q` or `awk { exit }` closing the
+# pipe early fails the pipeline with SIGPIPE (exit 141) whenever kcadm is still writing.
+has_line() { grep -x -- "$1" >/dev/null; }
+has_output() { grep . >/dev/null; }
+flow_exists() { kc get authentication/flows -r "$REALM" --fields alias --format csv --noquotes | has_line "$1"; }
+flow_id() {
+  kc get authentication/flows -r "$REALM" --fields id,alias --format csv --noquotes \
+    | awk -F, -v a="$1" '!found && $2 == a { print $1; found = 1 }'
+}
+# Prints the execution ID in flow $1 (including its subflows) whose providerId or displayName is $2.
 exec_id() {
   kc get "authentication/flows/$1/executions" -r "$REALM" --fields id,providerId,displayName --format csv --noquotes \
-    | awk -F, -v p="$2" '$2 == p || $3 == p { print $1; exit }'
+    | awk -F, -v p="$2" '!found && ($2 == p || $3 == p) { print $1; found = 1 }'
 }
 require() { kc update "authentication/flows/$1/executions" -r "$REALM" -b "{\"id\":\"$2\",\"requirement\":\"$3\"}"; }
 add_exec() { kc create "authentication/flows/$1/executions/execution" -r "$REALM" -s "provider=$2" >/dev/null; }
@@ -100,7 +109,7 @@ require oxinov-browser "$(exec_id oxinov-browser oxinov-browser-forms)" ALTERNAT
 require oxinov-browser-forms "$(exec_id oxinov-browser-forms auth-username-form)" REQUIRED
 OTP_ID=$(exec_id oxinov-browser-forms email-otp-form)
 require oxinov-browser-forms "$OTP_ID" REQUIRED
-if ! kc get "authentication/executions/$OTP_ID" -r "$REALM" --fields authenticationConfig --format csv --noquotes | grep -q .; then
+if ! kc get "authentication/executions/$OTP_ID" -r "$REALM" --fields authenticatorConfig --format csv --noquotes | has_output; then
   kc create "authentication/executions/$OTP_ID/config" -r "$REALM" -b '{
     "alias": "oxinov-email-code",
     "config": {
@@ -114,6 +123,25 @@ if ! kc get "authentication/executions/$OTP_ID" -r "$REALM" --fields authenticat
 fi
 kc update "realms/$REALM" -s browserFlow=oxinov-browser
 
+# --- Registration: a copy of Keycloak's built-in flow with the password step disabled, so Register asks only
+# for name and email (Keycloak hides the password fields); the address is verified by email, and sign-in
+# uses the emailed code.
+# A flow left without the password step by an interrupted earlier attempt is replaced with a fresh copy.
+if flow_exists oxinov-registration && [ -z "$(exec_id oxinov-registration registration-password-action)" ]; then
+  kc delete "authentication/flows/$(flow_id oxinov-registration)" -r "$REALM"
+fi
+if ! flow_exists oxinov-registration; then
+  kc create authentication/flows/registration/copy -r "$REALM" -s newName=oxinov-registration >/dev/null
+fi
+PASSWORD_ID=$(exec_id oxinov-registration registration-password-action)
+[ -n "$PASSWORD_ID" ] || { echo "oxinov-registration has no password step to disable" >&2; exit 1; }
+require oxinov-registration "$PASSWORD_ID" DISABLED
+kc update "realms/$REALM" -s registrationFlow=oxinov-registration
+
+# Nobody is ever asked to set a password. Disabling the action also skips it for accounts that already
+# carry it (created through the old registration form), without editing those accounts.
+kc update authentication/required-actions/UPDATE_PASSWORD -r "$REALM" -s enabled=false -s defaultAction=false
+
 # --- First broker login: create when unique, otherwise link only after an emailed confirmation.
 if ! flow_exists oxinov-first-broker; then
   kc create authentication/flows -r "$REALM" -s alias=oxinov-first-broker -s providerId=basic-flow \
@@ -126,7 +154,7 @@ if ! flow_exists oxinov-first-broker; then
 fi
 REVIEW_ID=$(exec_id oxinov-first-broker idp-review-profile)
 require oxinov-first-broker "$REVIEW_ID" REQUIRED
-if ! kc get "authentication/executions/$REVIEW_ID" -r "$REALM" --fields authenticationConfig --format csv --noquotes | grep -q .; then
+if ! kc get "authentication/executions/$REVIEW_ID" -r "$REALM" --fields authenticatorConfig --format csv --noquotes | has_output; then
   kc create "authentication/executions/$REVIEW_ID/config" -r "$REALM" \
     -b '{"alias":"oxinov-review-profile","config":{"update.profile.on.first.login":"missing"}}' >/dev/null
 fi
@@ -153,7 +181,7 @@ web_client() {
     -s "webOrigins=[\"$url\"]" \
     -s 'attributes."pkce.code.challenge.method"=S256' \
     -s "attributes.\"post.logout.redirect.uris\"=$url/*"
-  if ! kc get "clients/$id/protocol-mappers/models" -r "$REALM" --fields name --format csv --noquotes | grep -qx "$mapper"; then
+  if ! kc get "clients/$id/protocol-mappers/models" -r "$REALM" --fields name --format csv --noquotes | has_line "$mapper"; then
     kc create "clients/$id/protocol-mappers/models" -r "$REALM" \
       -s "name=$mapper" -s protocol=openid-connect -s protocolMapper=oidc-audience-mapper \
       -s "config.\"included.custom.audience\"=$audience" \
