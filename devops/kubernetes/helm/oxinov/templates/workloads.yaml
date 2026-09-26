@@ -1,0 +1,136 @@
+{{- /* One Deployment and one Service per entry in .Values.services (ADR-018). */ -}}
+{{- range $name, $svc := .Values.services }}
+{{- $tag := $svc.tag | default $.Values.global.tag }}
+{{- $readOnly := ne (toString $svc.readOnlyRootFilesystem) "false" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "oxinov.labels" $ | nindent 4 }}
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/version: {{ $tag | trunc 12 | quote }}
+spec:
+  replicas: {{ $svc.replicas }}
+  revisionHistoryLimit: 3
+  strategy:
+    {{- if eq $name "keycloak" }}
+    # Two Keycloak JVMs do not fit the starter node; sign-in restarts only when Keycloak itself changes.
+    type: Recreate
+    {{- else }}
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+    {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+  template:
+    metadata:
+      labels:
+        {{- include "oxinov.labels" $ | nindent 8 }}
+        app.kubernetes.io/name: {{ $name }}
+      annotations:
+        # Restarts pods when the application secret changes (for example new client secrets).
+        oxinov.com/secret-generation: {{ $.Values.global.secretGeneration | default "0" | quote }}
+    spec:
+      serviceAccountName: {{ $.Values.serviceAccount.name }}
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        # Every Oxinov image runs as uid/gid 1000 (node, keycloak); numeric IDs let runAsNonRoot be verified.
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $name }}
+          image: {{ include "oxinov.image" (dict "root" $ "image" $svc.image "tag" $svc.tag "name" $name) }}
+          imagePullPolicy: IfNotPresent
+          {{- if eq $name "keycloak" }}
+          args: ["start", "--optimized"]
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ $svc.port }}
+            {{- with $svc.managementPort }}
+            - name: management
+              containerPort: {{ . }}
+            {{- end }}
+          env:
+            {{- include "oxinov.env" (dict "root" $ "name" $name "svc" $svc "tag" $tag) | nindent 12 }}
+          {{- if $svc.healthPath }}
+          startupProbe:
+            httpGet:
+              path: {{ $svc.healthPath }}
+              port: {{ $svc.managementPort | default $svc.port }}
+            periodSeconds: 5
+            failureThreshold: {{ if eq $name "keycloak" }}90{{ else }}36{{ end }}
+          livenessProbe:
+            httpGet:
+              path: {{ $svc.healthPath }}
+              port: {{ $svc.managementPort | default $svc.port }}
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: {{ $svc.readyPath }}
+              port: {{ $svc.managementPort | default $svc.port }}
+            periodSeconds: 10
+          {{- else }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ $svc.port }}
+            periodSeconds: 10
+          {{- end }}
+          resources:
+            {{- toYaml $svc.resources | nindent 12 }}
+          {{- include "oxinov.containerSecurity" (dict "readOnly" $readOnly) | nindent 10 }}
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+            {{- range $i, $path := $svc.writablePaths }}
+            - { name: {{ printf "cache-%d" $i }}, mountPath: {{ $path }} }
+            {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: { sizeLimit: 256Mi }
+        {{- range $i, $path := $svc.writablePaths }}
+        - name: {{ printf "cache-%d" $i }}
+          emptyDir: { sizeLimit: 512Mi }
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "oxinov.labels" $ | nindent 4 }}
+    app.kubernetes.io/name: {{ $name }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ $name }}
+  ports:
+    - name: http
+      port: {{ $svc.port }}
+      targetPort: http
+{{- if gt (int $svc.replicas) 1 }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "oxinov.labels" $ | nindent 4 }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+{{- end }}
+{{- end }}

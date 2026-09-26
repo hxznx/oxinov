@@ -54,7 +54,7 @@ data "aws_iam_policy_document" "deploy" {
       "ecr:PutImage",
       "ecr:UploadLayerPart",
     ]
-    resources = [for repository in aws_ecr_repository.app : repository.arn]
+    resources = concat([for repository in aws_ecr_repository.app : repository.arn], [aws_ecr_repository.charts.arn])
   }
 
   statement {

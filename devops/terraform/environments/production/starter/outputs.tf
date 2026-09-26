@@ -29,7 +29,7 @@ output "backup_bucket" {
 }
 
 output "deploy_role_arn" {
-  description = "Role assumed by .github/workflows/deploy-starter.yml"
+  description = "Role assumed by .github/workflows/deploy-production.yml"
   value       = aws_iam_role.deploy.arn
 }
 

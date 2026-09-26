@@ -1,0 +1,447 @@
+{{- /* Service account, PostgreSQL, backups, migrations, ingress, and network policies (ADR-018). */ -}}
+{{- $root := . -}}
+{{- if .Values.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.serviceAccount.name }}
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+automountServiceAccountToken: false
+{{- end }}
+{{- if .Values.postgres.enabled }}
+---
+# First-start roles and databases; passwords come from the application Secret.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+data:
+  10-roles.sh: |
+    #!/bin/sh
+    set -eu
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
+      -v app_password="$APP_DB_PASSWORD" \
+      -v platform_password="$PLATFORM_APP_DB_PASSWORD" \
+      -v kc_password="$KEYCLOAK_DB_PASSWORD" <<'SQL'
+    CREATE ROLE oxinov_app LOGIN PASSWORD :'app_password'
+      NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT;
+    CREATE DATABASE oxinov_platform;
+    CREATE ROLE oxinov_platform_app LOGIN PASSWORD :'platform_password'
+      NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOINHERIT;
+    CREATE ROLE keycloak LOGIN PASSWORD :'kc_password' NOSUPERUSER NOCREATEDB NOCREATEROLE;
+    CREATE DATABASE keycloak OWNER keycloak;
+    SQL
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+    app.kubernetes.io/name: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  template:
+    metadata:
+      labels:
+        {{- include "oxinov.labels" . | nindent 8 }}
+        app.kubernetes.io/name: postgres
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 70
+        fsGroup: 70
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image }}
+          args: ["postgres", "-c", "shared_buffers={{ .Values.postgres.sharedBuffers }}", "-c", "max_connections=80"]
+          ports:
+            - { name: postgres, containerPort: 5432 }
+          env:
+            - { name: POSTGRES_DB, value: oxinov_lms }
+            - { name: POSTGRES_USER, value: oxinov }
+            - { name: PGDATA, value: /var/lib/postgresql/data/pgdata }
+            {{- range $key := list "POSTGRES_PASSWORD" "APP_DB_PASSWORD" "PLATFORM_APP_DB_PASSWORD" "KEYCLOAK_DB_PASSWORD" }}
+            {{- include "oxinov.secretEnv" (dict "root" $root "name" $key) | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "oxinov", "-d", "oxinov_lms"]
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "oxinov", "-d", "oxinov_lms"]
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql/data }
+            - { name: init, mountPath: /docker-entrypoint-initdb.d, readOnly: true }
+            - { name: run, mountPath: /var/run/postgresql }
+      volumes:
+        - name: init
+          configMap:
+            name: postgres-init
+            defaultMode: 0555
+        - name: run
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: postgres
+  ports:
+    - { name: postgres, port: 5432, targetPort: postgres }
+{{- end }}
+{{- if and .Values.backup.enabled .Values.postgres.enabled }}
+---
+# Nightly logical backup to S3 (kept 30 days by the bucket lifecycle); disk snapshots are the second copy.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: backup
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          enableServiceLinks: false
+          {{- with .Values.global.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 70
+          containers:
+            - name: backup
+              image: {{ include "oxinov.image" (dict "root" . "image" .Values.backup.image "tag" .Values.backup.tag "name" "backup") }}
+              env:
+                - { name: PGHOST, value: {{ .Values.postgres.host | quote }} }
+                - { name: PGUSER, value: oxinov }
+                - { name: BUCKET, value: {{ .Values.backup.bucket | quote }} }
+                - { name: AWS_REGION, value: {{ .Values.media.region | quote }} }
+                - { name: HOME, value: /tmp }
+                {{- include "oxinov.secretEnv" (dict "root" . "name" "PGPASSWORD" "key" "POSTGRES_PASSWORD") | nindent 16 }}
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  key="database/$(date -u +%Y/%m/%d)/oxinov-$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
+                  pg_dumpall --clean --if-exists | gzip -9 | aws s3 cp - "s3://$BUCKET/$key" --only-show-errors
+                  echo "backup written to s3://$BUCKET/$key"
+              resources:
+                requests: { cpu: 50m, memory: 64Mi }
+                limits: { memory: 256Mi }
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: [ALL]
+                seccompProfile:
+                  type: RuntimeDefault
+              volumeMounts:
+                - { name: tmp, mountPath: /tmp }
+          volumes:
+            - name: tmp
+              emptyDir: {}
+{{- end }}
+{{- if .Values.migrations.enabled }}
+---
+# Forward-only migrations. After the first install (the database exists by then) and before every
+# upgrade, so new code never runs on an old schema; a failure stops the release and Helm rolls back.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: oxinov-migrate
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 900
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: migrate
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      initContainers:
+        - name: wait-for-database
+          image: {{ .Values.postgres.image }}
+          command: ["sh", "-c", "until pg_isready -h {{ .Values.postgres.host }} -U oxinov; do sleep 3; done"]
+          securityContext:
+            runAsUser: 70
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+      containers:
+        - name: migrate
+          image: {{ include "oxinov.image" (dict "root" . "image" "oxinov/migrate" "tag" .Values.migrations.tag "name" "migrate") }}
+          env:
+            {{- include "oxinov.secretEnv" (dict "root" . "name" "POSTGRES_PASSWORD") | nindent 12 }}
+            - name: EDU_MIGRATION_DATABASE_URL
+              value: {{ printf "postgresql://oxinov:$(POSTGRES_PASSWORD)@%s:5432/oxinov_lms" .Values.postgres.host | quote }}
+            - name: PLATFORM_MIGRATION_DATABASE_URL
+              value: {{ printf "postgresql://oxinov:$(POSTGRES_PASSWORD)@%s:5432/oxinov_platform" .Values.postgres.host | quote }}
+          resources:
+            {{- toYaml .Values.migrations.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            seccompProfile:
+              type: RuntimeDefault
+{{- end }}
+{{- if .Values.ingress.enabled }}
+{{- $middleware := and .Values.ingress.securityHeaders (eq .Values.ingress.className "traefik") }}
+{{- if $middleware }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: security-headers
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  headers:
+    stsSeconds: 31536000
+    contentTypeNosniff: true
+    referrerPolicy: strict-origin-when-cross-origin
+    customResponseHeaders:
+      Server: ""
+      X-Powered-By: ""
+{{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oxinov
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if $middleware }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ printf "%s-security-headers@kubernetescrd" .Release.Namespace }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    {{- range $name, $svc := .Values.services }}
+    {{- if $svc.host }}
+    - host: {{ printf "%s.%s" $svc.host $.Values.global.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $name }}
+                port:
+                  number: {{ $svc.port }}
+    {{- end }}
+    {{- end }}
+{{- if .Values.services.keycloak.host }}
+---
+# The Keycloak console and master realm are never public: these paths route to a Service without
+# endpoints, so the ingress answers with an error instead of reaching Keycloak.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oxinov-identity-private
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ printf "%s.%s" .Values.services.keycloak.host .Values.global.domain }}
+      http:
+        paths:
+          {{- range list "/admin" "/realms/master" }}
+          - path: {{ . }}
+            pathType: Prefix
+            backend:
+              service:
+                name: oxinov-closed
+                port:
+                  number: 80
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oxinov-closed
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+{{- end }}
+{{- end }}
+{{- if .Values.networkPolicy.enabled }}
+---
+# Ingress: deny by default, then allow only the paths the services need.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oxinov-default-deny
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oxinov-public
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app.kubernetes.io/name, operator: In, values: [edu-web, platform-web, keycloak] }
+  policyTypes: [Ingress]
+  ingress:
+    - {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oxinov-apis
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app.kubernetes.io/name, operator: In, values: [edu-api, platform-api] }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - { key: app.kubernetes.io/name, operator: In, values: [edu-web, platform-web] }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oxinov-mail-relay
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mail-relay
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: keycloak
+{{- if .Values.postgres.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oxinov-postgres
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - { key: app.kubernetes.io/name, operator: In, values: [edu-api, platform-api, keycloak, migrate, backup] }
+      ports:
+        - { port: 5432 }
+{{- end }}
+---
+# Egress: only the pods that call AWS may reach the instance metadata service (and so the instance
+# role); every other pod can reach anything except it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: oxinov-no-instance-role
+  labels:
+    {{- include "oxinov.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchExpressions:
+      - { key: app.kubernetes.io/name, operator: NotIn, values: [edu-api, mail-relay, backup] }
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except: [169.254.169.254/32]
+{{- end }}

@@ -35,3 +35,8 @@ security/evidence/*
 *_override.tf
 .terraform.tfstate.lock.info
 *.tfplan
+
+# Terraform inputs with personal data (for example owner alert emails); examples end in .example
+*.auto.tfvars
+*.tfvars
+!*.tfvars.example

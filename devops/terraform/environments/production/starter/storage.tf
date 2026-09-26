@@ -1,7 +1,7 @@
 # Container images, lesson media, and database dumps.
 
 locals {
-  repositories = ["lms-api", "platform-api", "edu-web", "platform-web", "migrate", "mail-relay", "keycloak"]
+  repositories = ["lms-api", "platform-api", "edu-web", "platform-web", "migrate", "mail-relay", "keycloak", "backup"]
 }
 
 resource "aws_ecr_repository" "app" {
@@ -16,6 +16,28 @@ resource "aws_ecr_repository" "app" {
   encryption_configuration {
     encryption_type = "AES256" #trivy:ignore:AVD-AWS-0033 AWS-owned key is enough for public-source images; revisit with ADR-009
   }
+}
+
+# The shared Helm chart (ADR-018), published as an OCI artifact with every release.
+resource "aws_ecr_repository" "charts" {
+  name                 = "charts/oxinov"
+  image_tag_mutability = "IMMUTABLE"
+
+  encryption_configuration {
+    encryption_type = "AES256" #trivy:ignore:AVD-AWS-0033 chart packages are not secret; revisit with ADR-009
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "charts" {
+  repository = aws_ecr_repository.charts.name
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "Keep the thirty newest chart versions for rollbacks"
+      selection    = { tagStatus = "any", countType = "imageCountMoreThan", countNumber = 30 }
+      action       = { type = "expire" }
+    }]
+  })
 }
 
 resource "aws_ecr_lifecycle_policy" "app" {

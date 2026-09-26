@@ -2,8 +2,9 @@
 # Configures the `oxinov` realm on id.oxinov.com's Keycloak (ADR-011, ADR-016). Safe to re-run.
 # Local usage, from the repository root after `docker compose --profile identity up -d --wait`:
 #   bash devops/keycloak/configure-realm.sh
-# The starter server (ADR-017) runs it from devops/starter/deploy.sh with SKIP_DOTENV=1, its own
-# COMPOSE_FILE, public URLs, the SMTP relay, and CLIENT_SECRETS_OUT to collect the web client secrets.
+# Production (ADR-018) runs it from devops/kubernetes/scripts/deploy.sh with SKIP_DOTENV=1, KCADM_EXEC set
+# to `kubectl exec` into the Keycloak pod, public URLs, the SMTP relay, and CLIENT_SECRETS_OUT to collect
+# the web client secrets.
 set -euo pipefail
 # Git Bash on Windows rewrites container paths such as /opt/keycloak unless this is set.
 export MSYS_NO_PATHCONV=1
@@ -22,7 +23,8 @@ SMTP_HOST=${SMTP_HOST:-mailpit}
 SMTP_PORT=${SMTP_PORT:-1025}
 SMTP_FROM=${SMTP_FROM:-no-reply@oxinov.test}
 
-kcadm() { docker compose exec -T keycloak /opt/keycloak/bin/kcadm.sh "$@"; }
+# KCADM_EXEC runs a command in the Keycloak container: Docker Compose locally, kubectl on the k3s node.
+kcadm() { ${KCADM_EXEC:-docker compose exec -T keycloak} /opt/keycloak/bin/kcadm.sh "$@"; }
 kc_login() {
   kcadm config credentials --server http://localhost:8080 --realm master \
     --user "$KEYCLOAK_ADMIN_USER" --password "$KEYCLOAK_ADMIN_PASSWORD" >/dev/null

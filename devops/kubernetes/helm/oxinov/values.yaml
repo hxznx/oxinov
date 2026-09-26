@@ -1,0 +1,148 @@
+# Default values for the oxinov chart (ADR-018). One chart for every Oxinov service: a new service is a new
+# `services:` entry. Images are built once per commit and pulled from ECR; secrets come from the existing
+# Secret `oxinov-app` (rendered from Parameter Store by devops/kubernetes/scripts/bootstrap-node.sh), never
+# from values files. values-production.yaml holds the starter-server sizing.
+
+global:
+  registry: 614130400110.dkr.ecr.ap-south-1.amazonaws.com
+  # Default image tag (commit SHA) for services that do not set their own.
+  tag: ""
+  # Commit this release was planned from (read back by the release planner).
+  deployedSha: ""
+  domain: oxinov.com
+  existingSecret: oxinov-app
+  imagePullSecrets:
+    - name: ecr-pull
+
+# AWS access (S3 media, SES email, backups) comes from the node's instance role on k3s. On EKS, set an
+# IAM Roles for Service Accounts annotation here instead.
+serviceAccount:
+  create: true
+  name: oxinov
+  annotations: {}
+
+ingress:
+  enabled: true
+  # k3s bundles Traefik; on EKS use the controller chosen there.
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: letsencrypt
+  # Security headers applied to every public host (Traefik Middleware).
+  securityHeaders: true
+
+identity:
+  adminUser: oxinov-admin
+  # Only reachable through a Session Manager port forward (see the runbook).
+  adminHostname: http://localhost:8080
+
+# PostgreSQL in the cluster while small (k3s local-path volume on the encrypted EBS disk, covered by daily
+# snapshots). Set enabled: false and point `host` at Amazon RDS when the roadmap says so.
+postgres:
+  enabled: true
+  host: postgres
+  image: postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
+  storage: 10Gi
+  sharedBuffers: 128MB
+  resources:
+    requests: { cpu: 50m, memory: 256Mi }
+    limits: { memory: 512Mi }
+
+backup:
+  enabled: true
+  # Nightly dump at 02:30 Nepal time.
+  schedule: "45 20 * * *"
+  bucket: oxinov-starter-backups-614130400110
+  image: oxinov/backup
+  tag: ""
+
+migrations:
+  enabled: true
+  tag: ""
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits: { memory: 384Mi }
+
+media:
+  bucket: oxinov-edu-media-614130400110
+  region: ap-south-1
+mail:
+  from: no-reply@oxinov.com
+
+# One entry per service. `tag` overrides global.tag so services are released independently.
+services:
+  edu-api:
+    image: oxinov/lms-api
+    tag: ""
+    port: 4000
+    replicas: 2
+    host: ""
+    healthPath: /health/live
+    readyPath: /health/ready
+    resources:
+      requests: { cpu: 50m, memory: 160Mi }
+      limits: { memory: 320Mi }
+  platform-api:
+    image: oxinov/platform-api
+    tag: ""
+    port: 4200
+    replicas: 2
+    host: ""
+    healthPath: /health/live
+    readyPath: /health/ready
+    resources:
+      requests: { cpu: 25m, memory: 96Mi }
+      limits: { memory: 256Mi }
+  edu-web:
+    image: oxinov/edu-web
+    tag: ""
+    port: 3002
+    replicas: 2
+    host: edu
+    healthPath: /
+    readyPath: /
+    # Next.js caches rendered data under .next/cache.
+    writablePaths: [/app/frontend/products/lms-web/.next/cache]
+    resources:
+      requests: { cpu: 50m, memory: 128Mi }
+      limits: { memory: 320Mi }
+  platform-web:
+    image: oxinov/platform-web
+    tag: ""
+    port: 3001
+    replicas: 2
+    host: app
+    healthPath: /
+    readyPath: /
+    writablePaths: [/app/frontend/platform-web/.next/cache]
+    resources:
+      requests: { cpu: 25m, memory: 128Mi }
+      limits: { memory: 320Mi }
+  keycloak:
+    image: oxinov/keycloak
+    tag: ""
+    port: 8080
+    managementPort: 9000
+    replicas: 1
+    host: id
+    healthPath: /health/live
+    readyPath: /health/ready
+    # Keycloak writes its caches and kcadm settings under /opt/keycloak.
+    readOnlyRootFilesystem: false
+    heap: "-XX:InitialRAMPercentage=25 -XX:MaxRAMPercentage=65"
+    resources:
+      requests: { cpu: 100m, memory: 640Mi }
+      limits: { memory: 1024Mi }
+  mail-relay:
+    image: oxinov/mail-relay
+    tag: ""
+    port: 2525
+    replicas: 1
+    host: ""
+    resources:
+      requests: { cpu: 5m, memory: 32Mi }
+      limits: { memory: 96Mi }
+
+networkPolicy:
+  enabled: true

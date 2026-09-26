@@ -1,19 +1,10 @@
 #!/bin/bash
-# First boot of the starter server (ADR-017): Docker, a pinned Docker Compose, swap, and automatic
-# security updates. Applications arrive later through the deploy workflow over Systems Manager.
+# First boot of the production node (ADR-018): swap, automatic security updates, and the working folder.
+# k3s, Helm, and every application arrive with the first deploy (devops/kubernetes/scripts/bootstrap-node.sh
+# over Systems Manager), so a rebuilt server converges to the same state without SSH.
 set -euo pipefail
 
-dnf install -y docker dnf-automatic
-systemctl enable --now docker
-
-mkdir -p /usr/local/lib/docker/cli-plugins
-curl -fsSL -o /tmp/docker-compose \
-  "https://github.com/docker/compose/releases/download/${compose_version}/docker-compose-linux-x86_64"
-echo "${compose_sha256}  /tmp/docker-compose" | sha256sum -c -
-install -m 0755 /tmp/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
-rm -f /tmp/docker-compose
-
-# 2 GiB of swap absorbs short memory peaks (for example a Keycloak start during a deploy).
+# 2 GiB of swap absorbs short memory peaks on the 4 GiB node (k3s runs with fail-swap-on=false).
 if [ ! -f /swapfile ]; then
   fallocate -l 2G /swapfile
   chmod 600 /swapfile
@@ -23,6 +14,7 @@ fi
 swapon -a
 
 # Security updates only, applied daily without a reboot.
+dnf install -y dnf-automatic
 sed -i 's/^upgrade_type.*/upgrade_type = security/; s/^apply_updates.*/apply_updates = yes/' /etc/dnf/automatic.conf
 systemctl enable --now dnf-automatic.timer
 

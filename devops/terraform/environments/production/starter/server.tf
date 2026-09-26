@@ -1,5 +1,5 @@
-# The starter server (ADR-017): Amazon Linux 2023 with Docker Compose, managed only through Systems
-# Manager. Application secrets are generated on the server into Parameter Store, never in Terraform.
+# The production node (ADR-017 server, ADR-018 k3s runtime): Amazon Linux 2023, managed only through
+# Systems Manager. Application secrets are generated on the server into Parameter Store, never in Terraform.
 
 data "aws_ssm_parameter" "al2023" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
@@ -7,9 +7,6 @@ data "aws_ssm_parameter" "al2023" {
 
 locals {
   parameter_prefix = "/oxinov/production/starter"
-  # Docker Compose is installed from its release by exact version and SHA-256.
-  compose_version = "v5.5.1"
-  compose_sha256  = "db1889184726840f75c4f9c001048430d4f25b3be3cb084d3ddd762bc0aed576"
 }
 
 data "aws_iam_policy_document" "server_trust" {
@@ -43,7 +40,7 @@ data "aws_iam_policy_document" "server" {
   statement {
     sid       = "PullImages"
     actions   = ["ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer", "ecr:BatchCheckLayerAvailability"]
-    resources = [for repository in aws_ecr_repository.app : repository.arn]
+    resources = concat([for repository in aws_ecr_repository.app : repository.arn], [aws_ecr_repository.charts.arn])
   }
 
   statement {
@@ -115,10 +112,7 @@ resource "aws_instance" "server" {
     tags                  = { Name = local.name, Backup = "daily" }
   }
 
-  user_data = templatefile("${path.module}/user-data.sh.tftpl", {
-    compose_version = local.compose_version
-    compose_sha256  = local.compose_sha256
-  })
+  user_data                   = file("${path.module}/user-data.sh.tftpl")
   user_data_replace_on_change = false
 
   lifecycle {

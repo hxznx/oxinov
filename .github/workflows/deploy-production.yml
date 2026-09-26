@@ -1,0 +1,220 @@
+name: Deploy production
+
+# Continuous deployment (ADR-018, NFR-17): every push to main that passes CI is released to production,
+# the k3s node on the starter server, automatically. Only images whose inputs changed are rebuilt
+# (devops/scripts/release-plan.sh); unchanged services keep running. Images are scanned with Trivy and
+# pushed to immutable ECR tags; the Helm chart is packaged and pushed to ECR as an OCI artifact; the node
+# runs `helm upgrade --rollback-on-failure` over Systems Manager and checks the public names; a public smoke test
+# follows. A failure at any step restores the previous release automatically.
+# AWS access is keyless: GitHub's OIDC token becomes a short-lived role limited to these repositories and
+# to running the deploy script on that one server.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      rebuild_all:
+        description: Rebuild and redeploy every service, even unchanged ones
+        type: boolean
+        default: false
+      configure_realm:
+        description: Re-apply the sign-in realm settings (always done on the first deploy)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# One release at a time; a newer push waits, and superseded pending runs are dropped by GitHub.
+concurrency:
+  group: deploy-starter
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ap-south-1
+  REGISTRY: 614130400110.dkr.ecr.ap-south-1.amazonaws.com
+  DEPLOY_ROLE: arn:aws:iam::614130400110:role/oxinov-starter-deploy
+  # The commit CI tested (automatic runs) or the dispatched commit (manual runs).
+  RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  plan:
+    # Automatic runs only for green CI on pushes to main (never pull requests or forks).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      build: ${{ steps.plan.outputs.build }}
+      deploy: ${{ steps.plan.outputs.deploy }}
+      release: ${{ steps.plan.outputs.release }}
+      instance: ${{ steps.server.outputs.instance }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 0
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Find the server and its running release
+        id: server
+        run: |
+          source devops/scripts/ssm-run.sh
+          instance=$(starter_instance)
+          echo "instance=$instance" >> "$GITHUB_OUTPUT"
+          ssm_run "$instance" 'if [ -f /opt/oxinov/bootstrap-node.sh ]; then bash /opt/oxinov/deploy.sh release; fi' > current-release.env
+          echo "Running release:"; cat current-release.env
+      - name: Plan the release
+        id: plan
+        env:
+          FORCE_ALL: ${{ inputs.rebuild_all && '1' || '0' }}
+        run: |
+          base=$(sed -n 's/^DEPLOYED_SHA=//p' current-release.env)
+          bash devops/scripts/release-plan.sh "$base" "$RELEASE_SHA" current-release.env | tee -a "$GITHUB_OUTPUT"
+          # A manual run always deploys (for example to re-apply the realm), even with nothing to build.
+          if [ "${{ github.event_name }}" = workflow_dispatch ]; then echo "deploy=true" >> "$GITHUB_OUTPUT"; fi
+          {
+            echo "### Release plan for \`${RELEASE_SHA:0:7}\`"
+            echo "Images to build: \`$(grep '^build=' "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2-)\`"
+            echo "Deploy: \`$(grep '^deploy=' "$GITHUB_OUTPUT" | tail -1 | cut -d= -f2-)\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  images:
+    needs: plan
+    if: needs.plan.outputs.build != '[]' && needs.plan.outputs.build != ''
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      # Other images still build and push (warming the cache) when one fails; the deploy waits for all.
+      fail-fast: false
+      matrix:
+        service: ${{ fromJSON(needs.plan.outputs.build) }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+      - name: Resolve the build recipe
+        id: recipe
+        run: |
+          case "${{ matrix.service }}" in
+            lms-api) target=backend ;;
+            keycloak) target='' ;;
+            backup) target=backup ;;
+            *) target="${{ matrix.service }}" ;;
+          esac
+          if [ "${{ matrix.service }}" = keycloak ]; then
+            echo "context=devops/keycloak" >> "$GITHUB_OUTPUT"; echo "file=devops/keycloak/Dockerfile" >> "$GITHUB_OUTPUT"
+            # Reviewed, expiring exceptions for upstream Keycloak libraries (see the file).
+            echo "ignore=devops/keycloak/.trivyignore" >> "$GITHUB_OUTPUT"
+          else
+            echo "context=." >> "$GITHUB_OUTPUT"; echo "file=devops/docker/Dockerfile" >> "$GITHUB_OUTPUT"
+            echo "ignore=" >> "$GITHUB_OUTPUT"
+          fi
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+          echo "image=$REGISTRY/oxinov/${{ matrix.service }}:$RELEASE_SHA" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.service }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ steps.recipe.outputs.context }}
+          file: ${{ steps.recipe.outputs.file }}
+          target: ${{ steps.recipe.outputs.target }}
+          load: true
+          tags: ${{ steps.recipe.outputs.image }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+      - name: Scan ${{ matrix.service }}
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ steps.recipe.outputs.image }}
+          format: table
+          exit-code: '1'
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          trivyignores: ${{ steps.recipe.outputs.ignore }}
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Push ${{ matrix.service }}
+        run: |
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$REGISTRY"
+          # Tags are immutable: re-running a deploy of the same commit reuses the pushed image.
+          if aws ecr describe-images --repository-name "oxinov/${{ matrix.service }}" --image-ids "imageTag=$RELEASE_SHA" >/dev/null 2>&1; then
+            echo "already pushed"
+          else
+            docker push "${{ steps.recipe.outputs.image }}"
+          fi
+
+  deploy:
+    needs: [plan, images]
+    if: >-
+      always() && needs.plan.result == 'success' && needs.plan.outputs.deploy == 'true' &&
+      (needs.images.result == 'success' || needs.images.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://edu.oxinov.com
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.DEPLOY_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Publish the Helm chart
+        id: chart
+        run: |
+          sudo bash devops/scripts/install-helm.sh
+          version="0.1.0-g${RELEASE_SHA:0:12}"
+          helm package devops/kubernetes/helm/oxinov --version "$version" --app-version "$RELEASE_SHA" --destination /tmp/chart
+          aws ecr get-login-password | helm registry login --username AWS --password-stdin "$REGISTRY"
+          # Chart versions are immutable too; a re-run of the same commit reuses the published chart.
+          if ! aws ecr describe-images --repository-name charts/oxinov --image-ids "imageTag=$version" >/dev/null 2>&1; then
+            helm push "/tmp/chart/oxinov-$version.tgz" "oci://$REGISTRY/charts"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Install the release on the node
+        env:
+          RELEASE: ${{ needs.plan.outputs.release }}
+          INSTANCE: ${{ needs.plan.outputs.instance }}
+          CHART_VERSION: ${{ steps.chart.outputs.version }}
+          CONFIGURE_REALM: ${{ inputs.configure_realm && '1' || '0' }}
+        run: |
+          source devops/scripts/ssm-run.sh
+          printf '%s\n' "$RELEASE" > release.next.env
+          payload=$(bash devops/scripts/bundle.sh release.next.env)
+          ssm_run "$INSTANCE" "set -euo pipefail
+          mkdir -p /opt/oxinov && cd /opt/oxinov
+          echo '$payload' | base64 -d | tar -xzf - --no-same-owner
+          chmod 700 deploy.sh bootstrap-node.sh
+          CONFIGURE_REALM=$CONFIGURE_REALM bash deploy.sh apply $REGISTRY $CHART_VERSION" 3000
+
+      - name: Smoke test from the internet
+        id: smoke
+        run: bash devops/scripts/smoke-test.sh
+
+      - name: Roll back after a failed smoke test
+        if: failure() && steps.smoke.conclusion == 'failure'
+        env:
+          INSTANCE: ${{ needs.plan.outputs.instance }}
+        run: |
+          source devops/scripts/ssm-run.sh
+          ssm_run "$INSTANCE" 'cd /opt/oxinov && bash deploy.sh rollback' 1200
+          echo "::error::The release failed its smoke test and was rolled back."

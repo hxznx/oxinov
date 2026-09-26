@@ -1,5 +1,5 @@
 # Production images for the canonical pnpm workspace. Targets: backend (Edu API), platform-api, edu-web,
-# platform-web, migrate (database migrations, run once per deploy), and mail-relay. The worker and chat
+# platform-web, migrate (database migrations, run once per deploy), mail-relay, and backup. The worker and chat
 # targets remain templates until their source is implemented.
 FROM node:22-alpine AS base
 WORKDIR /app
@@ -80,7 +80,8 @@ COPY database/prisma/ ./database/prisma/
 COPY database/migrations/ ./database/migrations/
 COPY database/platform/prisma/ ./database/platform/prisma/
 COPY database/platform/migrations/ ./database/platform/migrations/
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 # EDU_MIGRATION_DATABASE_URL and PLATFORM_MIGRATION_DATABASE_URL are passed in by the deploy script.
 # The Prisma binary is called directly: pnpm would verify the whole workspace, which is only partly installed.
 CMD ["sh", "-c", "cd /app/backend/api && MIGRATION_DATABASE_URL=\"$EDU_MIGRATION_DATABASE_URL\" ./node_modules/.bin/prisma migrate deploy && cd /app/backend/platform-api && MIGRATION_DATABASE_URL=\"$PLATFORM_MIGRATION_DATABASE_URL\" ./node_modules/.bin/prisma migrate deploy"]
@@ -99,7 +100,8 @@ RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack 
 FROM runtime AS backend
 WORKDIR /app/backend/api
 COPY --from=backend-build /app/deploy/ ./
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 EXPOSE 4000
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:4000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
@@ -108,7 +110,8 @@ CMD ["node", "dist/main.js"]
 FROM runtime AS platform-api
 WORKDIR /app/backend/platform-api
 COPY --from=platform-api-build /app/deploy/ ./
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 EXPOSE 4200
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:4200/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
@@ -120,7 +123,8 @@ ENV PORT=3002 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
 COPY --from=edu-web-build --chown=node:node /app/frontend/products/lms-web/.next/standalone/ ./
 COPY --from=edu-web-build --chown=node:node /app/frontend/products/lms-web/.next/static/ ./frontend/products/lms-web/.next/static/
 COPY --from=edu-web-build --chown=node:node /app/frontend/products/lms-web/public/ ./frontend/products/lms-web/public/
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 EXPOSE 3002
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3002/',{redirect:'manual'}).then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"
@@ -132,7 +136,8 @@ ENV PORT=3001 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
 COPY --from=platform-web-build --chown=node:node /app/frontend/platform-web/.next/standalone/ ./
 COPY --from=platform-web-build --chown=node:node /app/frontend/platform-web/.next/static/ ./frontend/platform-web/.next/static/
 COPY --from=platform-web-build --chown=node:node /app/frontend/platform-web/public/ ./frontend/platform-web/public/
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 EXPOSE 3001
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3001/',{redirect:'manual'}).then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"
@@ -141,9 +146,16 @@ CMD ["node", "frontend/platform-web/server.js"]
 FROM runtime AS mail-relay
 WORKDIR /app
 COPY --from=mail-relay-build /app/deploy/ ./
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 EXPOSE 2525
 CMD ["node", "src/main.mjs"]
+
+# --- Database backup: PostgreSQL client tools plus the AWS CLI, for the nightly CronJob (ADR-018) ------
+FROM postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873 AS backup
+RUN apk add --no-cache aws-cli
+USER postgres
+CMD ["pg_dumpall", "--version"]
 
 FROM base AS worker
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
@@ -151,7 +163,8 @@ COPY backend/worker/package.json ./backend/worker/package.json
 RUN pnpm install --frozen-lockfile --filter @oxinov/lms-worker...
 COPY backend/worker/ ./backend/worker/
 RUN pnpm --filter @oxinov/lms-worker build
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 CMD ["node", "backend/worker/dist/main.js"]
 
 FROM base AS chat
@@ -160,6 +173,7 @@ COPY backend/chat/package.json ./backend/chat/package.json
 RUN pnpm install --frozen-lockfile --filter @oxinov/lms-chat...
 COPY backend/chat/ ./backend/chat/
 RUN pnpm --filter @oxinov/lms-chat build
-USER node
+# Numeric IDs (the node user) so Kubernetes can verify runAsNonRoot.
+USER 1000:1000
 EXPOSE 4001
 CMD ["node", "backend/chat/dist/main.js"]

@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# oxctl: day-to-day operations for Oxinov production (the k3s node, ADR-018), from a laptop.
+# Needs the AWS CLI signed in (aws sso login), the Session Manager plugin for shell and tunnel, the
+# GitHub CLI for deploy and history, and jq. Run `oxctl help` for the commands.
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$HERE/../.." && pwd)"
+# shellcheck source=ssm-run.sh
+source "$HERE/ssm-run.sh"
+
+REPO=${OXINOV_REPO:-hxznx/oxinov}
+SERVICES="postgres keycloak mail-relay edu-api platform-api edu-web platform-web"
+# Commands on the node run against the cluster as root.
+K="KUBECONFIG=/etc/rancher/k3s/k3s.yaml /usr/local/bin/kubectl -n oxinov"
+
+usage() {
+  cat <<'EOF'
+Usage: oxctl <command> [arguments]
+
+Release
+  deploy [--all] [--realm]   Deploy main now (--all rebuilds every image, --realm re-applies sign-in settings)
+  runs [n]                   Latest deploy runs and their results (default 5)
+  watch                      Follow the newest deploy run until it finishes
+  release                    Show the release running in production (image tag per service)
+  history                    Helm release history (revisions, status, chart version)
+  rollback                   Return production to the previous Helm revision
+  smoke                      Run the public smoke test against oxinov.com
+
+Cluster and server
+  status                     Pods, release history, memory, disk, and the backup schedule
+  logs <service> [lines]     Recent logs of one service (services: postgres keycloak mail-relay
+                             edu-api platform-api edu-web platform-web)
+  restart <service>          Rolling restart of one service
+  events                     Recent Kubernetes warnings (failed pulls, evictions, probes)
+  shell                      Interactive root shell (Session Manager, no SSH)
+  keycloak-admin             Tunnel the Keycloak console to http://localhost:8080/admin
+  backup                     Run the database backup job now (dump to S3)
+  backups [n]                List the newest database dumps (default 10)
+
+Infrastructure
+  plan                       terraform plan for the starter stack (never applies)
+  cost                       Month-to-date AWS cost and the budget
+EOF
+}
+
+need() { command -v "$1" >/dev/null || { echo "oxctl needs $1 on PATH" >&2; exit 1; }; }
+instance() { starter_instance; }
+remote() { ssm_run "$(instance)" "cd /opt/oxinov && $1" "${2:-600}"; }
+valid_service() { [[ " $SERVICES " == *" $1 "* ]] || { echo "unknown service '$1' (one of: $SERVICES)" >&2; exit 2; }; }
+
+cmd=${1:-help}
+shift || true
+case $cmd in
+  deploy)
+    need gh
+    args=(-f rebuild_all=false -f configure_realm=false)
+    for flag in "$@"; do
+      case $flag in
+        --all) args[1]=rebuild_all=true ;;
+        --realm) args[3]=configure_realm=true ;;
+        *) echo "unknown option $flag" >&2; exit 2 ;;
+      esac
+    done
+    gh workflow run deploy-production.yml --repo "$REPO" --ref main "${args[@]}"
+    echo "Deploy requested. Follow it with: oxctl watch"
+    ;;
+  runs)
+    need gh
+    gh run list --repo "$REPO" --workflow deploy-production.yml --limit "${1:-5}" \
+      --json databaseId,displayTitle,event,conclusion,status,createdAt \
+      --template '{{range .}}{{.databaseId}}  {{.createdAt}}  {{.event}}  {{.status}}/{{.conclusion}}  {{.displayTitle}}{{"\n"}}{{end}}'
+    ;;
+  watch)
+    need gh
+    id=$(gh run list --repo "$REPO" --workflow deploy-production.yml --limit 1 --json databaseId --jq '.[0].databaseId')
+    gh run watch "$id" --repo "$REPO" --exit-status
+    ;;
+  release) remote 'bash deploy.sh release' ;;
+  history) remote 'KUBECONFIG=/etc/rancher/k3s/k3s.yaml /usr/local/bin/helm history oxinov -n oxinov --max 10' ;;
+  rollback) remote 'bash deploy.sh rollback' 1200 ;;
+  smoke) bash "$HERE/smoke-test.sh" ;;
+  status) remote 'bash deploy.sh status' ;;
+  events) remote "$K get events --field-selector type=Warning --sort-by=.lastTimestamp | tail -n 30" ;;
+  logs)
+    service=${1:?service name}
+    valid_service "$service"
+    lines=${2:-200}
+    [[ $lines =~ ^[0-9]+$ ]] || { echo "lines must be a number" >&2; exit 2; }
+    kind=deploy
+    [ "$service" = postgres ] && kind=statefulset
+    remote "$K logs $kind/$service --tail $lines --all-containers"
+    ;;
+  restart)
+    service=${1:?service name}
+    valid_service "$service"
+    kind=deploy
+    [ "$service" = postgres ] && kind=statefulset
+    remote "$K rollout restart $kind/$service && $K rollout status $kind/$service --timeout=300s" 900
+    ;;
+  shell) need session-manager-plugin; aws ssm start-session --target "$(instance)" ;;
+  keycloak-admin)
+    need session-manager-plugin
+    echo "Open http://localhost:8080/admin (user oxinov-admin; password: KEYCLOAK_ADMIN_PASSWORD in Parameter Store)."
+    aws ssm start-session --target "$(instance)" --document-name AWS-StartPortForwardingSessionToRemoteHost \
+      --parameters '{"host":["127.0.0.1"],"portNumber":["8080"],"localPortNumber":["8080"]}'
+    ;;
+  backup) remote 'systemctl start oxinov-backup.service && journalctl -u oxinov-backup.service -n 3 --no-pager' 1200 ;;
+  backups)
+    aws s3 ls s3://oxinov-starter-backups-614130400110/database/ --recursive --human-readable \
+      | sort | tail -n "${1:-10}"
+    ;;
+  plan)
+    need terraform
+    terraform -chdir="$ROOT/devops/terraform/environments/production/starter" init -input=false >/dev/null
+    terraform -chdir="$ROOT/devops/terraform/environments/production/starter" plan -input=false
+    ;;
+  cost)
+    start=$(date -u +%Y-%m-01)
+    end=$(date -u -d tomorrow +%F 2>/dev/null || date -u -v+1d +%F)
+    aws ce get-cost-and-usage --time-period "Start=$start,End=$end" --granularity MONTHLY --metrics UnblendedCost \
+      --query 'ResultsByTime[0].Total.UnblendedCost.[Amount,Unit]' --output text --region us-east-1 \
+      | awk '{printf "month to date: %.2f %s\n", $1, $2}'
+    aws budgets describe-budget --account-id 614130400110 --budget-name oxinov-monthly \
+      --query 'Budget.BudgetLimit.[Amount,Unit]' --output text | awk '{printf "monthly budget: %.2f %s\n", $1, $2}'
+    ;;
+  help | -h | --help) usage ;;
+  *) echo "unknown command '$cmd'" >&2; usage >&2; exit 2 ;;
+esac

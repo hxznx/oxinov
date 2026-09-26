@@ -1,5 +1,117 @@
-# Kubernetes templates
+# Production runbook: Kubernetes (k3s)
 
-These manifests describe the future frontend and backend topology. They remain templates until the container registry, ingress controller, TLS issuer, secret integration, persistent storage, monitoring discovery, namespaces, resource targets, and production cloud provider are selected.
+Oxinov production runs on one k3s node on the starter server (`t3a.medium`, 4 GiB plus 2 GiB swap, Mumbai),
+deployed with one Helm chart ([ADR-017](../../docs/architecture/ADR.md), [ADR-018](../../docs/architecture/ADR.md),
+NFR-17). AWS resources: `devops/terraform/environments/production/starter`. Direction and phases:
+[DevOps roadmap](../../docs/devops/ROADMAP.md).
 
-Do not commit Kubernetes `Secret` values. Deployment credentials must come from the selected secrets manager and CI environment.
+| Address | Service |
+|---|---|
+| `https://edu.oxinov.com` | Oxinov Edu (`edu-web` → `edu-api`) |
+| `https://app.oxinov.com` | Account portal (`platform-web` → `platform-api`) |
+| `https://id.oxinov.com` | Keycloak sign-in (administration console and master realm closed publicly) |
+
+| Path | What it is |
+|---|---|
+| `helm/oxinov/` | The shared chart: every service is a `services:` entry; `values-production.yaml` sizes it for the node |
+| `scripts/bootstrap-node.sh` | Idempotent node setup: pinned k3s and Helm (SHA-256), Traefik with Let's Encrypt, secrets from Parameter Store, ECR pull secret |
+| `scripts/deploy.sh` | On the node: `apply`, `rollback`, `release`, `status` |
+| `../scripts/release-plan.sh` | Decides which images a push rebuilds (tested by `release-plan.test.sh`) |
+| `../scripts/oxctl` | Operations from a laptop |
+| `../scripts/check-delivery.sh` | Every delivery check (shellcheck, planner tests, Helm lint, Kubernetes schema, Terraform format) |
+| `scripts/rehearse-local.sh` | Full release rehearsal on a throwaway local k3s: install, routes, realm, and a forced rollback |
+
+## How a change reaches production
+
+1. Push to `main` (or merge a pull request). CI runs.
+2. When CI is green, **Deploy production** (`.github/workflows/deploy-production.yml`) starts by itself:
+   plan (only changed images) → build → Trivy scan → push to ECR (immutable tags) → publish the chart to
+   ECR (OCI) → on the node, `bootstrap-node.sh` then `helm upgrade --rollback-on-failure --wait` → check
+   the public names through Traefik → public smoke test.
+3. Any failure restores the previous release automatically. Documentation-only pushes deploy nothing.
+
+Typical time: 8–15 minutes. The first release also configures the sign-in realm (about 3 extra minutes).
+
+## Daily operations (`oxctl`)
+
+Needs the AWS CLI signed in (`aws sso login`), the Session Manager plugin, the GitHub CLI, and jq.
+
+```bash
+bash devops/scripts/oxctl status
+```
+
+| Command | Use |
+|---|---|
+| `oxctl status` / `events` | Pods, Helm history, memory, disk, backup schedule / recent warnings |
+| `oxctl logs <service> [lines]` / `restart <service>` | One service's logs / rolling restart |
+| `oxctl deploy [--all] [--realm]` / `watch` / `runs` | Deploy `main` now (normally automatic) / follow it / history |
+| `oxctl release` / `history` / `rollback` | Running image tags / Helm revisions / return to the previous revision |
+| `oxctl backup` / `backups` | Dump the databases to S3 now / list dumps |
+| `oxctl keycloak-admin` | Tunnel the Keycloak console to `http://localhost:8080/admin` for 30 minutes |
+| `oxctl shell` | Root shell on the node (Session Manager; there is no SSH) |
+| `oxctl plan` / `cost` | Terraform plan (never applies) / month-to-date spend and the budget |
+
+## Rollback
+
+Automatic on any failed release. By hand: `oxctl rollback` (previous Helm revision) or run **Deploy
+production** from an older commit. Migrations only move forward (expand, then contract), so an image
+rollback is always safe; a bad migration needs a forward fix.
+
+## Secrets
+
+Generated once as SecureStrings under `/oxinov/production/starter/` in Parameter Store (database passwords,
+the Keycloak admin password, session secrets, and the two web client secrets) and rendered into the
+Kubernetes Secret `oxinov/oxinov-app` by `bootstrap-node.sh`; k3s encrypts Secrets at rest. To rotate a
+session secret, overwrite the parameter and run `oxctl deploy` (everyone signs in again). Database
+password rotation needs `ALTER ROLE` first.
+
+## Backups and restore
+
+- Nightly `pg_dumpall` at 02:30 Nepal time (CronJob `postgres-backup`) to
+  `s3://oxinov-starter-backups-614130400110/database/`, kept 30 days.
+- Daily encrypted disk snapshots at 02:15 Nepal time, kept 7 days (Data Lifecycle Manager); PostgreSQL's
+  volume lives on that disk.
+
+Restore a dump (stops the apps first), from `oxctl shell`:
+
+```bash
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+kubectl -n oxinov scale deploy --all --replicas=0
+aws s3 cp s3://oxinov-starter-backups-614130400110/database/<yyyy/mm/dd>/<file>.sql.gz - | gunzip | kubectl -n oxinov exec -i postgres-0 -- psql -U oxinov -d postgres
+kubectl -n oxinov scale deploy --all --replicas=1
+```
+
+Whole-server loss: create a volume from the latest snapshot and attach it to a replacement instance from
+the Terraform stack, or let the next deploy bootstrap a fresh node and restore the latest dump.
+
+## Email
+
+Keycloak sends sign-in codes to the `mail-relay` pod, which forwards them to Amazon SES with the node's
+instance role (no SMTP keys). While SES is in its sandbox, mail reaches only verified addresses (SES
+console → Identities → Create identity → Email address). The account owner requests production access
+once (SES console → Account dashboard → Request production access): mail type **Transactional**, website
+`https://oxinov.com`, and a use case such as:
+
+> Oxinov Pvt. Ltd. (Lalitpur, Nepal) sends only transactional email from no-reply@oxinov.com: six-digit
+> sign-in codes and email-address confirmations for people who request them on edu.oxinov.com and
+> app.oxinov.com. There is no marketing or bulk mail. Recipients are people signing in themselves, so
+> addresses are never bought or imported. The domain is verified with DKIM, SPF (custom MAIL FROM), and
+> DMARC. We watch the SES bounce and complaint metrics, and Keycloak limits repeated code requests. We
+> expect fewer than 1,000 messages a day at launch.
+
+## Capacity and cost
+
+The whole stack uses about 2.9 GiB (measured in a local k3s rehearsal), leaving roughly 0.9 GiB plus swap.
+Every change keeps resource requests and limits realistic; `oxctl status` shows memory. Spend is about
+US$40 a month against a US$50 budget (Terraform `cost.tf`, alerts at 85% and 100% actual and 100% forecast).
+Scale triggers and the EKS path are in the roadmap.
+
+## Adding a service
+
+1. Add a Dockerfile target, a `services:` entry in `helm/oxinov/values.yaml` (and its size in
+   `values-production.yaml`), its environment in `templates/_helpers.tpl`, and network-policy rules.
+2. Teach `devops/scripts/release-plan.sh` its build inputs and `scripts/deploy.sh` its tag variable; add a
+   planner test.
+3. Add an ECR repository in Terraform (plan, then the owner's "yes apply").
+4. Run `bash devops/scripts/check-delivery.sh` and `bash devops/kubernetes/scripts/rehearse-local.sh`, then
+   push. The next green `main` deploys it.

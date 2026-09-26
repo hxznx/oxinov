@@ -1,0 +1,2 @@
+# Copy to owner.auto.tfvars (git-ignored) and fill in. Never commit the real file.
+budget_alert_emails = ["owner@example.com"]

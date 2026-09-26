@@ -6,7 +6,7 @@ AWS is the production cloud for Oxinov Platform. Use Asia Pacific Mumbai (`ap-so
 
 The selection must still be verified with latency measurements from the Nepal networks used by target customers before production launch. A material routing problem can change the primary AWS region through an ADR without changing the application architecture.
 
-> **Launch hosting (ADR-017):** until paying schools need an availability commitment, Oxinov Edu runs on a single starter server (`devops/terraform/environments/production/starter`, runbook in `devops/starter/README.md`). The layout below remains the target it moves to.
+> **Launch hosting (ADR-017, ADR-018):** until a scale trigger in the [DevOps roadmap](../devops/ROADMAP.md) is met, Oxinov runs on one k3s node on the starter server (`devops/terraform/environments/production/starter`), deployed with the shared Helm chart; runbook in `devops/kubernetes/README.md`. The layout below remains the target it moves to, with Amazon EKS as the runtime instead of ECS Fargate (ADR-018).
 
 ## AWS account structure
 

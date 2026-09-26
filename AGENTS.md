@@ -43,8 +43,20 @@ Milestone build commands live in [prompts/](prompts/). Implement one milestone a
 - Keep one folder layout: `frontend/`, `backend/`, `database/`, `packages/`, `devops/`, `monitoring/`, `security/`, `docs/`, `prompts/`. Follow the [product plane template](docs/engineering/COMPANY-PROJECT-STRUCTURE.md#product-plane-template): each product has its own frontend, API, and database.
 - The platform control plane never contains product business logic. Products call platform and product APIs and events only; no product reads another product's database.
 - Frontends and mobile apps call versioned APIs and never connect to a database.
-- AWS Mumbai with ECS Fargate, RDS PostgreSQL, ElastiCache, S3, CloudFront/WAF, Route 53, ECR, Secrets Manager/KMS, GitHub Actions OIDC, and Terraform is the production baseline. No EKS without an ADR.
+- AWS Mumbai is the production cloud, and **Kubernetes is the runtime for every Oxinov service** (ADR-018): one k3s node on the starter EC2 server (`t3a.medium`) while small, Amazon EKS once a scale trigger in the [DevOps roadmap](docs/devops/ROADMAP.md) is met. Every service ships as an image plus values in the shared Helm chart (`devops/kubernetes/helm/oxinov`); a new service is a new `services:` entry, not a new pipeline. S3, RDS (from the scale-out phase), Route 53, SES, ECR, and GitHub Actions OIDC stay the managed building blocks.
 - Start modular; extract a service only for a measured scaling, security, reliability, data, or ownership need (YAGNI).
+
+### Delivery and operations (ADR-018, NFR-17)
+- **Every push to `main` that passes CI is deployed to production automatically.** Nobody deploys by hand; the manual workflow run exists only for forced rebuilds and emergencies. Keep `main` always releasable.
+- **Terraform owns every AWS resource.** Never create, change, or delete AWS resources in the console or with ad-hoc CLI calls; change Terraform, show the saved plan, and apply only after the owner's explicit "yes apply". Emergency console changes are imported into Terraform the same day.
+- **Every repeatable stage is a tested bash script** under `devops/scripts/` or `devops/kubernetes/scripts/` (`set -euo pipefail`, idempotent, `shellcheck`-clean, no secrets in output), called by GitHub Actions and by `oxctl` for people. Do not put logic only in workflow YAML.
+- Build once, deploy the same immutable image everywhere: tags are commit SHAs, ECR tags are immutable, and only services whose inputs changed are rebuilt (`devops/scripts/release-plan.sh`).
+- Releases are self-healing: `helm upgrade --rollback-on-failure --wait` (Helm 4) waits for health and rolls back on failure, and a failed node check or public smoke test rolls back too. Migrations run as a hook before new code starts and only move forward (expand, then contract), so an image rollback is always safe.
+- Containers run as numeric non-root users (uid/gid 1000; PostgreSQL 70) with no capabilities, read-only root filesystems where possible, realistic resource requests and limits, and deny-by-default network policies; only pods that call AWS may reach the instance metadata service.
+- Security gates are never weakened to ship: Trivy (HIGH/CRITICAL with fixes), Dependabot updates, and pinned versions with checksums or digests (CodeQL and dependency review once GitHub Advanced Security is approved). Fix by upgrading, not by ignoring; an unavoidable upstream finding gets a written, expiring entry in that image's `.trivyignore`.
+- Cost is a requirement: total AWS spend stays within the owner's budget (US$50 a month, Terraform `cost.tf`); no always-on spend without a roadmap trigger and the owner's approval; prefer the single k3s node, bundled components, and lifecycle rules over managed extras until the roadmap says otherwise.
+- Rehearse delivery changes before production: run `bash devops/scripts/check-delivery.sh`, and for chart or node-script changes `bash devops/kubernetes/scripts/rehearse-local.sh` (a throwaway local k3s with the production versions: install, routes, realm, and a forced rollback).
+- Access is keyless: GitHub OIDC roles and instance roles only; no SSH (Systems Manager), no long-lived AWS keys, and secrets live in Parameter Store and Kubernetes Secrets, never in Git or Terraform state.
 
 ### Identity, trust, and tenancy
 - One Oxinov account works across all products. Customers sign in with Google, Apple (iOS), or an email one-time code, never a password. Products never store login data (ADR-011).
@@ -85,6 +97,8 @@ Milestone build commands live in [prompts/](prompts/). Implement one milestone a
 | Any documentation change | `python scripts/validate_project.py` |
 | `backend/api` change | `pnpm --filter @oxinov/lms-api typecheck`, `pnpm --filter @oxinov/lms-api lint`, `pnpm --filter @oxinov/lms-api test` from the repository root |
 | Database or tenant-isolation change | `pnpm lms:migrate`, `pnpm --filter @oxinov/lms-api db:test-policies`, `pnpm --filter @oxinov/lms-api test:integration` from the repository root (needs PostgreSQL) |
+| Terraform change | `terraform fmt -recursive devops/terraform`, `terraform validate` in the stack, then a saved `terraform plan` shown to the owner before any apply |
+| Delivery scripts, chart, or workflows | `bash devops/scripts/check-delivery.sh` (shellcheck, release-planner tests, `helm lint`, `kubeconform`) |
 
 CI runs the same checks on every push (`.github/workflows/ci.yml`). A change is not done while any required check fails.
 

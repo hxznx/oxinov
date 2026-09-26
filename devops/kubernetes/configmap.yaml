@@ -1,8 +1,0 @@
-# Template only. Use a Secret manager for credentials.
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: oxinov-config
-data:
-  NODE_ENV: production
-  API_PUBLIC_URL: https://lms.example.invalid/api

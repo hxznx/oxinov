@@ -1,0 +1,19 @@
+# Time-boxed exceptions for the Keycloak image scan only (ADR-018 security gate). Each entry is a library
+# bundled by upstream Keycloak 26.7.4 with no Keycloak release that updates it yet. Entries expire so the
+# deploy gate fails again and forces a re-check; the fix is a Keycloak patch release, not a longer expiry.
+# Reviewed 2026-09-26. Owner: platform engineering. Re-check every Keycloak 26.7.x release.
+
+# SQL Server JDBC driver: we use PostgreSQL only (KC_DB=postgres); the driver is never loaded.
+CVE-2025-59250 exp:2026-10-26
+
+# Netty SNI routing bypass: TLS ends at Caddy; Keycloak serves plain HTTP on a private network, no SNI.
+CVE-2026-75595 exp:2026-10-26
+
+# FreeMarker path issue: affects untrusted templates; only Keycloak's built-in themes are installed and
+# the administration console is not reachable from the internet.
+CVE-2026-84939 exp:2026-10-26
+
+# Bouncy Castle 1.84 (fixed in 1.85): not fully assessed; accepted as an upstream risk only until the next
+# Keycloak patch. Mitigated by the private admin console and realm brute-force protection.
+CVE-2026-8763 exp:2026-10-26
+CVE-2026-13506 exp:2026-10-26

@@ -2,7 +2,7 @@
 
 **Owner:** founder (decisions and spend), lead engineer (delivery). **Updated:** 2026-09-26.
 Related: [ADR-017 starter hosting and ADR-019 multi-product architecture](../architecture/ADR.md), [AWS architecture](../architecture/AWS-CLOUD-ARCHITECTURE.md),
-[CI/CD](CI-CD.md), [rollback](ROLLBACK.md), [backup and recovery](BACKUP-RECOVERY.md), [starter runbook](../../devops/starter/README.md).
+[CI/CD](CI-CD.md), [rollback](ROLLBACK.md), [backup and recovery](BACKUP-RECOVERY.md), [production runbook](../../devops/kubernetes/README.md).
 
 ## Guiding rules
 
@@ -17,24 +17,23 @@ Related: [ADR-017 starter hosting and ADR-019 multi-product architecture](../arc
 
 | Area | Status |
 |---|---|
-| CI | 9 jobs on every push: docs, workspace, API with PostgreSQL and object storage, platform API, three web apps, Terraform, starter files; Trivy repository scan |
-| Infrastructure as code | Terraform: state bootstrap, `edge` (DNS, website, email records), `starter` (65 resources, applied 2026-09-26) |
+| Runtime | One k3s node on the starter server (`t3a.medium`, 4 GiB + 2 GiB swap), shared Helm chart, about US$40/month (ADR-018, owner option 1) |
+| CI | Every push: docs, workspace, both APIs with PostgreSQL and object storage, three web apps, Terraform, delivery checks (shellcheck, planner tests, Helm lint, Kubernetes schema); Trivy repository scan; Dependabot weekly |
+| Continuous deployment | Every green `main` push: change-based image builds, Trivy, ECR, chart to ECR (OCI), `helm upgrade --rollback-on-failure`, node checks, public smoke test, automatic rollback |
+| Rehearsal | `rehearse-local.sh` proves install, migrations, routes, realm, and a forced rollback on local k3s before production |
+| Infrastructure as code | Terraform: state bootstrap, `edge` (DNS, website, email records), `starter` (server, backups, ECR, S3, DNS, SES, deploy role, budget) |
 | Company website | Continuous deployment to S3 and CloudFront on every push |
-| Oxinov Edu hosting | Server, backups, DNS, ECR, and SES ready; **first deploy blocked** by Trivy findings in the upstream Keycloak 26.7.3 image |
-| Continuous deployment | Written, not yet merged: change-based builds, automatic rollback, smoke tests, `oxctl`, Helm chart |
-| Cost control | Budget alert at US$50/month (85% and 100% actual, 100% forecast) |
+| Cost control | Budget US$50/month in Terraform (alerts at 85% and 100% actual, 100% forecast) |
 
-## Phase 1 — Go live with continuous deployment (now, about 1 week)
+## Phase 1 — Go live with continuous deployment (now)
 
-1. Upgrade Keycloak to 26.7.4 (same minor as the email-code extension, ADR-016) and confirm the image
-   passes the Trivy gate; never weaken the gate to ship.
-2. Merge the continuous-deployment work (ADR-018 to record): `release-plan.sh` builds only changed
-   services, `deploy.sh` health-checks and rolls back automatically, `smoke-test.sh` checks the public
-   sites and that the admin console stays hidden, `oxctl` covers daily operations, and the Helm chart is
-   validated in CI (`helm lint`, `kubeconform`) with `shellcheck` and the planner tests.
-3. First production deploy; configure the sign-in realm; verify sign-in end to end with a verified address.
-4. Request SES production access (owner, text in the runbook), then test a code to a new address.
-5. Record NFR-17 (continuous delivery) and the rule in AGENTS.md.
+1. Keycloak 26.7.4 passes the Trivy gate with reviewed, expiring exceptions for upstream libraries (done).
+2. Continuous deployment on k3s: planner, node bootstrap, Helm release with automatic rollback, smoke
+   test, `oxctl`, `check-delivery.sh`, `rehearse-local.sh`, ADR-018, NFR-17, and the AGENTS.md rules (done).
+3. Apply the Terraform additions (backup and chart repositories, budget import) after the owner's "yes apply".
+4. First production release through the pipeline; realm configured; sign-in verified end to end with a
+   verified address.
+5. Request SES production access (owner, text in the runbook), then test a code to a new address.
 
 **Exit:** `edu`, `app`, and `id.oxinov.com` serve over HTTPS; a push to `main` is live in about
 15 minutes with no manual step; a deliberately broken release rolls itself back; the nightly backup exists in S3.
@@ -86,12 +85,11 @@ region or product needs isolation.
 
 | Step | What changes | Approximate cost |
 |---|---|---|
-| Managed data | Amazon RDS PostgreSQL (Multi-AZ when promised), automated backups, copy to Hyderabad | +US$60–120 |
-| Managed runtime | ECS Fargate behind an Application Load Balancer with CloudFront and WAF (ADR-009) | total US$150–250 |
-| Kubernetes option | EKS with the Helm chart, GitOps (Argo CD), External Secrets, cert-manager, autoscaling, and canary releases (Argo Rollouts); needs its own ADR | total US$250–400 |
+| Bigger node | Same k3s node resized to `t3a.large` (8 GiB) when memory is the only limit; one Terraform change | +US$30 (or a Savings Plan) |
+| Managed data | Amazon RDS PostgreSQL (Multi-AZ when promised), automated backups, copy to Hyderabad; chart `postgres.enabled: false` | +US$60–120 |
+| Managed Kubernetes | Amazon EKS with the same chart and images, GitOps (Argo CD), External Secrets, cert-manager, cluster autoscaling, and canary releases (Argo Rollouts), behind CloudFront and WAF | total US$250–400 |
 
-The same images, migrations, and settings move unchanged; only the runtime changes. Choose ECS or EKS
-by team skills at that time; the Helm chart keeps the Kubernetes path ready.
+The same images, chart, migrations, and scripts move unchanged; only the cluster changes (ADR-018).
 
 ## Phase 6 — More products and mobile (with each product launch)
 

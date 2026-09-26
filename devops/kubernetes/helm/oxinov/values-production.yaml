@@ -1,0 +1,10 @@
+# Starter server (one k3s node, t3a.medium, 4 GiB; ADR-018, owner decision: stay within US$50 a month).
+# One replica per service keeps memory at about 2.5 GiB; rolling updates start the new pod before stopping
+# the old one, so a release still has no downtime for the stateless services.
+services:
+  edu-api: { replicas: 1 }
+  platform-api: { replicas: 1 }
+  edu-web: { replicas: 1 }
+  platform-web: { replicas: 1 }
+  keycloak: { replicas: 1 }
+  mail-relay: { replicas: 1 }
