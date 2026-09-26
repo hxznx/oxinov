@@ -28,7 +28,7 @@ variable "search_verification_txt" {
     verified site from Google Search Console, so it needs no record. These values are public in DNS.
   EOT
   type        = list(string)
-  default     = []
+  default     = ["google-site-verification=bXe176aapC8FXyHo1QZCvxJCzbNQkxbgnvbZzoF-cSw"]
 
   validation {
     condition = alltrue([
