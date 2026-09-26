@@ -2,7 +2,7 @@
 
 **Status:** Audit and plan, 2026-09-26. **Owner:** founder (content), engineering (technical items). Related: [marketing plan](MARKETING.md), [brand](../design/BRAND.md), website code `frontend/company-web`.
 
-Oxinov's audience is **global**, so search is planned as **international SEO**: English as the source language, more languages added by demand, and every page discoverable in every market we serve.
+Oxinov's audience is **global** and its only language is **English** (ADR-020). Search is planned as **one English site ranked worldwide**: people search in English from every country, and people who prefer another language read our pages through browser translation.
 
 ## Audit of oxinov.com (2026-09-26)
 
@@ -13,7 +13,7 @@ Oxinov's audience is **global**, so search is planned as **international SEO**: 
 | `robots.txt` | **Missing** | No sitemap pointer |
 | Social share images (Open Graph, 1200 × 630) | **Missing** | Plain, image-less link previews everywhere |
 | Structured data (JSON-LD) | **Missing** | No rich results; no Organization facts for search engines |
-| Languages and `hreflang` | English only, no language structure | Invisible to people searching in other languages |
+| Language markup | English only (correct under ADR-020) | Add `translate="no"` on brand names so translators keep them intact |
 | Web app manifest and icons | **Missing** | No home-screen icon on Android |
 | Canonical URLs | Not set | Risk of duplicate URLs |
 | HTTPS, HSTS, global CDN | Done (CloudFront, worldwide edge locations) | Good |
@@ -22,26 +22,26 @@ Oxinov's audience is **global**, so search is planned as **international SEO**: 
 
 ## Technical fixes (engineering, in `frontend/company-web`)
 
-1. **`app/sitemap.ts`** listing every public page in every language, with `lastModified` and language alternates.
+1. **`app/sitemap.ts`** listing every public page with `lastModified`.
 2. **`app/robots.ts`** allowing everything and pointing to `https://oxinov.com/sitemap.xml`.
-3. **Per-page metadata** in every language: a unique title (≤ 60 characters), description (≤ 155 characters), and `alternates.canonical`.
-4. **Open Graph images** per page type and language (`opengraph-image.tsx`), plus `twitter-image`.
+3. **Per-page metadata:** a unique title (≤ 60 characters), description (≤ 155 characters), and `alternates.canonical`.
+4. **Open Graph images** per page type (`opengraph-image.tsx`), plus `twitter-image`, with short English text.
 5. **JSON-LD structured data:**
    - `Organization` (name, logo, URL, `sameAs` social profiles, contact points with languages served) on every page;
    - `LocalBusiness` for the headquarters office (Lalitpur) on the contact page, alongside global contact options;
    - `SoftwareApplication` for Oxinov Edu (EducationalApplication, `offers` in USD and local currencies once prices are set);
    - `FAQPage` on pricing and product pages; `BreadcrumbList` on nested pages.
-6. **International structure:** English at the root (`/`) and other languages in subfolders (`/hi/`, `/ja/`, `/es/`, `/ar/`, …) on the same domain, so authority is shared; `hreflang` for every language plus `x-default`; a language switcher that never forces a redirect by IP; right-to-left layout for Arabic and other RTL languages.
-7. **Local signals without separate sites:** local currency on pricing pages, local contact options, local examples, and customer stories from each market.
+6. **One English site, translation-friendly:** `lang="en"` on every page; no language subfolders and no `hreflang`; never block translation (no `translate="no"` except on "Oxinov", product names, and code); keep text as real text, not inside images; let layouts stretch when a translator lengthens words; never redirect by the visitor's country.
+7. **Worldwide signals without translated pages:** local currency on pricing pages, contact options across time zones, and customer stories from many countries (in English).
 8. **Manifest and icons:** `app/manifest.ts` with 192, 512, and maskable icons from the approved app icon.
-9. **Performance everywhere:** Core Web Vitals "good" on a low-cost Android phone on a slow 4G connection (LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1; NFR-01); script fonts loaded only for their languages (brand T3).
-10. **CI check:** every page and language has a unique title, description, canonical URL, `hreflang` set, and valid JSON-LD; `sitemap.xml` lists every route.
+9. **Performance everywhere:** Core Web Vitals "good" on a low-cost Android phone on a slow 4G connection (LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1; NFR-01); Latin fonts only on the website (brand T3).
+10. **CI check:** every page has `lang="en"`, a unique title, description, canonical URL, and valid JSON-LD; `sitemap.xml` lists every route.
 
 **Product apps:** pages behind sign-in on `edu.oxinov.com` and `app.oxinov.com` are `noindex`. Later, public course pages of organisations that opt in can be indexable with `Course` structured data, which can bring organic traffic from every country.
 
 ## Keywords and content
 
-Target clusters, first in English, then in each new language (native keyword research per language; validate volumes in Search Console and keyword tools before writing):
+Target clusters, all in English (validate worldwide volumes in Search Console and keyword tools before writing):
 
 | Cluster | Example English searches | Page or article |
 | --- | --- | --- |
@@ -51,7 +51,7 @@ Target clusters, first in English, then in each new language (native keyword res
 | Language and skill schools | "software for language schools", "coding bootcamp LMS", "training institute management software" | Industry pages |
 | Company | "Oxinov", "Oxinov Edu" | Home, About, profiles |
 
-**Content rules:** one clear topic per page; the answer in the first paragraph; original screenshots and videos; every language written or reviewed natively (never raw machine translation); examples from many countries; link articles to the product page; update yearly. Comparison pages stay factual and dated.
+**Content rules:** one clear topic per page; the answer in the first paragraph; plain global English that translates well; original screenshots and videos with English captions; examples from many countries; link articles to the product page; update yearly. Comparison pages stay factual and dated.
 
 ## Off-site
 
@@ -64,7 +64,7 @@ Target clusters, first in English, then in each new language (native keyword res
 
 | Metric | Target by month 6 | Tool |
 | --- | --- | --- |
-| Pages indexed | All public pages in all languages | Search Console, Bing |
+| Pages indexed | All public pages | Search Console, Bing |
 | Clicks from search | 3,000 per month, from 10 or more countries | Search Console |
 | Branded search position ("Oxinov") | 1 worldwide | Search Console |
 | Core Web Vitals | All "good" | Search Console, PageSpeed Insights |
@@ -75,5 +75,5 @@ Target clusters, first in English, then in each new language (native keyword res
 1. Week 1: sitemap, robots, canonical URLs, per-page descriptions, share images, `Organization` JSON-LD, manifest, new global site title (engineering, about 1 day).
 2. Week 1: verify Search Console and Bing through Terraform DNS records; claim business profiles (owner).
 3. Weeks 2–4: font budget (brand T1–T3), `SoftwareApplication` and FAQ data; the English Edu product page and first comparison page.
-4. Month 2 onward: add languages in the order the marketing waves choose, each with `hreflang`, native copy, and its own articles and videos.
-5. Monthly: review Search Console by country and language, fix errors, and update keywords.
+4. Month 2 onward: two English articles a month, tutorial videos with captions, and a quarterly check that key pages read well through browser translation.
+5. Monthly: review Search Console by country, fix errors, and update keywords.

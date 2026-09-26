@@ -121,6 +121,12 @@ Consequences: no human deploy step; a red `main` blocks releases; migrations mus
 
 Consequences: more releases and namespaces to operate (automated by the catalog and scripts); events add eventual consistency and need idempotent handlers; a small amount of platform work lands before the second product. Alternatives considered: one release for everything (simplest, but one bad change rolls back the whole company), a service mesh (too heavy for one node), and a message broker such as Kafka or RabbitMQ (always-on cost and operations; SNS/SQS costs cents at this scale).
 
+## ADR-020: English-only product and company language
+
+**Date:** 2026-09-26. **Status:** Accepted (owner decision: "my company will only the english language … they can use the translator"). Every text Oxinov writes is in English only: websites, product interfaces, emails and notifications, policies, help, marketing, and support. Readers who prefer another language use their browser's or device's built-in translation, so pages must never block it (`lang="en"`, `translate="no"` only on brand names and code) and all copy follows the plain-English rules in the [brand voice](../design/BRAND.md#voice). Course content is separate: teachers and learners may write lessons, questions, and answers in any language and script, and the platform keeps full Unicode and right-to-left support for that content (NFR-08, FR-LANG-902). Locale settings that are not language (currency, time zone, date and number formats) still follow the reader.
+
+Consequences: one set of copy and no translation cost or per-language pages; faster releases; smaller websites (Latin fonts only in the interface). Machine translation can misread idioms or legal nuance, so policies state that the English text is the binding version, and copy is written for translation. Replaces the "English and Nepali at launch" plan in FR-SITE-2101, FR-POLICY-2401, the policy framework, and the UI guidelines. Alternatives considered: native translations per market (costly to write and keep in sync, and slower to release), and English plus one local language (favors one country over a global audience).
+
 ## Pending
 
 Choose company-platform product owners, AWS account and operations owners, identity operations model, final production sizing, Nepal and international payment providers, SIEM hosting/retention/on-call ownership, AI pilot owners/model aliases/approved data/budgets, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).

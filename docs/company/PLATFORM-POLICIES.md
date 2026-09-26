@@ -44,4 +44,4 @@ Every action records a reason code and actor, notifies the person with the appea
 
 ## Governance
 
-Each policy has an owner, version history, review date, and translations (English and Nepali at launch). Policy text is published on the company website and linked from every product footer, the sign-in page, and the relevant just-in-time acceptance screen.
+Each policy has an owner, version history, and review date, and is written in plain English only (ADR-020); readers may use a translator, and the English text is the binding version. Policy text is published on the company website and linked from every product footer, the sign-in page, and the relevant just-in-time acceptance screen.

@@ -24,24 +24,24 @@ Naming rules:
 
 **Status:** Proposed 2026-09-26 for owner approval. Marketing and SEO plans build on it: [marketing](../marketing/MARKETING.md), [SEO](../marketing/SEO.md).
 
-Oxinov is a **global technology company** headquartered in Lalitpur. Its products are built for everyone, in every country: global by default and local where it matters (language, currency, payment, time zone). The headquarters is part of the story, never a limit on who the products are for.
+Oxinov is a **global technology company** headquartered in Lalitpur. Its products are built for everyone, in every country, in **one language: English** (ADR-020). People who prefer another language read Oxinov through their browser's or device's built-in translation, so all Oxinov text is written to translate well. Local details that are not language (currency, payment method, time zone, date format) still follow the reader. The headquarters is part of the story, never a limit on who the products are for.
 
 | Element | Oxinov (company) | Oxinov Edu (first product) |
 | --- | --- | --- |
 | Mission | Build world-class technology that helps people everywhere learn, work, and trade | Help every teacher, school, and learner in the world teach and learn online as easily as in class |
-| Positioning | One global account across many useful products, designed to work for everyone: any language, any device, any connection | The complete online classroom for any school or teacher: courses, video, audio, books, quizzes, exams, assignments, and class discussion in one place |
+| Positioning | One global account across many useful products, designed to work for everyone: any device, any connection, clear English that translates well | The complete online classroom for any school or teacher: courses, video, audio, books, quizzes, exams, assignments, and class discussion in one place |
 | Primary audience | Schools, businesses, creators, and professionals worldwide | Training institutes, language and exam-prep schools, IT and skill academies, tutors, and schools of any size, in any country |
 | Secondary audience | Partners, investors, and developers | Learners of every age, and the parents or employers who pay |
-| Proof points | Security-first engineering; one sign-in across products; accessible (WCAG 2.2 AA) and fast on low-cost phones | Works on any phone and slow connections; multilingual; join by class code; teachers edit everything themselves; fair local pricing |
+| Proof points | Security-first engineering; one sign-in across products; accessible (WCAG 2.2 AA) and fast on low-cost phones | Works on any phone and slow connections; teachers can teach in any language; join by class code; teachers edit everything themselves; fair local pricing |
 
 **Messaging pillars** (every page and post supports at least one):
 
-1. **For everyone, everywhere:** your language, your currency, your time zone; works on any phone, even on slow connections.
+1. **For everyone, everywhere:** clear English that any translator can read, your currency and time zone, and it works on any phone, even on slow connections.
 2. **Everything in one place:** lessons, video and audio, books, quizzes, mock exams, assignments, notes, and class discussion.
 3. **Easy for teachers:** set up a course in an afternoon without IT staff; invite a class with a code.
 4. **Safe and trustworthy:** each organisation's data kept separate; sign-in without passwords; honest practice-exam labels; privacy by design.
 
-**Tagline candidates** (English is the master; each language gets a native adaptation, not a word-for-word translation; test with users before print):
+**Tagline candidates** (English only; test with users, including people who read them through a translator):
 
 | Brand | Candidates |
 | --- | --- |
@@ -50,7 +50,12 @@ Oxinov is a **global technology company** headquartered in Lalitpur. Its product
 
 The current website title, "Technology built in Nepal", describes the origin rather than the audience; replace it with the approved company tagline.
 
-**Name in other scripts:** the Latin wordmark "Oxinov" is used worldwide and never translated. Where a market searches in its own script, add an approved transliteration in page text and metadata only (for example Devanagari or Japanese katakana), confirmed by native speakers.
+## Language policy (owner decision, 2026-09-26, ADR-020)
+
+- **Oxinov writes in English only:** websites, product screens, emails, notifications, policies, help, marketing, and support. There are no translated versions to maintain.
+- **Readers translate for themselves:** pages never block browser translation (`lang="en"` on every page, no `translate="no"` except on brand names, code, and the logo), and layouts allow translated text to grow by up to 40% without breaking.
+- **Course content is the teacher's choice:** teachers and learners write lessons, questions, and answers in any language and script (NFR-08, FR-LANG-902); the interface around them stays English.
+- **Brand names are never translated:** mark "Oxinov" and product names with `translate="no"` so translators keep them intact.
 
 ## Cyberpunk principles
 
@@ -184,7 +189,7 @@ All fonts have open licences and are self-hosted. Type scale (rem, 16 px base): 
 
 ## Voice
 
-Confident, clear, and future-facing, but never cryptic. Short sentences and plain words; the tech flavor lives in the visuals and HUD labels, not in jargon. English first, then more languages, with the same meaning in each. Error messages say what happened and what to do next.
+Confident, clear, and future-facing, but never cryptic. Short sentences and plain words; the tech flavor lives in the visuals and HUD labels, not in jargon. English only, written so that a machine translator gives a correct result in any language. Error messages say what happened and what to do next.
 
 | Do | Don't |
 | --- | --- |
@@ -194,7 +199,8 @@ Confident, clear, and future-facing, but never cryptic. Short sentences and plai
 | "Rs 1,500 a month for up to 100 learners." | "Affordable pricing!!!" |
 
 - **Tone by moment:** marketing is warm and ambitious; product screens are calm and exact; errors are kind and specific; security and billing are formal.
-- **Every language:** English is the source language. Other languages are written or reviewed by native speakers in natural, modern wording (never raw machine translation); dates, numbers, and currencies follow the reader's locale; product names stay in Latin script.
+- **Write for translation (plain global English):** one idea per sentence, sentences under 20 words, active voice, and the same word for the same thing every time (for example always "course", never also "class" and "program"). Avoid idioms, slang, sports or cultural references, puns, and phrasal verbs with many meanings ("set up" is fine; "hit the ground running" is not). Write numbers as digits, spell out abbreviations once, and never put text inside images, where translators cannot reach it.
+- **Locale without translation:** dates, times, numbers, and currencies follow the reader's settings (for example 26 Sep 2026 or 9/26/2026; 1,500.00 or 1.500,00), while the words stay English.
 - **Claims:** no "best", "#1", "guaranteed", or exam-pass promises; every number (learners, schools, uptime) must be true on the day it is published.
 - **Inclusion:** gender-neutral wording; names, places, and examples from many countries and cultures; images of real people of different ages, backgrounds, and abilities, with consent; no idioms, humor, or symbols that only work in one culture.
 - **Global by default:** never assume a country, currency, calendar, or phone format; say "your country" or detect it, and let people change it.
@@ -221,16 +227,16 @@ The website currently loads **5 families in 26 files (about 668 KB)** and preloa
 | --- | --- |
 | T1 | Performance budget: at most **120 KB of fonts** on first view; preload only Inter (body) and Orbitron (hero); load the rest on demand (`preload: false`). |
 | T2 | Orbitron: one weight (700), for the logo lockup and hero titles only. Rajdhani: two weights (600, 700). Inter: the variable font, latin subset. JetBrains Mono: one weight (500). |
-| T3 | Load script fonts only where that script appears: Noto Sans Devanagari on Hindi and Nepali pages, Noto Sans JP or KR in Japanese or Korean pages and lessons, Noto Sans Arabic (with right-to-left layout) when Arabic launches. Latin-script languages need no extra font. |
+| T3 | The interface is English, so websites and app screens load Latin fonts only. Script fonts (Noto Sans Devanagari, JP, KR, Arabic, and others) load only inside course content that uses them, never on marketing pages. Rely on system fonts as the fallback for translated pages. |
 | T4 | Minimum body size 16 px, line height 1.6 for lessons; never set Rajdhani below 18 px (it is condensed and hard to read small). |
-| T5 | For each non-Latin script, test headings in Rajdhani (where it has the script) against the matching Noto Sans family with native readers; choose the one they read faster. |
+| T5 | Check that key pages still look right when a browser translates them into long-word languages (German), a non-Latin script (Hindi, Japanese), and a right-to-left language (Arabic). |
 
 ### Brand assets checklist
 
 | Asset | Status | Needed for |
 | --- | --- | --- |
 | Logo files (6 SVG and PNG variants) | Done | Everything |
-| Social share images (1200 × 630) for the company and each product, per language | Missing | Link previews on Facebook, WhatsApp, LinkedIn, X, LINE, and others (see [SEO](../marketing/SEO.md)) |
+| Social share images (1200 × 630) for the company and each product (short English text only) | Missing | Link previews on Facebook, WhatsApp, LinkedIn, X, LINE, and others (see [SEO](../marketing/SEO.md)) |
 | Social profile set: avatar 400 × 400, Facebook cover 1640 × 624, YouTube banner 2560 × 1440 | Missing | Facebook, Instagram, TikTok, YouTube, LinkedIn |
 | Web app manifest and icons (192, 512, maskable) | Missing on the website | "Add to home screen" on Android |
 | Email signature and letterhead (Daylight colors) | Missing | Zoho mailboxes, invoices, proposals |

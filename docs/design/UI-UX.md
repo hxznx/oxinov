@@ -14,7 +14,7 @@ The cyberpunk visual system is subordinate to usability. Reduce effects and use 
 - Ask for phone, KYC, payment, policy, organization, and advanced configuration only when the intended action requires them.
 - Show total price, fees, renewal, responsibility, data use, status, consequence, and next step before commitment.
 - Preserve valid input and drafts, make retry idempotent, and return users to their intended action after sign-in, verification, payment, or reconnection.
-- Design and test English and Nepali meaning, mobile and desktop, low-bandwidth recovery, light and dark themes, keyboard and assistive technology, and low digital confidence.
+- Design in plain English that translates well (ADR-020) and test pages through browser translation (a long-word language, a non-Latin script, and right-to-left), mobile and desktop, low-bandwidth recovery, light and dark themes, keyboard and assistive technology, and low digital confidence.
 - Provide visible support, report, dispute, appeal, export, and deletion paths where relevant.
 
 ## LMS-specific rules

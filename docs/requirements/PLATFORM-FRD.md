@@ -46,7 +46,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 
 ### 3.1 Company website (SITE)
 
-**FR-SITE-2101 — Company presence.** `oxinov.com` must present Oxinov Pvt. Ltd., its ten divisions, launched products, coming-soon products, research, careers, contact, and legal pages in English and Nepali. Unlaunched products and divisions are labeled as future initiatives.
+**FR-SITE-2101 — Company presence.** `oxinov.com` must present Oxinov Pvt. Ltd., its ten divisions, launched products, coming-soon products, research, careers, contact, and legal pages in English, readable through browser translation (no `translate="no"` except on brand names and code). Unlaunched products and divisions are labeled as future initiatives. *Changed 2026-09-26 by owner decision (ADR-020): English only; was English and Nepali.*
 *Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [blueprint](../company/PLATFORM-BLUEPRINT.md).
 - Acceptance: Given a visitor on any page, the header shows the Oxinov logo, division and product navigation, and a Sign in action.
 - Acceptance: Given an unlaunched product, its page states "coming soon" and offers no sign-up or purchase.
@@ -134,7 +134,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 
 ### 3.4 Policies (POLICY)
 
-**FR-POLICY-2401 — Versioned policies.** Every policy must be published with an ID, version, effective date, and English and Nepali text at `oxinov.com/legal/*`.
+**FR-POLICY-2401 — Versioned policies.** Every policy must be published with an ID, version, effective date, and English text at `oxinov.com/legal/*`, stating that the English version is binding when read through a translator. *Changed 2026-09-26 by owner decision (ADR-020): English only; was English and Nepali.*
 *Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [policies](../company/PLATFORM-POLICIES.md).
 - Acceptance: Given a new version, the previous version remains readable in the history.
 
