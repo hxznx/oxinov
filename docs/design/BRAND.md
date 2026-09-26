@@ -20,6 +20,38 @@ Naming rules:
 - Do not use the legacy concept names KrishiConnect, Kaji, or BT-Bazz on Oxinov products.
 - Product names describe the job to be done; avoid invented sub-brands.
 
+## Brand strategy
+
+**Status:** Proposed 2026-09-26 for owner approval. Marketing and SEO plans build on it: [marketing](../marketing/MARKETING.md), [SEO](../marketing/SEO.md).
+
+Oxinov is a **global technology company** headquartered in Lalitpur. Its products are built for everyone, in every country: global by default and local where it matters (language, currency, payment, time zone). The headquarters is part of the story, never a limit on who the products are for.
+
+| Element | Oxinov (company) | Oxinov Edu (first product) |
+| --- | --- | --- |
+| Mission | Build world-class technology that helps people everywhere learn, work, and trade | Help every teacher, school, and learner in the world teach and learn online as easily as in class |
+| Positioning | One global account across many useful products, designed to work for everyone: any language, any device, any connection | The complete online classroom for any school or teacher: courses, video, audio, books, quizzes, exams, assignments, and class discussion in one place |
+| Primary audience | Schools, businesses, creators, and professionals worldwide | Training institutes, language and exam-prep schools, IT and skill academies, tutors, and schools of any size, in any country |
+| Secondary audience | Partners, investors, and developers | Learners of every age, and the parents or employers who pay |
+| Proof points | Security-first engineering; one sign-in across products; accessible (WCAG 2.2 AA) and fast on low-cost phones | Works on any phone and slow connections; multilingual; join by class code; teachers edit everything themselves; fair local pricing |
+
+**Messaging pillars** (every page and post supports at least one):
+
+1. **For everyone, everywhere:** your language, your currency, your time zone; works on any phone, even on slow connections.
+2. **Everything in one place:** lessons, video and audio, books, quizzes, mock exams, assignments, notes, and class discussion.
+3. **Easy for teachers:** set up a course in an afternoon without IT staff; invite a class with a code.
+4. **Safe and trustworthy:** each organisation's data kept separate; sign-in without passwords; honest practice-exam labels; privacy by design.
+
+**Tagline candidates** (English is the master; each language gets a native adaptation, not a word-for-word translation; test with users before print):
+
+| Brand | Candidates |
+| --- | --- |
+| Oxinov | "Technology for everyone." · "Where learning meets work." · "Built for the world." |
+| Oxinov Edu | "Your classroom, online." · "Teach anywhere. Learn anywhere." |
+
+The current website title, "Technology built in Nepal", describes the origin rather than the audience; replace it with the approved company tagline.
+
+**Name in other scripts:** the Latin wordmark "Oxinov" is used worldwide and never translated. Where a market searches in its own script, add an approved transliteration in page text and metadata only (for example Devanagari or Japanese katakana), confirmed by native speakers.
+
 ## Cyberpunk principles
 
 1. **Dark first.** Near-black backgrounds with deep blue-violet surfaces. Dark is the default theme in every product.
@@ -124,9 +156,9 @@ LMS tenant branding (logo and accent) may replace the product accent inside a te
 | Role | Font | Notes |
 | --- | --- | --- |
 | Display (hero titles, logo-like headings, Latin only) | Orbitron | Futuristic geometric face; 32 px and larger only; never for paragraphs |
-| Headings (Latin and Nepali) | Rajdhani | Techno-condensed face that includes Devanagari, so English and Nepali headings match |
+| Headings (Latin and Devanagari scripts) | Rajdhani | Techno-condensed face that includes Devanagari, so headings match across English, Hindi, Nepali, and other Devanagari languages |
 | Body and UI text | Inter | High readability at small sizes |
-| Nepali body text | Noto Sans Devanagari | Loaded for `ne` locale and Devanagari content |
+| Devanagari body text | Noto Sans Devanagari | Loaded only for Devanagari locales (for example `hi`, `ne`) and content |
 | Japanese (LMS content) | Noto Sans JP | Loaded only where Japanese content appears |
 | HUD labels, codes, prices, data | JetBrains Mono | Uppercase small labels (for example `// STATUS: VERIFIED`), tabular numbers |
 
@@ -152,4 +184,56 @@ All fonts have open licences and are self-hosted. Type scale (rem, 16 px base): 
 
 ## Voice
 
-Confident, clear, and future-facing, but never cryptic. Short sentences and plain words; the tech flavor lives in the visuals and HUD labels, not in jargon. English and Nepali at launch, with the same meaning in both. Error messages say what happened and what to do next.
+Confident, clear, and future-facing, but never cryptic. Short sentences and plain words; the tech flavor lives in the visuals and HUD labels, not in jargon. English first, then more languages, with the same meaning in each. Error messages say what happened and what to do next.
+
+| Do | Don't |
+| --- | --- |
+| "Invite your class with a code." | "Leverage our seamless onboarding paradigm." |
+| "Your quiz is saved." | "Operation completed successfully." |
+| "This is a practice score, not an official result." | "Guaranteed to pass JLPT!" |
+| "Rs 1,500 a month for up to 100 learners." | "Affordable pricing!!!" |
+
+- **Tone by moment:** marketing is warm and ambitious; product screens are calm and exact; errors are kind and specific; security and billing are formal.
+- **Every language:** English is the source language. Other languages are written or reviewed by native speakers in natural, modern wording (never raw machine translation); dates, numbers, and currencies follow the reader's locale; product names stay in Latin script.
+- **Claims:** no "best", "#1", "guaranteed", or exam-pass promises; every number (learners, schools, uptime) must be true on the day it is published.
+- **Inclusion:** gender-neutral wording; names, places, and examples from many countries and cultures; images of real people of different ages, backgrounds, and abilities, with consent; no idioms, humor, or symbols that only work in one culture.
+- **Global by default:** never assume a country, currency, calendar, or phone format; say "your country" or detect it, and let people change it.
+
+## Proposed refinements (2026-09-26, owner approval needed)
+
+These are recommendations from a review of the tokens and the live website. Nothing below changes `packages/design-system` until the owner approves it; each approved item then updates the tokens, the contrast tests, and this document together.
+
+### Color
+
+| # | Finding | Proposal |
+| --- | --- | --- |
+| C1 | The Edu accent `#B388FF` is close to the logo's middle violet `#C040FF`, so Edu screens read as "Oxinov" rather than "Edu". | Move Edu to a clearly different hue, for example neon teal-green `#2EF2B8` (dark, 13.9:1) / `#00785A` (light, 5.1:1). |
+| C2 | Market's acid green `#39FF14` is easy to confuse with the success green `#00FF9C`; people with red-green color blindness may not tell "Market" from "success". | Keep success green; move Market to lime `#C6FF00` (dark, 16.9:1) / `#5A7300` (light, 5.0:1), and always pair status colors with an icon and text. |
+| C3 | Dark neon is right for the brand and marketing, but long lesson reading and exams on phones are tiring in dark mode for many learners and parents. | Keep dark as the brand default, but let Edu follow the device setting (system light or dark) and default lesson and exam reading surfaces to the Daylight theme. |
+| C4 | Yellow `#FCEE0A` is both "highlight" and "warning". | Keep yellow for warnings only; use the signature gradient or magenta for "new" and "featured" badges. |
+| C5 | Photos and illustrations have no color rules yet. | Real, well-lit photos with a subtle cyan-magenta duotone overlay on marketing pages only; never over text. |
+
+### Typography
+
+The website currently loads **5 families in 26 files (about 668 KB)** and preloads 10 of them (about 372 KB) on every first visit, which slows the first view on mobile data, especially for the many people worldwide on low-cost phones and slower networks (Largest Contentful Paint target: 2.5 s, NFR-01).
+
+| # | Proposal |
+| --- | --- |
+| T1 | Performance budget: at most **120 KB of fonts** on first view; preload only Inter (body) and Orbitron (hero); load the rest on demand (`preload: false`). |
+| T2 | Orbitron: one weight (700), for the logo lockup and hero titles only. Rajdhani: two weights (600, 700). Inter: the variable font, latin subset. JetBrains Mono: one weight (500). |
+| T3 | Load script fonts only where that script appears: Noto Sans Devanagari on Hindi and Nepali pages, Noto Sans JP or KR in Japanese or Korean pages and lessons, Noto Sans Arabic (with right-to-left layout) when Arabic launches. Latin-script languages need no extra font. |
+| T4 | Minimum body size 16 px, line height 1.6 for lessons; never set Rajdhani below 18 px (it is condensed and hard to read small). |
+| T5 | For each non-Latin script, test headings in Rajdhani (where it has the script) against the matching Noto Sans family with native readers; choose the one they read faster. |
+
+### Brand assets checklist
+
+| Asset | Status | Needed for |
+| --- | --- | --- |
+| Logo files (6 SVG and PNG variants) | Done | Everything |
+| Social share images (1200 × 630) for the company and each product, per language | Missing | Link previews on Facebook, WhatsApp, LinkedIn, X, LINE, and others (see [SEO](../marketing/SEO.md)) |
+| Social profile set: avatar 400 × 400, Facebook cover 1640 × 624, YouTube banner 2560 × 1440 | Missing | Facebook, Instagram, TikTok, YouTube, LinkedIn |
+| Web app manifest and icons (192, 512, maskable) | Missing on the website | "Add to home screen" on Android |
+| Email signature and letterhead (Daylight colors) | Missing | Zoho mailboxes, invoices, proposals |
+| One-page brand sheet (logo, colors, fonts, do and don't) | Missing | Partners, printers, freelancers |
+| Photo and illustration library | Missing | Marketing pages and ads |
+
