@@ -57,6 +57,7 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 | --- | --- | --- |
 | [Oxinov Edu](products/lms/README.md) | `edu.oxinov.com` | [Product record](products/lms/README.md), [brief](products/lms/BRIEF.md), [PRD](products/lms/PRD.md), [FRD](requirements/LMS-FRD.md), [NFR](requirements/NFR.md), [LMS architecture](architecture/ARCHITECTURE.md), [LMS tech stack](architecture/TECH-STACK.md), [LMS roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [LMS UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
 | [Oxinov Commodity Market](products/COMMODITY-MARKET.md) | `market.oxinov.com` | [Charter](products/COMMODITY-MARKET.md) ([Agri Market](products/AGRI-MARKET.md) superseded) |
+| [Oxinov HR](products/hr/README.md) | `hr.oxinov.com` | [Product record](products/hr/README.md), [FRD](requirements/HR-FRD.md) (draft for owner review) |
 | [Oxinov Jobs](products/jobs/README.md) | `jobs.oxinov.com` | [Product record](products/jobs/README.md), [charter](products/JOBS.md), [FRD](requirements/JOBS-FRD.md) |
 | Oxinov Services Market | `services.oxinov.com` | [Charter](products/SERVICES-MARKET.md) |
 

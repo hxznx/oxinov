@@ -51,7 +51,8 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 | 5000–5999 | MKT | Commodity Market FRD (after release gate) | Commodity Market owner |
 | 6000–6999 | JOB | [Jobs FRD](JOBS-FRD.md) | Jobs owner |
 | 7000–7999 | SVC | Services Market FRD (after release gate) | Services Market owner |
-| 8000–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
+| 8000–8499 | HR | [Oxinov HR FRD](HR-FRD.md) (draft, not approved) | HR product owner |
+| 8500–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
 
 LMS areas keep their historical numbers. New LMS requirements continue in the LMS block.
 
