@@ -22,7 +22,7 @@ variable "github_environment" {
 
 variable "search_verification_txt" {
   description = <<-EOT
-    Search engine domain-ownership values published as apex TXT records (docs/marketing/seo/search-console.md).
+    Search engine domain-ownership values published as apex TXT records (docs/13-marketing/seo/search-console.md).
     Google Search Console: add oxinov.com as a Domain property, copy its TXT value
     ("google-site-verification=..."), add it here, and apply. Bing Webmaster Tools then imports the
     verified site from Google Search Console, so it needs no record. These values are public in DNS.

@@ -13,16 +13,16 @@ Read these files before changing code:
 - README.md
 - AGENTS.md
 - docs/README.md
-- docs/company/PLATFORM-BLUEPRINT.md
-- docs/company/PLATFORM-POLICIES.md
-- docs/architecture/IDENTITY-AND-ACCESS.md
-- docs/company/SUBSCRIPTION-MODEL.md
-- docs/design/BRAND.md and docs/design/DESIGN-SYSTEM.md
-- docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md
-- docs/architecture/COMPANY-TECH-STACK.md
-- docs/engineering/COMPANY-PROJECT-STRUCTURE.md
-- docs/planning/COMPANY-PLATFORM-ROADMAP.md
-- the product charter in docs/products/ for any product touched by the milestone
+- docs/01-company/platform-blueprint.md
+- docs/01-company/platform-policies.md
+- docs/04-architecture/identity-and-access.md
+- docs/01-company/subscription-model.md
+- docs/07-design/brand.md and docs/07-design/design-system.md
+- docs/04-architecture/platform-architecture.md
+- docs/04-architecture/tech-stack.md
+- docs/08-engineering/company-project-structure.md
+- docs/11-planning/company-roadmap.md
+- the product charter in docs/02-products/ for any product touched by the milestone
 - all existing Oxinov Edu PRD, FRD, NFR, security, data, API, and DevOps documents relevant to the milestone
 
 Context:
@@ -44,7 +44,7 @@ Architecture requirements:
 - Use REST/OpenAPI and generated clients. Version API and event contracts.
 - Use payment adapters and an internal ledger. For Nepal, do not assume Stripe eligibility; keep Khalti and eSewa integrations server-verified and idempotent.
 - Instrument with OpenTelemetry. Keep Prometheus, Alertmanager, Grafana, Loki, and Tempo operational telemetry separate from the SIEM and SOC pipeline.
-- Use the approved Oxinov logo files in packages/design-system/assets/brand/ and the cyberpunk design tokens in docs/design/BRAND.md; never hard-code colors or redraw the logo. Dark is the default theme and the light Daylight theme is required. Meet WCAG 2.2 AA and honor reduced motion.
+- Use the approved Oxinov logo files in packages/design-system/assets/brand/ and the cyberpunk design tokens in docs/07-design/brand.md; never hard-code colors or redraw the logo. Dark is the default theme and the light Daylight theme is required. Meet WCAG 2.2 AA and honor reduced motion.
 - Use strict TypeScript, SOLID where useful, KISS, DRY for stable shared rules, YAGNI, dependency inversion at provider boundaries, least privilege, secure defaults, accessibility, internationalization, and privacy by design.
 - AI-generated changes can create drafts through typed authorized actions. AI never receives direct production SQL, shell, secrets, payment, publishing, role-change, deletion, or cross-tenant privileges.
 
@@ -64,7 +64,7 @@ Implement only this milestone now:
 ## First command to run
 
 ```text
-Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with packages/design-system (cyberpunk tokens from docs/design/BRAND.md, dark default and Daylight theme, self-hosted Orbitron, Rajdhani, Inter, Noto Sans Devanagari, and JetBrains Mono, and the approved logo SVGs), the Full effect level on hero sections, accessible responsive navigation, company and product landing pages, one division page for each of the ten strategic pillars listed in docs/company/PLATFORM-BLUEPRINT.md (education, ai, engineering, services, robotics, studio, agritech, space, research, production), placeholder routes for careers, contact, privacy, terms, and security contact, company identity (Oxinov Pvt. Ltd., registered in Lalitpur, Nepal), health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify Oxinov Edu as the first product, show unified Oxinov HR, Oxinov Commodity Market, and Oxinov Services Market as coming soon, and label all unlaunched sectors as future initiatives. Include a pricing page placeholder at /pricing and legal routes under /legal. Do not move the current Edu applications or rename their internal `lms` technical identifiers in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
+Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with packages/design-system (cyberpunk tokens from docs/07-design/brand.md, dark default and Daylight theme, self-hosted Orbitron, Rajdhani, Inter, Noto Sans Devanagari, and JetBrains Mono, and the approved logo SVGs), the Full effect level on hero sections, accessible responsive navigation, company and product landing pages, one division page for each of the ten strategic pillars listed in docs/01-company/platform-blueprint.md (education, ai, engineering, services, robotics, studio, agritech, space, research, production), placeholder routes for careers, contact, privacy, terms, and security contact, company identity (Oxinov Pvt. Ltd., registered in Lalitpur, Nepal), health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify Oxinov Edu as the first product, show unified Oxinov HR, Oxinov Commodity Market, and Oxinov Services Market as coming soon, and label all unlaunched sectors as future initiatives. Include a pricing page placeholder at /pricing and legal routes under /legal. Do not move the current Edu applications or rename their internal `lms` technical identifiers in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
 ```
 
 ## Second command after Phase 1 passes

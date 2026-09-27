@@ -1,6 +1,6 @@
 # @oxinov/design-system
 
-Shared Oxinov design tokens and brand assets for every web app. Specifications live in the [brand system](../../docs/design/BRAND.md) and [design system](../../docs/design/DESIGN-SYSTEM.md); `src/tokens.ts` implements them and must change together with those documents.
+Shared Oxinov design tokens and brand assets for every web app. Specifications live in the [brand system](../../docs/07-design/brand.md) and [design system](../../docs/07-design/design-system.md); `src/tokens.ts` implements them and must change together with those documents.
 
 ## Use in an app
 

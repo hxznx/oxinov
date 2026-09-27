@@ -6,7 +6,7 @@ import type { IdentityResolver, VerifiedIdentity } from '@oxinov/server-kit';
 
 /**
  * Maps a verified identity to its global UserProfile, creating it on first sign-in. Tenant roles
- * are never taken from the token; they come from PostgreSQL memberships (docs/api/AUTH.md).
+ * are never taken from the token; they come from PostgreSQL memberships (docs/06-api/api-auth.md).
  */
 @Injectable()
 export class IdentityService implements IdentityResolver<AuthUser> {

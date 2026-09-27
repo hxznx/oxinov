@@ -14,7 +14,7 @@ Public website of **Oxinov Pvt. Ltd.** at `oxinov.com`. It is a Next.js App Rout
 | `/careers/`, `/contact/`, `/security/` | Company contact routes |
 | `/legal/` and `/legal/<doc>/` | Policy pages (text pending legal review) |
 
-All copy lives in `src/content/site.ts`. Search and sharing settings (titles, descriptions, canonical URLs, sitemap, structured data) live in `src/seo/`, one file per job; see [its README](src/seo/README.md) and the [SEO plan](../../docs/marketing/seo/README.md). Styling uses Tailwind CSS mapped to `@oxinov/design-system` tokens; components never hard-code colors. Dark is the default theme, the Daylight theme follows the device until the visitor chooses, and reduced motion turns animation off.
+All copy lives in `src/content/site.ts`. Search and sharing settings (titles, descriptions, canonical URLs, sitemap, structured data) live in `src/seo/`, one file per job; see [its README](src/seo/README.md) and the [SEO plan](../../docs/13-marketing/seo/README.md). Styling uses Tailwind CSS mapped to `@oxinov/design-system` tokens; components never hard-code colors. Dark is the default theme, the Daylight theme follows the device until the visitor chooses, and reduced motion turns animation off.
 
 ## Commands (from the repository root)
 

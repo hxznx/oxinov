@@ -2,7 +2,7 @@ import type { LoggerService } from '@nestjs/common';
 
 type Level = 'debug' | 'info' | 'warn' | 'error';
 
-// Keys whose values must never reach logs (docs/engineering/LOGGING.md).
+// Keys whose values must never reach logs (docs/08-engineering/logging.md).
 const REDACTED_KEYS = /^(password|token|secret|authorization|cookie|prompt|answer|response|card|code|phone)/i;
 
 function redact(value: unknown, depth = 0): unknown {

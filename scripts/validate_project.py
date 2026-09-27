@@ -1,4 +1,4 @@
-"""Validate the Oxinov company platform and OxinovLMS project scaffold."""
+"""Validate the Oxinov company platform and product scaffold, documentation, and catalogs."""
 
 from __future__ import annotations
 
@@ -8,6 +8,8 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
+from doc_links import local_targets, markdown_files, unreachable_docs
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -23,54 +25,53 @@ REQUIRED = [
     "devops/kubernetes/helm/oxinov/values.yaml", "devops/kubernetes/scripts/deploy.sh",
     "devops/kubernetes/scripts/bootstrap-node.sh", "devops/kubernetes/README.md",
     "devops/README.md", "devops/docker/README.md",
-    "docs/products/lms/BRIEF.md", "docs/products/lms/PRD.md", "docs/requirements/frd/EDU-FRD.md", "docs/requirements/NFR.md",
-    "docs/README.md", "docs/company/PLATFORM-BLUEPRINT.md",
-    "docs/company/PLATFORM-POLICIES.md", "docs/company/SUBSCRIPTION-MODEL.md",
-    "docs/company/AI-IMPLEMENTATION-STRATEGY.md",
-    "docs/research/README.md", "docs/research/PORTFOLIO.md",
-    "docs/research/PROJECT-TEMPLATE.md",
-    "docs/research/USER-CENTERED-PRODUCT-STANDARD.md",
-    "docs/architecture/IDENTITY-AND-ACCESS.md",
-    "docs/requirements/README.md", "docs/requirements/frd/PLATFORM-FRD.md",
-    "docs/requirements/frd/HR-FRD.md", "docs/requirements/frd/MARKET-FRD.md",
-    "docs/requirements/frd/SERVICES-MARKET-FRD.md",
-    "docs/requirements/frd/STUDIO-FRD.md", "docs/requirements/frd/JP-FRD.md",
-    "docs/requirements/frd/TECH-FRD.md",
-    "docs/products/README.md", "docs/products/AGRI-MARKET.md",
-    "docs/products/COMMODITY-MARKET.md",
-    "docs/products/hr/README.md", "docs/products/SERVICES-MARKET.md",
-    "docs/architecture/ARCHITECTURE.md", "docs/architecture/TECH-STACK.md",
-    "docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md",
-    "docs/architecture/COMPANY-TECH-STACK.md",
-    "docs/architecture/AWS-CLOUD-ARCHITECTURE.md",
-    "docs/architecture/AI-PLATFORM-ARCHITECTURE.md",
-    "docs/architecture/ADR.md", "docs/architecture/DATA-FLOW.md",
-    "docs/architecture/INTEGRATIONS.md", "docs/architecture/SCALABILITY.md",
-    "docs/design/UI-UX.md", "docs/design/USER-FLOWS.md",
-    "docs/design/DESIGN-SYSTEM.md", "docs/design/BRAND.md", "docs/design/ACCESSIBILITY.md",
-    "docs/data/DATABASE-DESIGN.md", "docs/data/DATA-MODEL.md",
-    "docs/data/ERD.md", "docs/data/MIGRATION-STRATEGY.md",
-    "docs/data/DATA-RETENTION.md", "docs/api/API-SPEC.md",
-    "docs/api/AUTH.md", "docs/api/ERROR-HANDLING.md",
-    "docs/api/API-VERSIONING.md", "docs/engineering/CODING-STANDARDS.md",
-    "docs/engineering/PROJECT-STRUCTURE.md", "docs/engineering/GIT-WORKFLOW.md",
-    "docs/engineering/COMPANY-PROJECT-STRUCTURE.md",
-    "docs/engineering/TESTING-STRATEGY.md", "docs/engineering/ERROR-HANDLING.md",
-    "docs/engineering/LOGGING.md", "docs/engineering/DEPENDENCY-POLICY.md",
-    "docs/security/SECURITY.md", "docs/security/THREAT-MODEL.md",
-    "docs/security/AI-GOVERNANCE.md",
-    "docs/security/SECRETS-MANAGEMENT.md", "docs/security/PRIVACY.md",
-    "docs/security/SOC.md",
-    "docs/devops/DEV-SETUP.md", "docs/devops/ENVIRONMENTS.md",
-    "docs/devops/CI-CD.md", "docs/devops/DEPLOYMENT.md",
-    "docs/devops/OBSERVABILITY.md", "docs/devops/BACKUP-RECOVERY.md",
-    "docs/devops/ROLLBACK.md", "docs/planning/ROADMAP.md",
-    "docs/planning/COMPANY-PLATFORM-ROADMAP.md",
-    "docs/planning/AI-IMPLEMENTATION-ROADMAP.md",
-    "docs/planning/TASKS.md", "docs/planning/ACCEPTANCE-CRITERIA.md",
-    "docs/planning/RISKS.md", "docs/planning/CHANGELOG.md",
+    "docs/02-products/edu/edu-brief.md", "docs/02-products/edu/edu-prd.md", "docs/03-requirements/frd/edu-frd.md", "docs/03-requirements/nfr.md",
+    "docs/README.md", "docs/01-company/platform-blueprint.md",
+    "docs/01-company/platform-policies.md", "docs/01-company/subscription-model.md",
+    "docs/01-company/ai-strategy.md",
+    "docs/12-research/README.md", "docs/12-research/portfolio.md",
+    "docs/12-research/project-template.md",
+    "docs/12-research/user-centered-product-standard.md",
+    "docs/04-architecture/identity-and-access.md",
+    "docs/03-requirements/README.md", "docs/03-requirements/frd/platform-frd.md",
+    "docs/03-requirements/frd/hr-frd.md", "docs/03-requirements/frd/market-frd.md",
+    "docs/03-requirements/frd/services-market-frd.md",
+    "docs/03-requirements/frd/studio-frd.md", "docs/03-requirements/frd/jp-frd.md",
+    "docs/03-requirements/frd/tech-frd.md",
+    "docs/02-products/README.md", "docs/02-products/market/market-charter.md",
+    "docs/02-products/hr/README.md", "docs/02-products/services-market/services-market-charter.md",
+    "docs/02-products/edu/edu-architecture.md", "docs/02-products/edu/edu-tech-stack.md",
+    "docs/04-architecture/platform-architecture.md",
+    "docs/04-architecture/tech-stack.md",
+    "docs/04-architecture/cloud-architecture.md",
+    "docs/04-architecture/ai-architecture.md",
+    "docs/04-architecture/adr/README.md", "docs/04-architecture/data-flow.md",
+    "docs/04-architecture/integrations.md", "docs/04-architecture/scalability.md",
+    "docs/02-products/edu/edu-ui-ux.md", "docs/02-products/edu/edu-user-flows.md",
+    "docs/07-design/design-system.md", "docs/07-design/brand.md", "docs/07-design/accessibility.md",
+    "docs/05-data/database-design.md", "docs/05-data/data-model.md",
+    "docs/02-products/edu/edu-erd.md", "docs/05-data/migration-strategy.md",
+    "docs/05-data/data-retention.md", "docs/06-api/api-spec.md",
+    "docs/06-api/api-auth.md", "docs/06-api/api-errors.md",
+    "docs/06-api/api-versioning.md", "docs/08-engineering/coding-standards.md",
+    "docs/08-engineering/project-structure.md", "docs/08-engineering/git-workflow.md",
+    "docs/08-engineering/company-project-structure.md",
+    "docs/08-engineering/testing-strategy.md", "docs/08-engineering/error-handling.md",
+    "docs/08-engineering/logging.md", "docs/08-engineering/dependency-policy.md",
+    "docs/09-security/security-baseline.md", "docs/09-security/threat-model.md",
+    "docs/09-security/ai-governance.md",
+    "docs/09-security/secrets-management.md", "docs/09-security/privacy.md",
+    "docs/09-security/soc.md",
+    "docs/10-devops/dev-setup.md", "docs/10-devops/environments.md",
+    "docs/10-devops/ci-cd.md", "docs/10-devops/deployment.md",
+    "docs/10-devops/observability.md", "docs/10-devops/backup-recovery.md",
+    "docs/10-devops/rollback.md", "docs/02-products/edu/edu-roadmap.md",
+    "docs/11-planning/company-roadmap.md",
+    "docs/11-planning/ai-roadmap.md",
+    "docs/11-planning/tasks.md", "docs/02-products/edu/edu-acceptance-criteria.md",
+    "docs/11-planning/risks.md", "docs/11-planning/changelog.md",
     "frontend/README.md", "frontend/company-web/README.md", "frontend/platform-web/README.md",
-    "frontend/products/lms-web/README.md", "frontend/mobile/README.md", "docs/products/lms/README.md",
+    "frontend/products/lms-web/README.md", "frontend/mobile/README.md", "docs/02-products/edu/README.md",
     "backend/README.md", "backend/gateway/README.md", "backend/platform-api/README.md",
     "backend/workers/platform-worker/README.md", "backend/products/lms-api/README.md",
     "backend/products/lms-api/README.md", "backend/products/lms-worker/README.md", "backend/products/lms-chat/README.md",
@@ -115,16 +116,16 @@ def check_docs(errors: list[str]) -> None:
         elif not path.read_bytes().strip():
             errors.append(f"Empty: {relative}")
 
-    frd = ROOT / "docs/requirements/frd/EDU-FRD.md"
+    frd = ROOT / "docs/03-requirements/frd/edu-frd.md"
     if frd.is_file():
         text = frd.read_text(encoding="utf-8")
         ids = re.findall(r"(?m)^\*\*(FR-[A-Z]+-\d{3,4})", text)
         if len(ids) < 55:
             errors.append(f"FRD has {len(ids)} requirement IDs; expected at least 55")
 
-    # Requirement IDs are unique across every FRD in the company (docs/requirements/README.md).
+    # Requirement IDs are unique across every FRD in the company (docs/03-requirements/README.md).
     all_ids: list[str] = []
-    for path in sorted((ROOT / "docs/requirements/frd").glob("*-FRD.md")):
+    for path in sorted((ROOT / "docs/03-requirements/frd").glob("*-frd.md")):
         if path.is_file():
             all_ids += re.findall(r"(?m)^\*\*(FR-[A-Z]+-\d{3,4})", path.read_text(encoding="utf-8"))
     duplicates = sorted({i for i in all_ids if all_ids.count(i) > 1})
@@ -135,14 +136,13 @@ def check_docs(errors: list[str]) -> None:
     if reused:
         errors.append(f"Requirement numbers reused across areas: {reused}")
 
-    doc_map = ROOT / "docs/README.md"
-    if doc_map.is_file():
-        mapped = doc_map.read_text(encoding="utf-8")
-        for doc in sorted((ROOT / "docs").rglob("*.md")):
-            relative = doc.relative_to(ROOT / "docs").as_posix()
-            is_redirect = doc.read_text(encoding="utf-8").startswith("# Moved")
-            if relative != "README.md" and not is_redirect and f"({relative}" not in mapped:
-                errors.append(f"Document not linked from docs/README.md: docs/{relative}")
+    markdown = markdown_files(ROOT)
+    for doc in unreachable_docs(ROOT, markdown):
+        errors.append(f"Document not reachable from docs/README.md (link it from a folder index): {doc}")
+    for doc in markdown:
+        name = doc.rsplit("/", 1)[-1]
+        if doc.startswith("docs/") and name != "README.md" and name != name.lower():
+            errors.append(f"Document names under docs/ are lowercase kebab-case: {doc}")
 
     dashboard = ROOT / "monitoring/grafana/dashboards/platform-overview.json"
     if dashboard.is_file():
@@ -216,17 +216,12 @@ def check_docs(errors: list[str]) -> None:
         if (ROOT / legacy).exists():
             errors.append(f"Legacy root must not return: {legacy}/")
 
-    link_pattern = re.compile(r"(?<!!)\[[^]]+\]\(([^)]+)\)")
-    for path in ROOT.glob("**/*.md"):
-        parts = path.relative_to(ROOT).parts
-        if "node_modules" in parts or any(part.startswith(".") for part in parts):
+    for relative in markdown:
+        if relative.startswith(".claude/"):
             continue
-        for target in link_pattern.findall(path.read_text(encoding="utf-8")):
-            if target.startswith(("http://", "https://", "mailto:", "#")):
-                continue
-            local = target.split("#", 1)[0].replace("%20", " ")
-            if local and not (path.parent / local).exists():
-                errors.append(f"Broken link: {path.relative_to(ROOT)} -> {target}")
+        for target in local_targets(relative, (ROOT / relative).read_text(encoding="utf-8")):
+            if not (ROOT / target).exists():
+                errors.append(f"Broken link: {relative} -> {target}")
 
 
 def check_security(errors: list[str]) -> None:

@@ -1,9 +1,9 @@
 # Production runbook: Kubernetes (k3s)
 
 Oxinov production runs on one k3s node on the starter server (`t3a.medium`, 4 GiB plus 2 GiB swap, Mumbai),
-deployed with one Helm chart ([ADR-017](../../docs/architecture/ADR.md), [ADR-018](../../docs/architecture/ADR.md),
+deployed with one Helm chart ([ADR-017](../../docs/04-architecture/adr/README.md), [ADR-018](../../docs/04-architecture/adr/README.md),
 NFR-17). AWS resources: `devops/terraform/environments/production/starter`. Direction and phases:
-[DevOps roadmap](../../docs/devops/ROADMAP.md).
+[DevOps roadmap](../../docs/10-devops/devops-roadmap.md).
 
 | Address | Service |
 |---|---|
@@ -126,13 +126,13 @@ Scale triggers and the EKS path are in the roadmap.
 ## Adding a service
 
 Start with `oxctl new-service <product> <api|web|worker>`: it performs steps 1 and 2 for a small
-standard-library service (see the [service catalog](../../docs/engineering/SERVICE-CATALOG.md#adding-a-service)).
+standard-library service (see the [service catalog](../../docs/08-engineering/service-catalog.md#adding-a-service)).
 By hand:
 
 1. Register it in the root [`services.yaml`](../../services.yaml) (product, owner, source path, build recipe,
    inputs, Helm tag, workload, port, host) and run `python scripts/service_catalog.py`. The release planner,
    deploy workflow, `deploy.sh`, rehearsal, `oxctl`, CODEOWNERS and the
-   [service catalog page](../../docs/engineering/SERVICE-CATALOG.md) pick it up from there.
+   [service catalog page](../../docs/08-engineering/service-catalog.md) pick it up from there.
 2. Add a Dockerfile target, a `services:` entry in `helm/oxinov/values.yaml` named after the workload (and its
    size in `values-production.yaml`), its `priority` tier (`growth` until launch, ADR-022), measured memory
    requests, its environment in `templates/_helpers.tpl`, and network-policy rules.

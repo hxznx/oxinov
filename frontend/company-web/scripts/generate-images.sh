@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Renders the website's social share image and app icons as PNG files (docs/marketing/seo/technical.md).
+# Renders the website's social share image and app icons as PNG files (docs/13-marketing/seo/technical.md).
 # The site is a static export on S3, so these are real files, generated once and committed; run again
 # only when the logo or the design changes:
 #   bash frontend/company-web/scripts/generate-images.sh

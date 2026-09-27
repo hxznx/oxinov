@@ -1,6 +1,6 @@
 # Security operations
 
-This area contains executable security engineering and SOC assets. Product security policy remains under `docs/security/`; operational rules, schemas, runbooks, and incident templates live here.
+This area contains executable security engineering and SOC assets. Product security policy remains under `docs/09-security/`; operational rules, schemas, runbooks, and incident templates live here.
 
 ```text
 security/
@@ -13,4 +13,4 @@ security/
   evidence/           local evidence instructions; actual evidence is ignored by Git
 ```
 
-Application uptime and performance remain under `monitoring/`. Security events are sent to a separately access-controlled SIEM. See [SOC design](../docs/security/SOC.md).
+Application uptime and performance remain under `monitoring/`. Security events are sent to a separately access-controlled SIEM. See [SOC design](../docs/09-security/soc.md).

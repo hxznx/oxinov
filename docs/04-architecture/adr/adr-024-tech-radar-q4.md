@@ -1,0 +1,12 @@
+# ADR-024: Technology radar and stack improvements (2026-Q4)
+
+**Date:** 2026-09-28. **Status:** Accepted (owner request of 2026-09-28: "improve the company tech stack and framework"). Builds on ADR-018 (delivery), ADR-019 (multi-product platform), and ADR-021 (starter baseline). The living list is the [technology radar](../tech-radar.md), reviewed quarterly.
+
+Decisions:
+
+1. **Adopt, at no extra AWS cost:** OpenTelemetry in `server-kit` and the Next.js apps with the Grafana Cloud free tier as the backend (production metrics, traces, and logs without using the node's memory); generated OpenAPI clients (`openapi-typescript`, `openapi-fetch`) with an `oasdiff` breaking-change check; Playwright end-to-end tests with axe accessibility checks; Semgrep SAST in the security workflow; CycloneDX SBOMs and cosign keyless image signatures verified before release; pino structured logging with redaction in `server-kit`; the React Compiler in the web apps; Node.js 24 LTS before Node.js 22 leaves support (April 2027); and `pg_stat_statements` in PostgreSQL.
+2. **Trial, each with a named first use:** Vitest (mail relay, then the platform API), Testcontainers, the outbox to SNS/SQS for the first cross-product event (Edu certificate to the Oxinov HR candidate profile), OpenFeature flags for paid checkout, Graviton multi-architecture images, and Expo for the Edu learner app.
+3. **Hold:** GraphQL, per-feature microservices, service meshes, Kafka/RabbitMQ, self-hosted observability on the production node, a second transactional database or ORM, and additional package managers or runtimes.
+4. **Golden path:** every new service follows the radar's scaffold, API, data, web, events, tests, and delivery steps (`oxctl new-service`).
+
+Consequences: the stack stays small and current, with one way to build each kind of service; Grafana Cloud adds a third-party processor for operational telemetry (no personal data: the redaction rules and bounded labels of NFR-07 apply, and the privacy notice lists it); each adoption lands as its own tested change, updates the radar and [CURRENT-STATE.md](../current-state.md), and follows AGENTS.md checks. Alternatives considered: self-hosting Prometheus, Loki, and Tempo on the node (memory the applications need), Amazon Managed Prometheus and Grafana (monthly cost before revenue), and switching wholesale to newer runtimes such as Bun (tooling and support risk for no measured gain).

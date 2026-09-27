@@ -1,6 +1,6 @@
 # Command: implement the Oxinov AI foundation
 
-Use this command only after Phase 0 of `docs/planning/AI-IMPLEMENTATION-ROADMAP.md` is approved. It implements the foundation and two staff-only pilots. It does not authorize production deployment, customer-data ingestion, a learner-facing tutor, autonomous agents, model training, or state-changing tools.
+Use this command only after Phase 0 of `docs/11-planning/ai-roadmap.md` is approved. It implements the foundation and two staff-only pilots. It does not authorize production deployment, customer-data ingestion, a learner-facing tutor, autonomous agents, model training, or state-changing tools.
 
 ```text
 You are implementing Phase 1 of the Oxinov AI foundation in this repository.
@@ -8,18 +8,18 @@ You are implementing Phase 1 of the Oxinov AI foundation in this repository.
 Read first:
 - AGENTS.md
 - README.md and docs/README.md
-- docs/company/AI-IMPLEMENTATION-STRATEGY.md
-- docs/architecture/AI-PLATFORM-ARCHITECTURE.md
-- docs/security/AI-GOVERNANCE.md
-- docs/planning/AI-IMPLEMENTATION-ROADMAP.md
-- docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md
-- docs/architecture/AWS-CLOUD-ARCHITECTURE.md
-- docs/architecture/IDENTITY-AND-ACCESS.md
-- docs/engineering/COMPANY-PROJECT-STRUCTURE.md
-- docs/engineering/CODING-STANDARDS.md
-- docs/engineering/TESTING-STRATEGY.md
-- docs/security/THREAT-MODEL.md
-- docs/devops/OBSERVABILITY.md
+- docs/01-company/ai-strategy.md
+- docs/04-architecture/ai-architecture.md
+- docs/09-security/ai-governance.md
+- docs/11-planning/ai-roadmap.md
+- docs/04-architecture/platform-architecture.md
+- docs/04-architecture/cloud-architecture.md
+- docs/04-architecture/identity-and-access.md
+- docs/08-engineering/company-project-structure.md
+- docs/08-engineering/coding-standards.md
+- docs/08-engineering/testing-strategy.md
+- docs/09-security/threat-model.md
+- docs/10-devops/observability.md
 
 Before coding, verify and report these approved inputs. If any is missing, create a reviewable proposal and stop before provider calls or data ingestion:
 - accountable owners;

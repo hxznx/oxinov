@@ -1,5 +1,5 @@
 /**
- * Stable API error codes (docs/api/ERROR-HANDLING.md). Clients branch on `code`, never on
+ * Stable API error codes (docs/06-api/api-errors.md). Clients branch on `code`, never on
  * `message`. Add codes deliberately; renaming one is a breaking API change.
  */
 export type ErrorCode =

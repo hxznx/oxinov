@@ -42,7 +42,7 @@ Cluster and server
 Services
   new-service <product> <api|web|worker> [--port N] [--host NAME] [--dry-run]
                              Scaffold <product>-<kind>: code, Dockerfile stage, services.yaml and Helm entries
-                             (the product needs a record in docs/products/<product>/)
+                             (the product needs a record in docs/02-products/<product>/)
   services                   The service catalog: every service, its product, port, and host
 
 Infrastructure

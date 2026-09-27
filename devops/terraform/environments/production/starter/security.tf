@@ -1,4 +1,4 @@
-# AWS account security monitoring (docs/security/SECURITY.md roadmap items 1 and 2; owner approval
+# AWS account security monitoring (docs/09-security/security-baseline.md roadmap items 1 and 2; owner approval
 # 2026-09-26: "yes add cloudtrail and guardduty").
 #   - CloudTrail: one multi-region trail of management events (every AWS API call), with log-file
 #     validation, encrypted with a customer-managed key, kept 365 days in a private bucket. The first

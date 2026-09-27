@@ -1,0 +1,12 @@
+# 09 · Security
+
+How Oxinov protects accounts, tenants, data, and the platform, and how it detects and responds to security events. Detection rules, event schemas, and incident runbooks live in [`security/`](../../security/README.md).
+
+| Document | Purpose |
+| --- | --- |
+| [Security baseline](security-baseline.md) | Controls every service and change must meet |
+| [Threat model](threat-model.md) | Assets, threats, and mitigations |
+| [Privacy](privacy.md) | Personal data handling, export, and deletion |
+| [Secrets management](secrets-management.md) | Where secrets live and how they are rotated |
+| [AI governance](ai-governance.md) | Rules for every AI feature, model, prompt, and evaluation |
+| [Security operations (SOC)](soc.md) | Security events, detections, and incident handling |

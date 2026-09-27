@@ -7,7 +7,7 @@ import { MetricsService } from '../observability/metrics.service';
 
 /**
  * Liveness, readiness, and Prometheus metrics (NFR-12). /metrics must be reachable only on the
- * private network; the public ingress must not route it (docs/devops/OBSERVABILITY.md).
+ * private network; the public ingress must not route it (docs/10-devops/observability.md).
  */
 @ApiExcludeController()
 @Public()

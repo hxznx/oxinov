@@ -377,7 +377,7 @@ export const pricingFaqs: Question[] = [
   },
 ];
 
-/** Plan ladder from docs/company/SUBSCRIPTION-MODEL.md; prices are unapproved, so none are shown. */
+/** Plan ladder from docs/01-company/subscription-model.md; prices are unapproved, so none are shown. */
 export const plans = [
   { name: 'Free', audience: 'Everyone with an Oxinov account', summary: 'Core features of every launched product with fair usage limits. No card required.' },
   { name: 'Plus', audience: 'People who use Oxinov regularly', summary: 'Higher limits and premium features across products through Oxinov One.' },

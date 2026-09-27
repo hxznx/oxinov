@@ -2,7 +2,7 @@
 
 NestJS REST/OpenAPI service. It owns authorization, validation, tenant context, business
 transactions, and database access for request-driven operations. Requirements: `AGENTS.md`,
-`docs/requirements/frd/EDU-FRD.md`, `docs/api/`.
+`docs/03-requirements/frd/edu-frd.md`, `docs/06-api/`.
 
 ## What exists (first backend slice)
 

@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { StatusBadge } from '@/components/StatusBadge';
 import { divisions, products } from '@/content/site';
 
-// Division pages live at oxinov.com/<slug> (see docs/company/PLATFORM-BLUEPRINT.md).
+// Division pages live at oxinov.com/<slug> (see docs/01-company/platform-blueprint.md).
 export const dynamicParams = false;
 
 export function generateStaticParams() {

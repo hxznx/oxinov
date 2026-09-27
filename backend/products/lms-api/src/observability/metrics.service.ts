@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { APP_CONFIG, HttpMetrics, type ServiceConfig } from '@oxinov/server-kit';
 import { Counter } from 'prom-client';
 
-/** Shared HTTP metrics plus Edu-specific counters (docs/devops/OBSERVABILITY.md). */
+/** Shared HTTP metrics plus Edu-specific counters (docs/10-devops/observability.md). */
 @Injectable()
 export class MetricsService extends HttpMetrics {
   private readonly examSubmissionFailures: Counter<'reason_code'>;

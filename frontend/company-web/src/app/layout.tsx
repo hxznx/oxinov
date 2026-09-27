@@ -9,7 +9,7 @@ import './globals.css';
 
 // next/font downloads these at build time and serves them from this site (self-hosted fonts). The site is
 // English only (ADR-020), so only Latin subsets load. Only the body and hero fonts are preloaded; the
-// heading and HUD fonts load on first use (font budget, docs/design/BRAND.md typography T1-T3).
+// heading and HUD fonts load on first use (font budget, docs/07-design/brand.md typography T1-T3).
 const orbitron = Orbitron({ subsets: ['latin'], weight: ['500', '700'], variable: '--font-orbitron', display: 'swap' });
 const rajdhani = Rajdhani({
   subsets: ['latin'],
@@ -21,7 +21,7 @@ const rajdhani = Rajdhani({
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains', display: 'swap', preload: false });
 
-// Search and sharing defaults live in src/seo (docs/marketing/seo).
+// Search and sharing defaults live in src/seo (docs/13-marketing/seo).
 export const metadata: Metadata = siteMetadata;
 
 export default function RootLayout({ children }: { children: ReactNode }) {

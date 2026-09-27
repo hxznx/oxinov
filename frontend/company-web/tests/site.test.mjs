@@ -140,7 +140,7 @@ describe('static export', () => {
   });
 });
 
-// docs/marketing/seo/technical.md (code in src/seo) and ADR-020 (one English site that translates well).
+// docs/13-marketing/seo/technical.md (code in src/seo) and ADR-020 (one English site that translates well).
 describe('search and sharing', () => {
   const site = 'https://oxinov.com';
   const meta = (page, attr, name) =>

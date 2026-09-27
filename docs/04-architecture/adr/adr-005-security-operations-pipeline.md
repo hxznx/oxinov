@@ -1,0 +1,3 @@
+# ADR-005: Separate security operations pipeline
+
+**Date:** 2026-09-24. **Status:** Accepted as the baseline design. Operational metrics remain in Prometheus/Grafana. Security events follow the versioned schema under `security/soc/` and are sent to an access-controlled SIEM. OpenSearch Security Analytics with portable Sigma rules is the initial SIEM recommendation; a compatible managed SIEM may replace it. Amazon GuardDuty Runtime Monitoring supplies initial ECS Fargate runtime detections. Falco or GuardDuty may cover later EKS/EC2 workloads. Wazuh is optional when endpoint/host agents, file-integrity monitoring, inventory, or compliance capabilities justify the additional platform. Actual incident evidence is never stored in Git.

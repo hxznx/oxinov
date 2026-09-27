@@ -1,5 +1,5 @@
 /**
- * Stable API errors (docs/api/ERROR-HANDLING.md). Clients branch on `code`, never on `message`.
+ * Stable API errors (docs/06-api/api-errors.md). Clients branch on `code`, never on `message`.
  * Each API adds its own codes; renaming a code is a breaking API change.
  */
 export class DomainError<Code extends string = string> extends Error {

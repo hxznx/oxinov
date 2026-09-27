@@ -1,7 +1,7 @@
 # Oxinov Edu database (`lms`)
 
 Everything the Edu PostgreSQL database needs, owned by the [Edu API](../../../backend/products/lms-api/README.md).
-The [product record](../../../docs/products/lms/README.md) links the rest of the product.
+The [product record](../../../docs/02-products/edu/README.md) links the rest of the product.
 
 | Folder | Contents |
 | --- | --- |

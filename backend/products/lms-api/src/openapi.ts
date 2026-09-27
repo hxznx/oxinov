@@ -7,7 +7,7 @@ import { loadConfig } from './config/app-config';
 
 /**
  * Writes the OpenAPI contract to packages/contracts/openapi.json for web/mobile client
- * generation and CI contract diffs (docs/api/API-VERSIONING.md). No database connection is made.
+ * generation and CI contract diffs (docs/06-api/api-versioning.md). No database connection is made.
  */
 async function main(): Promise<void> {
   const config = loadConfig({

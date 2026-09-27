@@ -2,7 +2,7 @@
 
 These rules bind every coding assistant (Claude, Copilot, and others) and every person working in the Oxinov repository. `CLAUDE.md` and `.github/copilot-instructions.md` point here. They are written for the level this repository needs: an architect who owns boundaries and decisions, a DevOps engineer who owns delivery and cost, and a systems engineer who owns the running server. Act as all three.
 
-**How to use this file:** read sections 1–3 before any task, the section for your area before editing, and section 11 before reporting. Where this file and another document disagree, this file wins for *how to work*, the FRDs win for *what the product does*, [current state](docs/architecture/CURRENT-STATE.md) wins for *what runs today*, and the ADRs win for *why*. If the conflict matters, stop and ask the owner.
+**How to use this file:** read sections 1–3 before any task, the section for your area before editing, and section 11 before reporting. Where this file and another document disagree, this file wins for *how to work*, the FRDs win for *what the product does*, [current state](docs/04-architecture/current-state.md) wins for *what runs today*, and the ADRs win for *why*. If the conflict matters, stop and ask the owner.
 
 ## 1. What this repository is
 
@@ -13,11 +13,11 @@ The monorepo of **Oxinov Pvt. Ltd.**, organized as **company website → Oxinov 
 | Company website | `oxinov.com` | Live (S3 + CloudFront); SEO in `frontend/company-web/src/seo` |
 | Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Identity (email code) and portal foundation live; gateway folder remains planned |
 | Oxinov Edu | `edu.oxinov.com` | Live, in development; must stay working |
-| Oxinov HR | `hr.oxinov.com` | Candidate unified HR product: managed recruitment plus the approved direct-hiring requirements; not built or public ([record](docs/products/hr/README.md), [FRD](docs/requirements/frd/HR-FRD.md), ADR-025) |
+| Oxinov HR | `hr.oxinov.com` | Candidate unified HR product: managed recruitment plus the approved direct-hiring requirements; not built or public ([record](docs/02-products/hr/README.md), [FRD](docs/03-requirements/frd/hr-frd.md), ADR-025) |
 | Oxinov Market, Services Market | `market.`, `services.oxinov.com` | Draft charters and proposed FRDs only; do not scaffold |
 | Oxinov Studio, JP, Tech | Future or undecided | Proposed discovery FRDs only; definitions and release gates remain open; do not scaffold |
 
-Do not claim that an application, deployment, or integration works unless it was executed and verified. What is verified today is recorded in [current state](docs/architecture/CURRENT-STATE.md); update it in the same change as any runtime, data, security, or cost change.
+Do not claim that an application, deployment, or integration works unless it was executed and verified. What is verified today is recorded in [current state](docs/04-architecture/current-state.md); update it in the same change as any runtime, data, security, or cost change.
 
 ### 1.1 Production at a glance (ADR-017, ADR-018, ADR-021)
 
@@ -32,7 +32,7 @@ Internet ──443/80──▶ EC2 t3a.medium (ap-south-1, 4 GiB + 2 GiB swap, I
 oxinov.com ──▶ CloudFront ──▶ private S3 (static Next.js export)
 ```
 
-- **Services** are registered once in [`services.yaml`](services.yaml) and listed in the [service catalog](docs/engineering/SERVICE-CATALOG.md). Never hard-code a service list anywhere else.
+- **Services** are registered once in [`services.yaml`](services.yaml) and listed in the [service catalog](docs/08-engineering/service-catalog.md). Never hard-code a service list anywhere else.
 - **No staging environment** exists (ADR-021) until DevOps roadmap Phase 4 (a second developer, or the first paying school). Delivery changes are rehearsed on a throwaway local k3s instead.
 - **No cache, queue, or broker** runs today (ADR-021); add one only for a measured need, SQS first.
 - **Media** lives in a private S3 bucket behind short-lived presigned URLs, with no transcoding yet (ADR-021).
@@ -43,29 +43,29 @@ oxinov.com ──▶ CloudFront ──▶ private S3 (static Next.js export)
 ## 2. Read before you change anything
 
 Use [PROJECT-LIBRARY.md](PROJECT-LIBRARY.md) for category navigation and the
-[file catalog](docs/engineering/FILE-CATALOG.md) for alphabetical paths. After adding,
+[file catalog](docs/08-engineering/file-catalog.md) for alphabetical paths. After adding,
 removing or renaming repository files, run `python scripts/project_catalog.py` before validation.
 
-Start with [docs/README.md](docs/README.md), the documentation map. Then read what matches the task:
+Start with [docs/README.md](docs/README.md), the documentation map. Documents are grouped in numbered folders (`docs/01-company` to `docs/13-marketing`), each with a README index; file names are lowercase kebab-case, and a document about one product lives in `docs/02-products/<slug>/`. Then read what matches the task:
 
 | Task | Read first |
 | --- | --- |
-| Any change | This file, [current state](docs/architecture/CURRENT-STATE.md), [README.md](README.md), [platform blueprint](docs/company/PLATFORM-BLUEPRINT.md), [requirements standard](docs/requirements/README.md) |
-| Frontend, backend, database, scripts | [coding standards](docs/engineering/CODING-STANDARDS.md), [testing strategy](docs/engineering/TESTING-STRATEGY.md), [database design](docs/data/DATABASE-DESIGN.md), [dependency policy](docs/engineering/DEPENDENCY-POLICY.md) |
-| API contracts and errors | [API spec](docs/api/API-SPEC.md), [versioning](docs/api/API-VERSIONING.md), [API errors](docs/api/ERROR-HANDLING.md), [auth](docs/api/AUTH.md) |
-| Schema or data change | [migration strategy](docs/data/MIGRATION-STRATEGY.md), [data retention](docs/data/DATA-RETENTION.md), [privacy](docs/security/PRIVACY.md) |
-| Public website pages or search | [SEO](docs/marketing/seo/README.md), [`src/seo`](frontend/company-web/src/seo/README.md), NFR-19 |
-| Anything that costs money | [cost optimization](docs/devops/COST-OPTIMIZATION.md), NFR-18 |
-| Deployment, Kubernetes, the server | [production runbook](devops/kubernetes/README.md), [CI/CD](docs/devops/CI-CD.md), [rollback](docs/devops/ROLLBACK.md), [backup and recovery](docs/devops/BACKUP-RECOVERY.md), [service catalog](docs/engineering/SERVICE-CATALOG.md) |
-| Logging, metrics, alerts | [observability](docs/devops/OBSERVABILITY.md), [logging](docs/engineering/LOGGING.md), [SOC](docs/security/SOC.md) |
-| Platform feature (sign-in, trust, policies, plans, payments, KYC, portal) | [Platform FRD](docs/requirements/frd/PLATFORM-FRD.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [policies](docs/company/PLATFORM-POLICIES.md), [subscription model](docs/company/SUBSCRIPTION-MODEL.md) |
-| Oxinov Edu feature | [Edu product record](docs/products/lms/README.md), [Edu FRD](docs/requirements/frd/EDU-FRD.md), [NFR](docs/requirements/NFR.md), [Edu architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
-| Other product | Its record in [docs/products/](docs/products/README.md) and FRD in [docs/requirements/frd/](docs/requirements/frd/); build nothing until its release gate is approved |
-| Website or any UI | [brand](docs/design/BRAND.md), [design system](docs/design/DESIGN-SYSTEM.md), [accessibility](docs/design/ACCESSIBILITY.md), [user-centred product standard](docs/research/USER-CENTERED-PRODUCT-STANDARD.md) |
-| AI feature | [AI strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md) |
-| Data, API, security, or infrastructure | [company architecture](docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md), [company stack](docs/architecture/COMPANY-TECH-STACK.md), [AWS](docs/architecture/AWS-CLOUD-ARCHITECTURE.md), [ADRs](docs/architecture/ADR.md) (ADR-021 for today's baseline), [security baseline](docs/security/SECURITY.md), [threat model](docs/security/THREAT-MODEL.md) |
-| New product, service, or kind of offering | [company library standard](docs/engineering/COMPANY-LIBRARY-STANDARD.md), [target structure](docs/engineering/COMPANY-PROJECT-STRUCTURE.md) |
-| Research or experiment | [R&D operating system](docs/research/README.md) |
+| Any change | This file, [current state](docs/04-architecture/current-state.md), [README.md](README.md), [platform blueprint](docs/01-company/platform-blueprint.md), [requirements standard](docs/03-requirements/README.md) |
+| Frontend, backend, database, scripts | [coding standards](docs/08-engineering/coding-standards.md), [testing strategy](docs/08-engineering/testing-strategy.md), [database design](docs/05-data/database-design.md), [dependency policy](docs/08-engineering/dependency-policy.md) |
+| API contracts and errors | [API spec](docs/06-api/api-spec.md), [versioning](docs/06-api/api-versioning.md), [API errors](docs/06-api/api-errors.md), [auth](docs/06-api/api-auth.md) |
+| Schema or data change | [migration strategy](docs/05-data/migration-strategy.md), [data retention](docs/05-data/data-retention.md), [privacy](docs/09-security/privacy.md) |
+| Public website pages or search | [SEO](docs/13-marketing/seo/README.md), [`src/seo`](frontend/company-web/src/seo/README.md), NFR-19 |
+| Anything that costs money | [cost optimization](docs/10-devops/cost-optimization.md), NFR-18 |
+| Deployment, Kubernetes, the server | [production runbook](devops/kubernetes/README.md), [CI/CD](docs/10-devops/ci-cd.md), [rollback](docs/10-devops/rollback.md), [backup and recovery](docs/10-devops/backup-recovery.md), [service catalog](docs/08-engineering/service-catalog.md) |
+| Logging, metrics, alerts | [observability](docs/10-devops/observability.md), [logging](docs/08-engineering/logging.md), [SOC](docs/09-security/soc.md) |
+| Platform feature (sign-in, trust, policies, plans, payments, KYC, portal) | [Platform FRD](docs/03-requirements/frd/platform-frd.md), [identity and access](docs/04-architecture/identity-and-access.md), [policies](docs/01-company/platform-policies.md), [subscription model](docs/01-company/subscription-model.md) |
+| Oxinov Edu feature | [Edu product record](docs/02-products/edu/README.md), [Edu FRD](docs/03-requirements/frd/edu-frd.md), [NFR](docs/03-requirements/nfr.md), [Edu architecture](docs/02-products/edu/edu-architecture.md), [current code structure](docs/08-engineering/project-structure.md) |
+| Other product | Its record in [docs/02-products/](docs/02-products/README.md) and FRD in [docs/03-requirements/frd/](docs/03-requirements/frd/); build nothing until its release gate is approved |
+| Website or any UI | [brand](docs/07-design/brand.md), [design system](docs/07-design/design-system.md), [accessibility](docs/07-design/accessibility.md), [user-centred product standard](docs/12-research/user-centered-product-standard.md) |
+| AI feature | [AI strategy](docs/01-company/ai-strategy.md), [AI architecture](docs/04-architecture/ai-architecture.md), [AI governance](docs/09-security/ai-governance.md), [AI roadmap](docs/11-planning/ai-roadmap.md) |
+| Data, API, security, or infrastructure | [company architecture](docs/04-architecture/platform-architecture.md), [company stack](docs/04-architecture/tech-stack.md), [AWS](docs/04-architecture/cloud-architecture.md), [ADRs](docs/04-architecture/adr/README.md) (ADR-021 for today's baseline), [security baseline](docs/09-security/security-baseline.md), [threat model](docs/09-security/threat-model.md) |
+| New product, service, or kind of offering | [company library standard](docs/08-engineering/company-library-standard.md), [target structure](docs/08-engineering/company-project-structure.md) |
+| Research or experiment | [R&D operating system](docs/12-research/README.md) |
 
 Milestone build commands live in [prompts/](prompts/). Implement one milestone at a time.
 
@@ -89,11 +89,11 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
 ## 4. Architecture rules
 
 ### 4.1 Boundaries
-- **Keep one folder layout:** `frontend/`, `backend/`, `database/`, `packages/`, `devops/`, `monitoring/`, `security/`, `docs/`, `prompts/`. Each product has the same shelves under one stable slug (Edu is `lms`), per the [product plane template](docs/engineering/COMPANY-PROJECT-STRUCTURE.md#product-plane-template):
+- **Keep one folder layout:** `frontend/`, `backend/`, `database/`, `packages/`, `devops/`, `monitoring/`, `security/`, `docs/`, `prompts/`. Each product has the same shelves under one stable slug (Edu is `lms`), per the [product plane template](docs/08-engineering/company-project-structure.md#product-plane-template):
   - `frontend/products/<slug>-web`
   - `backend/products/<slug>-api` (and `-worker`, `-chat`)
   - `database/products/<slug>`
-  - `docs/products/<slug>`
+  - `docs/02-products/<slug>`
 - **Layering:** the platform control plane (`platform-api`, `platform-web`, `database/platform`) never contains product business logic. Products use platform and product APIs and events only; no product reads another product's database or imports another product's code.
 - **Clients:** frontends and mobile apps call versioned APIs from the server side and never connect to a database. Browsers never hold access tokens (`@oxinov/web-auth` keeps them in sealed server cookies).
 - **Shared packages:** `packages/*` contain stable, cross-product concerns only, and never import applications.
@@ -110,7 +110,7 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
 
 ### 4.3 Requirements and decisions
 - FRDs are the source of truth for behavior. Cite the requirement ID (for example `FR-TENANT-1605`) in code comments, tests, and pull requests for every behavior you change.
-- Never renumber or reuse a requirement ID. Add new IDs from the area's block in the [requirements standard](docs/requirements/README.md).
+- Never renumber or reuse a requirement ID. Add new IDs from the area's block in the [requirements standard](docs/03-requirements/README.md).
 - Do not silently change a recorded decision. Changing the stack, cloud, identity, payments, or architecture needs an ADR in the same change, with alternatives and consequences.
 
 ## 5. Data rules (PostgreSQL is the system of record, ADR-001, ADR-006)
@@ -130,7 +130,7 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
   - Forward-only, in expand → migrate → contract steps, so the previous image still runs against the new schema and an image rollback stays safe.
   - They run as the Helm pre-upgrade hook (`migrate` image) before new code starts.
   - The Prisma schema must match the migrations; CI's drift check fails otherwise.
-- **Personal data:** collect the minimum, never copy login data out of the identity service, and keep personal data out of logs, metrics labels, security events, fixtures, and prompts. Follow the [retention](docs/data/DATA-RETENTION.md) and [privacy](docs/security/PRIVACY.md) rules for deletion and export.
+- **Personal data:** collect the minimum, never copy login data out of the identity service, and keep personal data out of logs, metrics labels, security events, fixtures, and prompts. Follow the [retention](docs/05-data/data-retention.md) and [privacy](docs/09-security/privacy.md) rules for deletion and export.
 - **Recovery:** nightly `pg_dumpall` to S3 (30 days) and daily disk snapshots (7 days). A change that adds data outside PostgreSQL or S3 must state how it is backed up and restored.
 
 ## 6. Application rules
@@ -138,7 +138,7 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
 ### 6.1 APIs (NestJS, `@oxinov/server-kit`)
 - Validate every input at the boundary: DTOs with `class-validator`, and a global `ValidationPipe` with whitelist and forbid-non-whitelisted.
 - Authorize on the server for every protected action: token audience, tenant membership, role, entitlement, trust level (T0–T4), and policy acceptance. Ignore client-supplied roles and levels.
-- Errors use the stable codes in [API errors](docs/api/ERROR-HANDLING.md); never leak stack traces, SQL, or internal IDs of other tenants. An unknown or forbidden resource in another tenant answers "not found".
+- Errors use the stable codes in [API errors](docs/06-api/api-errors.md); never leak stack traces, SQL, or internal IDs of other tenants. An unknown or forbidden resource in another tenant answers "not found".
 - Every service exposes `/health/live` (process up) and `/health/ready` (dependencies reachable), logs one JSON line per event with a request ID, and shuts down gracefully on SIGTERM.
 - Keep the OpenAPI description current (`pnpm --filter @oxinov/lms-api openapi`) for every contract change.
 
@@ -222,7 +222,7 @@ What a push to `main` does, by kind of change:
   - Set `REHEARSAL_NAME` and `REHEARSAL_HTTPS_PORT` to avoid another session's rehearsal. Two clusters do not fit in 8 GB of RAM, so coordinate first.
 - **Cost is a requirement (NFR-18):**
   - Total AWS spend stays within the owner's budget (US$50 a month, Terraform `cost.tf`).
-  - State the monthly cost of any new resource in its plan and in [cost optimization](docs/devops/COST-OPTIMIZATION.md).
+  - State the monthly cost of any new resource in its plan and in [cost optimization](docs/10-devops/cost-optimization.md).
   - No always-on spend without a roadmap trigger and the owner's approval.
   - Prefer the single k3s node, bundled components, and lifecycle rules over managed extras until the roadmap says otherwise.
 
@@ -252,7 +252,7 @@ Every workload in the shared chart (`devops/kubernetes/helm/oxinov`) meets this 
   - `bootstrap-node.sh` is idempotent and pins k3s and Helm by SHA-256.
   - The instance runs Amazon Linux 2023 with automatic security updates, IMDSv2 (hop limit 2), an encrypted disk, CloudWatch recovery actions, and daily snapshots.
   - Never change the node by hand without writing the change back into the scripts or Terraform.
-- **Capacity:** check memory and disk before adding workloads (`oxctl status`). The scale-out triggers (EKS, RDS, CloudFront signed URLs, staging) live in the [DevOps roadmap](docs/devops/ROADMAP.md); do not pre-build them.
+- **Capacity:** check memory and disk before adding workloads (`oxctl status`). The scale-out triggers (EKS, RDS, CloudFront signed URLs, staging) live in the [DevOps roadmap](docs/10-devops/devops-roadmap.md); do not pre-build them.
 
 ### 9.2 Day-to-day commands (`devops/scripts/oxctl`)
 
@@ -276,21 +276,21 @@ Every workload in the shared chart (`devops/kubernetes/helm/oxinov`) meets this 
 2. **Diagnose** with `oxctl status`, `oxctl events`, `oxctl logs`, and the CloudWatch alarms. Record times in UTC.
 3. **Communicate** to the owner what users see, what you did, and what is next. Do not guess root causes.
 4. **Fix** through the normal pipeline, with a test that would have caught it, plus a smoke-test or rehearsal check if the gap was in delivery.
-5. **Record** the incident in `docs/planning/CHANGELOG.md` (what happened, impact, fix, and prevention), and in `security/soc/incidents/` if it was a security event.
+5. **Record** the incident in `docs/11-planning/changelog.md` (what happened, impact, fix, and prevention), and in `security/soc/incidents/` if it was a security event.
 
-Data restores (from the nightly dump or a snapshot) follow [backup and recovery](docs/devops/BACKUP-RECOVERY.md) and need the owner's approval, because they overwrite data.
+Data restores (from the nightly dump or a snapshot) follow [backup and recovery](docs/10-devops/backup-recovery.md) and need the owner's approval, because they overwrite data.
 
 ## 10. Workflow
 
 1. **Understand:**
    - Name the milestone and the requirement IDs involved.
-   - Read the current code and the [current state](docs/architecture/CURRENT-STATE.md).
+   - Read the current code and the [current state](docs/04-architecture/current-state.md).
    - Check who else is working (section 12).
 2. **Specify:** add or update the requirement, acceptance statements, ADR, API contract, and migration before or with the code.
 3. **Build:** make the smallest complete vertical slice; keep backward compatibility or add a tested migration.
 4. **Verify:** run the checks below, add tests for the allowed and denied paths, and rehearse delivery changes.
 5. **Document:**
-   - Update docs, `docs/README.md` for new documents, current state, and the changelog with rollback notes.
+   - Update docs (link every new document from its folder README), current state, and the changelog with rollback notes.
    - Regenerate the catalogs (`python scripts/project_catalog.py`, `python scripts/service_catalog.py`).
 6. **Report:** what changed and why, requirement IDs, commands run with results, what was not verified, the production effect of pushing, and open decisions.
 
@@ -298,9 +298,9 @@ Data restores (from the nightly dump or a snapshot) follow [backup and recovery]
 
 | When | Command (from the repository root) |
 | --- | --- |
-| Any documentation change | `python scripts/validate_project.py` (every `docs/**/*.md` must be linked from `docs/README.md`; checks links and both catalogs) |
+| Any documentation change | `python scripts/validate_project.py` (every `docs/**/*.md` must be reachable by links from `docs/README.md` and named in lowercase; checks links and both catalogs) |
 | Files added, removed, or renamed | `python scripts/project_catalog.py`, then the validation above |
-| `services.yaml`, the chart's `services:`, or a Dockerfile target | `python scripts/service_catalog.py` then `--check`; `cd scripts && python -m unittest test_project_catalog test_service_catalog test_new_service` |
+| `services.yaml`, the chart's `services:`, or a Dockerfile target | `python scripts/service_catalog.py` then `--check`; `cd scripts && python -m unittest test_project_catalog test_service_catalog test_new_service test_quarantine` |
 | Dependencies or workspace layout | `pnpm install`, `node scripts/validate-workspace.mjs` |
 | `frontend/company-web` change | `pnpm --filter @oxinov/company-web build` then `test` |
 | `frontend/products/lms-web` or `frontend/platform-web` | `pnpm --filter <package> typecheck`, `lint`, `test`, `build` |
@@ -340,6 +340,7 @@ Several assistants often work in this repository at the same time, sometimes in 
   - Commit with `git commit -- <paths>`. Never run `git add -A`, `git stash`, `git reset --hard`, `git checkout -- .`, or `git pull --autostash` in a shared checkout: they capture or destroy other sessions' uncommitted work.
 - **Build large or shared changes in a separate `git worktree`** from `origin/main`, then push from there. Regenerate shared outputs (the file and service catalogs) in that worktree, so other sessions' untracked files do not leak into them.
 - **Moving files:** do not move or rename shared documents while another session is active; links and validators depend on paths.
+- **Unwanted files:** never delete them by hand. `python scripts/quarantine.py --scan` lists leftovers (empty folders, caches, merge leftovers, unreachable documents); `--scan --move`, or `quarantine.py <path>`, moves them into the Git-ignored `DELETE_ME/`, which only the owner empties. The tool renames the top folder and never walks it, because pnpm links workspace packages with junctions and a copy-then-delete move (for example `robocopy /MOVE`) deletes the linked source.
 - **Before pushing:**
   - Fetch and rebase your own commit.
   - Check that `main` is green and that no production deploy is running (`gh run list --branch main`): a red or busy `main` blocks everyone.

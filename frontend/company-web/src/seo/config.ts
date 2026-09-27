@@ -1,11 +1,11 @@
-// Site-wide search and sharing settings for oxinov.com (docs/marketing/seo/README.md, ADR-020: one English site).
+// Site-wide search and sharing settings for oxinov.com (docs/13-marketing/seo/README.md, ADR-020: one English site).
 // Change titles, the share image, or social profiles here; pages and schemas read them from this file.
 
 export const siteUrl = 'https://oxinov.com';
 export const siteName = 'Oxinov';
 export const locale = 'en_US';
 
-/** Home page and fallback title. Replace with the approved tagline (docs/design/BRAND.md, brand strategy). */
+/** Home page and fallback title. Replace with the approved tagline (docs/07-design/brand.md, brand strategy). */
 export const defaultTitle = 'Oxinov — Software, services, and research';
 export const defaultDescription =
   'Oxinov builds software, services, and research for people everywhere. Our first product, Oxinov Edu, is an online classroom for schools and teachers.';

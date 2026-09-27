@@ -1,6 +1,6 @@
 # `src/seo`: search and sharing for oxinov.com
 
-Everything search engines and link previews read lives here. Pages import from `@/seo` only. The plan and the reasoning behind it are in [docs/marketing/seo](../../../../docs/marketing/seo/README.md).
+Everything search engines and link previews read lives here. Pages import from `@/seo` only. The plan and the reasoning behind it are in [docs/13-marketing/seo](../../../../docs/13-marketing/seo/README.md).
 
 | File | What it owns | Change it when |
 | --- | --- | --- |

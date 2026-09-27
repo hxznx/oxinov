@@ -1,0 +1,3 @@
+# ADR-004: Prometheus and Grafana observability baseline
+
+**Date:** 2026-09-23. **Status:** Accepted for the initial implementation. Services expose Prometheus-compatible metrics only on the private network. Prometheus stores short-term metrics and evaluates version-controlled rules; Alertmanager routes alerts; Grafana loads data sources and dashboards from version-controlled provisioning files. PostgreSQL and Redis use dedicated exporters. Do not use tenant IDs, user IDs, email addresses, URLs with identifiers, or other unbounded values as metric labels. Production may replace these containers with compatible managed services while preserving metric names, dashboards, and alert behavior.

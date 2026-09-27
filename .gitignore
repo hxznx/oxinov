@@ -5,6 +5,8 @@ node_modules/
 .turbo/
 .pnpm-store/
 .tmp/
+# Quarantine for unwanted files (scripts/quarantine.py); empty it by hand once reviewed.
+DELETE_ME/
 pnpm-debug.log*
 .next/
 dist/

@@ -5,7 +5,7 @@
     python scripts/service_catalog.py --list    print every service
 
 Derived files: devops/scripts/services.sh (sourced by the delivery scripts), .github/CODEOWNERS, and
-docs/engineering/SERVICE-CATALOG.md. Standard library only, so it runs anywhere Python 3.9+ does.
+docs/08-engineering/service-catalog.md. Standard library only, so it runs anywhere Python 3.9+ does.
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOG = "services.yaml"
 SHELL_OUT = "devops/scripts/services.sh"
 OWNERS_OUT = ".github/CODEOWNERS"
-DOCS_OUT = "docs/engineering/SERVICE-CATALOG.md"
+DOCS_OUT = "docs/08-engineering/service-catalog.md"
 CHART_VALUES = "devops/kubernetes/helm/oxinov/values.yaml"
 CHART_PRODUCTION = "devops/kubernetes/helm/oxinov/values-production.yaml"
 TIERS = {"critical", "core", "growth"}
@@ -163,7 +163,7 @@ def render_docs(catalog: dict) -> str:
     services = catalog["services"]
     lines = [
         "# Service catalog", "",
-        "[Project library](../../PROJECT-LIBRARY.md) · [Product register](../products/README.md) · [Production runbook](../../devops/kubernetes/README.md)", "",
+        "[Project library](../../PROJECT-LIBRARY.md) · [Product register](../02-products/README.md) · [Production runbook](../../devops/kubernetes/README.md)", "",
         "Every deployable service, generated from [`services.yaml`](../../services.yaml) by `python scripts/service_catalog.py`.",
         "Edit the catalog, not this page. The image of each service is `oxinov/<service>` in Amazon ECR.", "",
         "| Service | Product | Kind | Source | Build target | Workload | Port | Public host | Owner |",
@@ -177,10 +177,10 @@ def render_docs(catalog: dict) -> str:
     lines += [
         "", "## Adding a service", "",
         "Run `oxctl new-service <product> <api|web|worker>` (try `--dry-run` first). It creates `<product>-<kind>` on",
-        "its product shelf ([placement rules](PROJECT-STRUCTURE.md)) as a small standard-library Node.js service with",
+        "its product shelf ([placement rules](project-structure.md)) as a small standard-library Node.js service with",
         "health endpoints and a test, adds its Dockerfile stage, `services.yaml` entry and Helm entry (with network",
         "access: web public, API from the product's web app, worker none), and regenerates this page. The product",
-        "needs a record in `docs/products/<product>/` first, so the release gate still applies. Then:", "",
+        "needs a record in `docs/02-products/<product>/` first, so the release gate still applies. Then:", "",
         "1. `pnpm install` to add the package to the lockfile, and run its test.",
         "2. Plan and apply the starter Terraform stack: it creates the ECR repository from the catalog (and add a",
         "   public host to `var.hosts` for its DNS record).",
@@ -300,8 +300,8 @@ def check(catalog: dict, root: Path = ROOT) -> list[str]:
         if missing or extra:
             errors.append(f"{where}: missing {sorted(missing)} / unknown {sorted(extra)}")
             continue
-        if s["product"] != "platform" and not (root / "docs/products" / s["product"] / "README.md").is_file():
-            errors.append(f"{where}: product {s['product']} has no record at docs/products/{s['product']}/README.md")
+        if s["product"] != "platform" and not (root / "docs/02-products" / s["product"] / "README.md").is_file():
+            errors.append(f"{where}: product {s['product']} has no record at docs/02-products/{s['product']}/README.md")
         if s["kind"] not in KINDS:
             errors.append(f"{where}: kind must be one of {sorted(KINDS)}")
         if not str(s["owner"]).startswith("@"):

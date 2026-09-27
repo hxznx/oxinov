@@ -41,8 +41,8 @@ class ApplyTests(unittest.TestCase):
             for relative in (CATALOG, CHART_VALUES, new_service.DOCKERFILE):
                 (root / relative).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(ROOT / relative, root / relative)
-            (root / "docs/products/demo").mkdir(parents=True)
-            (root / "docs/products/demo/README.md").write_text("# Demo\n", encoding="utf-8")
+            (root / "docs/02-products/demo").mkdir(parents=True)
+            (root / "docs/02-products/demo/README.md").write_text("# Demo\n", encoding="utf-8")
 
             web = new_service.plan(root, "demo", "web", None, None)
             new_service.apply(root, web)

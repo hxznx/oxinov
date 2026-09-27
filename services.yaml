@@ -2,11 +2,11 @@
 #
 # Read by: devops/scripts/release-plan.sh, devops/kubernetes/scripts/deploy.sh, the deploy workflow,
 # rehearse-local.sh and oxctl (through the generated devops/scripts/services.sh), Terraform (ECR
-# repositories, yamldecode), .github/CODEOWNERS and docs/engineering/SERVICE-CATALOG.md (both generated).
+# repositories, yamldecode), .github/CODEOWNERS and docs/08-engineering/service-catalog.md (both generated).
 # After editing: python scripts/service_catalog.py   (then --check runs in CI).
 #
 # Fields
-#   product    platform, or a product slug from docs/products/README.md
+#   product    platform, or a product slug from docs/02-products/README.md
 #   kind       api | web | worker | identity | job
 #   owner      GitHub handle that reviews changes (CODEOWNERS)
 #   path       source folder of the service
@@ -28,7 +28,7 @@ default_owner: "@hxznx"
 
 services:
   lms-api:
-    product: lms
+    product: edu
     kind: api
     owner: "@hxznx"
     path: backend/products/lms-api
@@ -58,7 +58,7 @@ services:
     host: none
 
   edu-web:
-    product: lms
+    product: edu
     kind: web
     owner: "@hxznx"
     path: frontend/products/lms-web

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { EncryptJWT, jwtDecrypt } from 'jose';
 
 /**
- * Tokens stay on the server side of the web app (backend-for-frontend, docs/architecture/IDENTITY-AND-ACCESS.md):
+ * Tokens stay on the server side of the web app (backend-for-frontend, docs/04-architecture/identity-and-access.md):
  * they are sealed with AES-256-GCM into an HttpOnly cookie that the browser cannot read or alter.
  */
 export interface WebSession {

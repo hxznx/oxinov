@@ -5,7 +5,7 @@
 Creates <product>-<kind>: a minimal standard-library Node.js service with health endpoints, a README and a
 test on its product shelf; a Dockerfile stage; the services.yaml entry; and the Helm values entry. Then
 regenerates the catalog's derived files and checks everything agrees. The product must already have a
-record at docs/products/<product>/README.md (or be `platform`), so the release gate still applies.
+record at docs/02-products/<product>/README.md (or be `platform`), so the release gate still applies.
 """
 from __future__ import annotations
 
@@ -41,8 +41,8 @@ def plan(root: Path, product: str, kind: str, port: int | None, host: str | None
     problems = []
     if not NAME.match(product):
         problems.append("product must be a lowercase slug")
-    if product != "platform" and not (root / "docs/products" / product / "README.md").is_file():
-        problems.append(f"no product record at docs/products/{product}/README.md: record and approve the product first")
+    if product != "platform" and not (root / "docs/02-products" / product / "README.md").is_file():
+        problems.append(f"no product record at docs/02-products/{product}/README.md: record and approve the product first")
     if name in catalog["services"]:
         problems.append(f"{name} is already in {CATALOG}")
     path = source_path(product, kind, name)
@@ -128,7 +128,7 @@ test('answers health checks and 404 otherwise', async () => {{
     readme = f"""# {name}
 
 {p['kind'].capitalize()} service for `{p['product']}`, registered in [`services.yaml`]({up}services.yaml) and listed in the
-[service catalog]({up}docs/engineering/SERVICE-CATALOG.md). Scaffolded by `oxctl new-service`.
+[service catalog]({up}docs/08-engineering/service-catalog.md). Scaffolded by `oxctl new-service`.
 
 | | |
 | --- | --- |

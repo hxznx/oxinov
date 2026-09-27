@@ -26,7 +26,7 @@ function prismaCode(exception: unknown): string | undefined {
 }
 
 /**
- * Maps every failure to the stable envelope in docs/api/ERROR-HANDLING.md. Stack traces, SQL, and
+ * Maps every failure to the stable envelope in docs/06-api/api-errors.md. Stack traces, SQL, and
  * identifiers from other tenants never reach the client; they are logged server-side.
  */
 @Catch()

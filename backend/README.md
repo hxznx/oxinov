@@ -8,4 +8,4 @@ and independently owned `products/`, one folder per product component named `<sl
 Backend processes enforce tenant membership and may use approved shared packages. Platform code
 must not import product business logic, and one product must never read another product's
 database. See [the current LMS API](products/lms-api/README.md) and the
-[target structure](../docs/engineering/COMPANY-PROJECT-STRUCTURE.md).
+[target structure](../docs/08-engineering/company-project-structure.md).

@@ -1,77 +1,44 @@
-# Oxinov documentation map
+# Oxinov documentation
 
-Documentation follows the company structure: **Oxinov Pvt. Ltd.** → **company website** → **Oxinov platform** (one account and shared services) → **products**. Start at the top and read down to the area you are changing. Every document under `docs/` must be linked from this map; `scripts/validate_project.py` fails when one is missing.
+This is the entry point to every document about **Oxinov Pvt. Ltd.**: the company, its shared platform, and its products. Folders are numbered in reading order, from *why the company exists* to *how it is marketed*. Each folder has a README that indexes its documents.
 
-## 1. Company
+New here? Read [AGENTS.md](../AGENTS.md) (how everyone works in this repository), then [current state](04-architecture/current-state.md) (what actually runs today), then the folder for your task.
 
-For file navigation, start with the [project library](../PROJECT-LIBRARY.md),
-[complete alphabetical file catalog](engineering/FILE-CATALOG.md), the
-[service catalog](engineering/SERVICE-CATALOG.md) of every deployable service, and
-[current structure and placement rules](engineering/PROJECT-STRUCTURE.md).
-For future offerings, use the [company library and growth standard](engineering/COMPANY-LIBRARY-STANDARD.md)
-and [product record template](products/PRODUCT-RECORD-TEMPLATE.md).
+## Folders
 
-| Document | Purpose |
-| --- | --- |
-| [Platform blueprint](company/PLATFORM-BLUEPRINT.md) | Company layers, ten strategic pillars, domain plan, product portfolio, candidate modules, release gate |
-| [Platform policies](company/PLATFORM-POLICIES.md) | Terms, privacy, product-role policies, acceptance records, enforcement |
-| [Subscription model](company/SUBSCRIPTION-MODEL.md) | Plan ladder, Oxinov One bundle, features per product, entitlements, billing channels |
-| [AI implementation strategy](company/AI-IMPLEMENTATION-STRATEGY.md) | Company AI priorities, service choice, language constraints, operating model, scorecard, and release gate |
-| [Company roadmap](planning/COMPANY-PLATFORM-ROADMAP.md) | Phases from company website to product pilots |
-
-### Research and innovation
-
-| Document | Purpose |
-| --- | --- |
-| [R&D operating system](research/README.md) | Company-wide R&D definition, governance, portfolio allocation, stage gates, scorecard, readiness, safety, IP, metrics, and first 90 days |
-| [User-centred product standard](research/USER-CENTERED-PRODUCT-STANDARD.md) | Mandatory user research, evidence traceability, usability rules and measures, inclusive testing, release gate, and 90-day rollout for every product |
-| [R&D portfolio](research/PORTFOLIO.md) | Candidate first-wave, adjacent, and frontier research questions; status does not approve funding or product implementation |
-| [Project and experiment template](research/PROJECT-TEMPLATE.md) | Reusable brief, scorecard, experiment log, gate decision, transfer, and closeout record |
-
-## 2. Company website (`oxinov.com`)
-
-Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/COMPANY-PLATFORM-ROADMAP.md) and the [build command](../prompts/BUILD-OXINOV-PLATFORM.md). Design rules: [brand system](design/BRAND.md), [design system](design/DESIGN-SYSTEM.md), [accessibility](design/ACCESSIBILITY.md).
-
-## 3. Oxinov platform (`id.oxinov.com`, `app.oxinov.com`, `api.oxinov.com`)
-
-| Document | Purpose |
-| --- | --- |
-| [Identity server setup](../devops/keycloak/README.md) | Local Keycloak, email-code extension checks, realm settings |
-| [Identity and access](architecture/IDENTITY-AND-ACCESS.md) | Google and email sign-in, single sign-on, universal product access, trust levels |
-| [Technology radar](architecture/TECH-RADAR.md) | Adopt, trial, assess, and hold decisions for every technology, and the golden path for new services (ADR-024) |
-| [Current state](architecture/CURRENT-STATE.md) | **What runs today**, verified: services, data, delivery, security controls, cost, and known gaps |
-| [Company platform architecture](architecture/COMPANY-PLATFORM-ARCHITECTURE.md) | Control plane, product planes, data ownership, events |
-| [Company tech stack](architecture/COMPANY-TECH-STACK.md) | Selected technologies |
-| [AWS cloud architecture](architecture/AWS-CLOUD-ARCHITECTURE.md) | Production cloud baseline |
-| [AI platform architecture](architecture/AI-PLATFORM-ARCHITECTURE.md) | Governed AI gateway, Bedrock/SageMaker boundary, RAG, tools, data, cost, and observability |
-| [Architecture decisions](architecture/ADR.md) | ADR-001 onward, newest last |
-| [Requirements standard](requirements/README.md) | FR ID scheme, template, priorities, status, traceability, change process |
-| [Platform FRD](requirements/frd/PLATFORM-FRD.md) | Functional requirements for the website, sign-in, trust, policies, organizations, plans, payments, KYC, notifications, messaging, portal, privacy, and operations |
-| [Company project structure](engineering/COMPANY-PROJECT-STRUCTURE.md) | Folder layout and the product plane template |
-| [Data flow](architecture/DATA-FLOW.md) | Sign-in, trust step-up, subscriptions, purchases, escrow, learning, AI drafts, security events |
-| [Integrations](architecture/INTEGRATIONS.md) | External providers and their required controls |
-| [Scalability](architecture/SCALABILITY.md) | When and how to scale containers, databases, and clusters |
-
-## 4. Products
-
-| Product | Address | Documents |
+| Folder | What it answers | Start with |
 | --- | --- | --- |
-| [Oxinov Edu](products/lms/README.md) | `edu.oxinov.com` | [Product record](products/lms/README.md), [brief](products/lms/BRIEF.md), [PRD](products/lms/PRD.md), [FRD](requirements/frd/EDU-FRD.md), [NFR](requirements/NFR.md), [Edu architecture](architecture/ARCHITECTURE.md), [Edu tech stack](architecture/TECH-STACK.md), [Edu roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [Edu UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
-| [Oxinov Market](products/COMMODITY-MARKET.md) | `market.oxinov.com` | [Commodity Market charter](products/COMMODITY-MARKET.md), [proposed FRD](requirements/frd/MARKET-FRD.md) ([Agri Market](products/AGRI-MARKET.md) superseded) |
-| [Oxinov HR](products/hr/README.md) | `hr.oxinov.com` | [Product record](products/hr/README.md), [unified HR and direct-hiring FRD](requirements/frd/HR-FRD.md); standalone Jobs was merged by ADR-025 |
-| Oxinov Services Market | `services.oxinov.com` | [Charter](products/SERVICES-MARKET.md), [proposed FRD](requirements/frd/SERVICES-MARKET-FRD.md) |
-| Oxinov Studio | Future | [Proposed FRD](requirements/frd/STUDIO-FRD.md) |
-| Oxinov JP | To be decided | [Proposed FRD](requirements/frd/JP-FRD.md); definition requires owner validation |
-| Oxinov Tech | Portal module unless later approved | [Proposed FRD](requirements/frd/TECH-FRD.md); definition requires owner validation |
+| [01 · Company](01-company/README.md) | Why Oxinov exists; policies, subscriptions, AI strategy | [Platform blueprint](01-company/platform-blueprint.md) |
+| [02 · Products](02-products/README.md) | What each product is, and its release gate | [Oxinov Edu](02-products/edu/README.md) |
+| [03 · Requirements](03-requirements/README.md) | What the system must do, requirement by requirement | [Area registry and FRDs](03-requirements/README.md#area-registry) |
+| [04 · Architecture](04-architecture/README.md) | How the pieces fit, what runs, and why | [Current state](04-architecture/current-state.md) |
+| [05 · Data](05-data/README.md) | How data is stored, isolated, changed, and deleted | [Database design](05-data/database-design.md) |
+| [06 · API](06-api/README.md) | Shared API contracts | [API specification](06-api/api-spec.md) |
+| [07 · Design](07-design/README.md) | Brand, design system, accessibility | [Brand](07-design/brand.md) |
+| [08 · Engineering](08-engineering/README.md) | How code is written, tested, and organized | [Coding standards](08-engineering/coding-standards.md) |
+| [09 · Security](09-security/README.md) | Security baseline, privacy, secrets, AI governance, SOC | [Security baseline](09-security/security-baseline.md) |
+| [10 · DevOps](10-devops/README.md) | Delivery, operations, backups, and cost | [CI/CD](10-devops/ci-cd.md) |
+| [11 · Planning](11-planning/README.md) | Roadmaps, tasks, risks, and the changelog | [Company roadmap](11-planning/company-roadmap.md) |
+| [12 · Research](12-research/README.md) | R&D operating system and user research standard | [User-centred product standard](12-research/user-centered-product-standard.md) |
+| [13 · Marketing](13-marketing/README.md) | Marketing plan and search engine optimization | [SEO](13-marketing/seo/README.md) |
 
-All product charters: [products index](products/README.md).
+## Which document wins
 
-## 5. Cross-cutting engineering and operations
+| Question | Source of truth |
+| --- | --- |
+| How to work in this repository | [AGENTS.md](../AGENTS.md) |
+| What the product must do | The FRDs listed in the [area registry](03-requirements/README.md#area-registry) |
+| What runs today | [Current state](04-architecture/current-state.md) |
+| Why a decision was made | [Architecture decisions](04-architecture/adr/README.md) |
 
-- **API:** [spec](api/API-SPEC.md), [authentication](api/AUTH.md), [errors](api/ERROR-HANDLING.md), [versioning](api/API-VERSIONING.md)
-- **Data:** [database design](data/DATABASE-DESIGN.md), [data model](data/DATA-MODEL.md), [retention](data/DATA-RETENTION.md), [migrations](data/MIGRATION-STRATEGY.md)
-- **Security:** [security](security/SECURITY.md), [threat model](security/THREAT-MODEL.md), [AI governance](security/AI-GOVERNANCE.md), [privacy](security/PRIVACY.md), [secrets](security/SECRETS-MANAGEMENT.md), [SOC](security/SOC.md)
-- **DevOps:** [developer setup](devops/DEV-SETUP.md), [environments](devops/ENVIRONMENTS.md), [deployment](devops/DEPLOYMENT.md), [CI/CD](devops/CI-CD.md), [observability](devops/OBSERVABILITY.md), [backup](devops/BACKUP-RECOVERY.md), [rollback](devops/ROLLBACK.md), [DevOps roadmap](devops/ROADMAP.md), [cost optimization](devops/COST-OPTIMIZATION.md), [production runbook](../devops/kubernetes/README.md)
-- **Engineering:** [coding standards](engineering/CODING-STANDARDS.md), [testing](engineering/TESTING-STRATEGY.md), [Git workflow](engineering/GIT-WORKFLOW.md), [logging](engineering/LOGGING.md), [application errors](engineering/ERROR-HANDLING.md), [dependency policy](engineering/DEPENDENCY-POLICY.md)
-- **Brand and marketing:** [brand system and strategy](design/BRAND.md), [marketing plan](marketing/MARKETING.md), [SEO](marketing/seo/README.md): [technical](marketing/seo/technical.md), [structured data](marketing/seo/structured-data.md), [Search Console](marketing/seo/search-console.md), [keywords](marketing/seo/keywords.md), [content plan](marketing/seo/content-plan.md), [off-site](marketing/seo/off-site.md), [measurement](marketing/seo/measurement.md), [checklists](marketing/seo/checklist.md)
-- **Planning:** [tasks](planning/TASKS.md), [AI roadmap](planning/AI-IMPLEMENTATION-ROADMAP.md), [risks and decisions](planning/RISKS.md), [changelog](planning/CHANGELOG.md)
+If two documents disagree and it matters, stop and ask the owner.
+
+## Conventions
+
+- **Names:** folders are `NN-topic`; files are lowercase kebab-case (`current-state.md`). Product documents are prefixed with the product slug (`edu-roadmap.md`). The validator enforces lowercase names.
+- **Links:** every document must be reachable by following links from this page. `python scripts/validate_project.py` fails on an unreachable document or a broken link.
+- **Placement:** company-wide documents go in the numbered topic folder; a document about one product goes in `02-products/<slug>/`; every FRD goes in `03-requirements/frd/`.
+- **Unwanted files:** never delete them by hand. Run `python scripts/quarantine.py --scan` to list leftovers (empty folders, caches, merge leftovers, unreachable documents) and `--scan --move` to move them into `DELETE_ME/`, which Git ignores. Empty `DELETE_ME/` once you have checked it.
+- **Generated files:** the [service catalog](08-engineering/service-catalog.md) and [file catalog](08-engineering/file-catalog.md) come from `scripts/`; regenerate them instead of editing them.
+
+Code-side guides live beside the code: the [project library](../PROJECT-LIBRARY.md), the [production runbook](../devops/kubernetes/README.md), and the [security engineering area](../security/README.md).

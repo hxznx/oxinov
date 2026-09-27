@@ -21,9 +21,9 @@ jobs:
           python-version: '3.12'
       - name: Validate project documents and local links
         run: python scripts/validate_project.py
-      - name: Test the file and service catalog tools
+      - name: Test the catalog, scaffolding, and quarantine tools
         working-directory: scripts
-        run: python -m unittest test_project_catalog test_service_catalog test_new_service
+        run: python -m unittest test_project_catalog test_service_catalog test_new_service test_quarantine
       - name: Validate monorepo boundaries and release gates
         run: node scripts/validate-workspace.mjs
       - name: Validate Docker Compose syntax
@@ -288,4 +288,4 @@ jobs:
           ignore-unfixed: true
 
   # Frontend, worker, chat, and mobile tests are added when that source
-  # is implemented. See docs/devops/CI-CD.md.
+  # is implemented. See docs/10-devops/ci-cd.md.

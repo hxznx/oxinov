@@ -1,6 +1,6 @@
 # Terraform
 
-Terraform manages the approved AWS platform defined in the [AWS cloud architecture](../../docs/architecture/AWS-CLOUD-ARCHITECTURE.md). The account is `614130400110`, the primary region is `ap-south-1` Mumbai, and `ap-south-2` Hyderabad later receives encrypted recovery copies.
+Terraform manages the approved AWS platform defined in the [AWS cloud architecture](../../docs/04-architecture/cloud-architecture.md). The account is `614130400110`, the primary region is `ap-south-1` Mumbai, and `ap-south-2` Hyderabad later receives encrypted recovery copies.
 
 ## Stacks in use
 

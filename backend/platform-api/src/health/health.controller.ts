@@ -5,7 +5,7 @@ import { DatabaseContext } from '../database/database-context.service';
 
 /**
  * Liveness, readiness, and Prometheus metrics. /metrics must be reachable only on the private
- * network; the public ingress must not route it (docs/devops/OBSERVABILITY.md).
+ * network; the public ingress must not route it (docs/10-devops/observability.md).
  */
 @Public()
 @Controller()

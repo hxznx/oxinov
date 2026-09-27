@@ -35,7 +35,7 @@ export interface WebAuth {
 }
 
 /**
- * Backend-for-frontend sign-in for an Oxinov web app (docs/architecture/IDENTITY-AND-ACCESS.md). Tokens
+ * Backend-for-frontend sign-in for an Oxinov web app (docs/04-architecture/identity-and-access.md). Tokens
  * never reach the browser: they live in an encrypted HttpOnly cookie named after `cookiePrefix`.
  */
 export function createWebAuth(options: { cookiePrefix: string }): WebAuth {

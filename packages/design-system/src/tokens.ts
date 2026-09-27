@@ -1,5 +1,5 @@
 /**
- * Oxinov design tokens. The single source of truth is docs/design/BRAND.md; change both together.
+ * Oxinov design tokens. The single source of truth is docs/07-design/brand.md; change both together.
  * Colors come from the approved logo (cyan #00F0FF, violet #C040FF, magenta #FF3EEC).
  */
 

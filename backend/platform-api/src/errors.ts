@@ -1,6 +1,6 @@
 import { CommonErrors, DomainError } from '@oxinov/server-kit';
 
-/** Platform API errors (docs/api/ERROR-HANDLING.md). Renaming a code is a breaking API change. */
+/** Platform API errors (docs/06-api/api-errors.md). Renaming a code is a breaking API change. */
 export const Errors = {
   ...CommonErrors,
   /** FR-TRUST-2303: the client shows the listed policies and retries the original action. */

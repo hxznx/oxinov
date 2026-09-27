@@ -41,7 +41,7 @@ export default async function LegalDocPage({ params }: Props) {
         {doc.summary}
       </PageHeader>
       <div className="prose-ox mx-auto max-w-6xl px-4 py-12">
-        {/* Policy text needs Nepal counsel review before publication (docs/company/PLATFORM-POLICIES.md). */}
+        {/* Policy text needs Nepal counsel review before publication (docs/01-company/platform-policies.md). */}
         <p>
           This policy is being prepared and reviewed by qualified counsel in Nepal. It will be published here, in
           English, before sign-in to any Oxinov product opens.

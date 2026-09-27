@@ -4,7 +4,7 @@ import type { ServiceConfig } from './config';
 import { APP_CONFIG } from './tokens';
 
 /**
- * HTTP metrics following docs/devops/OBSERVABILITY.md: `oxinov_` prefix, base units, and bounded
+ * HTTP metrics following docs/10-devops/observability.md: `oxinov_` prefix, base units, and bounded
  * labels only. Never label with tenant, user, or request IDs. APIs extend this class with their own
  * domain counters on the same registry.
  */
