@@ -4,11 +4,11 @@
 **Date:** 2026-09-28
 **Status:** Proposed for owner review
 **Scope:** Company website (`oxinov.com`), identity (`id.oxinov.com`), account portal (`app.oxinov.com`), API gateway (`api.oxinov.com`), and the shared control-plane services used by every Oxinov product.
-**Standard:** [Oxinov requirements standard](README.md)
+**Standard:** [Oxinov requirements standard](../README.md)
 
 ## Implementation status (2026-09-26)
 
-Built and verified in production or CI. Requirements not listed are not built yet (or not yet verified); the per-requirement *Status* lines move to **Implemented** once the owner approves each FR. Source of truth for what runs: [current state](../architecture/CURRENT-STATE.md).
+Built and verified in production or CI. Requirements not listed are not built yet (or not yet verified); the per-requirement *Status* lines move to **Implemented** once the owner approves each FR. Source of truth for what runs: [current state](../../architecture/CURRENT-STATE.md).
 
 | Requirement | State | Notes |
 | --- | --- | --- |
@@ -34,7 +34,7 @@ The Oxinov Platform gives every person one Oxinov account that works across all 
 
 Out of scope: product workflows such as courses, listings, job postings, and bookings (see each product FRD); Oxinov staff HR and finance systems.
 
-Sources: [platform blueprint](../company/PLATFORM-BLUEPRINT.md), [identity and access](../architecture/IDENTITY-AND-ACCESS.md), [platform policies](../company/PLATFORM-POLICIES.md), [subscription model](../company/SUBSCRIPTION-MODEL.md), [brand](../design/BRAND.md), and ADR-008 to ADR-013.
+Sources: [platform blueprint](../../company/PLATFORM-BLUEPRINT.md), [identity and access](../../architecture/IDENTITY-AND-ACCESS.md), [platform policies](../../company/PLATFORM-POLICIES.md), [subscription model](../../company/SUBSCRIPTION-MODEL.md), [brand](../../design/BRAND.md), and ADR-008 to ADR-013.
 
 ### Shared terms
 
@@ -69,12 +69,12 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 ### 3.1 Company website (SITE)
 
 **FR-SITE-2101 — Company presence.** `oxinov.com` must present Oxinov Pvt. Ltd., its ten divisions, launched products, coming-soon products, research, careers, contact, and legal pages in English, readable through browser translation (no `translate="no"` except on brand names and code). Unlaunched products and divisions are labeled as future initiatives. *Changed 2026-09-26 by owner decision (ADR-020): English only; was English and Nepali.*
-*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [blueprint](../company/PLATFORM-BLUEPRINT.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [blueprint](../../company/PLATFORM-BLUEPRINT.md).
 - Acceptance: Given a visitor on any page, the header shows the Oxinov logo, division and product navigation, and a Sign in action.
 - Acceptance: Given an unlaunched product, its page states "coming soon" and offers no sign-up or purchase.
 
 **FR-SITE-2102 — Brand and themes.** Every public page must use the Oxinov design tokens and approved logo files, default to the dark theme, offer the light Daylight theme, meet WCAG 2.2 AA, and honor reduced-motion settings.
-*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [brand](../design/BRAND.md), [design system](../design/DESIGN-SYSTEM.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [brand](../../design/BRAND.md), [design system](../../design/DESIGN-SYSTEM.md).
 - Acceptance: Given a device with reduced motion enabled, no glitch, pulse, or scanline animation plays.
 - Acceptance: Automated contrast checks fail the build on any text pair below 4.5:1.
 
@@ -84,7 +84,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given an unpublished plan, it never appears on the page.
 
 **FR-SITE-2104 — Contact and security reports.** Visitors must be able to send contact and security-disclosure messages through a form with abuse protection, and receive an acknowledgement.
-*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [policies](../company/PLATFORM-POLICIES.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [policies](../../company/PLATFORM-POLICIES.md).
 - Acceptance: Given a valid contact or security report, when submitted, then one case is recorded and an acknowledgement with its reference is returned without echoing sensitive content.
 - Acceptance: Given repeated submissions from one source, rate limiting blocks further submissions and records a security event.
 
@@ -131,7 +131,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a token issued for one product, another product's API rejects it.
 
 **FR-ID-2208 — Sessions and sign-out.** Access tokens must last 5–15 minutes; refresh tokens rotate on use and are revoked on sign-out, suspension, or reuse detection. People can sign out of the current device or all devices, and see active sessions.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [identity and access](../architecture/IDENTITY-AND-ACCESS.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [identity and access](../../architecture/IDENTITY-AND-ACCESS.md).
 - Acceptance: Given sign-out of all devices, every product rejects that account's old refresh tokens.
 - Acceptance: Given a reused refresh token, the whole token family is revoked and a security event is emitted.
 
@@ -153,24 +153,24 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a number already verified on another account, verification is refused with a support route.
 
 **FR-TRUST-2303 — Step-up prompts.** When a product action needs a higher level or an unaccepted policy, the API must return `TRUST_LEVEL_REQUIRED` or `POLICY_ACCEPTANCE_REQUIRED` with the required level or policy ID, and the client must show one step and return to the original action afterwards.
-*Priority:* Must. *Status:* Proposed. *Access:* All products. *Source:* [error contract](../api/ERROR-HANDLING.md).
+*Priority:* Must. *Status:* Proposed. *Access:* All products. *Source:* [error contract](../../api/ERROR-HANDLING.md).
 - Acceptance: Given a T1 member trying to message a seller, the phone-verification step appears and messaging opens after success.
 - Acceptance: Client-supplied trust levels are ignored by every API.
 
 **FR-TRUST-2304 — Restrictions.** Operations must be able to restrict a role in one product, one product, or the whole account, with a reason code and appeal route; account suspension revokes sessions.
-*Priority:* Must. *Status:* Proposed. *Access:* Trust reviewer. *Source:* [policies](../company/PLATFORM-POLICIES.md).
+*Priority:* Must. *Status:* Proposed. *Access:* Trust reviewer. *Source:* [policies](../../company/PLATFORM-POLICIES.md).
 - Acceptance: Given a product-role restriction, other products remain usable.
 - Acceptance: Given a reviewer without the required scope or reason, when they attempt a restriction, then it is refused and audited.
 
 ### 3.4 Policies (POLICY)
 
 **FR-POLICY-2401 — Versioned policies.** Every policy must be published with an ID, version, effective date, and English text at `oxinov.com/legal/*`, stating that the English version is binding when read through a translator. *Changed 2026-09-26 by owner decision (ADR-020): English only; was English and Nepali.*
-*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [policies](../company/PLATFORM-POLICIES.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [policies](../../company/PLATFORM-POLICIES.md).
 - Acceptance: Given a new version, the previous version remains readable in the history.
 - Acceptance: Given a policy draft without an ID, version, effective date, or reviewed English text, when publication is attempted, then it is refused.
 
 **FR-POLICY-2402 — Acceptance records.** Acceptances must be append-only records with user ID, policy ID, version, timestamp, channel, and locale.
-*Priority:* Must. *Status:* Proposed. *Access:* Platform. *Source:* [policies](../company/PLATFORM-POLICIES.md).
+*Priority:* Must. *Status:* Proposed. *Access:* Platform. *Source:* [policies](../../company/PLATFORM-POLICIES.md).
 - Acceptance: Given a person accepts a published policy version, when recorded, then the exact version, actor, UTC time, and channel can be retrieved for audit.
 - Acceptance: No API allows editing or deleting an acceptance record.
 
@@ -180,7 +180,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given an unaccepted Marketplace Seller Policy, creating a listing returns `POLICY_ACCEPTANCE_REQUIRED`.
 
 **FR-POLICY-2404 — Material changes.** A material policy change must require re-acceptance before the next protected action; a minor change sends a notification only.
-*Priority:* Must. *Status:* Proposed. *Access:* T1+. *Source:* [policies](../company/PLATFORM-POLICIES.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1+. *Source:* [policies](../../company/PLATFORM-POLICIES.md).
 - Acceptance: Given a material Terms change, the next protected request prompts re-acceptance.
 - Acceptance: Given a minor change, when a protected action runs, then it is not blocked and one notification is sent.
 
@@ -192,7 +192,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given two organizations, members of one cannot read or change the other.
 
 **FR-ORG-2502 — Organization switcher.** A person in several organizations must be able to switch the active organization in the portal and in every product header.
-*Priority:* Should. *Status:* Proposed. *Access:* Member. *Source:* [design system](../design/DESIGN-SYSTEM.md).
+*Priority:* Should. *Status:* Proposed. *Access:* Member. *Source:* [design system](../../design/DESIGN-SYSTEM.md).
 - Acceptance: Given an organization switch, subsequent requests use only the new organization's context.
 - Acceptance: Given a person supplies an organization where they have no active membership, when switching, then it is refused and the previous context remains active.
 
@@ -224,7 +224,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a member without billing authority for an organization, when changing its plan, then the request is refused and no payment is initiated.
 
 **FR-PLAN-2606 — Prepaid periods in Nepal.** The first release must sell prepaid 1, 3, 6, and 12-month periods through Nepal providers, with renewal reminders, a grace period, and one-tap renewal.
-*Priority:* Must. *Status:* Proposed. *Access:* T1+. *Source:* [subscription model](../company/SUBSCRIPTION-MODEL.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1+. *Source:* [subscription model](../../company/SUBSCRIPTION-MODEL.md).
 - Acceptance: Given a period ending in 7 days, the person receives a renewal reminder.
 - Acceptance: Given a renewal payment is not verified by the paid-through date plus grace period, when access is checked, then paid entitlements end without creating debt or a stored balance.
 
@@ -256,7 +256,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a reconciliation mismatch, an alert is raised to billing operations.
 
 **FR-PAY-2705 — Invoices.** The platform must issue invoices and receipts in NPR with Oxinov Pvt. Ltd. details and applicable tax once tax treatment is confirmed.
-*Priority:* Must. *Status:* Proposed. *Access:* Payer. *Source:* [subscription model](../company/SUBSCRIPTION-MODEL.md).
+*Priority:* Must. *Status:* Proposed. *Access:* Payer. *Source:* [subscription model](../../company/SUBSCRIPTION-MODEL.md).
 - Acceptance: Given a completed payment, the invoice is downloadable from the portal.
 - Acceptance: Given a different payer or an unverified payment, when an invoice is requested, then the response is "not found" and no tax document is issued.
 
@@ -273,12 +273,12 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a member who is not an owner or a reviewer outside the case scope, when they request the evidence, then access is refused.
 
 **FR-KYC-2803 — Document protection.** KYC documents must be stored privately and encrypted, visible only to trust reviewers through short-lived access, with every view audited. Products receive only status and level.
-*Priority:* Must. *Status:* Proposed. *Access:* Trust reviewer. *Source:* [privacy](../security/PRIVACY.md).
+*Priority:* Must. *Status:* Proposed. *Access:* Trust reviewer. *Source:* [privacy](../../security/PRIVACY.md).
 - Acceptance: Given an assigned reviewer requests an unexpired document link, when opened, then the view is authorized, time-limited, and audited without document content in logs.
 - Acceptance: Given a product API request for a document, access is denied.
 
 **FR-KYC-2804 — Retention.** Rejected document images must be deleted after the retention period; approved ones are deleted when the legal period ends, keeping only status and decision metadata.
-*Priority:* Must. *Status:* Proposed. *Access:* Platform. *Source:* [retention](../data/DATA-RETENTION.md).
+*Priority:* Must. *Status:* Proposed. *Access:* Platform. *Source:* [retention](../../data/DATA-RETENTION.md).
 - Acceptance: A scheduled job deletes expired images and records a minimal audit entry.
 - Acceptance: Given a documented active legal hold, when the normal deletion date arrives, then only the held evidence is preserved until the hold's reviewed end.
 
@@ -290,7 +290,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a delivery failure, the service retries and records the final status.
 
 **FR-NOTIF-2902 — Preferences.** People must be able to choose which non-essential notifications they receive per product and channel. Security and transaction notices cannot be disabled.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [privacy](../security/PRIVACY.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [privacy](../../security/PRIVACY.md).
 - Acceptance: Given marketing email disabled, no marketing email is sent.
 - Acceptance: Given a security or transaction event, when the user has disabled marketing, then the required notice is still delivered through its configured essential channel.
 
@@ -302,31 +302,31 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a participant posts a valid message, when the related record is active, then it appears once in that scoped conversation with actor and UTC time.
 
 **FR-MSG-3002 — Safety.** People must be able to block and report users; messages with off-platform payment links show a warning.
-*Priority:* Should. *Status:* Proposed. *Access:* T2. *Source:* [threat model](../security/THREAT-MODEL.md).
+*Priority:* Should. *Status:* Proposed. *Access:* T2. *Source:* [threat model](../../security/THREAT-MODEL.md).
 - Acceptance: Given a block, the blocked user can no longer send messages to that person.
 - Acceptance: Given a report, when submitted, then a moderation case is created without exposing the reporter to the reported person.
 
 ### 3.11 Account portal (PORTAL)
 
 **FR-PORTAL-3101 — Account home.** `app.oxinov.com` must show the person's products, plan, usage meters, verification level, organizations, and security status.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [blueprint](../company/PLATFORM-BLUEPRINT.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [blueprint](../../company/PLATFORM-BLUEPRINT.md).
 - Acceptance: Given a new member, all launched products appear with their free tier.
 - Acceptance: Given another person's account or organization identifier, when supplied to the portal, then no data outside the signed-in person's memberships is shown.
 
 **FR-PORTAL-3102 — App launcher.** Every Oxinov web app must show the shared app launcher and account menu with the same behavior.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [design system](../design/DESIGN-SYSTEM.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [design system](../../design/DESIGN-SYSTEM.md).
 - Acceptance: Given an unlaunched product, it is absent from the launcher.
 - Acceptance: Given a launched entitled product, when selected, then its registered URL opens and the existing identity session is reused.
 
 ### 3.12 Privacy (PRIV)
 
 **FR-PRIV-3201 — Export.** People must be able to request an export of their data across all products and download it within a published time.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [privacy](../security/PRIVACY.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [privacy](../../security/PRIVACY.md).
 - Acceptance: The export includes platform data and each launched product's data for that person.
 - Acceptance: Given an export request for another person or organization, when authorization runs, then it is refused and no export job is created.
 
 **FR-PRIV-3202 — Deletion.** People must be able to request account deletion with confirmation and a waiting period; deletion propagates to every product, keeping only records the law requires.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [retention](../data/DATA-RETENTION.md).
+*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [retention](../../data/DATA-RETENTION.md).
 - Acceptance: Given a completed deletion, sign-in with the old methods creates a new, empty account.
 - Acceptance: Given legally retained records, when deletion completes, then the person is told the category and end condition while those records remain excluded from ordinary product use.
 
@@ -338,7 +338,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given an authorized elevation with a valid reason and scope, when support accesses the case, then only scoped fields are visible and every action is audited.
 
 **FR-OPS-3302 — Product catalogue and flags.** Platform administrators must be able to enable a product only after its release gate is recorded, and control features by market with flags.
-*Priority:* Must. *Status:* Proposed. *Access:* Platform administrator. *Source:* [blueprint](../company/PLATFORM-BLUEPRINT.md).
+*Priority:* Must. *Status:* Proposed. *Access:* Platform administrator. *Source:* [blueprint](../../company/PLATFORM-BLUEPRINT.md).
 - Acceptance: Given a product without a recorded release gate, it cannot be enabled.
 - Acceptance: Given an approved product and market flag, when an administrator enables it, then only eligible users in that market see it and the change is audited.
 
@@ -353,4 +353,4 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 
 ## 5. Open decisions
 
-Minimum age by country, SMS and KYC providers, escrow bank partner, email one-time-code implementation in Keycloak, final plan prices and free limits, and tax treatment. See [risks and decisions](../planning/RISKS.md).
+Minimum age by country, SMS and KYC providers, escrow bank partner, email one-time-code implementation in Keycloak, final plan prices and free limits, and tax treatment. See [risks and decisions](../../planning/RISKS.md).

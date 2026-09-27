@@ -46,7 +46,7 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 | [AI platform architecture](architecture/AI-PLATFORM-ARCHITECTURE.md) | Governed AI gateway, Bedrock/SageMaker boundary, RAG, tools, data, cost, and observability |
 | [Architecture decisions](architecture/ADR.md) | ADR-001 onward, newest last |
 | [Requirements standard](requirements/README.md) | FR ID scheme, template, priorities, status, traceability, change process |
-| [Platform FRD](requirements/PLATFORM-FRD.md) | Functional requirements for the website, sign-in, trust, policies, organizations, plans, payments, KYC, notifications, messaging, portal, privacy, and operations |
+| [Platform FRD](requirements/frd/PLATFORM-FRD.md) | Functional requirements for the website, sign-in, trust, policies, organizations, plans, payments, KYC, notifications, messaging, portal, privacy, and operations |
 | [Company project structure](engineering/COMPANY-PROJECT-STRUCTURE.md) | Folder layout and the product plane template |
 | [Data flow](architecture/DATA-FLOW.md) | Sign-in, trust step-up, subscriptions, purchases, escrow, learning, AI drafts, security events |
 | [Integrations](architecture/INTEGRATIONS.md) | External providers and their required controls |
@@ -56,10 +56,13 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 
 | Product | Address | Documents |
 | --- | --- | --- |
-| [Oxinov Edu](products/lms/README.md) | `edu.oxinov.com` | [Product record](products/lms/README.md), [brief](products/lms/BRIEF.md), [PRD](products/lms/PRD.md), [FRD](requirements/EDU-FRD.md), [NFR](requirements/NFR.md), [Edu architecture](architecture/ARCHITECTURE.md), [Edu tech stack](architecture/TECH-STACK.md), [Edu roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [Edu UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
-| [Oxinov Commodity Market](products/COMMODITY-MARKET.md) | `market.oxinov.com` | [Charter](products/COMMODITY-MARKET.md) ([Agri Market](products/AGRI-MARKET.md) superseded) |
-| [Oxinov HR](products/hr/README.md) | `hr.oxinov.com` | [Product record](products/hr/README.md), [unified HR and direct-hiring FRD](requirements/HR-FRD.md); standalone Jobs was merged by ADR-024 |
-| Oxinov Services Market | `services.oxinov.com` | [Charter](products/SERVICES-MARKET.md) |
+| [Oxinov Edu](products/lms/README.md) | `edu.oxinov.com` | [Product record](products/lms/README.md), [brief](products/lms/BRIEF.md), [PRD](products/lms/PRD.md), [FRD](requirements/frd/EDU-FRD.md), [NFR](requirements/NFR.md), [Edu architecture](architecture/ARCHITECTURE.md), [Edu tech stack](architecture/TECH-STACK.md), [Edu roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [Edu UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
+| [Oxinov Market](products/COMMODITY-MARKET.md) | `market.oxinov.com` | [Commodity Market charter](products/COMMODITY-MARKET.md), [proposed FRD](requirements/frd/MARKET-FRD.md) ([Agri Market](products/AGRI-MARKET.md) superseded) |
+| [Oxinov HR](products/hr/README.md) | `hr.oxinov.com` | [Product record](products/hr/README.md), [unified HR and direct-hiring FRD](requirements/frd/HR-FRD.md); standalone Jobs was merged by ADR-024 |
+| Oxinov Services Market | `services.oxinov.com` | [Charter](products/SERVICES-MARKET.md), [proposed FRD](requirements/frd/SERVICES-MARKET-FRD.md) |
+| Oxinov Studio | Future | [Proposed FRD](requirements/frd/STUDIO-FRD.md) |
+| Oxinov JP | To be decided | [Proposed FRD](requirements/frd/JP-FRD.md); definition requires owner validation |
+| Oxinov Tech | Portal module unless later approved | [Proposed FRD](requirements/frd/TECH-FRD.md); definition requires owner validation |
 
 All product charters: [products index](products/README.md).
 

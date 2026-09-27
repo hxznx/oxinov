@@ -27,7 +27,7 @@ The former Oxinov Jobs scope is now HR's direct-hiring module: verified employer
 
 | Document | Purpose |
 | --- | --- |
-| [FRD](../../requirements/HR-FRD.md) | Unified functional requirements: 53 `FR-HR-*` managed-recruitment requirements and 30 retained `FR-JOB-*` direct-hiring requirements, dependencies, open decisions, and build order |
+| [FRD](../../requirements/frd/HR-FRD.md) | Unified functional requirements: 53 `FR-HR-*` managed-recruitment requirements and 30 retained `FR-JOB-*` direct-hiring requirements, dependencies, open decisions, and build order |
 | [NFR](../../requirements/NFR.md) | Company-wide non-functional requirements Oxinov HR must meet |
 
 ## Canonical locations (planned)
@@ -44,7 +44,7 @@ The former Oxinov Jobs scope is now HR's direct-hiring module: verified employer
 | Item | Status |
 | --- | --- |
 | Accountable product owner | Done: the founder |
-| Scope and requirements | Unified [FRD](../../requirements/HR-FRD.md); direct hiring approved, managed recruitment proposed |
+| Scope and requirements | Unified [FRD](../../requirements/frd/HR-FRD.md); direct hiring approved, managed recruitment proposed |
 | Owner approval of the first release and budget | Open |
 | Legal review: Nepal labour/job-posting rules, employment agency, foreign employment, data protection, retention, and cross-border transfer (Nepal first, then launch destinations) | Open; blocks publishing |
 | Business model (service fee, agency subscription) and payments with escrow | Open |

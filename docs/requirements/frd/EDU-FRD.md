@@ -5,11 +5,11 @@
 **Status:** Active product requirements with mixed implementation state; owner review remains open for unapproved scope
 **Audience:** Product, design, engineering, and QA
 **Product:** Oxinov Edu (`edu.oxinov.com`), the first Oxinov product plane
-**Standard:** [Oxinov requirements standard](README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
+**Standard:** [Oxinov requirements standard](../README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
 
 ## Implementation status (2026-09-26)
 
-Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web README](../../frontend/products/lms-web/README.md#what-works-today) and [current state](../architecture/CURRENT-STATE.md)). Requirements not listed are not built yet; the per-requirement *Status* lines move to **Implemented** once the owner approves each FR.
+Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web README](../../../frontend/products/lms-web/README.md#what-works-today) and [current state](../../architecture/CURRENT-STATE.md)). Requirements not listed are not built yet; the per-requirement *Status* lines move to **Implemented** once the owner approves each FR.
 
 | Requirement | State | Notes |
 | --- | --- | --- |
@@ -30,7 +30,7 @@ Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web R
 
 ### Acceptance baseline for every Edu requirement
 
-The older Edu requirements keep their permanent IDs and compact prose, but they are not exempt from the current [requirements standard](README.md). Every implementation and test for a requirement below must apply all relevant baseline statements in addition to the behavior written in that requirement:
+The older Edu requirements keep their permanent IDs and compact prose, but they are not exempt from the current [requirements standard](../README.md). Every implementation and test for a requirement below must apply all relevant baseline statements in addition to the behavior written in that requirement:
 
 - **Allowed path:** an authenticated actor with the stated role, active tenant membership, entitlement, and object ownership can complete the behavior and receives only fields in that scope.
 - **Denied path:** a missing role, expired entitlement, suspended membership, guessed identifier, or object from another tenant is refused; protected resources outside the caller's scope answer "not found" and cross-tenant attempts emit `tenant.cross_access.denied` without personal data.
@@ -237,11 +237,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 
 - The owner must assign current-standard Priority, Status, Access, and Source attributes to the 52 legacy compact requirements that predate the company requirement template. Their absence must not be interpreted as approval or first-release priority.
 - Native mobile release scope, offline media, Organization Manager, AI features, subscriptions, tenant self-service, and provider choices remain product decisions even where this document describes their required behavior.
-- The implementation table and [current state](../architecture/CURRENT-STATE.md) describe verified behavior today; prose below that is broader than the running product remains unimplemented until separately approved and verified.
+- The implementation table and [current state](../../architecture/CURRENT-STATE.md) describe verified behavior today; prose below that is broader than the running product remains unimplemented until separately approved and verified.
 
 ## Related documents
 
-Platform requirements: [Platform FRD](PLATFORM-FRD.md). Requirements standard: [requirements/README.md](README.md). Non-functional requirements: [NFR.md](NFR.md). Architecture and delivery rules: [architecture](../architecture/ARCHITECTURE.md) and [engineering](../engineering/CODING-STANDARDS.md). Acceptance journeys: [ACCEPTANCE-CRITERIA.md](../planning/ACCEPTANCE-CRITERIA.md).
+Platform requirements: [Platform FRD](PLATFORM-FRD.md). Requirements standard: [requirements/README.md](../README.md). Non-functional requirements: [NFR.md](../NFR.md). Architecture and delivery rules: [architecture](../../architecture/ARCHITECTURE.md) and [engineering](../../engineering/CODING-STANDARDS.md). Acceptance journeys: [ACCEPTANCE-CRITERIA.md](../../planning/ACCEPTANCE-CRITERIA.md).
 
 ## Subject and platform references
 

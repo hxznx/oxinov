@@ -1,6 +1,6 @@
 # Oxinov Edu product requirements document
 
-**Status:** Draft for product review. **Portfolio:** Oxinov Edu is the first product on the [Oxinov company platform](../../company/PLATFORM-BLUEPRINT.md). **Source:** [project brief](BRIEF.md) and [FRD](../../requirements/EDU-FRD.md).
+**Status:** Draft for product review. **Portfolio:** Oxinov Edu is the first product on the [Oxinov company platform](../../company/PLATFORM-BLUEPRINT.md). **Source:** [project brief](BRIEF.md) and [FRD](../../requirements/frd/EDU-FRD.md).
 
 ## Personas and jobs
 

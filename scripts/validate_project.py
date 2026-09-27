@@ -23,7 +23,7 @@ REQUIRED = [
     "devops/kubernetes/helm/oxinov/values.yaml", "devops/kubernetes/scripts/deploy.sh",
     "devops/kubernetes/scripts/bootstrap-node.sh", "devops/kubernetes/README.md",
     "devops/README.md", "devops/docker/README.md",
-    "docs/products/lms/BRIEF.md", "docs/products/lms/PRD.md", "docs/requirements/EDU-FRD.md", "docs/requirements/NFR.md",
+    "docs/products/lms/BRIEF.md", "docs/products/lms/PRD.md", "docs/requirements/frd/EDU-FRD.md", "docs/requirements/NFR.md",
     "docs/README.md", "docs/company/PLATFORM-BLUEPRINT.md",
     "docs/company/PLATFORM-POLICIES.md", "docs/company/SUBSCRIPTION-MODEL.md",
     "docs/company/AI-IMPLEMENTATION-STRATEGY.md",
@@ -31,7 +31,11 @@ REQUIRED = [
     "docs/research/PROJECT-TEMPLATE.md",
     "docs/research/USER-CENTERED-PRODUCT-STANDARD.md",
     "docs/architecture/IDENTITY-AND-ACCESS.md",
-    "docs/requirements/README.md", "docs/requirements/PLATFORM-FRD.md",
+    "docs/requirements/README.md", "docs/requirements/frd/PLATFORM-FRD.md",
+    "docs/requirements/frd/HR-FRD.md", "docs/requirements/frd/MARKET-FRD.md",
+    "docs/requirements/frd/SERVICES-MARKET-FRD.md",
+    "docs/requirements/frd/STUDIO-FRD.md", "docs/requirements/frd/JP-FRD.md",
+    "docs/requirements/frd/TECH-FRD.md",
     "docs/products/README.md", "docs/products/AGRI-MARKET.md",
     "docs/products/COMMODITY-MARKET.md",
     "docs/products/hr/README.md", "docs/products/SERVICES-MARKET.md",
@@ -111,7 +115,7 @@ def check_docs(errors: list[str]) -> None:
         elif not path.read_bytes().strip():
             errors.append(f"Empty: {relative}")
 
-    frd = ROOT / "docs/requirements/EDU-FRD.md"
+    frd = ROOT / "docs/requirements/frd/EDU-FRD.md"
     if frd.is_file():
         text = frd.read_text(encoding="utf-8")
         ids = re.findall(r"(?m)^\*\*(FR-[A-Z]+-\d{3,4})", text)
@@ -120,7 +124,7 @@ def check_docs(errors: list[str]) -> None:
 
     # Requirement IDs are unique across every FRD in the company (docs/requirements/README.md).
     all_ids: list[str] = []
-    for path in sorted((ROOT / "docs/requirements").glob("*-FRD.md")):
+    for path in sorted((ROOT / "docs/requirements/frd").glob("*-FRD.md")):
         if path.is_file():
             all_ids += re.findall(r"(?m)^\*\*(FR-[A-Z]+-\d{3,4})", path.read_text(encoding="utf-8"))
     duplicates = sorted({i for i in all_ids if all_ids.count(i) > 1})

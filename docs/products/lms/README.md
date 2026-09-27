@@ -23,7 +23,7 @@ Structure follows the [company library standard](../../engineering/COMPANY-LIBRA
 | --- | --- |
 | [Brief](BRIEF.md) | Vision, problem, customers and first release |
 | [PRD](PRD.md) | Product requirements and priorities |
-| [FRD](../../requirements/EDU-FRD.md) | Functional requirements (FR IDs 101–1799); `lms` remains the internal technical slug |
+| [FRD](../../requirements/frd/EDU-FRD.md) | Functional requirements (FR IDs 101–1799); `lms` remains the internal technical slug |
 | [NFR](../../requirements/NFR.md) | Company-wide non-functional requirements Edu must meet |
 | [Acceptance criteria](../../planning/ACCEPTANCE-CRITERIA.md) and [roadmap](../../planning/ROADMAP.md) | How releases are proven and ordered |
 | [Architecture](../../architecture/ARCHITECTURE.md) and [tech stack](../../architecture/TECH-STACK.md) | Edu technical design |

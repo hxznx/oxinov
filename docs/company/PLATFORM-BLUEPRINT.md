@@ -26,12 +26,13 @@ The control plane knows that a person or organization can use a product. It does
 | Oxinov account portal | One login, organization switcher, product launcher, plans, invoices, support, and privacy controls | Shared control plane | First |
 | Oxinov Edu | Multi-tenant language, SSW, IT, exam, media, assignment, chat, and administration platform | First independent product plane | First |
 | [Oxinov HR](../products/hr/README.md) | Verified HR network, managed recruitment, direct job discovery, applications, and skill matching linked to Edu certificates | One unified `hr` product plane; direct hiring absorbs the former standalone Jobs plan (ADR-024) | Second product after Edu |
-| [Oxinov Commodity Market](../products/COMMODITY-MARKET.md) | Verified marketplace for agricultural produce, raw materials, commercial machinery, and circular second-hand goods | Independent product plane; adopted Flo Softwares concept expanded to all commodities & re-commerce (ADR-010) | Future candidate after HR |
-| [Oxinov Services Market](../products/SERVICES-MARKET.md) | Book verified local service providers or post service needs | Independent product plane; adopted Flo Softwares concept (ADR-010) | Future candidate |
+| [Oxinov Market](../requirements/frd/MARKET-FRD.md) | Verified marketplace for agricultural produce, raw materials, commercial machinery, and circular second-hand goods | Independent `market` product plane; Commodity Market charter remains the source (ADR-010, ADR-013, ADR-025) | Proposed FRD; future candidate after HR |
+| [Oxinov Services Market](../requirements/frd/SERVICES-MARKET-FRD.md) | Book verified local service providers or post service needs | Independent `services` product plane; adopted Flo Softwares concept (ADR-010) | Proposed FRD; future candidate |
 | Oxinov AI | AI tools, model services, evaluation, and governed agent capabilities | Independent product; reuse identity, billing, audit, and AI gateway | After platform foundation |
-| Oxinov Engineering and Services | Software, cloud, networking, cybersecurity, consulting, and managed services | Service portal and project operations module | After platform foundation |
+| [Oxinov Tech](../requirements/frd/TECH-FRD.md) | Software, cloud, networking, cybersecurity, consulting, and managed-service delivery | Begin as a client portal module; product plane requires a later ADR | Proposed definition; after platform foundation |
 | Oxinov Robotics and IoT | Device management, telemetry, automation, laboratories, and customer projects | Independent device and telemetry platform | Later pilot |
-| Oxinov Media and Studio | Production projects, media assets, licensing, streaming, and client delivery | Independent media product | Later pilot |
+| [Oxinov Studio](../requirements/frd/STUDIO-FRD.md) | Production projects, media assets, licensing, review, and client delivery | Future media product; broadcasting excluded | Proposed FRD; later pilot |
+| [Oxinov JP](../requirements/frd/JP-FRD.md) | Guided Japan learning-to-work journey using consented Edu and HR records | Cross-product portal, not a duplicate system of record | Proposed definition; owner validation required |
 | Oxinov AgriTech | Farm operations, sensing, analytics, traceability, and pilots | Independent product with device integration | Later pilot |
 | Oxinov Research and Space | Research portfolio, publications, intellectual property, data, and regulated programs | Separate restricted systems where required | Long horizon |
 

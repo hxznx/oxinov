@@ -2,9 +2,9 @@
 
 **Version:** 1.0 (consolidated HR and direct hiring)
 **Date:** 2026-09-28
-**Status:** Mixed. The managed-recruitment `FR-HR-*` scope remains Proposed; the direct-hiring `FR-JOB-*` scope retains its earlier owner approval but is now delivered only inside the unified HR product (ADR-024). Publication still requires the unified release gate in the [product record](../products/hr/README.md).
+**Status:** Mixed. The managed-recruitment `FR-HR-*` scope remains Proposed; the direct-hiring `FR-JOB-*` scope retains its earlier owner approval but is now delivered only inside the unified HR product (ADR-024). Publication still requires the unified release gate in the [product record](../../products/hr/README.md).
 **Scope:** `hr.oxinov.com`: verified HR professionals and agencies, managed recruitment from CV to deployment, and direct job discovery and applications.
-**Standard:** [Oxinov requirements standard](README.md). Number blocks **6000–6999** (`JOB`, retained IDs) and **8000–8499** (`HR`).
+**Standard:** [Oxinov requirements standard](../README.md). Number blocks **6000–6999** (`JOB`, retained IDs) and **8000–8499** (`HR`).
 
 ## Implementation status (2026-09-28)
 
@@ -34,7 +34,7 @@ Oxinov HR is global and English only (ADR-020). It is a candidate product plane 
 - Automated hiring or rejection decisions. AI may summarize and rank with explanations; a person decides every step (FR-HR-8143).
 - Its own login, one-time codes, KYC, notification delivery, or payment processing.
 
-Sources: owner requests of 2026-09-28; [platform blueprint](../company/PLATFORM-BLUEPRINT.md); [identity and access](../architecture/IDENTITY-AND-ACCESS.md); [platform policies](../company/PLATFORM-POLICIES.md); ADR-008, ADR-011, ADR-019, ADR-020, ADR-022, ADR-024.
+Sources: owner requests of 2026-09-28; [platform blueprint](../../company/PLATFORM-BLUEPRINT.md); [identity and access](../../architecture/IDENTITY-AND-ACCESS.md); [platform policies](../../company/PLATFORM-POLICIES.md); ADR-008, ADR-011, ADR-019, ADR-020, ADR-022, ADR-024.
 
 ### Shared terms
 
@@ -313,7 +313,7 @@ Sources: owner requests of 2026-09-28; [platform blueprint](../company/PLATFORM-
 - Acceptance: Given a client downloads a candidate's CV, when the download completes, then an audit entry records who, when, and which document.
 - Acceptance: Given anyone, when they try to edit or delete an audit entry, then it is refused.
 
-**FR-HR-8094 — Security events.** The product must emit schema-valid security events for denied cross-organization access, unauthorized engagement access, malware uploads, bulk or unusual candidate-data exports, privilege changes, fee-request reports, and worker-safety escalations. Events must use actions registered in the [security event catalog](../../security/soc/EVENT-CATALOG.md), contain no CV text, document contents, medical data, private messages, or raw AI prompts, and preserve the request and audit correlation identifiers.
+**FR-HR-8094 — Security events.** The product must emit schema-valid security events for denied cross-organization access, unauthorized engagement access, malware uploads, bulk or unusual candidate-data exports, privilege changes, fee-request reports, and worker-safety escalations. Events must use actions registered in the [security event catalog](../../../security/soc/EVENT-CATALOG.md), contain no CV text, document contents, medical data, private messages, or raw AI prompts, and preserve the request and audit correlation identifiers.
 *Priority:* Must. *Status:* Proposed. *Access:* system emits; authorized security operators read. *Source:* NFR-15; security event schema and catalog.
 - Acceptance: Given a member requests another organization's candidate record, when access is denied, then `tenant.cross_access.denied` is emitted without candidate personal data.
 - Acceptance: Given an ordinary authorized candidate view, when it succeeds, then no high-severity security event is emitted merely for viewing the record.
@@ -347,7 +347,7 @@ Sources: owner requests of 2026-09-28; [platform blueprint](../company/PLATFORM-
 - Acceptance: Given an earned certificate, when attached, then clients see it marked "Verified by Oxinov Edu".
 - Acceptance: Given a certificate the candidate did not earn, when they try to attach it, then it is refused.
 
-**FR-HR-8143 — AI assistance with a person deciding.** AI features (CV extraction, screening summaries, match explanations, message drafting) must follow the [AI governance](../security/AI-GOVERNANCE.md) rules: they only suggest, are labelled as AI-generated, never reject or advance a candidate on their own, never use protected characteristics (gender, caste, religion, ethnicity, age, marital status, disability, nationality where unlawful), and log which model version produced each suggestion.
+**FR-HR-8143 — AI assistance with a person deciding.** AI features (CV extraction, screening summaries, match explanations, message drafting) must follow the [AI governance](../../security/AI-GOVERNANCE.md) rules: they only suggest, are labelled as AI-generated, never reject or advance a candidate on their own, never use protected characteristics (gender, caste, religion, ethnicity, age, marital status, disability, nationality where unlawful), and log which model version produced each suggestion.
 *Priority:* Must. *Status:* Proposed. *Access:* system rule. *Source:* AI governance; owner request.
 - Acceptance: Given an AI screening summary, when a recruiter views it, then it is marked AI-generated and the recruiter must choose the next stage themselves.
 - Acceptance: Given a prompt or feature that would use a protected characteristic, when evaluated, then it is blocked and logged.
@@ -368,7 +368,7 @@ Sources: owner requests of 2026-09-28; [platform blueprint](../company/PLATFORM-
 
 ## 5. Open decisions
 
-- **Release approval:** the owner approves the product, first-release scope, and budget before implementation (release gate in the [product record](../products/hr/README.md)).
+- **Release approval:** the owner approves the product, first-release scope, and budget before implementation (release gate in the [product record](../../products/hr/README.md)).
 - **Legal review:** employment agency, foreign employment, data protection, and cross-border transfer rules for the launch countries, starting with Nepal and the main destination countries. This blocks publishing.
 - **Business model:** Oxinov service fee (percentage of milestone payments, subscription for agencies, or both) and whether payments launch with escrow.
 - **Launch markets:** which origin and destination countries and sectors open first, and the verification partners for licences in each.
@@ -612,4 +612,4 @@ The former standalone Oxinov Jobs scope is now the direct-hiring module of Oxino
 5. Moderation, audit, and privacy: 6081–6083, 6091–6092.
 6. Edu certificates (6071) when Edu issues certificates.
 
-Each step ships through the normal pipeline behind the release gate in the [product record](../products/hr/README.md). Build order does not authorize an unsafe partial launch: `hr.oxinov.com/jobs` remains private until steps 1–5 pass their acceptance tests, counsel confirms the content and retention rules, moderation staffing is ready, and the owner approves publication. Edu certificates may remain hidden until step 6 is available.
+Each step ships through the normal pipeline behind the release gate in the [product record](../../products/hr/README.md). Build order does not authorize an unsafe partial launch: `hr.oxinov.com/jobs` remains private until steps 1–5 pass their acceptance tests, counsel confirms the content and retention rules, moderation staffing is ready, and the owner approves publication. Edu certificates may remain hidden until step 6 is available.

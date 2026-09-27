@@ -10,10 +10,10 @@ Company blueprint, policies, subscription model, ADRs      why and what the comp
 Product charter (docs/products/)                           problem, scope, exclusions, release gate
         │
 FRD                                                        what the system must do (this standard)
-  ├── Platform FRD   docs/requirements/PLATFORM-FRD.md      website, identity, trust, policies, orgs, plans, KYC, payments, notifications
-  └── Product FRDs   docs/requirements/EDU-FRD.md           Oxinov Edu (`lms` is its internal technical slug)
-                     docs/requirements/HR-FRD.md            Unified HR and direct hiring
-                     docs/requirements/<PRODUCT>-FRD.md     created when another product passes its release gate
+  ├── Platform FRD   docs/requirements/frd/PLATFORM-FRD.md       website, identity, trust, policies, orgs, plans, KYC, payments, notifications
+  └── Product FRDs   docs/requirements/frd/EDU-FRD.md            Oxinov Edu (`lms` is its internal technical slug)
+                     docs/requirements/frd/HR-FRD.md             Unified HR and direct hiring
+                     docs/requirements/frd/<PRODUCT>-FRD.md      every FRD lives in this folder
         │
 NFR (docs/requirements/NFR.md) and acceptance criteria     how well, and how we prove it
         │
@@ -35,8 +35,8 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 
 | Block | Areas | FRD | Owner |
 | --- | --- | --- | --- |
-| 101–1799 | AUTH, COURSE, CATALOG, PLAYER, ASSESS, CERT, COMM, ANALYTICS, LANG, SSW, IT, EXAM, CHAT, MGMT, MOBILE, TENANT, AI | [Oxinov Edu FRD](EDU-FRD.md) | Edu product owner |
-| 2101–2199 | SITE | [Platform FRD](PLATFORM-FRD.md) | Company website owner |
+| 101–1799 | AUTH, COURSE, CATALOG, PLAYER, ASSESS, CERT, COMM, ANALYTICS, LANG, SSW, IT, EXAM, CHAT, MGMT, MOBILE, TENANT, AI | [Oxinov Edu FRD](frd/EDU-FRD.md) | Edu product owner |
+| 2101–2199 | SITE | [Platform FRD](frd/PLATFORM-FRD.md) | Company website owner |
 | 2201–2299 | ID | Platform FRD | Identity owner |
 | 2301–2399 | TRUST | Platform FRD | Identity owner |
 | 2401–2499 | POLICY | Platform FRD | Legal and trust owner |
@@ -49,11 +49,14 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 | 3101–3199 | PORTAL | Platform FRD | Platform owner |
 | 3201–3299 | PRIV | Platform FRD | Privacy owner |
 | 3301–3399 | OPS | Platform FRD | Operations owner |
-| 5000–5999 | MKT | Commodity Market FRD (after release gate) | Commodity Market owner |
-| 6000–6999 | JOB | [Oxinov HR FRD](HR-FRD.md), direct-hiring module (retained IDs) | HR product owner |
-| 7000–7999 | SVC | Services Market FRD (after release gate) | Services Market owner |
-| 8000–8499 | HR | [Oxinov HR FRD](HR-FRD.md), managed-recruitment module (proposed) | HR product owner |
-| 8500–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
+| 5000–5999 | MKT | [Oxinov Market FRD](frd/MARKET-FRD.md) (proposed) | Market product owner |
+| 6000–6999 | JOB | [Oxinov HR FRD](frd/HR-FRD.md), direct-hiring module (retained IDs) | HR product owner |
+| 7000–7999 | SVC | [Services Market FRD](frd/SERVICES-MARKET-FRD.md) (proposed) | Services Market owner |
+| 8000–8499 | HR | [Oxinov HR FRD](frd/HR-FRD.md), managed-recruitment module (proposed) | HR product owner |
+| 8500–8599 | STUDIO | [Oxinov Studio FRD](frd/STUDIO-FRD.md) (proposed) | Studio product owner |
+| 8600–8699 | JP | [Oxinov JP FRD](frd/JP-FRD.md) (proposed; definition to validate) | JP product owner |
+| 8700–8799 | TECH | [Oxinov Tech FRD](frd/TECH-FRD.md) (proposed; definition to validate) | Tech product owner |
+| 8800–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
 
 LMS areas keep their historical numbers. New LMS requirements continue in the LMS block.
 
@@ -111,6 +114,8 @@ Writing rules:
 4. When code, tests, and documentation are merged and verified, set **Implemented**.
 5. Run `python scripts/validate_project.py`; it fails on duplicate IDs across all FRDs.
 
-## Product FRD creation
+## FRD location and product creation
 
-A product FRD is created only when its charter passes the release gate. Copy the section layout of the Platform FRD: purpose and scope, roles, dependencies on platform FRs, functional requirements by area, out of scope, and open decisions. Use the product's number block from the registry.
+Every functional requirements document lives under `docs/requirements/frd/`; `docs/requirements/` holds the standard and shared non-functional requirements.
+
+Normally, a product FRD is created when its charter passes the release gate. ADR-025 records the owner's exception for early discovery drafts for Market, Services Market, Studio, JP, and Tech. Those files remain **Proposed**, do not authorize application scaffolding or spending, and keep their release gates closed until the missing owner, customer, legal, operating, data, and budget decisions are approved. Copy the section layout of the Platform FRD: purpose and scope, roles, dependencies on platform FRs, functional requirements by area, out of scope, and open decisions. Use the product's number block from the registry.
