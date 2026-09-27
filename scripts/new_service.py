@@ -171,6 +171,8 @@ def chart_entry(p: dict) -> str:
     allow = f"    allowFrom: [{', '.join(p['allow_from'])}]\n" if p["allow_from"] else ""
     return f"""  {p['name']}:
     image: oxinov/{p['name']}
+    # New services start in the lowest tier and move to core at launch (ADR-022).
+    priority: growth
     tag: ""
     port: {p['port']}
     replicas: 1

@@ -58,6 +58,7 @@ spec:
         {{- include "oxinov.labels" . | nindent 8 }}
         app.kubernetes.io/name: postgres
     spec:
+      {{- include "oxinov.priority" (dict "root" . "tier" "critical") | nindent 6 }}
       automountServiceAccountToken: false
       enableServiceLinks: false
       securityContext:
@@ -150,6 +151,7 @@ spec:
           labels:
             app.kubernetes.io/name: backup
         spec:
+          {{- include "oxinov.priority" (dict "root" . "tier" "core") | nindent 10 }}
           restartPolicy: Never
           automountServiceAccountToken: false
           enableServiceLinks: false
@@ -178,8 +180,7 @@ spec:
                   pg_dumpall --clean --if-exists | gzip -9 | aws s3 cp - "s3://$BUCKET/$key" --only-show-errors
                   echo "backup written to s3://$BUCKET/$key"
               resources:
-                requests: { cpu: 50m, memory: 64Mi }
-                limits: { memory: 256Mi }
+                {{- toYaml .Values.backup.resources | nindent 16 }}
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
@@ -215,6 +216,7 @@ spec:
       labels:
         app.kubernetes.io/name: migrate
     spec:
+      {{- include "oxinov.priority" (dict "root" . "tier" "core") | nindent 6 }}
       restartPolicy: Never
       automountServiceAccountToken: false
       enableServiceLinks: false

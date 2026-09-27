@@ -19,6 +19,8 @@ SHELL_OUT = "devops/scripts/services.sh"
 OWNERS_OUT = ".github/CODEOWNERS"
 DOCS_OUT = "docs/engineering/SERVICE-CATALOG.md"
 CHART_VALUES = "devops/kubernetes/helm/oxinov/values.yaml"
+CHART_PRODUCTION = "devops/kubernetes/helm/oxinov/values-production.yaml"
+TIERS = {"critical", "core", "growth"}
 KINDS = {"api", "web", "worker", "identity", "job"}
 FIELDS = {"product", "kind", "owner", "path", "build", "inputs", "helm_tag", "workload", "port", "host"}
 NAME = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -186,6 +188,12 @@ def render_docs(catalog: dict) -> str:
         "4. Grow the code into the product stack (NestJS with `@oxinov/server-kit`, or Next.js) as it needs more.", "",
         "`python scripts/service_catalog.py --check` (run by `scripts/validate_project.py` in CI) fails when a derived",
         "file is stale, a path, Dockerfile target or chart entry is missing, or a port or host disagrees with the chart.", "",
+        "## Sharing the node (ADR-022)", "",
+        "Every product runs on the one k3s node. Each chart workload has a `priority` tier: `critical` (PostgreSQL,",
+        "Keycloak, mail relay), `core` (live products and the platform, the default), or `growth` (new products; new",
+        "services start here and move to core at launch). Under memory pressure Kubernetes preempts and evicts lower",
+        "tiers first. `--check` also fails when the production memory requests of all workloads exceed",
+        "`memoryBudgetMi` in the chart values, so crowding shows up in CI instead of in production.", "",
     ]
     return "\n".join(lines)
 
@@ -214,6 +222,64 @@ def _chart_services(root: Path) -> dict[str, dict]:
         if current is not None and field:
             current[field.group(1)] = _scalar(field.group(2))
     return found
+
+
+def _mebibytes(text: str) -> int:
+    match = re.fullmatch(r"(\d+)(Mi|Gi)", text.strip())
+    if not match:
+        raise ValueError(f"memory must be written in Mi or Gi, not {text!r}")
+    return int(match.group(1)) * (1024 if match.group(2) == "Gi" else 1)
+
+
+def memory_plan(root: Path = ROOT) -> dict:
+    """Production memory requests per workload (ADR-022): chart defaults with the production overrides.
+
+    Returns {"budget": Mi, "workloads": {name: (replicas, request Mi, priority)}}; one-off Jobs (migrate,
+    backup) are counted because a release or the nightly dump runs beside everything else.
+    """
+    values = (root / CHART_VALUES).read_text(encoding="utf-8").splitlines()
+    budget = next((int(m.group(1)) for line in values if (m := re.match(r"^memoryBudgetMi:\s*(\d+)", line))), 0)
+    workloads: dict[str, list] = {}
+    section, current = None, None
+    for line in values:
+        if re.match(r"^\S", line):
+            section, current = line.split(":")[0], None
+            if section in {"postgres", "migrations", "backup"}:
+                current = workloads.setdefault(section, [1, 0, "critical" if section == "postgres" else "core"])
+            continue
+        key = re.match(r"^  ([a-z0-9-]+):\s*$", line)
+        if section == "services" and key:
+            current = workloads.setdefault(key.group(1), [1, 0, "core"])
+            continue
+        if current is None:
+            continue
+        if (m := re.match(r"^\s+replicas:\s*(\d+)", line)) and section == "services":
+            current[0] = int(m.group(1))
+        elif (m := re.match(r"^\s+priority:\s*([a-z]+)", line)) and section == "services":
+            current[2] = m.group(1)
+        elif m := re.match(r"^\s+requests:\s*\{[^}]*memory:\s*([0-9]+(?:Mi|Gi))", line):
+            current[1] = _mebibytes(m.group(1))
+    for line in (root / CHART_PRODUCTION).read_text(encoding="utf-8").splitlines():
+        if (m := re.match(r"^  ([a-z0-9-]+):\s*\{[^}]*replicas:\s*(\d+)", line)) and m.group(1) in workloads:
+            workloads[m.group(1)][0] = int(m.group(2))
+    return {"budget": budget, "workloads": {name: tuple(w) for name, w in workloads.items()}}
+
+
+def check_memory(root: Path = ROOT) -> list[str]:
+    plan = memory_plan(root)
+    errors = []
+    for name, (_, request, tier) in plan["workloads"].items():
+        if tier not in TIERS:
+            errors.append(f"{CHART_VALUES}: {name} priority {tier!r} must be one of {sorted(TIERS)}")
+        if request <= 0:
+            errors.append(f"{CHART_VALUES}: {name} needs resources.requests.memory")
+    total = sum(replicas * request for replicas, request, _ in plan["workloads"].values())
+    if not plan["budget"]:
+        errors.append(f"{CHART_VALUES}: memoryBudgetMi is missing")
+    elif total > plan["budget"]:
+        errors.append(f"production memory requests are {total} Mi, over the {plan['budget']} Mi node budget (ADR-022): "
+                      "shrink a workload or get the owner's approval to scale out")
+    return errors
 
 
 def check(catalog: dict, root: Path = ROOT) -> list[str]:
@@ -278,6 +344,7 @@ def check(catalog: dict, root: Path = ROOT) -> list[str]:
     listed = {s["workload"] for s in services.values() if isinstance(s, dict) and s.get("workload")}
     for workload in sorted(set(chart) - listed):
         errors.append(f"{CHART_VALUES}: services.{workload} is not registered in services.yaml")
+    errors += check_memory(root)
     return errors
 
 
@@ -316,7 +383,10 @@ def main_with(argv: list[str] | None) -> int:
     for error in errors:
         print(f"ERROR: {error}")
     if not errors and args.check:
-        print(f"Service catalog is consistent ({len(catalog['services'])} services)")
+        plan = memory_plan()
+        total = sum(r * m for r, m, _ in plan["workloads"].values())
+        print(f"Service catalog is consistent ({len(catalog['services'])} services; production memory requests "
+              f"{total} of {plan['budget']} Mi)")
     return 1 if errors else 0
 
 

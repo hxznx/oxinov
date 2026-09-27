@@ -5,6 +5,13 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- end -}}
 
+{{/* priorityClassName line for a workload tier (ADR-022); empty when priority classes are off. */}}
+{{- define "oxinov.priority" -}}
+{{- if .root.Values.priorityClasses.enabled -}}
+priorityClassName: {{ printf "oxinov-%s" (.tier | default "core") }}
+{{- end }}
+{{- end -}}
+
 {{/* Image reference: registry/image:tag, where the service tag wins over global.tag. */}}
 {{- define "oxinov.image" -}}
 {{- $tag := .tag | default .root.Values.global.tag -}}

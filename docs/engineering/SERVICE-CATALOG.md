@@ -32,3 +32,11 @@ needs a record in `docs/products/<product>/` first, so the release gate still ap
 
 `python scripts/service_catalog.py --check` (run by `scripts/validate_project.py` in CI) fails when a derived
 file is stale, a path, Dockerfile target or chart entry is missing, or a port or host disagrees with the chart.
+
+## Sharing the node (ADR-022)
+
+Every product runs on the one k3s node. Each chart workload has a `priority` tier: `critical` (PostgreSQL,
+Keycloak, mail relay), `core` (live products and the platform, the default), or `growth` (new products; new
+services start here and move to core at launch). Under memory pressure Kubernetes preempts and evicts lower
+tiers first. `--check` also fails when the production memory requests of all workloads exceed
+`memoryBudgetMi` in the chart values, so crowding shows up in CI instead of in production.

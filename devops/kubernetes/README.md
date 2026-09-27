@@ -118,8 +118,10 @@ By hand:
    deploy workflow, `deploy.sh`, rehearsal, `oxctl`, CODEOWNERS and the
    [service catalog page](../../docs/engineering/SERVICE-CATALOG.md) pick it up from there.
 2. Add a Dockerfile target, a `services:` entry in `helm/oxinov/values.yaml` named after the workload (and its
-   size in `values-production.yaml`), its environment in `templates/_helpers.tpl`, and network-policy rules.
-   `python scripts/service_catalog.py --check` fails until the chart and the catalog agree.
+   size in `values-production.yaml`), its `priority` tier (`growth` until launch, ADR-022), measured memory
+   requests, its environment in `templates/_helpers.tpl`, and network-policy rules.
+   `python scripts/service_catalog.py --check` fails until the chart and the catalog agree and the production
+   memory requests fit `memoryBudgetMi`.
 3. Plan the starter Terraform stack: it creates the ECR repository from the catalog (then the owner's "yes apply").
 4. Run `bash devops/scripts/check-delivery.sh` and `bash devops/kubernetes/scripts/rehearse-local.sh`, then
    push. The next green `main` deploys it.

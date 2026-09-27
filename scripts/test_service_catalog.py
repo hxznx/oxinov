@@ -85,6 +85,24 @@ class CheckTests(unittest.TestCase):
         del catalog["services"]["mail-relay"]
         self.assertIn("services.mail-relay is not registered", "\n".join(check(catalog)))
 
+    def test_memory_plan_reads_production_requests_and_tiers(self):
+        plan = service_catalog.memory_plan()
+        self.assertGreater(plan["budget"], 0)
+        self.assertEqual(plan["workloads"]["postgres"][2], "critical")
+        self.assertEqual(plan["workloads"]["keycloak"][2], "critical")
+        self.assertEqual(plan["workloads"]["edu-api"][0], 1)  # production override
+        self.assertTrue(all(request > 0 for _, request, _ in plan["workloads"].values()))
+
+    def test_memory_budget_fails_when_requests_exceed_it(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in (service_catalog.CHART_VALUES, service_catalog.CHART_PRODUCTION):
+                (root / relative).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(ROOT / relative, root / relative)
+            values = root / service_catalog.CHART_VALUES
+            values.write_text(values.read_text(encoding="utf-8").replace("memoryBudgetMi: 3300", "memoryBudgetMi: 500"), encoding="utf-8")
+            self.assertIn("over the 500 Mi node budget", " ".join(service_catalog.check_memory(root)))
+
     def test_derived_files_are_current(self):
         for relative, render in service_catalog.OUTPUTS.items():
             with self.subTest(file=relative):

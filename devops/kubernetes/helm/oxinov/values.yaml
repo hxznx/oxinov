@@ -59,6 +59,9 @@ backup:
   bucket: oxinov-starter-backups-614130400110
   image: oxinov/backup
   tag: ""
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { memory: 256Mi }
 
 migrations:
   enabled: true
@@ -73,10 +76,26 @@ media:
 mail:
   from: no-reply@oxinov.com
 
-# One entry per service. `tag` overrides global.tag so services are released independently.
+# Scheduling priority on the shared node (ADR-022). When memory runs short, the scheduler preempts and the
+# kubelet evicts lower tiers first, so sign-in and live products survive a spike in a new product.
+# Traefik and CoreDNS keep k3s's system-cluster-critical priority above all of these.
+priorityClasses:
+  enabled: true
+  tiers:
+    critical: { value: 1000000, description: "Data and sign-in: PostgreSQL, Keycloak, mail relay" }
+    core: { value: 100000, description: "Live products and the platform" }
+    growth: { value: 1000, description: "Products in development or early launch" }
+
+# Memory the production workloads may request in total (checked by scripts/service_catalog.py --check):
+# the 4 GiB node minus k3s, Traefik, CoreDNS, and page cache.
+memoryBudgetMi: 3300
+
+# One entry per service. `tag` overrides global.tag so services are released independently;
+# `priority` is critical, core (default), or growth.
 services:
   edu-api:
     image: oxinov/lms-api
+    priority: core
     tag: ""
     port: 4000
     replicas: 2
@@ -88,6 +107,7 @@ services:
       limits: { memory: 320Mi }
   platform-api:
     image: oxinov/platform-api
+    priority: core
     tag: ""
     port: 4200
     replicas: 2
@@ -99,6 +119,7 @@ services:
       limits: { memory: 256Mi }
   edu-web:
     image: oxinov/edu-web
+    priority: core
     tag: ""
     port: 3002
     replicas: 2
@@ -112,6 +133,7 @@ services:
       limits: { memory: 320Mi }
   platform-web:
     image: oxinov/platform-web
+    priority: core
     tag: ""
     port: 3001
     replicas: 2
@@ -127,6 +149,7 @@ services:
       limits: { memory: 320Mi }
   keycloak:
     image: oxinov/keycloak
+    priority: critical
     tag: ""
     port: 8080
     managementPort: 9000
@@ -143,6 +166,7 @@ services:
       limits: { memory: 1024Mi }
   mail-relay:
     image: oxinov/mail-relay
+    priority: critical
     tag: ""
     port: 2525
     replicas: 1

@@ -36,6 +36,7 @@ spec:
         # Restarts pods when the application secret changes (for example new client secrets).
         oxinov.com/secret-generation: {{ $.Values.global.secretGeneration | default "0" | quote }}
     spec:
+      {{- include "oxinov.priority" (dict "root" $ "tier" $svc.priority) | nindent 6 }}
       serviceAccountName: {{ $.Values.serviceAccount.name }}
       automountServiceAccountToken: false
       enableServiceLinks: false
