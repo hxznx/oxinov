@@ -42,7 +42,7 @@ async function converse(port, commands) {
 describe('mail relay', () => {
   const sent = [];
   const events = [];
-  let failNext = false;
+  let failNext = null;
   let port = 0;
   const relay = createRelay({
     allowedFrom: 'no-reply@oxinov.com',
@@ -51,8 +51,9 @@ describe('mail relay', () => {
     log: (event) => events.push(event),
     send: async (message) => {
       if (failNext) {
-        failNext = false;
-        throw Object.assign(new Error('throttled'), { name: 'TooManyRequestsException' });
+        const error = failNext;
+        failNext = null;
+        throw error;
       }
       sent.push(message);
     },
@@ -86,9 +87,23 @@ describe('mail relay', () => {
   });
 
   it('answers a temporary failure when SES refuses, so the sender can retry', async () => {
-    failNext = true;
+    failNext = Object.assign(new Error('throttled'), { name: 'TooManyRequestsException', $metadata: { httpStatusCode: 429 } });
     const replies = await converse(port, ['EHLO x', 'MAIL FROM:<no-reply@oxinov.com>', 'RCPT TO:<a@example.com>', ...message]);
     assert.equal(replies[5], 451);
+    assert.ok(events.some((event) => event.event === 'mail.failed' && event.status === 429 && event.permanent === false));
+  });
+
+  it('answers a permanent failure with the SES reason, without the address, when SES rejects the recipient', async () => {
+    failNext = Object.assign(
+      new Error('Email address is not verified. The following identities failed the check in region AP-SOUTH-1: learner.test@example.com'),
+      { name: 'MessageRejected', $metadata: { httpStatusCode: 400 } },
+    );
+    const replies = await converse(port, ['EHLO x', 'MAIL FROM:<no-reply@oxinov.com>', 'RCPT TO:<learner.test@example.com>', ...message]);
+    assert.equal(replies[5], 550);
+    const failed = events.findLast((event) => event.event === 'mail.failed');
+    assert.equal(failed.error, 'MessageRejected');
+    assert.equal(failed.permanent, true);
+    assert.match(failed.reason, /^Email address is not verified\..*: \[address\]$/);
   });
 
   it('never logs addresses or message content', () => {

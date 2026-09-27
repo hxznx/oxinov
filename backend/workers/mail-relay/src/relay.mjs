@@ -3,6 +3,16 @@
 // It listens only on the private Docker network and refuses any sender other than the configured one.
 import { SMTPServer } from 'smtp-server';
 
+// SES errors that retrying cannot fix (for example an unverified recipient while the account is in the SES
+// sandbox); the relay answers them with a permanent SMTP failure instead of "try again later".
+const PERMANENT_ERRORS = new Set(['MessageRejected', 'MailFromDomainNotVerifiedException']);
+
+/** SES's reason for a failure, safe to log: email addresses removed, length capped. */
+export function failureReason(error) {
+  const message = typeof error?.message === 'string' ? error.message : '';
+  return message.replace(/[^\s@<>"'(),;:]+@[^\s@<>"'(),;:]+/g, '[address]').slice(0, 300);
+}
+
 /**
  * @param {object} options
  * @param {(message: { from: string; to: string[]; raw: Buffer }) => Promise<void>} options.send
@@ -49,8 +59,19 @@ export function createRelay({ send, allowedFrom, maxBytes = 512 * 1024, maxRecip
             callback();
           },
           (error) => {
-            log({ event: 'mail.failed', error: error?.name ?? 'Error' });
-            callback(Object.assign(new Error('Temporary delivery failure'), { responseCode: 451 }));
+            const permanent = PERMANENT_ERRORS.has(error?.name);
+            log({
+              event: 'mail.failed',
+              error: error?.name ?? 'Error',
+              status: error?.$metadata?.httpStatusCode,
+              permanent,
+              reason: failureReason(error),
+            });
+            callback(
+              permanent
+                ? Object.assign(new Error('Message refused by the email service'), { responseCode: 550 })
+                : Object.assign(new Error('Temporary delivery failure'), { responseCode: 451 }),
+            );
           },
         );
       });
