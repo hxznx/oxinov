@@ -1,10 +1,10 @@
 # Functional Requirements Document: Oxinov Edu
 
-**Version:** 2.0  
-**Date:** 2026-09-24  
-**Status:** Draft for product review  
-**Audience:** Product, design, engineering, and QA  
-**Product:** Oxinov Edu (`edu.oxinov.com`), the first Oxinov product plane  
+**Version:** 2.1
+**Date:** 2026-09-28
+**Status:** Active product requirements with mixed implementation state; owner review remains open for unapproved scope
+**Audience:** Product, design, engineering, and QA
+**Product:** Oxinov Edu (`edu.oxinov.com`), the first Oxinov product plane
 **Standard:** [Oxinov requirements standard](README.md). IDs in this document are permanent and are cited by code, migrations, and tests.
 
 ## Implementation status (2026-09-26)
@@ -27,6 +27,20 @@ Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web R
 | FR-COMM-701, FR-COMM-702 Class stream and Q&A | Implemented | Announcements, lesson questions, best answers, votes, moderation |
 | FR-ANALYTICS-801 Learner progress | Partly | "Continue learning"; dashboards open |
 | FR-CERT-601, FR-CERT-602 Certificates | Implemented | Issued once when the completion rule holds (approved mock exams must be passed; practice quizzes never block), print layout for saving as PDF, Add to LinkedIn, public `/verify/{id}`, revocation with a reason |
+
+### Acceptance baseline for every Edu requirement
+
+The older Edu requirements keep their permanent IDs and compact prose, but they are not exempt from the current [requirements standard](README.md). Every implementation and test for a requirement below must apply all relevant baseline statements in addition to the behavior written in that requirement:
+
+- **Allowed path:** an authenticated actor with the stated role, active tenant membership, entitlement, and object ownership can complete the behavior and receives only fields in that scope.
+- **Denied path:** a missing role, expired entitlement, suspended membership, guessed identifier, or object from another tenant is refused; protected resources outside the caller's scope answer "not found" and cross-tenant attempts emit `tenant.cross_access.denied` without personal data.
+- **Retry path:** externally triggered writes, payments, uploads, submissions, certificate issuance, notifications, and background jobs are idempotent; retrying the same operation cannot create a second durable result.
+- **State path:** invalid or stale state transitions are refused. Accepted transitions record the actor, UTC time, previous state, new state, and reason where the action affects access, publication, grading, money, moderation, or ownership.
+- **File path:** uploads are type- and size-checked, malware-scanned, stored privately, and unavailable until checks finish; rejected content is deleted.
+- **Money and time path:** prices and totals use integer minor units plus currency; deadlines use stored UTC instants and render in the reader's time zone. Amount, currency, provider, and final provider state are verified server-side before access changes.
+- **Accessibility and recovery path:** the behavior works at phone width, by keyboard and assistive technology where applicable, explains validation errors, preserves safe user input after a recoverable failure, and has a non-AI path.
+
+Tests cite the requirement ID plus the baseline path they prove. A happy-path test alone is never sufficient for a protected, tenant-scoped, financial, upload, or state-changing requirement.
 
 ## 0. Platform dependencies
 
@@ -72,11 +86,20 @@ One account may be a learner or instructor in one tenant and an administrator in
 
 ### 3.1 Accounts and access
 
-**FR-AUTH-101 — Registration and sign-in.** *Status: Superseded by FR-ID-2201, FR-ID-2202, FR-ID-2203, FR-ID-2204, and FR-ID-2206 (ADR-011). LMS uses Oxinov single sign-on with Google or email one-time codes and no customer passwords. The original text is kept for history:* Support email/password and Google, GitHub, and Microsoft sign-in. Verify email ownership for password registrations before purchase, enrollment, or instructor application. Provide password reset and expired-link handling. When a social provider returns an email already in use, require an account-linking flow rather than silently making a duplicate account.
+**FR-AUTH-101 — Registration and sign-in.** This requirement is **Superseded** by FR-ID-2201, FR-ID-2202, FR-ID-2203, FR-ID-2204, and FR-ID-2206 (ADR-011). LMS uses Oxinov single sign-on with Google or email one-time codes and no customer passwords. Historical behavior—email/password plus Google, GitHub, and Microsoft sign-in—is retained here only to explain the supersession and must not be implemented.
+*Priority:* Must. *Status:* Superseded. *Access:* T0 → T1 through the platform only. *Source:* ADR-011; Platform FRD.
+- Acceptance: Given a valid Oxinov session with the Edu audience, when the member opens Edu, then Edu uses that identity without a product-specific registration step.
+- Acceptance: Given any Edu screen or API, when a customer looks for password registration or reset, then no such flow is offered.
 
 **FR-AUTH-102 — Tenant roles and instructor approval.** A learner can request instructor status in a tenant. Its administrator can approve or reject with a recorded reason and time. Only approved instructors can submit that tenant's courses for review. A tenant administrator can invite or promote another tenant administrator but cannot grant the platform-operator role. Denied requests reveal no protected data.
+*Priority:* Must. *Status:* Proposed; partially implemented as recorded above. *Access:* active tenant member requests; tenant administrator decides. *Source:* product scope; FR-TENANT-1604.
+- Acceptance: Given an active member requests instructor status and the tenant administrator approves it, when the next protected request runs, then that member can submit only that tenant's courses for review.
+- Acceptance: Given an instructor or tenant administrator tries to grant platform-operator access, when the role change is processed, then it is refused and audited.
 
-**FR-AUTH-103 — Profile and security.** *Status: Partially superseded. Sign-in methods, sessions, sign-out everywhere, and MFA follow FR-ID-2206, FR-ID-2208, and FR-ID-2209; password changes no longer apply. LMS keeps the profile fields and the rule that role changes take effect on the next protected request.* Users can edit avatar, headline, bio, and social links. Password users can change passwords. Users can enable MFA and revoke other sessions; MFA is required for administrators. Role and account changes take effect on the next protected request, including from existing sessions.
+**FR-AUTH-103 — Product profile and immediate authorization changes.** Sign-in methods, MFA, sessions, and sign-out follow FR-ID-2206, FR-ID-2208, and FR-ID-2209; the former password behavior is **Superseded** and must not be implemented. Edu members can edit their product avatar, headline, bio, and safe social links. Tenant role, membership, suspension, and account changes take effect on the next protected request, including requests made from an existing session.
+*Priority:* Must. *Status:* Proposed; platform-owned parts superseded. *Access:* member edits own profile; platform and tenant administrators change only their scoped authorization records. *Source:* ADR-011; FR-ID-2206/2208/2209; FR-TENANT-1604.
+- Acceptance: Given a member saves valid profile fields, when the profile reloads, then only their Edu product profile changes and platform identity data remains platform-owned.
+- Acceptance: Given a role is removed or a membership suspended, when an existing session makes its next protected request, then the removed permission is refused.
 
 ### 3.2 Course authoring and publishing
 
@@ -209,6 +232,12 @@ One account may be a learner or instructor in one tenant and an administrator in
 **FR-AI-1703 — Safe command execution.** The assistant can call only documented, tenant-scoped application actions allowed to the requesting role. Before a command changes data, show a human-readable plan and affected records; high-impact actions such as publication, bulk messages, refunds, payouts, user-role changes, and deletion require explicit confirmation. Reject instructions that request arbitrary SQL, shell execution, secrets, cross-tenant data, or bypass of approval. Record executed actions and support undo for reversible changes.
 
 **FR-AI-1704 — AI quality, privacy, and cost.** Keep AI provider integrations replaceable. Do not send private learner data, payment details, or another tenant's content to a model without a documented purpose and tenant permission. Apply per-tenant usage limits and show consumption to administrators. Provide a non-AI manual path for every core authoring and administration workflow. Test generated question banks for duplicates, unsupported claims of official exam affiliation, and missing answers before review.
+
+## Open decisions and normalization work
+
+- The owner must assign current-standard Priority, Status, Access, and Source attributes to the 52 legacy compact requirements that predate the company requirement template. Their absence must not be interpreted as approval or first-release priority.
+- Native mobile release scope, offline media, Organization Manager, AI features, subscriptions, tenant self-service, and provider choices remain product decisions even where this document describes their required behavior.
+- The implementation table and [current state](../architecture/CURRENT-STATE.md) describe verified behavior today; prose below that is broader than the running product remains unimplemented until separately approved and verified.
 
 ## Related documents
 

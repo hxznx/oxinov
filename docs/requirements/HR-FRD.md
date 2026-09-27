@@ -1,6 +1,6 @@
 # Functional Requirements Document: Oxinov HR
 
-**Version:** 0.2 (draft for owner review)
+**Version:** 0.3 (draft for owner review)
 **Date:** 2026-09-28
 **Status:** Proposed. Drafted at the owner's request; not approved for implementation until the release gate in the [product record](../products/hr/README.md) is passed.
 **Scope:** `hr.oxinov.com`: a verified, global network of HR professionals and agencies, and the workspace where client companies engage them to take candidates from CV to deployment.
@@ -9,6 +9,8 @@
 ## Implementation status (2026-09-28)
 
 Nothing is built. Every requirement below is **Proposed**. Each moves to **Approved** when the owner approves the release, and to **Implemented** when its code, tests, and documentation are merged and verified. The build order is in section 6.
+
+Approval of this draft and approval to publish the product are separate decisions. Before publication, the release evidence must map every Must requirement to its allowed-path and denied-or-failure-path tests, demonstrate cross-organization isolation with at least two clients and two agencies, verify consent withdrawal and retention deletion end to end, and record the owner-approved launch countries, sectors, legal review, operating staff, and reduced scope (if any). Passing an earlier build step never waives these controls.
 
 ## 1. Purpose and scope
 
@@ -310,7 +312,7 @@ Sources: owner request of 2026-09-28; [platform blueprint](../company/PLATFORM-B
 - Acceptance: Given a client downloads a candidate's CV, when the download completes, then an audit entry records who, when, and which document.
 - Acceptance: Given anyone, when they try to edit or delete an audit entry, then it is refused.
 
-**FR-HR-8094 — Security events.** The product must emit schema-valid security events for denied cross-organization access, unauthorized engagement access, malware uploads, bulk or unusual candidate-data exports, privilege changes, fee-request reports, and worker-safety escalations. Events must use actions registered in the [security event catalog](../security/soc/EVENT-CATALOG.md), contain no CV text, document contents, medical data, private messages, or raw AI prompts, and preserve the request and audit correlation identifiers.
+**FR-HR-8094 — Security events.** The product must emit schema-valid security events for denied cross-organization access, unauthorized engagement access, malware uploads, bulk or unusual candidate-data exports, privilege changes, fee-request reports, and worker-safety escalations. Events must use actions registered in the [security event catalog](../../security/soc/EVENT-CATALOG.md), contain no CV text, document contents, medical data, private messages, or raw AI prompts, and preserve the request and audit correlation identifiers.
 *Priority:* Must. *Status:* Proposed. *Access:* system emits; authorized security operators read. *Source:* NFR-15; security event schema and catalog.
 - Acceptance: Given a member requests another organization's candidate record, when access is denied, then `tenant.cross_access.denied` is emitted without candidate personal data.
 - Acceptance: Given an ordinary authorized candidate view, when it succeeds, then no high-severity security event is emitted merely for viewing the record.
