@@ -120,7 +120,10 @@ describe('certificates', () => {
        INSERT INTO entitlements (tenant_id, user_id, course_id, enrollment_id, source) SELECT $1, $2, $3, id, 'ADMIN_GRANT' FROM e`,
       [SEED.sakura, BIKASH, SEED.paidCourse],
     );
-    for (const lesson of PAID_LESSONS) expect((await complete(SEED.users.bikash, SEED.paidCourse, lesson)).status).toBe(200);
+    const before = await progress(SEED.users.bikash, SEED.paidCourse);
+    const lessons = (before.body as { data: { lessons: { id: string }[] } }).data.lessons.map((lesson) => lesson.id);
+    expect(lessons).toEqual(expect.arrayContaining(PAID_LESSONS));
+    for (const lesson of lessons) expect((await complete(SEED.users.bikash, SEED.paidCourse, lesson)).status).toBe(200);
     let status = await progress(SEED.users.bikash, SEED.paidCourse);
     expect(status.body.data.completedRequiredLessons).toBe(status.body.data.requiredLessons);
     expect(status.body.data).toMatchObject({ complete: false, exams: [{ id: SEED.mockExam, passed: false }], certificate: null });
