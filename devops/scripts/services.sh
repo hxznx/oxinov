@@ -11,11 +11,11 @@ CATALOG_WORKLOADS=(edu-api platform-api edu-web platform-web mail-relay keycloak
 # Extended regular expression of the paths an image is built from.
 catalog_inputs() {
   case $1 in
-    lms-api) echo '^(backend/products/lms-api/|packages/server-kit/|database/products/lms/prisma/|security/soc/event-schema\.json$)' ;;
+    lms-api) echo '^(backend/products/edu-api/|packages/server-kit/|database/products/edu/prisma/|security/soc/event-schema\.json$)' ;;
     platform-api) echo '^(backend/platform-api/|packages/server-kit/|database/platform/prisma/|security/soc/event-schema\.json$)' ;;
-    edu-web) echo '^(frontend/products/lms-web/|packages/web-auth/|packages/design-system/)' ;;
+    edu-web) echo '^(frontend/products/edu-web/|packages/web-auth/|packages/design-system/)' ;;
     platform-web) echo '^(frontend/platform-web/|packages/web-auth/|packages/design-system/)' ;;
-    migrate) echo '^(database/products/lms/migrations/|database/products/lms/prisma/|database/platform/migrations/|database/platform/prisma/|backend/workers/migrate/)' ;;
+    migrate) echo '^(database/products/edu/migrations/|database/products/edu/prisma/|database/platform/migrations/|database/platform/prisma/|backend/workers/migrate/)' ;;
     mail-relay) echo '^(backend/workers/mail-relay/)' ;;
     keycloak) echo '^(devops/keycloak/Dockerfile$)' ;;
     backup) echo '^(devops/docker/Dockerfile$)' ;;

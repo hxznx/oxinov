@@ -134,7 +134,7 @@ services:
     healthPath: /
     readyPath: /
     # Next.js caches rendered data under .next/cache.
-    writablePaths: [/app/frontend/products/lms-web/.next/cache]
+    writablePaths: [/app/frontend/products/edu-web/.next/cache]
     resources:
       requests: { cpu: 50m, memory: 128Mi }
       limits: { memory: 320Mi }

@@ -34,7 +34,7 @@ Implement one modular AI capability within the platform backend. Do not create a
 
 Required vertical slices:
 1. Staff internal knowledge assistant with approved, access-scoped sources and citations.
-2. LMS authoring copilot that returns instructor-reviewable structured drafts and cannot publish.
+2. Edu authoring copilot that returns instructor-reviewable structured drafts and cannot publish.
 
 Architecture requirements:
 - Web and mobile call authenticated product/platform APIs. They never receive model-provider credentials or call Bedrock directly.

@@ -56,7 +56,7 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 | 8700–8799 | TECH | [Oxinov Tech FRD](frd/tech-frd.md) (proposed; definition to validate) | Tech product owner |
 | 8800–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
 
-LMS areas keep their historical numbers. New LMS requirements continue in the LMS block.
+Edu areas keep their historical numbers. New Edu requirements continue in the Edu block (101–1799).
 
 ## Requirement template
 

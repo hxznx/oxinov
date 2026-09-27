@@ -17,7 +17,7 @@ AREAS = {
     "scripts": "Repository maintenance", "security": "Security and incident response",
 }
 RESERVED = {
-    "backend/products/lms-chat", "backend/gateway", "backend/products/lms-worker", "backend/workers/platform-worker",
+    "backend/products/edu-chat", "backend/gateway", "backend/products/edu-worker", "backend/workers/platform-worker",
     "devops/ansible", "frontend/mobile", "packages/auth", "packages/config",
     "packages/contracts", "packages/domain", "packages/observability",
     "packages/security-events", "packages/testing",

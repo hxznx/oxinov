@@ -8,10 +8,10 @@ One SaaS platform serves many learning spaces (tenants). A person holds membersh
 
 ```text
 Browser ─HTTPS─> Traefik (k3s ingress, Let's Encrypt)
-                  ├─ edu.oxinov.com ─> edu-web (Next.js, server-side calls) ─> lms-api (NestJS) ─> PostgreSQL (lms)
+                  ├─ edu.oxinov.com ─> edu-web (Next.js, server-side calls) ─> edu-api (NestJS) ─> PostgreSQL (Edu database)
                   ├─ app.oxinov.com ─> platform-web ─> platform-api ─> PostgreSQL (platform)
                   └─ id.oxinov.com  ─> Keycloak ─> mail-relay ─> Amazon SES
-lms-api ─presigned URLs─> private S3 (media, resources)       Browser ─direct upload/playback─> S3
+edu-api ─presigned URLs─> private S3 (media, resources)       Browser ─direct upload/playback─> S3
 Helm hook: migrate job before each release     CronJob: nightly backup ─> S3
 ```
 
@@ -19,7 +19,7 @@ Everything runs on one k3s node (ADR-018). The APIs have no public host: browser
 
 ## At scale
 
-The same images and chart move to Amazon EKS with RDS (ADR-018). Workers (`lms-worker`) and a chat gateway (`lms-chat`) are added when their features are approved; products exchange events through an outbox and SNS/SQS (ADR-019); OpenTelemetry traces connect portal, APIs, and sign-in.
+The same images and chart move to Amazon EKS with RDS (ADR-018). Workers (`edu-worker`) and a chat gateway (`edu-chat`) are added when their features are approved; products exchange events through an outbox and SNS/SQS (ADR-019); OpenTelemetry traces connect portal, APIs, and sign-in.
 
 ## Rules
 

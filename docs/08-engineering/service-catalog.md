@@ -7,9 +7,9 @@ Edit the catalog, not this page. The image of each service is `oxinov/<service>`
 
 | Service | Product | Kind | Source | Build target | Workload | Port | Public host | Owner |
 | --- | --- | --- | --- | --- | --- | ---: | --- | --- |
-| `lms-api` | edu | api | [backend/products/lms-api](../../backend/products/lms-api/) | backend | edu-api | 4000 | internal | @hxznx |
+| `lms-api` | edu | api | [backend/products/edu-api](../../backend/products/edu-api/) | backend | edu-api | 4000 | internal | @hxznx |
 | `platform-api` | platform | api | [backend/platform-api](../../backend/platform-api/) | platform-api | platform-api | 4200 | internal | @hxznx |
-| `edu-web` | edu | web | [frontend/products/lms-web](../../frontend/products/lms-web/) | edu-web | edu-web | 3002 | `edu.oxinov.com` | @hxznx |
+| `edu-web` | edu | web | [frontend/products/edu-web](../../frontend/products/edu-web/) | edu-web | edu-web | 3002 | `edu.oxinov.com` | @hxznx |
 | `platform-web` | platform | web | [frontend/platform-web](../../frontend/platform-web/) | platform-web | platform-web | 3001 | `app.oxinov.com` | @hxznx |
 | `migrate` | platform | job | [backend/workers/migrate](../../backend/workers/migrate/) | migrate | none | - | internal | @hxznx |
 | `mail-relay` | platform | worker | [backend/workers/mail-relay](../../backend/workers/mail-relay/) | mail-relay | mail-relay | 2525 | internal | @hxznx |

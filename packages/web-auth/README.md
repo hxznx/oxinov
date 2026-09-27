@@ -1,6 +1,6 @@
 # @oxinov/web-auth
 
-Backend-for-frontend sign-in at `id.oxinov.com` for every Oxinov Next.js web app ([identity and access](../../docs/04-architecture/identity-and-access.md), ADR-011, ADR-016). Used by the account portal (`frontend/platform-web`) and Oxinov Edu (`frontend/products/lms-web`).
+Backend-for-frontend sign-in at `id.oxinov.com` for every Oxinov Next.js web app ([identity and access](../../docs/04-architecture/identity-and-access.md), ADR-011, ADR-016). Used by the account portal (`frontend/platform-web`) and Oxinov Edu (`frontend/products/edu-web`).
 
 - Authorization code flow with PKCE (S256), `state`, and ID-token `nonce` checks.
 - Tokens never reach the browser: they are sealed with AES-256-GCM into HttpOnly cookies with purpose-separated keys.

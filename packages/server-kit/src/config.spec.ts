@@ -3,7 +3,7 @@ import { loadServiceConfig } from './config';
 const loadConfig = (env: NodeJS.ProcessEnv) => loadServiceConfig(env, { serviceName: 'api', defaultPort: 4000 });
 
 const valid = {
-  DATABASE_URL: 'postgresql://oxinov_app:x@localhost:5432/oxinov_lms',
+  DATABASE_URL: 'postgresql://oxinov_app:x@localhost:5432/oxinov_edu',
   AUTH_DEV_JWT_SECRET: 'x'.repeat(32),
 };
 
@@ -34,7 +34,7 @@ describe('loadConfig', () => {
     };
     expect(() => loadConfig({ ...idp, DEPLOY_ENVIRONMENT: 'staging' })).toThrow(/AUTH_AUDIENCE is required/);
     expect(() => loadConfig({ ...idp, NODE_ENV: 'production' })).toThrow(/AUTH_AUDIENCE is required/);
-    expect(loadConfig({ ...idp, DEPLOY_ENVIRONMENT: 'local' }).auth.audience).toBeUndefined();
+    expect(loadConfig({ ...idp, DEPLOY_ENVIRONMENT: 'local' }).auth.audiences).toEqual([]);
   });
 
   it('validates the rate limit', () => {
@@ -60,9 +60,34 @@ describe('loadConfig', () => {
       DEPLOY_ENVIRONMENT: 'production',
       AUTH_ISSUER: 'https://idp.example',
       AUTH_JWKS_URL: 'https://idp.example/.well-known/jwks.json',
-      AUTH_AUDIENCE: 'oxinov-lms-api',
+      AUTH_AUDIENCE: 'oxinov-edu-api',
     });
     expect(config.auth.devJwtSecret).toBeUndefined();
-    expect(config.auth.audience).toBe('oxinov-lms-api');
+    expect(config.auth.audiences).toEqual(['oxinov-edu-api']);
+  });
+
+  it('accepts a comma-separated audience list while an audience is renamed (ADR-027)', () => {
+    const config = loadConfig({
+      DATABASE_URL: valid.DATABASE_URL,
+      NODE_ENV: 'production',
+      DEPLOY_ENVIRONMENT: 'production',
+      AUTH_ISSUER: 'https://idp.example',
+      AUTH_JWKS_URL: 'https://idp.example/.well-known/jwks.json',
+      AUTH_AUDIENCE: ' oxinov-edu-api , oxinov-lms-api ,',
+    });
+    expect(config.auth.audiences).toEqual(['oxinov-edu-api', 'oxinov-lms-api']);
+  });
+
+  it('still requires an audience in production when the list is blank', () => {
+    expect(() =>
+      loadConfig({
+        DATABASE_URL: valid.DATABASE_URL,
+        NODE_ENV: 'production',
+        DEPLOY_ENVIRONMENT: 'production',
+        AUTH_ISSUER: 'https://idp.example',
+        AUTH_JWKS_URL: 'https://idp.example/.well-known/jwks.json',
+        AUTH_AUDIENCE: ' , ',
+      }),
+    ).toThrow('AUTH_AUDIENCE is required in staging and production');
   });
 });

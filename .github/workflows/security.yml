@@ -35,5 +35,5 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
 
-  # The CI workflow builds and scans the LMS API image. CodeQL, pull-request
+  # The CI workflow builds and scans the Edu API image. CodeQL, pull-request
   # dependency review, and SBOM/provenance remain release-gate work.

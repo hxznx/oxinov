@@ -87,7 +87,7 @@ export async function createTestContext(): Promise<TestContext> {
     http: request(app.getHttpServer()),
     securityEvents,
     token: (subject, claims = {}) =>
-      new SignJWT({ aud: config.auth.audience, email_verified: true, ...claims })
+      new SignJWT({ aud: config.auth.audiences[0], email_verified: true, ...claims })
         .setProtectedHeader({ alg: 'RS256', kid: 'test-key' })
         .setIssuer(config.auth.issuer as string)
         .setSubject(subject)

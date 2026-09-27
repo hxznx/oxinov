@@ -11,7 +11,7 @@ Control plane for the one Oxinov account at `api.oxinov.com` (ADR-008, ADR-011).
 | `GET /v1/me` | Signed in | FR-ID-2205, FR-ID-2206 | The account; created as `PENDING_WELCOME` on first sign-in |
 | `POST /v1/me/welcome` | Signed in, verified email | FR-ID-2205, FR-PLAN-2602 | Country, age confirmation, and acceptance of current sign-up policies; activates the account and grants member access |
 | `POST /v1/me/policy-acceptances` | Signed in | FR-POLICY-2404 | Accept new material policy versions |
-| `GET /v1/me/entitlements` | Active account, current policies | FR-PLAN-2603 | Active entitlement keys, such as `lms.member` |
+| `GET /v1/me/entitlements` | Active account, current policies | FR-PLAN-2603 | Active entitlement keys, such as `edu.member` |
 | `GET /health/live`, `/health/ready`, `/metrics` | Private network | NFR-12 | Probes and Prometheus metrics |
 
 Errors use the shared envelope. Platform-specific codes: `POLICY_ACCEPTANCE_REQUIRED` (403, `details.policies`), `POLICY_VERSION_OUTDATED` (409), `ACCOUNT_SUSPENDED` (403), `EMAIL_NOT_VERIFIED` (403).

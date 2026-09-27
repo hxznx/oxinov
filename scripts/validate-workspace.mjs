@@ -12,12 +12,12 @@ const required = [
   'turbo.json',
   'frontend/company-web/README.md',
   'frontend/platform-web/README.md',
-  'frontend/products/lms-web/README.md',
+  'frontend/products/edu-web/README.md',
   'backend/gateway/README.md',
   'backend/platform-api/README.md',
-  'backend/products/lms-api/README.md',
+  'backend/products/edu-api/README.md',
   'database/platform/README.md',
-  'database/products/lms/README.md',
+  'database/products/edu/README.md',
 ];
 
 for (const path of required) {
@@ -30,10 +30,10 @@ if (!/^pnpm@\d+\.\d+\.\d+$/.test(rootManifest.packageManager ?? '')) {
   errors.push('Root package.json must pin an exact pnpm version');
 }
 
-const lmsManifestPath = join(root, 'backend/products/lms-api/package.json');
-const lmsManifest = JSON.parse(readFileSync(lmsManifestPath, 'utf8'));
-if (lmsManifest.name !== '@oxinov/lms-api') {
-  errors.push('The Edu API workspace (backend/products/lms-api) must be identified as @oxinov/lms-api');
+const eduManifestPath = join(root, 'backend/products/edu-api/package.json');
+const eduManifest = JSON.parse(readFileSync(eduManifestPath, 'utf8'));
+if (eduManifest.name !== '@oxinov/edu-api') {
+  errors.push('The Edu API workspace (backend/products/edu-api) must be identified as @oxinov/edu-api');
 }
 
 for (const forbidden of [
@@ -52,7 +52,7 @@ for (const forbidden of [
   }
 }
 
-if (existsSync(join(root, 'backend/products/lms-api/package-lock.json'))) {
+if (existsSync(join(root, 'backend/products/edu-api/package-lock.json'))) {
   errors.push('Nested package-lock.json conflicts with the canonical root pnpm-lock.yaml');
 }
 

@@ -71,14 +71,14 @@ REQUIRED = [
     "docs/11-planning/tasks.md", "docs/02-products/edu/edu-acceptance-criteria.md",
     "docs/11-planning/risks.md", "docs/11-planning/changelog.md",
     "frontend/README.md", "frontend/company-web/README.md", "frontend/platform-web/README.md",
-    "frontend/products/lms-web/README.md", "frontend/mobile/README.md", "docs/02-products/edu/README.md",
+    "frontend/products/edu-web/README.md", "frontend/mobile/README.md", "docs/02-products/edu/README.md",
     "backend/README.md", "backend/gateway/README.md", "backend/platform-api/README.md",
-    "backend/workers/platform-worker/README.md", "backend/products/lms-api/README.md",
-    "backend/products/lms-api/README.md", "backend/products/lms-worker/README.md", "backend/products/lms-chat/README.md",
-    "database/README.md", "database/platform/README.md", "database/products/lms/README.md",
-    "database/products/lms/prisma/README.md",
-    "database/products/lms/migrations/README.md", "database/products/lms/seeds/README.md",
-    "database/products/lms/policies/README.md", "packages/auth/README.md", "packages/config/README.md",
+    "backend/workers/platform-worker/README.md", "backend/products/edu-api/README.md",
+    "backend/products/edu-api/README.md", "backend/products/edu-worker/README.md", "backend/products/edu-chat/README.md",
+    "database/README.md", "database/platform/README.md", "database/products/edu/README.md",
+    "database/products/edu/prisma/README.md",
+    "database/products/edu/migrations/README.md", "database/products/edu/seeds/README.md",
+    "database/products/edu/policies/README.md", "packages/auth/README.md", "packages/config/README.md",
     "packages/contracts/README.md", "packages/design-system/README.md",
     "packages/observability/README.md", "packages/security-events/README.md",
     "packages/testing/README.md", "packages/domain/README.md", "monitoring/README.md",
@@ -257,9 +257,9 @@ def check_security(errors: list[str]) -> None:
 def check_deploy(errors: list[str]) -> None:
     applications = {
         "frontend/mobile": ROOT / "frontend" / "mobile" / "package.json",
-        "backend/products/lms-api": ROOT / "backend" / "products" / "lms-api" / "package.json",
-        "backend/products/lms-worker": ROOT / "backend" / "products" / "lms-worker" / "package.json",
-        "backend/products/lms-chat": ROOT / "backend" / "products" / "lms-chat" / "package.json",
+        "backend/products/edu-api": ROOT / "backend" / "products" / "edu-api" / "package.json",
+        "backend/products/edu-worker": ROOT / "backend" / "products" / "edu-worker" / "package.json",
+        "backend/products/edu-chat": ROOT / "backend" / "products" / "edu-chat" / "package.json",
     }
     for name, manifest in applications.items():
         if not manifest.is_file():

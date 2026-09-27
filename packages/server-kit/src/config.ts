@@ -13,7 +13,8 @@ export interface ServiceConfig {
   readonly auth: {
     readonly issuer?: string;
     readonly jwksUrl?: string;
-    readonly audience?: string;
+    /** Accepted token audiences; empty when AUTH_AUDIENCE is unset. */
+    readonly audiences: readonly string[];
     /** Local HS256 secret for development tokens. Allowed only in local and CI environments. */
     readonly devJwtSecret?: string;
   };
@@ -52,7 +53,11 @@ export function loadServiceConfig(
 
   const issuer = optional(env, 'AUTH_ISSUER');
   const jwksUrl = optional(env, 'AUTH_JWKS_URL');
-  const audience = optional(env, 'AUTH_AUDIENCE');
+  // AUTH_AUDIENCE may list several audiences, comma-separated, only while one is being renamed (ADR-027).
+  const audiences = (optional(env, 'AUTH_AUDIENCE') ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
   const devJwtSecret = optional(env, 'AUTH_DEV_JWT_SECRET');
 
   if (Boolean(issuer) !== Boolean(jwksUrl)) {
@@ -67,7 +72,7 @@ export function loadServiceConfig(
     errors.push('AUTH_DEV_JWT_SECRET is not allowed in staging or production');
   }
   // Each Oxinov product is its own OIDC client; a token issued for another product must fail (FR-ID-2207).
-  if (isDeployed && issuer && !audience) {
+  if (isDeployed && issuer && audiences.length === 0) {
     errors.push('AUTH_AUDIENCE is required in staging and production');
   }
   if (!issuer && !devJwtSecret) {
@@ -90,7 +95,7 @@ export function loadServiceConfig(
     serviceVersion: optional(env, 'SERVICE_VERSION') ?? '0.0.0-dev',
     environment,
     databaseUrl: databaseUrl as string,
-    auth: { issuer, jwksUrl, audience, devJwtSecret },
+    auth: { issuer, jwksUrl, audiences, devJwtSecret },
     rateLimitPerMinute,
   };
 }

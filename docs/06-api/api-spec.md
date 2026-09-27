@@ -1,10 +1,10 @@
 # API contract
 
-**Updated:** 2026-09-26. The NestJS APIs publish versioned OpenAPI; `pnpm --filter @oxinov/lms-api openapi` writes the Edu contract to `packages/contracts/openapi.json`. Web and mobile clients use the same documented API, and business rules never live only in a frontend. Every tenant route requires an authenticated membership and a resolved tenant context ([auth](api-auth.md)).
+**Updated:** 2026-09-26. The NestJS APIs publish versioned OpenAPI; `pnpm --filter @oxinov/edu-api openapi` writes the Edu contract to `packages/contracts/openapi.json`. Web and mobile clients use the same documented API, and business rules never live only in a frontend. Every tenant route requires an authenticated membership and a resolved tenant context ([auth](api-auth.md)).
 
 Today the APIs have no public host: browsers call the web apps, which call the APIs from the server with the person's token. A public API host (for mobile apps and partners) is added with its own rate limits and scopes when the first client needs it.
 
-## Oxinov Edu API (`backend/products/lms-api`), all under `/v1/tenants/{tenantId}`
+## Oxinov Edu API (`backend/products/edu-api`), all under `/v1/tenants/{tenantId}`
 
 | Module | Routes (built) |
 | --- | --- |

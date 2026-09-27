@@ -51,7 +51,7 @@ class GenerateTests(unittest.TestCase):
                 "source ./services.sh; "
                 'echo "${CATALOG_SERVICES[*]}"; catalog_helm_key TAG_LMS_API; catalog_build keycloak; '
                 'catalog_node backup || echo "backup not node"; '
-                'echo backend/products/lms-api/src/main.ts | grep -Eq "$(catalog_inputs lms-api)" && echo matched'
+                'echo backend/products/edu-api/src/main.ts | grep -Eq "$(catalog_inputs lms-api)" && echo matched'
             )
             out = subprocess.run([BASH, "-c", script], cwd=directory, capture_output=True, text=True, check=True).stdout.splitlines()
         self.assertEqual(out[0].split(), list(catalog["services"]))

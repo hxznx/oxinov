@@ -42,7 +42,7 @@ Sources: [platform blueprint](../../01-company/platform-blueprint.md), [identity
 | --- | --- |
 | Oxinov account | One person's identity, keyed by an immutable internal user ID |
 | Trust level | T0 Visitor, T1 Member, T2 Contact-verified, T3 Identity-verified, T4 Business-verified; staff roles are separate |
-| Entitlement key | A named capability such as `lms.ai_tutor`; products check keys, never plan names |
+| Entitlement key | A named capability such as `edu.ai_tutor`; products check keys, never plan names |
 | Limit | A metered allowance such as `ai.credits.monthly` with a reset schedule |
 | Organization | A customer group (company, school, cooperative) with members, roles, KYC status, and subscriptions |
 | Launched product | A product that passed its release gate and is enabled in the product catalogue |

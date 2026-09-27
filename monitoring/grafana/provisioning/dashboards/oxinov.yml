@@ -4,7 +4,7 @@ providers:
   - name: Oxinov
     orgId: 1
     folder: Oxinov Platform
-    folderUid: oxinov-lms
+    folderUid: oxinov
     type: file
     disableDeletion: true
     editable: false

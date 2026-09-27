@@ -51,13 +51,13 @@ DO $$
 BEGIN
     BEGIN
         INSERT INTO entitlements (user_id, product_key, entitlement_key, source)
-        VALUES ('11111111-0000-4000-8000-000000000002', 'lms', 'lms.extra', 'MEMBER');
+        VALUES ('11111111-0000-4000-8000-000000000002', 'edu', 'edu.extra', 'MEMBER');
         RAISE EXCEPTION 'granted an entitlement to another person';
     EXCEPTION WHEN insufficient_privilege THEN NULL;
     END;
     BEGIN
         INSERT INTO entitlements (user_id, product_key, entitlement_key, source)
-        VALUES ('11111111-0000-4000-8000-000000000001', 'lms', 'lms.ai_tutor', 'PLAN');
+        VALUES ('11111111-0000-4000-8000-000000000001', 'edu', 'edu.ai_tutor', 'PLAN');
         RAISE EXCEPTION 'self-granted a plan entitlement';
     EXCEPTION WHEN insufficient_privilege THEN NULL;
     END;

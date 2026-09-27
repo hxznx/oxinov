@@ -1,6 +1,6 @@
 # Logical data model
 
-**Updated:** 2026-09-26 from the Prisma schemas (`database/products/lms/prisma/schema.prisma`, `database/platform/prisma/schema.prisma`). Each plane has its own database; no product reads another's (ADR-008).
+**Updated:** 2026-09-26 from the Prisma schemas (`database/products/edu/prisma/schema.prisma`, `database/platform/prisma/schema.prisma`). Each plane has its own database; no product reads another's (ADR-008).
 
 ## Platform database (`database/platform`)
 
@@ -13,7 +13,7 @@
 
 Isolation: owner-scoped rows with row-level security (`20260924100200_owner_isolation`).
 
-## Oxinov Edu database (`database/products/lms`)
+## Oxinov Edu database (`database/products/edu`)
 
 | Domain | Entities (built) | Planned |
 | --- | --- | --- |

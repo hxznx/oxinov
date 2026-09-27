@@ -39,14 +39,14 @@ describe('platform accounts', () => {
       expect(missing.status).toBe(401);
       expect(missing.body.error.code).toBe('UNAUTHENTICATED');
 
-      const other = await ctx.http.get('/v1/me').set(await bearer('user_x', { aud: 'oxinov-lms-api' }));
+      const other = await ctx.http.get('/v1/me').set(await bearer('user_x', { aud: 'oxinov-edu-api' }));
       expect(other.status).toBe(401);
     });
 
     it('lists only launched products and the current policy versions without sign-in', async () => {
       const products = await ctx.http.get('/v1/products');
       expect(products.status).toBe(200);
-      expect(products.body.data).toEqual([{ key: 'lms', name: 'Oxinov Edu', address: 'edu.oxinov.com' }]);
+      expect(products.body.data).toEqual([{ key: 'edu', name: 'Oxinov Edu', address: 'edu.oxinov.com' }]);
 
       const policies = await ctx.http.get('/v1/policies/current');
       expect(policies.body.data.map((p: { policyId: string }) => p.policyId).sort()).toEqual(['acceptable-use', 'privacy', 'terms']);
@@ -121,7 +121,7 @@ describe('platform accounts', () => {
 
       const entitlements = await ctx.http.get('/v1/me/entitlements').set(headers);
       expect(entitlements.status).toBe(200);
-      expect(entitlements.body.data.map((e: { entitlementKey: string }) => e.entitlementKey)).toEqual(['lms.member']);
+      expect(entitlements.body.data.map((e: { entitlementKey: string }) => e.entitlementKey)).toEqual(['edu.member']);
     });
 
     it('treats a repeated welcome as a no-op', async () => {
@@ -140,7 +140,7 @@ describe('platform accounts', () => {
     it('adds member access automatically when a product launches', async () => {
       await ownerQuery(`UPDATE products SET launched = true, release_gate_recorded_at = now() WHERE key = 'jobs'`);
       const response = await ctx.http.get('/v1/me/entitlements').set(await bearer(SEED.asha.subject));
-      expect(response.body.data.map((e: { entitlementKey: string }) => e.entitlementKey)).toEqual(['jobs.member', 'lms.member']);
+      expect(response.body.data.map((e: { entitlementKey: string }) => e.entitlementKey)).toEqual(['edu.member', 'jobs.member']);
       await ownerQuery(`UPDATE products SET launched = false, release_gate_recorded_at = NULL WHERE key = 'jobs'`);
     });
 

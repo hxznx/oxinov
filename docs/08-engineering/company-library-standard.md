@@ -29,7 +29,7 @@ These are filing rules, not a list of approved products. Financial records, HR f
 ## Stable identifiers and optional components
 
 Give each approved product a stable lowercase technical slug, separate from its public display name.
-Existing `lms` remains the technical slug for Oxinov Edu; a brand rename alone does not rename imports, databases or deployments.
+Oxinov Edu's slug is `edu` everywhere (ADR-027). Renaming a live product's slug is a planned migration, not a find-and-replace: production identifiers such as databases, token audiences, and image repositories change only through an approved cutover.
 Avoid generic slugs such as `app2`, `new-product` or dates.
 
 Create only components justified by an approved scope:

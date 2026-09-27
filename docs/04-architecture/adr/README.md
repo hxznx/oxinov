@@ -32,6 +32,7 @@ Each decision has its own file, named `adr-NNN-short-title.md`. Add new decision
 | [ADR-024](adr-024-tech-radar-q4.md) | Technology radar and stack improvements (2026-Q4) | Accepted |
 | [ADR-025](adr-025-two-products-edu-hr.md) | Two product modules now—Oxinov Edu and unified Oxinov HR | Accepted |
 | [ADR-026](adr-026-central-frd-folder.md) | Central FRD folder and five proposed module definitions | Accepted for requirements discovery only |
+| [ADR-027](adr-027-edu-technical-slug.md) | One slug for Oxinov Edu: `edu` replaces `lms` | Accepted; production cutover pending |
 
 ## Pending
 

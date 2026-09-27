@@ -44,7 +44,7 @@ Each product has its own frontend, backend, and database; one Oxinov account sig
 
 ## Current state
 
-Implemented applications include company-web, platform-web, platform-api, Edu web and the Edu API. Edu includes workspaces, catalog, free enrollment, authoring, media, quizzes, assignments, notes, resources and discussions. See [Edu web](frontend/products/lms-web/README.md) and [the API guide](backend/products/lms-api/README.md) for scope and setup.
+Implemented applications include company-web, platform-web, platform-api, Edu web and the Edu API. Edu includes workspaces, catalog, free enrollment, authoring, media, quizzes, assignments, notes, resources and discussions. See [Edu web](frontend/products/edu-web/README.md) and [the API guide](backend/products/edu-api/README.md) for scope and setup.
 
 Production runs on one k3s node in AWS Mumbai, managed by Terraform and deployed automatically from every green `main` with automatic rollback (ADR-017, ADR-018); spend stays within US$50 a month. The verified picture (services, data, security controls, cost, and gaps) is in [current state](docs/04-architecture/current-state.md); open work is in the [backlog](docs/11-planning/tasks.md). Paid checkout, certificates, native mobile, and broader platform capabilities remain open. Planned gateway, chat, and general worker folders are not implemented services. Source presence alone is not verification. Use the [current structure](docs/08-engineering/project-structure.md) for active paths and the [changelog](docs/11-planning/changelog.md) for recorded delivery evidence.
 

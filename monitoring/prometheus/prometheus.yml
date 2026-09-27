@@ -3,7 +3,7 @@ global:
   evaluation_interval: 15s
   external_labels:
     environment: local
-    platform: oxinov-lms
+    platform: oxinov
 
 rule_files:
   - /etc/prometheus/rules/*.yml

@@ -20,7 +20,7 @@ Configuration lives under `monitoring/`. Keep data sources, dashboards, and aler
 4. In Prometheus, check **Status > Targets**. Prometheus, PostgreSQL, and Redis should be up.
 5. In Grafana, open **Oxinov Platform > Oxinov Platform Overview**.
 
-The application scrape targets are added when `backend/products/lms-api`, `backend/products/lms-worker`, `backend/products/lms-chat`, and `frontend/products/lms-web` expose `/metrics`; adding them earlier would generate false target-down alerts in the documentation-only scaffold.
+The application scrape targets are added when `backend/products/edu-api`, `backend/products/edu-worker`, `backend/products/edu-chat`, and `frontend/products/edu-web` expose `/metrics`; adding them earlier would generate false target-down alerts in the documentation-only scaffold.
 
 ## Application instrumentation contract
 

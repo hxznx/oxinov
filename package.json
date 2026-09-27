@@ -20,9 +20,9 @@
     "typecheck": "turbo run typecheck",
     "validate": "python scripts/validate_project.py && node scripts/validate-workspace.mjs",
     "validate:security": "python scripts/validate_project.py --security",
-    "lms:dev": "pnpm --filter @oxinov/lms-api dev",
-    "lms:migrate": "pnpm --filter @oxinov/lms-api db:migrate",
-    "lms:seed": "pnpm --filter @oxinov/lms-api db:seed"
+    "edu:dev": "pnpm --filter @oxinov/edu-api dev",
+    "edu:migrate": "pnpm --filter @oxinov/edu-api db:migrate",
+    "edu:seed": "pnpm --filter @oxinov/edu-api db:seed"
   },
   "devDependencies": {
     "turbo": "2.11.3"

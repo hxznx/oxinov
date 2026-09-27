@@ -164,7 +164,7 @@ export interface Question {
 }
 
 export interface Product {
-  key: 'lms' | 'market' | 'hr' | 'services';
+  key: 'edu' | 'market' | 'hr' | 'services';
   /** Page at oxinov.com/products/<slug>/. */
   slug: string;
   name: string;
@@ -187,7 +187,7 @@ export interface Product {
 
 export const products: Product[] = [
   {
-    key: 'lms',
+    key: 'edu',
     slug: 'edu',
     name: 'Oxinov Edu',
     address: 'edu.oxinov.com',
@@ -196,7 +196,7 @@ export const products: Product[] = [
     description:
       'Oxinov Edu helps training providers run their own branded learning platform. Instructors can publish recorded lessons, chapter practice, mock exams, and assignments. Administrators can manage learners, results, and enrolments. It is designed for subjects such as Japanese, Korean, English, and IT. Learners will use it on the web and on mobile apps.',
     status: 'in-development',
-    searchTitle: 'Oxinov Edu: online classroom and LMS for schools',
+    searchTitle: 'Oxinov Edu: online classroom and learning platform for schools',
     summary:
       'Oxinov Edu is an online classroom for schools and teachers: video lessons, timed mock exams, assignments, and class Q&A in one place.',
     audience: ['Language schools', 'IT and coding training centres', 'Exam preparation institutes', 'Independent teachers'],
@@ -230,7 +230,7 @@ export const products: Product[] = [
       {
         question: 'What is Oxinov Edu?',
         answer:
-          'Oxinov Edu is an online classroom and learning management system (LMS). Schools and teachers use it to run courses, lessons, timed mock exams, and assignments in one place.',
+          'Oxinov Edu is an online classroom and learning management system. Schools and teachers use it to run courses, lessons, timed mock exams, and assignments in one place.',
       },
       {
         question: 'Who is Oxinov Edu for?',

@@ -5,7 +5,7 @@
 ## Today
 
 - **PostgreSQL 18** is the system of record. In production it runs as a StatefulSet on the node's encrypted disk (ADR-018); locally and in CI it runs in Docker. Amazon RDS replaces it at scale-out with the same migrations.
-- **One database per plane:** `platform` and `lms`, each with an owner role for migrations and a request role for the application. The request role never bypasses row-level security.
+- **One database per plane:** `oxinov_platform` and the Edu database `oxinov_lms` (renamed `oxinov_edu` at the ADR-027 cutover), each with an owner role for migrations and a request role for the application. The request role never bypasses row-level security.
 - **Tenant isolation:** shared tables with `tenant_id`, tenant-scoped keys and indexes, API membership checks, and row-level security. Tenant context is set transaction-locally (`set_config(..., true)` in `database-context.service.ts`), so it cannot leak across pooled connections; integration tests cover allowed and denied paths with two tenants.
 - **Migrations:** Prisma 7 migrations, reviewed SQL, applied once per release by the `migrate` Helm hook before new code starts; CI applies them to a fresh database and fails on schema drift.
 - **Search:** PostgreSQL (catalogue search) until scale or analytics needs OpenSearch.

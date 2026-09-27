@@ -132,7 +132,7 @@ model Entitlement {
   id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId         String            @map("user_id") @db.Uuid
   productKey     String            @map("product_key") @db.VarChar(20)
-  /// For example `lms.member`; one active row per person and key (partial unique index in migration).
+  /// For example `edu.member`; one active row per person and key (partial unique index in migration).
   entitlementKey String            @map("entitlement_key") @db.VarChar(80)
   source         EntitlementSource
   startsAt       DateTime          @default(now()) @map("starts_at") @db.Timestamptz(3)

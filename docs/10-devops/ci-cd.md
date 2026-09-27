@@ -11,10 +11,10 @@ emergencies. Keep `main` always releasable.
 | `scaffold` | Documentation map, requirement IDs, workspace boundaries, Compose and monitoring files |
 | `api` | Edu API type check, lint, unit tests, migrations on PostgreSQL 18, Prisma drift, row-level-security tests, integration tests with object storage, build |
 | `platform-api` | Same for the platform API |
-| `platform-web`, `lms-web`, `company-web` | Type checks, unit tests, builds (and the shared `web-auth` tests) |
+| `platform-web`, `edu-web`, `company-web` | Type checks, unit tests, builds (and the shared `web-auth` tests) |
 | `terraform` | `terraform fmt`, `validate` for every stack, CloudFront router tests |
 | `delivery` | Mail relay tests, then `devops/scripts/check-delivery.sh`: shellcheck, release-planner tests, Helm lint, Kubernetes schema (`kubeconform`), Terraform format |
-| `lms-api-image` | Production image build and Trivy image scan |
+| `edu-api-image` | Production image build and Trivy image scan |
 
 `.github/workflows/security.yml` scans the repository (vulnerabilities, secrets, misconfiguration) with
 Trivy on every push and weekly. Dependabot (`.github/dependabot.yml`) opens grouped weekly updates for npm,

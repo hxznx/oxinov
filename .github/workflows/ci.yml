@@ -62,18 +62,18 @@ jobs:
       postgres:
         image: postgres:18-alpine
         env:
-          POSTGRES_DB: oxinov_lms_test
+          POSTGRES_DB: oxinov_edu_test
           POSTGRES_USER: oxinov
           POSTGRES_PASSWORD: ci-only-owner
         ports: ['5432:5432']
         options: >-
-          --health-cmd "pg_isready -U oxinov -d oxinov_lms_test"
+          --health-cmd "pg_isready -U oxinov -d oxinov_edu_test"
           --health-interval 5s --health-timeout 5s --health-retries 10
     env:
-      MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_lms_test
-      DATABASE_URL: postgresql://oxinov_app:ci-only-app@localhost:5432/oxinov_lms_test
-      TEST_MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_lms_test
-      TEST_DATABASE_URL: postgresql://oxinov_app:ci-only-app@localhost:5432/oxinov_lms_test
+      MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_edu_test
+      DATABASE_URL: postgresql://oxinov_app:ci-only-app@localhost:5432/oxinov_edu_test
+      TEST_MIGRATION_DATABASE_URL: postgresql://oxinov:ci-only-owner@localhost:5432/oxinov_edu_test
+      TEST_DATABASE_URL: postgresql://oxinov_app:ci-only-app@localhost:5432/oxinov_edu_test
       # Lesson media tests run against SeaweedFS, the same S3-compatible server as local development.
       TEST_MEDIA_S3_ENDPOINT: http://127.0.0.1:9000
       TEST_MEDIA_ACCESS_KEY: ci-only-storage-key
@@ -94,25 +94,25 @@ jobs:
         run: |
           pnpm --filter @oxinov/server-kit test
           pnpm --filter @oxinov/server-kit build
-      - run: pnpm --filter @oxinov/lms-api prisma:generate
-      - run: pnpm --filter @oxinov/lms-api typecheck
-      - run: pnpm --filter @oxinov/lms-api lint
-      - run: pnpm --filter @oxinov/lms-api test
+      - run: pnpm --filter @oxinov/edu-api prisma:generate
+      - run: pnpm --filter @oxinov/edu-api typecheck
+      - run: pnpm --filter @oxinov/edu-api lint
+      - run: pnpm --filter @oxinov/edu-api test
       - name: Apply migrations with Prisma and check the schema has not drifted
         run: |
-          pnpm --filter @oxinov/lms-api exec prisma migrate deploy
-          pnpm --filter @oxinov/lms-api exec prisma migrate diff --from-config-datasource --to-schema ../../../database/products/lms/prisma/schema.prisma --exit-code
+          pnpm --filter @oxinov/edu-api exec prisma migrate deploy
+          pnpm --filter @oxinov/edu-api exec prisma migrate diff --from-config-datasource --to-schema ../../../database/products/edu/prisma/schema.prisma --exit-code
       - name: Give the request role a login for tests
         run: psql "$MIGRATION_DATABASE_URL" -c "ALTER ROLE oxinov_app LOGIN PASSWORD 'ci-only-app'"
-      - run: pnpm --filter @oxinov/lms-api db:seed
-      - run: pnpm --filter @oxinov/lms-api db:test-policies
+      - run: pnpm --filter @oxinov/edu-api db:seed
+      - run: pnpm --filter @oxinov/edu-api db:test-policies
       - name: Start S3-compatible storage for media tests
         run: |
           docker run -d --name object-storage -p 127.0.0.1:9000:8333 --entrypoint /bin/sh             chrislusf/seaweedfs:4.47@sha256:ce9e796f1fe6f06968f4c04bdaf8f678dad9c8acdfef3d244133d71bfa6bf882 -c             "printf '{\"identities\":[{\"name\":\"ci\",\"credentials\":[{\"accessKey\":\"$TEST_MEDIA_ACCESS_KEY\",\"secretKey\":\"$TEST_MEDIA_SECRET_KEY\"}],\"actions\":[\"Admin\",\"Read\",\"Write\",\"List\"]}]}' > /tmp/s3.json && exec weed server -dir=/data -ip.bind=0.0.0.0 -volume.max=0 -s3 -s3.port=8333 -s3.config=/tmp/s3.json"
           for i in $(seq 60); do [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:9000/)" != "000" ] && exit 0; sleep 2; done
           docker logs object-storage; exit 1
-      - run: pnpm --filter @oxinov/lms-api test:integration
-      - run: pnpm --filter @oxinov/lms-api build
+      - run: pnpm --filter @oxinov/edu-api test:integration
+      - run: pnpm --filter @oxinov/edu-api build
 
   platform-api:
     # Platform control plane (api.oxinov.com): accounts, policies, entitlements with PostgreSQL RLS.
@@ -191,7 +191,7 @@ jobs:
           SESSION_SECRET: ci-only-placeholder-session-secret-0000
         run: pnpm --filter @oxinov/platform-web build
 
-  lms-web:
+  edu-web:
     # Oxinov Edu web app (edu.oxinov.com): helper unit tests, type check, build.
     runs-on: ubuntu-latest
     steps:
@@ -207,9 +207,9 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @oxinov/design-system build
-      - run: pnpm --filter @oxinov/lms-web test
-      - run: pnpm --filter @oxinov/lms-web typecheck
-      - run: pnpm --filter @oxinov/lms-web build
+      - run: pnpm --filter @oxinov/edu-web test
+      - run: pnpm --filter @oxinov/edu-web typecheck
+      - run: pnpm --filter @oxinov/edu-web build
 
   company-web:
     # oxinov.com static export: design tokens with contrast tests, site build, and page checks (FR-SITE-2101/2102/2105).
@@ -271,17 +271,17 @@ jobs:
       - run: pnpm --filter @oxinov/mail-relay test
       - run: bash devops/scripts/check-delivery.sh
 
-  lms-api-image:
+  edu-api-image:
     needs: api
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Build immutable LMS API candidate
-        run: docker build --file devops/docker/Dockerfile --target backend --tag oxinov/lms-api:${{ github.sha }} .
-      - name: Scan the LMS API image
+      - name: Build immutable Edu API candidate
+        run: docker build --file devops/docker/Dockerfile --target backend --tag oxinov/edu-api:${{ github.sha }} .
+      - name: Scan the Edu API image
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: oxinov/lms-api:${{ github.sha }}
+          image-ref: oxinov/edu-api:${{ github.sha }}
           format: table
           exit-code: '1'
           severity: HIGH,CRITICAL

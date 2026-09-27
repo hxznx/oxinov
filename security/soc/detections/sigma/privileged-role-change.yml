@@ -8,7 +8,7 @@ references:
   - ../../runbooks/ACCOUNT-TAKEOVER.md
 logsource:
   category: application
-  product: oxinov_lms
+  product: oxinov_edu
 detection:
   selection:
     event.action: membership.role.changed

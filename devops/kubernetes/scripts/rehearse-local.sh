@@ -105,7 +105,7 @@ kube get pods --no-headers | awk '{printf "     %-42s %s\n", $1, $3}'
 
 log "checking the release"
 edu=$(kube exec postgres-0 -- psql -U oxinov -d oxinov_lms -tAc 'select count(*) from _prisma_migrations where finished_at is not null')
-expected=$(find database/products/lms/migrations -mindepth 1 -maxdepth 1 -type d -name '2*' | wc -l | tr -d ' ')
+expected=$(find database/products/edu/migrations -mindepth 1 -maxdepth 1 -type d -name '2*' | wc -l | tr -d ' ')
 [ "$edu" = "$expected" ] && echo "ok   Edu migrations ($edu)" || { echo "FAIL Edu migrations: $edu of $expected"; failures=$((failures + 1)); }
 check "Edu home" edu.oxinov.com / '^200$'
 check "Account portal" app.oxinov.com / '^200$'

@@ -8,7 +8,7 @@ references:
   - ../../runbooks/CROSS-TENANT-ACCESS.md
 logsource:
   category: application
-  product: oxinov_lms
+  product: oxinov_edu
 detection:
   selection:
     event.action: tenant.cross_access.denied

@@ -9,7 +9,7 @@
 
 ## Implementation status (2026-09-26)
 
-Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web README](../../../frontend/products/lms-web/README.md#what-works-today) and [current state](../../04-architecture/current-state.md)). Requirements not listed are not built yet; the per-requirement *Status* lines move to **Implemented** once the owner approves each FR.
+Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web README](../../../frontend/products/edu-web/README.md#what-works-today) and [current state](../../04-architecture/current-state.md)). Requirements not listed are not built yet; the per-requirement *Status* lines move to **Implemented** once the owner approves each FR.
 
 | Requirement | State | Notes |
 | --- | --- | --- |

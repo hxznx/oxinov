@@ -148,7 +148,7 @@ Accents identify the product in its header, app icon, borders, and glow. Primary
 
 | Product | Token | Dark | Light |
 | --- | --- | --- | --- |
-| Oxinov Edu | `color.product.lms` | `#B388FF` neon violet (7.5:1) | `#6B2FD6` (6.5:1) |
+| Oxinov Edu | `color.product.edu` | `#B388FF` neon violet (7.5:1) | `#6B2FD6` (6.5:1) |
 | Oxinov Commodity Market | `color.product.market` | `#39FF14` acid green (14.8:1) | `#2E7D0B` (4.8:1) |
 | Oxinov HR | `color.product.hr` | `#FF8A00` neon orange (8.5:1) | `#B34700` (5.1:1) |
 | Oxinov Services Market | `color.product.services` | `#3D8BFF` electric blue (6.1:1) | `#1F5FD1` (5.4:1) |

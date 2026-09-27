@@ -21,7 +21,7 @@ Every item is placed in one ring, with its reason, monthly cost, effort, and tri
 | A4 | **Semgrep** (open-source rules for TypeScript, Node, Next.js, Terraform) in `security.yml` | Fills the CodeQL gap without GitHub Advanced Security | Code-level security findings on every push, gated on HIGH like Trivy | US$0 | 0.5 day |
 | A5 | **Signed releases:** CycloneDX SBOM from Trivy and **cosign** keyless signatures (GitHub OIDC) on every image; the node verifies the signature before `helm upgrade` | Adds supply-chain proof (security roadmap #4) | Only images built by our pipeline can run | US$0 | 1 day |
 | A6 | **Structured logging with pino** (`nestjs-pino`) in `server-kit`, with redaction paths for tokens, emails, and bodies, and the OpenTelemetry trace ID in every line | The custom `JsonLogger` in `server-kit` | One log format across services, faster, correlated with traces | US$0 | 1 day |
-| A7 | **React Compiler** (`reactCompiler: true`) in `lms-web`, `platform-web`, and `company-web` | Manual `useMemo`/`useCallback` | Automatic memoization; fewer re-renders on low-end phones (NFR-01) | US$0 | 0.5 day plus a regression pass |
+| A7 | **React Compiler** (`reactCompiler: true`) in `edu-web`, `platform-web`, and `company-web` | Manual `useMemo`/`useCallback` | Automatic memoization; fewer re-renders on low-end phones (NFR-01) | US$0 | 0.5 day plus a regression pass |
 | A8 | **Node.js 24 LTS** for images, CI, and local development | Node.js 22 (maintenance only until April 2027) | Stay on an active LTS; newer V8 and built-in TypeScript stripping | US$0 | 1 day with a rehearsal |
 | A9 | **`pg_stat_statements`** in production PostgreSQL | Adds query-level performance data | Find slow queries before customers do | US$0 | 0.5 day |
 

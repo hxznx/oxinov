@@ -17,7 +17,7 @@ Oxinov follows the pattern used by multi-product companies and consumer AI assis
           │                      │                           │
           └──────────── entitlements and usage limits ───────┘
                                  │
-        lms app · market app · jobs app · services app · future apps
+        edu app · market app · jobs app · services app · future apps
 ```
 
 ## Plan ladder
@@ -80,12 +80,12 @@ Products never check a plan name such as "Pro". The platform turns plans into **
 
 ```text
 plan: oxinov-one-plus
-  entitlements: lms.mock_exams.unlimited, lms.ai_tutor, market.price_alerts, jobs.cv_helper, ...
+  entitlements: edu.mock_exams.unlimited, edu.ai_tutor, market.price_alerts, jobs.cv_helper, ...
   limits:       ai.credits.monthly = 1000, storage.gb = 20, market.active_listings = 50
 ```
 
 - A plan is a named bundle of entitlement keys and limits stored in the platform catalogue.
-- Products ask the platform "does this user or organization have `lms.ai_tutor`?" and "how much of `ai.credits.monthly` is left?"
+- Products ask the platform "does this user or organization have `edu.ai_tutor`?" and "how much of `ai.credits.monthly` is left?"
 - Changing a plan's contents, running a promotion, or adding a regional plan needs no product code change.
 - Usage is metered by products as events to the platform; the platform enforces limits and shows usage in the account portal, like usage bars in consumer AI apps.
 - Free-tier limits reset on a published schedule; reaching a limit shows one clear upgrade or wait message.

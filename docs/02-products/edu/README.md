@@ -8,7 +8,7 @@ Structure follows the [company library standard](../../08-engineering/company-li
 | Field | Value |
 | --- | --- |
 | Display name | Oxinov Edu |
-| Technical slug | `lms` (stable; the brand name does not rename code, databases or deployments) |
+| Technical slug | `edu` everywhere (ADR-027); the production database, token audience, and image repository keep `lms` until the [cutover](../../10-devops/runbooks/edu-rename-cutover.md) |
 | Kind | Software: multi-tenant learning platform (web now, mobile planned) |
 | Company pillar | Education ([platform blueprint](../../01-company/platform-blueprint.md)) |
 | Product owner | Unassigned |
@@ -23,7 +23,7 @@ Structure follows the [company library standard](../../08-engineering/company-li
 | --- | --- |
 | [Brief](edu-brief.md) | Vision, problem, customers and first release |
 | [PRD](edu-prd.md) | Product requirements and priorities |
-| [FRD](../../03-requirements/frd/edu-frd.md) | Functional requirements (FR IDs 101–1799); `lms` remains the internal technical slug |
+| [FRD](../../03-requirements/frd/edu-frd.md) | Functional requirements (FR IDs 101–1799) |
 | [NFR](../../03-requirements/nfr.md) | Company-wide non-functional requirements Edu must meet |
 | [Acceptance criteria](edu-acceptance-criteria.md) and [roadmap](edu-roadmap.md) | How releases are proven and ordered |
 | [Architecture](edu-architecture.md) and [tech stack](edu-tech-stack.md) | Edu technical design |
@@ -35,12 +35,12 @@ Structure follows the [company library standard](../../08-engineering/company-li
 
 | Artifact | Path | Status |
 | --- | --- | --- |
-| Web client | [frontend/products/lms-web](../../../frontend/products/lms-web/README.md) | Implemented, deployed |
-| API | [backend/products/lms-api](../../../backend/products/lms-api/README.md) | Implemented, deployed |
-| Worker | [backend/products/lms-worker](../../../backend/products/lms-worker/README.md) | Planned |
-| Realtime chat | [backend/products/lms-chat](../../../backend/products/lms-chat/README.md) | Planned |
-| Mobile client | [frontend/mobile](../../../frontend/mobile/README.md) (`frontend/mobile/lms/` when approved) | Planned |
-| Database | [database/products/lms](../../../database/products/lms/README.md) | Implemented |
+| Web client | [frontend/products/edu-web](../../../frontend/products/edu-web/README.md) | Implemented, deployed |
+| API | [backend/products/edu-api](../../../backend/products/edu-api/README.md) | Implemented, deployed |
+| Worker | [backend/products/edu-worker](../../../backend/products/edu-worker/README.md) | Planned |
+| Realtime chat | [backend/products/edu-chat](../../../backend/products/edu-chat/README.md) | Planned |
+| Mobile client | [frontend/mobile](../../../frontend/mobile/README.md) (`frontend/mobile/edu/` when approved) | Planned |
+| Database | [database/products/edu](../../../database/products/edu/README.md) | Implemented |
 | API contract | [packages/contracts](../../../packages/contracts/README.md) | Scaffold |
 | Deployment and monitoring | [Production runbook](../../../devops/kubernetes/README.md), [observability](../../10-devops/observability.md) | Live; dashboards per product planned (ADR-019) |
-| Tests and release evidence | CI `lms-api` and `lms-web` jobs, [changelog](../../11-planning/changelog.md) | Verified per release |
+| Tests and release evidence | CI `api`, `edu-web`, and `edu-api-image` jobs, [changelog](../../11-planning/changelog.md) | Verified per release |

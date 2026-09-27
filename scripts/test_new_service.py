@@ -19,13 +19,13 @@ class PlanTests(unittest.TestCase):
 
     def test_refuses_existing_services_and_hosts_for_non_web(self):
         with self.assertRaises(SystemExit) as raised:
-            new_service.plan(ROOT, "lms", "api", None, "api")
+            new_service.plan(ROOT, "platform", "api", None, "api")
         self.assertIn("already in services.yaml", str(raised.exception))
         self.assertIn("only web services", str(raised.exception))
 
     def test_places_each_kind_on_its_shelf(self):
-        self.assertEqual(new_service.source_path("lms", "web", "lms-web"), "frontend/products/lms-web")
-        self.assertEqual(new_service.source_path("lms", "worker", "lms-worker"), "backend/products/lms-worker")
+        self.assertEqual(new_service.source_path("edu", "web", "edu-web"), "frontend/products/edu-web")
+        self.assertEqual(new_service.source_path("edu", "worker", "edu-worker"), "backend/products/edu-worker")
         self.assertEqual(new_service.source_path("platform", "worker", "platform-worker"), "backend/workers/platform-worker")
 
     def test_picks_an_unused_port(self):

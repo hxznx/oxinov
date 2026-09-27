@@ -12,7 +12,7 @@ function application(product: Product) {
     name: product.name,
     url: `${siteUrl}${productPath(product)}`,
     description: product.summary,
-    applicationCategory: product.key === 'lms' ? 'EducationalApplication' : 'BusinessApplication',
+    applicationCategory: product.key === 'edu' ? 'EducationalApplication' : 'BusinessApplication',
     operatingSystem: 'Web',
     inLanguage: 'en',
     publisher: { '@id': organizationId },

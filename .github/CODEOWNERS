@@ -4,10 +4,10 @@
 *                             @hxznx
 /services.yaml                @hxznx
 /backend/platform-api/        @hxznx
-/backend/products/lms-api/    @hxznx
+/backend/products/edu-api/    @hxznx
 /backend/workers/mail-relay/  @hxznx
 /backend/workers/migrate/     @hxznx
 /devops/docker/               @hxznx
 /devops/keycloak/             @hxznx
 /frontend/platform-web/       @hxznx
-/frontend/products/lms-web/   @hxznx
+/frontend/products/edu-web/   @hxznx

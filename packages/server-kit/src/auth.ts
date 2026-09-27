@@ -74,7 +74,7 @@ export class TokenVerifier {
       if (this.jwks && this.config.auth.issuer) {
         const { payload } = await jwtVerify(token, this.jwks, {
           issuer: this.config.auth.issuer,
-          audience: this.config.auth.audience,
+          audience: this.config.auth.audiences.length > 0 ? [...this.config.auth.audiences] : undefined,
           algorithms: ['RS256', 'ES256'],
         });
         return payload;

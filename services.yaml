@@ -31,12 +31,12 @@ services:
     product: edu
     kind: api
     owner: "@hxznx"
-    path: backend/products/lms-api
+    path: backend/products/edu-api
     build:
       dockerfile: devops/docker/Dockerfile
       target: backend
       node: true
-    inputs: [backend/products/lms-api/, packages/server-kit/, database/products/lms/prisma/, security/soc/event-schema.json]
+    inputs: [backend/products/edu-api/, packages/server-kit/, database/products/edu/prisma/, security/soc/event-schema.json]
     helm_tag: services.edu-api.tag
     workload: edu-api
     port: 4000
@@ -61,12 +61,12 @@ services:
     product: edu
     kind: web
     owner: "@hxznx"
-    path: frontend/products/lms-web
+    path: frontend/products/edu-web
     build:
       dockerfile: devops/docker/Dockerfile
       target: edu-web
       node: true
-    inputs: [frontend/products/lms-web/, packages/web-auth/, packages/design-system/]
+    inputs: [frontend/products/edu-web/, packages/web-auth/, packages/design-system/]
     helm_tag: services.edu-web.tag
     workload: edu-web
     port: 3002
@@ -97,7 +97,7 @@ services:
       dockerfile: devops/docker/Dockerfile
       target: migrate
       node: true
-    inputs: [database/products/lms/migrations/, database/products/lms/prisma/, database/platform/migrations/, database/platform/prisma/, backend/workers/migrate/]
+    inputs: [database/products/edu/migrations/, database/products/edu/prisma/, database/platform/migrations/, database/platform/prisma/, backend/workers/migrate/]
     helm_tag: migrations.tag
     workload: none
     port: none

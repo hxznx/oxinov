@@ -13,3 +13,4 @@ How code reaches production and how production is operated. Every push to `main`
 | [Observability](observability.md) | Metrics, logs, probes, and alarms |
 | [Cost optimization](cost-optimization.md) | The US$50 monthly budget and every resource's cost |
 | [DevOps roadmap](devops-roadmap.md) | Phases and the triggers for scaling out |
+| [Runbooks](runbooks/README.md) | Step-by-step procedures for planned production changes |

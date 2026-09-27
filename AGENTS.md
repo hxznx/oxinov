@@ -24,7 +24,7 @@ Do not claim that an application, deployment, or integration works unless it was
 ```text
 Internet ──443/80──▶ EC2 t3a.medium (ap-south-1, 4 GiB + 2 GiB swap, IMDSv2, no SSH)
                       └─ k3s v1.36 ─ Traefik (Let's Encrypt, HSTS, security headers)
-                          ├─ edu-web ──────▶ lms-api ──────┐
+                          ├─ edu-web ──────▶ edu-api ──────┐
                           ├─ platform-web ─▶ platform-api ─┼─▶ PostgreSQL 18.6 StatefulSet
                           ├─ keycloak (id.) ─▶ mail-relay ─┼─▶ Amazon SES (instance role)
                           ├─ migrate (Helm hook Job)       │   databases: oxinov_lms, oxinov_platform
@@ -89,7 +89,7 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
 ## 4. Architecture rules
 
 ### 4.1 Boundaries
-- **Keep one folder layout:** `frontend/`, `backend/`, `database/`, `packages/`, `devops/`, `monitoring/`, `security/`, `docs/`, `prompts/`. Each product has the same shelves under one stable slug (Edu is `lms`), per the [product plane template](docs/08-engineering/company-project-structure.md#product-plane-template):
+- **Keep one folder layout:** `frontend/`, `backend/`, `database/`, `packages/`, `devops/`, `monitoring/`, `security/`, `docs/`, `prompts/`. Each product has the same shelves under one stable slug (Edu is `edu`), per the [product plane template](docs/08-engineering/company-project-structure.md#product-plane-template):
   - `frontend/products/<slug>-web`
   - `backend/products/<slug>-api` (and `-worker`, `-chat`)
   - `database/products/<slug>`
@@ -116,7 +116,7 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
 ## 5. Data rules (PostgreSQL is the system of record, ADR-001, ADR-006)
 
 - **Ownership:** each product owns its database, roles, and migrations:
-  - Edu: `database/products/lms`, database `oxinov_lms`
+  - Edu: `database/products/edu`, database `oxinov_lms` (renamed `oxinov_edu` only through the ADR-027 [cutover runbook](docs/10-devops/runbooks/edu-rename-cutover.md))
   - Platform: `database/platform`, database `oxinov_platform`
 
   Cross-product data moves through APIs or events, never through shared tables.
@@ -140,7 +140,7 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
 - Authorize on the server for every protected action: token audience, tenant membership, role, entitlement, trust level (T0–T4), and policy acceptance. Ignore client-supplied roles and levels.
 - Errors use the stable codes in [API errors](docs/06-api/api-errors.md); never leak stack traces, SQL, or internal IDs of other tenants. An unknown or forbidden resource in another tenant answers "not found".
 - Every service exposes `/health/live` (process up) and `/health/ready` (dependencies reachable), logs one JSON line per event with a request ID, and shuts down gracefully on SIGTERM.
-- Keep the OpenAPI description current (`pnpm --filter @oxinov/lms-api openapi`) for every contract change.
+- Keep the OpenAPI description current (`pnpm --filter @oxinov/edu-api openapi`) for every contract change.
 
 ### 6.2 Web (Next.js App Router)
 - Server components and server actions call APIs, so tokens never reach the browser.
@@ -303,11 +303,11 @@ Data restores (from the nightly dump or a snapshot) follow [backup and recovery]
 | `services.yaml`, the chart's `services:`, or a Dockerfile target | `python scripts/service_catalog.py` then `--check`; `cd scripts && python -m unittest test_project_catalog test_service_catalog test_new_service test_quarantine` |
 | Dependencies or workspace layout | `pnpm install`, `node scripts/validate-workspace.mjs` |
 | `frontend/company-web` change | `pnpm --filter @oxinov/company-web build` then `test` |
-| `frontend/products/lms-web` or `frontend/platform-web` | `pnpm --filter <package> typecheck`, `lint`, `test`, `build` |
-| `backend/products/lms-api` change | `pnpm --filter @oxinov/lms-api typecheck`, `lint`, `test` |
+| `frontend/products/edu-web` or `frontend/platform-web` | `pnpm --filter <package> typecheck`, `lint`, `test`, `build` |
+| `backend/products/edu-api` change | `pnpm --filter @oxinov/edu-api typecheck`, `lint`, `test` |
 | `backend/platform-api` change | `pnpm --filter @oxinov/platform-api typecheck`, `lint`, `test` |
 | Shared packages | `pnpm --filter @oxinov/<server-kit\|web-auth\|design-system> test`, then the checks of every consumer |
-| Database or tenant-isolation change | `pnpm lms:migrate`, `pnpm --filter @oxinov/lms-api db:test-policies`, `pnpm --filter @oxinov/lms-api test:integration` (needs PostgreSQL; the platform database has the same scripts) |
+| Database or tenant-isolation change | `pnpm edu:migrate`, `pnpm --filter @oxinov/edu-api db:test-policies`, `pnpm --filter @oxinov/edu-api test:integration` (needs PostgreSQL; the platform database has the same scripts) |
 | Terraform change | `terraform fmt -recursive devops/terraform`, `terraform validate` in the stack, then a saved `terraform plan` shown to the owner before any apply |
 | Delivery scripts, chart, or workflows | `bash devops/scripts/check-delivery.sh` (executable bits, shellcheck, release-planner tests, `helm lint`, `kubeconform`, Terraform format) |
 | Chart, node scripts, or the realm | `bash devops/kubernetes/scripts/rehearse-local.sh` in addition |

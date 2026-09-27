@@ -10,7 +10,7 @@ Each Oxinov product plane has a charter before implementation starts. A charter 
 | Product | Address | Pillar | Origin | Charter status |
 | --- | --- | --- | --- | --- |
 | [Oxinov Market](market/market-charter.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) expanded to all commodities & second-hand items ([Agri Market](market/market-charter.md) superseded) | Draft charter and [proposed FRD](../03-requirements/frd/market-frd.md) |
-| [Oxinov Edu](edu/README.md) | `edu.oxinov.com` | Education | Oxinov | Approved and live ([FRD](../03-requirements/frd/edu-frd.md)); internal technical slug remains `lms` |
+| [Oxinov Edu](edu/README.md) | `edu.oxinov.com` | Education | Oxinov | Approved and live ([FRD](../03-requirements/frd/edu-frd.md)); technical slug `edu` (ADR-027) |
 | [Oxinov HR](hr/README.md) | `hr.oxinov.com` | Services / talent | Oxinov plus adopted Flo Softwares HR/jobs concept | Candidate unified product: direct-hiring requirements approved; managed recruitment proposed ([FRD](../03-requirements/frd/hr-frd.md), ADR-025) |
 | [Oxinov Services Market](services-market/services-market-charter.md) | `services.oxinov.com` | Services | Flo Softwares concept (`service-platform`, `service-platform-frontend`) | Draft charter and [proposed FRD](../03-requirements/frd/services-market-frd.md) |
 | Oxinov Studio | Future | Media & Studio | Owner-requested requirements draft | Requirements-only candidate ([FRD](../03-requirements/frd/studio-frd.md)); charter and release gate pending |
@@ -26,7 +26,7 @@ A draft charter does not authorize scaffolding product folders, databases, or de
 | Offering | Technical slug | Canonical implementation / evidence |
 | --- | --- | --- |
 | Oxinov Market | `market` | Draft charter and proposed FRD above; no application scaffold authorized |
-| Edu | `lms` | [Product record](edu/README.md), [web](../../frontend/products/lms-web/README.md), [API](../../backend/products/lms-api/README.md), [database](../../database/products/lms/README.md), [release history](../11-planning/changelog.md) |
+| Edu | `edu` | [Product record](edu/README.md), [web](../../frontend/products/edu-web/README.md), [API](../../backend/products/edu-api/README.md), [database](../../database/products/edu/README.md), [release history](../11-planning/changelog.md) |
 | HR and direct hiring | `hr` | [Product record](hr/README.md); unified FRD only, no application scaffold exists |
 | Services Market | `services` | Draft charter and proposed FRD above; no application scaffold authorized |
 | Studio | `studio` | Proposed FRD only; no application scaffold authorized |
@@ -46,5 +46,5 @@ Future non-software offerings use the same register but do not require an applic
 
 - Rebuild on the Oxinov stack and patterns. Source repositories are reference material for requirements, data models, screens, and business rules; their code is not copied in unreviewed.
 - Use the shared identity, organizations, entitlements, KYC, payments ledger, notifications, messaging, file storage, and audit services from the platform control plane. Products do not ship their own login, OTP, password reset, wallet, or KYC tables.
-- Training, courses, exams, and certifications belong to Oxinov Edu. Other products link to LMS certificates through a versioned API.
+- Training, courses, exams, and certifications belong to Oxinov Edu. Other products link to Edu certificates through a versioned API.
 - Each product owns its database, migrations, row-level security policies, workers, dashboards, alerts, runbooks, and release lifecycle.

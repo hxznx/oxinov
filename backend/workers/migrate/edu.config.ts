@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { defineConfig } from 'prisma/config';
 
-// Edu database migrations with the owner role; the image copies database/products/lms/prisma and database/products/lms/migrations
+// Edu database migrations with the owner role; the image copies database/products/edu/prisma and database/products/edu/migrations
 // into schemas/edu (devops/docker/Dockerfile, target migrate).
 export default defineConfig({
   schema: path.join(__dirname, 'schemas/edu/schema.prisma'),

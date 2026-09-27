@@ -9,7 +9,7 @@
 | `oxinov.com` | Company website: static Next.js export on S3 behind CloudFront | Live; SEO complete ([docs/13-marketing/seo](../13-marketing/seo/README.md)); Google Search Console and Bing verified |
 | `id.oxinov.com` | One Oxinov account (Keycloak, email one-time code) | Live; sign-in emails through Amazon SES (sandbox until production access is granted) |
 | `app.oxinov.com` | Account portal and product launcher (`platform-web`, `platform-api`) | Live, foundation only |
-| `edu.oxinov.com` | Oxinov Edu (`lms-web`, `lms-api`) | Live, in development: courses, video and audio lessons, timed quizzes and mock exams, assignments, notes, resources, class stream, join codes ([Edu web](../../frontend/products/lms-web/README.md)) |
+| `edu.oxinov.com` | Oxinov Edu (`edu-web`, `edu-api`) | Live, in development: courses, video and audio lessons, timed quizzes and mock exams, assignments, notes, resources, class stream, join codes ([Edu web](../../frontend/products/edu-web/README.md)) |
 | `hr.oxinov.com` | Unified Oxinov HR: managed recruitment and direct hiring | Consolidated FRD and product record only; nothing is built or public until its unified release gate closes (ADR-025) |
 | `market.`, `services.oxinov.com` | Oxinov Market, Services Market | Draft charters and proposed FRDs only; nothing is built until each release gate is approved |
 | Future or undecided | Oxinov Studio, Oxinov JP, Oxinov Tech | Proposed discovery FRDs only; definitions and release gates remain open, with no runtime or production address |
@@ -22,7 +22,7 @@
 | Packaging | One shared Helm chart (`devops/kubernetes/helm/oxinov`), Helm 4; one `oxinov` release | One release and namespace per product plane (ADR-019) |
 | Services | Eight, registered once in [`services.yaml`](../08-engineering/service-catalog.md): `lms-api`, `platform-api`, `edu-web`, `platform-web`, `keycloak`, `mail-relay`, `migrate` (Helm hook job), `backup` (nightly CronJob) | Same images and chart |
 | Website | S3 + CloudFront (PriceClass_200) with a CloudFront Function router | Same |
-| Database | PostgreSQL 18.6 as a StatefulSet on the encrypted disk; separate `lms` and `platform` databases and roles; row-level security with a non-bypass request role (ADR-006) | Amazon RDS for PostgreSQL (Multi-AZ when an availability commitment exists) |
+| Database | PostgreSQL 18.6 as a StatefulSet on the encrypted disk; separate `oxinov_lms` (Edu; renamed `oxinov_edu` at the ADR-027 cutover) and `oxinov_platform` databases and roles; row-level security with a non-bypass request role (ADR-006) | Amazon RDS for PostgreSQL (Multi-AZ when an availability commitment exists) |
 | Files | Private, versioned S3 bucket; uploads and playback through short-lived presigned URLs; video served as uploaded (no adaptive streaming yet, ADR-021) | CloudFront signed URLs; HLS transcoding when learners need it (ADR-021) |
 | Cache and queues | None. Nothing needs them yet (ADR-021) | Redis-compatible cache or SQS when a measured need appears; events through SNS/SQS (ADR-019) |
 | Email | Amazon SES through `mail-relay` (instance role, no keys); configuration set with bounce and complaint suppression, events to an encrypted SNS topic, reputation alarms | Same |

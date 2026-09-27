@@ -2,7 +2,7 @@
 
 ## Migration rule
 
-Oxinov Edu now lives at its product-plane paths (`frontend/products/lms-web`, `backend/products/lms-api`, `database/products/lms`). Any later move or rename happens only in a dedicated migration with import, Docker, CI, and test updates in the same change.
+Oxinov Edu now lives at its product-plane paths (`frontend/products/edu-web`, `backend/products/edu-api`, `database/products/edu`). Any later move or rename happens only in a dedicated migration with import, Docker, CI, and test updates in the same change.
 
 ## Target repository layout
 
@@ -17,12 +17,12 @@ frontend/
   company-web/                 oxinov.com public company site, divisions, legal pages
   platform-web/                app.oxinov.com account portal, product launcher, KYC, billing
   products/
-    lms-web/                   edu.oxinov.com
+    edu-web/                   edu.oxinov.com
     market-web/                market.oxinov.com       after release gate
     hr-web/                    hr.oxinov.com           after unified HR release gate
     services-web/              services.oxinov.com     after release gate
   mobile/
-    lms/                       Oxinov Edu Android and iOS
+    edu/                       Oxinov Edu Android and iOS
     marketplace/               shared Commodity and Services mobile app if approved
 
 backend/
@@ -31,9 +31,9 @@ backend/
   workers/
     platform-worker/           notifications, billing, KYC checks, outbox, scheduled work
   products/
-    lms-api/                   LMS business API
-    lms-worker/                LMS media, results, certificates, scheduled work
-    lms-chat/                  LMS realtime gateway
+    edu-api/                   Edu business API
+    edu-worker/                Edu media, results, certificates, scheduled work
+    edu-chat/                  Edu realtime gateway
     market-api/                listings, orders, escrow, price indices    after release gate
     market-worker/             price feeds, escrow timers, dispute SLAs  after release gate
     hr-api/                    HR network, recruitment, jobs, applications after unified HR release gate
@@ -42,7 +42,7 @@ backend/
 database/
   platform/                    platform Prisma schema, migrations, seeds, RLS policies
   products/
-    lms/                       LMS schema, migrations, seeds, RLS policies
+    edu/                       Edu schema, migrations, seeds, RLS policies
     market/                    Commodity Market schema                    after release gate
     hr/                        HR and direct-hiring schema                after unified HR release gate
     services/                  Services Market schema                     after release gate
@@ -94,8 +94,8 @@ Every product plane has the same shape so teams and coding agents can move betwe
 
 ## Transition steps
 
-1. Add `company-web`, `platform-web`, `platform-api`, and the platform database without moving LMS code.
+1. Add `company-web`, `platform-web`, `platform-api`, and the platform database without moving Edu code.
 2. Establish shared OIDC, contracts, configuration, observability, security events, and design tokens.
-3. Connect the existing LMS to platform identities and entitlements through APIs.
-4. Rename the existing LMS folders to the target product paths once container builds and CI protect the migration. **Done 2026-09-26.**
+3. Connect the existing Edu product to platform identities and entitlements through APIs.
+4. Rename the existing Edu folders to the target product paths once container builds and CI protect the migration. **Done 2026-09-26.**
 5. Add future product folders only when their product charter and release gate are approved.

@@ -10,20 +10,20 @@ frontend/
   company-web/      implemented public company site
   platform-web/     implemented account portal
   products/
-    lms-web/        implemented Edu web application
+    edu-web/        implemented Edu web application
   mobile/           planned mobile clients (mobile/<slug>/)
 backend/
   platform-api/     implemented platform API foundation
   products/
-    lms-api/        implemented Edu API
-    lms-worker/     planned Edu background jobs
-    lms-chat/       planned Edu realtime gateway
+    edu-api/        implemented Edu API
+    edu-worker/     planned Edu background jobs
+    edu-chat/       planned Edu realtime gateway
   workers/          mail-relay and migrate implemented; platform-worker planned
   gateway/          planned gateway boundary
 database/
   platform/         separate platform schema, migrations, policies and seeds
   products/
-    lms/            Edu database: prisma/, migrations/, seeds/, policies/
+    edu/            Edu database: prisma/, migrations/, seeds/, policies/
 devops/
   docker/           application Dockerfile and Docker guidance
   keycloak/         identity image and realm configuration

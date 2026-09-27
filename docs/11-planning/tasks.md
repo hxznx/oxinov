@@ -36,7 +36,7 @@
 | 1 | Confirm Flo Softwares rights and rotate their leaked secrets | Signed rights confirmation; rotated credentials | Founder |
 | 2 | Mobile app (Expo) for Edu | Signed internal `.aab`; mobile flow tests (NFR-14) | Engineering |
 | 2 | AI Phase 0 governance, then the governed AI gateway and two staff pilots (ADR-014) | Per the [AI roadmap](ai-roadmap.md) | Founder, engineering |
-| 2 | Live chat (`lms-chat`) and background worker (`lms-worker`) | When approved features need them (ADR-021) | Engineering |
+| 2 | Live chat (`edu-chat`) and background worker (`edu-worker`) | When approved features need them (ADR-021) | Engineering |
 | 2 | Shared KYC (T3/T4), SMS verification (T2), messaging, and reviews primitives | Trust-level enforcement tests; audited reviewer workflow | Engineering |
 | 2 | Staging and preview environments ([DevOps roadmap](../10-devops/devops-roadmap.md) Phase 4) | A bad commit is stopped before production | Engineering |
 | 2 | SIEM detections and incident routing ([SOC](../09-security/soc.md)) | Synthetic findings routed; three runbook exercises | Engineering |

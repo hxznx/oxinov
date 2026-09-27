@@ -36,14 +36,14 @@ services, hardware, content and research fit without duplicating shared files.
 
 Every product uses one technical slug and the same shelves, so a new product is found the same way as Edu:
 
-| Shelf | Path pattern | Oxinov Edu (`lms`) |
+| Shelf | Path pattern | Oxinov Edu (`edu`) |
 | --- | --- | --- |
 | Product record | `docs/02-products/<slug>/README.md` | [docs/02-products/edu](docs/02-products/edu/README.md) |
 | Requirements | `docs/03-requirements/frd/<product>-frd.md` | [EDU-FRD.md](docs/03-requirements/frd/edu-frd.md) |
-| Web client | `frontend/products/<slug>-web/` | [lms-web](frontend/products/lms-web/README.md) |
-| API | `backend/products/<slug>-api/` | [lms-api](backend/products/lms-api/README.md) |
+| Web client | `frontend/products/<slug>-web/` | [edu-web](frontend/products/edu-web/README.md) |
+| API | `backend/products/<slug>-api/` | [edu-api](backend/products/edu-api/README.md) |
 | Worker, realtime | `backend/products/<slug>-worker/`, `<slug>-chat/` | planned |
-| Database | `database/products/<slug>/` | [lms](database/products/lms/README.md) |
+| Database | `database/products/<slug>/` | [edu](database/products/edu/README.md) |
 
 Shared company layers sit beside the products: `frontend/company-web` and `frontend/platform-web`,
 `backend/platform-api` and `backend/workers/`, `database/platform/`, and `packages/`.
@@ -53,7 +53,7 @@ The [product register](docs/02-products/README.md) lists every offering, includi
 
 | Subject | Open |
 | --- | --- |
-| Assignments, courses, exams, media, notes and discussions | [Edu product record](docs/02-products/edu/README.md), [Edu API](backend/products/lms-api/README.md), [Edu web](frontend/products/lms-web/README.md) |
+| Assignments, courses, exams, media, notes and discussions | [Edu product record](docs/02-products/edu/README.md), [Edu API](backend/products/edu-api/README.md), [Edu web](frontend/products/edu-web/README.md) |
 | Branding and tokens | [Design system](packages/design-system/README.md) |
 | Company website | [Company web](frontend/company-web/README.md) |
 | Database changes | [Migration strategy](docs/05-data/migration-strategy.md) |

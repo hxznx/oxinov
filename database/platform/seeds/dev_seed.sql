@@ -8,7 +8,7 @@ INSERT INTO policies (id, version, title, url, material, required_for_signup, ef
     ('acceptable-use', 1, 'Acceptable Use and Community Policy', 'https://oxinov.com/legal/acceptable-use/', true, false, '2026-09-01T00:00:00Z');
 
 -- Oxinov Edu is launched locally so member access can be exercised; the other products stay unlaunched.
-UPDATE products SET launched = true, release_gate_recorded_at = '2026-09-20T00:00:00Z' WHERE key = 'lms';
+UPDATE products SET launched = true, release_gate_recorded_at = '2026-09-20T00:00:00Z' WHERE key = 'edu';
 
 -- Two active members for isolation tests.
 INSERT INTO user_accounts (id, auth_subject, email, email_verified, display_name, country, status, age_confirmed_at, welcomed_at) VALUES
@@ -22,5 +22,5 @@ INSERT INTO policy_acceptances (user_id, policy_id, policy_version, channel, loc
     ('11111111-0000-4000-8000-000000000002', 'privacy', 1, 'WEB', 'ne-NP');
 
 INSERT INTO entitlements (user_id, product_key, entitlement_key, source) VALUES
-    ('11111111-0000-4000-8000-000000000001', 'lms', 'lms.member', 'MEMBER'),
-    ('11111111-0000-4000-8000-000000000002', 'lms', 'lms.member', 'MEMBER');
+    ('11111111-0000-4000-8000-000000000001', 'edu', 'edu.member', 'MEMBER'),
+    ('11111111-0000-4000-8000-000000000002', 'edu', 'edu.member', 'MEMBER');
