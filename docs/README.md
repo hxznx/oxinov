@@ -43,7 +43,7 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 | [Company tech stack](architecture/COMPANY-TECH-STACK.md) | Selected technologies |
 | [AWS cloud architecture](architecture/AWS-CLOUD-ARCHITECTURE.md) | Production cloud baseline |
 | [AI platform architecture](architecture/AI-PLATFORM-ARCHITECTURE.md) | Governed AI gateway, Bedrock/SageMaker boundary, RAG, tools, data, cost, and observability |
-| [Architecture decisions](architecture/ADR.md) | ADR-001 to ADR-014 |
+| [Architecture decisions](architecture/ADR.md) | ADR-001 onward, newest last |
 | [Requirements standard](requirements/README.md) | FR ID scheme, template, priorities, status, traceability, change process |
 | [Platform FRD](requirements/PLATFORM-FRD.md) | Functional requirements for the website, sign-in, trust, policies, organizations, plans, payments, KYC, notifications, messaging, portal, privacy, and operations |
 | [Company project structure](engineering/COMPANY-PROJECT-STRUCTURE.md) | Folder layout and the product plane template |
@@ -57,7 +57,7 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 | --- | --- | --- |
 | [Oxinov Edu](products/lms/README.md) | `edu.oxinov.com` | [Product record](products/lms/README.md), [brief](products/lms/BRIEF.md), [PRD](products/lms/PRD.md), [FRD](requirements/LMS-FRD.md), [NFR](requirements/NFR.md), [LMS architecture](architecture/ARCHITECTURE.md), [LMS tech stack](architecture/TECH-STACK.md), [LMS roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [LMS UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
 | [Oxinov Commodity Market](products/COMMODITY-MARKET.md) | `market.oxinov.com` | [Charter](products/COMMODITY-MARKET.md) ([Agri Market](products/AGRI-MARKET.md) superseded) |
-| Oxinov Jobs | `jobs.oxinov.com` | [Charter](products/JOBS.md) |
+| [Oxinov Jobs](products/jobs/README.md) | `jobs.oxinov.com` | [Product record](products/jobs/README.md), [charter](products/JOBS.md), [FRD](requirements/JOBS-FRD.md) |
 | Oxinov Services Market | `services.oxinov.com` | [Charter](products/SERVICES-MARKET.md) |
 
 All product charters: [products index](products/README.md).

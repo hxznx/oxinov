@@ -140,6 +140,26 @@ Consequences: one set of copy and no translation cost or per-language pages; fas
 
 Consequences: lower cost and fewer moving parts now; video is not adaptive, and there is no pre-production environment with real data shapes, so releases rely on tests, rehearsal, and automatic rollback; each item has a stated trigger and moves without changing application contracts. Alternatives considered: adopting the full target stack now (several times the budget) and dropping the target designs from the documents (they remain the plan for scale).
 
+## ADR-022: Oxinov Jobs approved, and every product shares one Kubernetes node
+
+**Date:** 2026-09-27. **Status:** Accepted (owner decisions of 2026-09-27: "full approval now", "full first release", and "do not increase the cost … all product and service has to use the same resources … if possible decrease the cost"). Builds on ADR-008, ADR-010, ADR-017, ADR-018, ADR-019, and ADR-021. Amazon EKS stays the scale-out design but is **not** adopted: its control plane alone (about US$73 a month) exceeds the budget.
+
+1. **Jobs is approved** for the full first release in the [Jobs FRD](../requirements/JOBS-FRD.md) (FR-JOB-6001 to 6092), with the founder as product owner. It is built as a product plane (`jobs-web`, `jobs-api`, database `oxinov_jobs`) and deployed like every service, but `jobs.oxinov.com` is published only after Nepal counsel reviews the content and retention rules and the remaining items in its [product record](../products/jobs/README.md#release-gate) close. Where platform capabilities are missing, Jobs uses documented interim paths: operator verification instead of organization KYC, email through the mail relay instead of the notification service, and application-scoped messages until platform messaging exists.
+2. **One node, one chart, one database server for every product.** All products run on the existing `t3a.medium` k3s node from the shared Helm chart, behind the one Traefik, with one Keycloak and one PostgreSQL instance holding a separate database and roles per product. A new product adds workloads, not infrastructure, and so adds no AWS cost.
+3. **Kubernetes arbitrates the shared node:**
+   - **Priority classes**, from the chart:
+     - `oxinov-critical`: PostgreSQL, Keycloak, and the mail relay. Without them nobody can sign in, and data is at risk.
+     - `oxinov-core`: live products and the platform (`edu-*`, `platform-*`).
+     - `oxinov-growth`: products in development or early launch (Jobs).
+   - **What priority does:** when the node runs short, the scheduler preempts lower classes to place higher ones, and the kubelet evicts pods that exceed their requests, lower priority first. Sign-in and Edu therefore survive a spike in Jobs.
+   - **Honest sizing:** every workload declares measured requests and a memory limit.
+   - **A memory budget checked in CI:** `scripts/service_catalog.py --check` fails when the production memory requests of all workloads exceed the node's allocatable budget (3.3 GiB of the 4 GiB, leaving room for k3s, Traefik, and the page cache).
+   - **Growth path:** new products start in `oxinov-growth` with one replica and move to `oxinov-core` at launch. Horizontal autoscaling is not used on a single node, because extra replicas cannot add capacity there; it arrives with a second node.
+4. **Scale-out stays trigger-based and cost-approved.** A second node, RDS, or EKS happens only when the memory budget can no longer hold the live products or an availability commitment requires it, and only with the owner's approval of the new monthly cost ([DevOps roadmap](../devops/ROADMAP.md)). The same chart and catalog move unchanged.
+5. **Cost reduction instead of increase:** the largest lever is a 1-year Compute Savings Plan for the node (about a quarter off its on-demand price, with no upfront payment). It is proposed to the owner in [cost optimization](../devops/COST-OPTIMIZATION.md) because it is a commitment. Adding products never raises spend under this decision.
+
+Consequences: products compete for 4 GiB, so every new workload must be small and measured; one node means shared failure (ADR-017), which is acceptable before paying customers; the memory budget makes crowding visible in CI instead of in production. Alternatives considered: EKS now (about US$150–200 a month, rejected by the owner), a second EC2 node or bigger instance (more cost), and separate clusters per product (more cost and operations).
+
 ## Pending
 
 Choose company-platform product owners, AWS account and operations owners, identity operations model, final production sizing, Nepal and international payment providers, SIEM hosting/retention/on-call ownership, AI pilot owners/model aliases/approved data/budgets, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../planning/RISKS.md).

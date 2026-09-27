@@ -1,6 +1,6 @@
 # Oxinov Jobs charter
 
-**Status:** Draft. **Address:** `jobs.oxinov.com`. **Pillar:** Oxinov Education (talent and placements). **Origin:** Flo Softwares `hr-backend` / `human-resource` (duplicate) and `hr-frontend`.
+**Status:** Approved for the full first release on 2026-09-27; in development ([product record](jobs/README.md), [FRD](../requirements/JOBS-FRD.md), ADR-022). **Address:** `jobs.oxinov.com`. **Pillar:** Oxinov Education (talent and placements). **Origin:** Flo Softwares `hr-backend` / `human-resource` (duplicate) and `hr-frontend`.
 
 ## Problem and customers
 

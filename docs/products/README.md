@@ -11,7 +11,7 @@ Each Oxinov product plane has a charter before implementation starts. A charter 
 | --- | --- | --- | --- | --- |
 | [Oxinov Commodity Market](COMMODITY-MARKET.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) expanded to all commodities & second-hand items ([Agri Market](AGRI-MARKET.md) superseded) | Draft |
 | [Oxinov Edu](lms/README.md) | `edu.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/requirements/LMS-FRD.md`) |
-| [Oxinov Jobs](JOBS.md) | `jobs.oxinov.com` | Education | Flo Softwares concept (`hr-backend`, `hr-frontend`) | Draft |
+| [Oxinov Jobs](jobs/README.md) | `jobs.oxinov.com` | Education | Flo Softwares concept (`hr-backend`, `hr-frontend`) | Approved 2026-09-27; in development ([charter](JOBS.md), [FRD](../requirements/JOBS-FRD.md)) |
 | [Oxinov Services Market](SERVICES-MARKET.md) | `services.oxinov.com` | Services | Flo Softwares concept (`service-platform`, `service-platform-frontend`) | Draft |
 
 A draft charter does not authorize scaffolding product folders, databases, or deployments. The product moves to implementation only after every release-gate item is resolved and recorded here. See [ADR-010](../architecture/ADR.md#adr-010-adopt-flo-softwares-marketplace-concepts-as-oxinov-product-planes) for the adoption rules that apply to all three Flo Softwares concepts.
@@ -24,7 +24,7 @@ A draft charter does not authorize scaffolding product folders, databases, or de
 | --- | --- | --- |
 | Commodity Market | `market` | Draft charter above; no application scaffold authorized |
 | Edu | `lms` | [Product record](lms/README.md), [web](../../frontend/products/lms-web/README.md), [API](../../backend/products/lms-api/README.md), [database](../../database/products/lms/README.md), [release history](../planning/CHANGELOG.md) |
-| Jobs | `jobs` | Draft charter above; no application scaffold authorized |
+| Jobs | `jobs` | [Product record](jobs/README.md); `frontend/products/jobs-web`, `backend/products/jobs-api`, `database/products/jobs` (in development) |
 | Services Market | `services` | Draft charter above; no application scaffold authorized |
 
 These are location and charter records, not assertions that every release condition is satisfied.

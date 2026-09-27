@@ -49,7 +49,7 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 | 3201–3299 | PRIV | Platform FRD | Privacy owner |
 | 3301–3399 | OPS | Platform FRD | Operations owner |
 | 5000–5999 | MKT | Commodity Market FRD (after release gate) | Commodity Market owner |
-| 6000–6999 | JOB | Jobs FRD (after release gate) | Jobs owner |
+| 6000–6999 | JOB | [Jobs FRD](JOBS-FRD.md) | Jobs owner |
 | 7000–7999 | SVC | Services Market FRD (after release gate) | Services Market owner |
 | 8000–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
 

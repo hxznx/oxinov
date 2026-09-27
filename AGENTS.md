@@ -13,7 +13,8 @@ The monorepo of **Oxinov Pvt. Ltd.**, organized as **company website → Oxinov 
 | Company website | `oxinov.com` | Live (S3 + CloudFront); SEO in `frontend/company-web/src/seo` |
 | Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Identity (email code) and portal foundation live; gateway folder remains planned |
 | Oxinov Edu | `edu.oxinov.com` | Live, in development; must stay working |
-| Commodity Market, Jobs, Services Market | `market.`, `jobs.`, `services.oxinov.com` | Draft charters only; do not scaffold |
+| Oxinov Jobs | `jobs.oxinov.com` | Approved 2026-09-27, in development ([record](docs/products/jobs/README.md), [FRD](docs/requirements/JOBS-FRD.md)); not public until its release gate closes |
+| Commodity Market, Services Market | `market.`, `services.oxinov.com` | Draft charters only; do not scaffold |
 
 Do not claim that an application, deployment, or integration works unless it was executed and verified. What is verified today is recorded in [current state](docs/architecture/CURRENT-STATE.md); update it in the same change as any runtime, data, security, or cost change.
 
