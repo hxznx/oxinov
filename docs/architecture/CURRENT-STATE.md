@@ -73,7 +73,7 @@ Budget: US$50 a month, with Terraform-managed alerts at 85%, 100%, and forecast 
 
 ## Known gaps, in priority order
 
-1. SES production access (owner request pending), so sign-in email reaches any address.
+1. SES production access: requested 2026-09-28 (transactional, Mumbai), AWS review pending. Until approved, SES sends only to verified addresses, so new accounts with outside addresses (for example Gmail) get no code (seen in the mail-relay log as `MessageRejected`).
 2. Upload malware scanning before public sign-up (security roadmap #3).
 3. Single node: a host failure means minutes of downtime and restores lose up to 24 hours (ADR-017); acceptable until a paying school needs an availability commitment.
 4. No paid checkout, certificates, mobile apps, or worker and chat services yet ([backlog](../planning/TASKS.md)).

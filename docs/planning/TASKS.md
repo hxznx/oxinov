@@ -18,7 +18,7 @@
 
 | Priority | Task | Acceptance evidence | Owner |
 | --- | --- | --- | --- |
-| 0 | Request SES production access | Sign-in code reaches an address that is not verified in SES | Founder |
+| 0 | SES production access (requested 2026-09-28, review pending) | Sign-in code reaches a Gmail address that is not verified in SES | AWS review; founder answers any follow-up |
 | 0 | Remove or retarget the stale `.github/workflows/deploy.yml` preflight | Only live workflows remain | Engineering |
 | 0 | Playwright end-to-end tests for sign-in, join, enrol, lesson, timed exam, assignment | Run in CI on every push | Engineering |
 | 0 | Quarterly restore test from the nightly dump | Restored database passes smoke checks; time recorded against NFR-05 | Engineering |
