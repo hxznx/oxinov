@@ -13,8 +13,69 @@ export interface MediaConfig {
   readonly forcePathStyle: boolean;
 }
 
-/** The Edu API (internal name `api`) uses the shared service configuration (ADR-007) plus media storage. */
-export type AppConfig = ServiceConfig & { readonly media: MediaConfig };
+/** Khalti and eSewa checkout for paid courses (ADR-023). A provider is enabled only when its keys are set. */
+export interface PaymentsConfig {
+  /** `sandbox` uses the providers' test systems; `live` moves real money and is required explicitly. */
+  readonly mode: 'sandbox' | 'live';
+  /** Tenants allowed to sell courses (ADR-023: Oxinov's own workspace first). IDs, never slugs. */
+  readonly sellerTenantIds: ReadonlySet<string>;
+  /** Public address of the Edu web app; providers send learners back here after paying. */
+  readonly webUrl: string;
+  readonly khalti?: { readonly secretKey: string; readonly apiUrl: string };
+  readonly esewa?: { readonly productCode: string; readonly secretKey: string; readonly formUrl: string; readonly statusUrl: string };
+}
+
+/** The Edu API (internal name `api`) uses the shared service configuration (ADR-007) plus media storage and payments. */
+export type AppConfig = ServiceConfig & { readonly media: MediaConfig; readonly payments: PaymentsConfig };
+
+const PROVIDER_URLS = {
+  sandbox: {
+    khalti: 'https://dev.khalti.com/api/v2',
+    esewaForm: 'https://rc-epay.esewa.com.np/api/epay/main/v2/form',
+    esewaStatus: 'https://rc.esewa.com.np/api/epay/transaction/status/',
+  },
+  live: {
+    khalti: 'https://khalti.com/api/v2',
+    esewaForm: 'https://epay.esewa.com.np/api/epay/main/v2/form',
+    esewaStatus: 'https://esewa.com.np/api/epay/transaction/status/',
+  },
+} as const;
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+export function loadPaymentsConfig(env: NodeJS.ProcessEnv, environment: string): PaymentsConfig {
+  const mode = env.PAYMENTS_MODE?.trim() || 'sandbox';
+  if (mode !== 'sandbox' && mode !== 'live') throw new Error('Invalid configuration: PAYMENTS_MODE must be sandbox or live');
+  const sellerTenantIds = new Set(
+    (env.PAYMENTS_SELLER_TENANT_IDS ?? '').split(',').map((id) => id.trim().toLowerCase()).filter(Boolean),
+  );
+  for (const id of sellerTenantIds) {
+    if (!UUID.test(id)) throw new Error('Invalid configuration: PAYMENTS_SELLER_TENANT_IDS must list tenant UUIDs');
+  }
+  const webUrl = (env.EDU_WEB_URL?.trim() || 'http://localhost:3002').replace(/\/$/, '');
+  if (!/^https?:\/\/[^\s/]+(:\d+)?$/.test(webUrl)) throw new Error('Invalid configuration: EDU_WEB_URL must be an http(s) origin');
+  if (environment === 'production' && !webUrl.startsWith('https://')) {
+    throw new Error('Invalid configuration: EDU_WEB_URL must use https in production');
+  }
+  const urls = PROVIDER_URLS[mode];
+  const khaltiKey = env.KHALTI_SECRET_KEY?.trim();
+  const esewaCode = env.ESEWA_PRODUCT_CODE?.trim();
+  const esewaKey = env.ESEWA_SECRET_KEY?.trim();
+  if (Boolean(esewaCode) !== Boolean(esewaKey)) {
+    throw new Error('Invalid configuration: set both ESEWA_PRODUCT_CODE and ESEWA_SECRET_KEY, or neither');
+  }
+  // The published eSewa test merchant must never take real payments.
+  if (mode === 'live' && esewaCode === 'EPAYTEST') throw new Error('Invalid configuration: EPAYTEST is the eSewa test merchant');
+  return {
+    mode,
+    sellerTenantIds,
+    webUrl,
+    ...(khaltiKey ? { khalti: { secretKey: khaltiKey, apiUrl: urls.khalti } } : {}),
+    ...(esewaCode && esewaKey
+      ? { esewa: { productCode: esewaCode, secretKey: esewaKey, formUrl: urls.esewaForm, statusUrl: urls.esewaStatus } }
+      : {}),
+  };
+}
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const base = loadServiceConfig(env, { serviceName: 'api', defaultPort: 4000 });
@@ -28,6 +89,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   }
   return {
     ...base,
+    payments: loadPaymentsConfig(env, base.environment),
     media: {
       bucket,
       endpoint: endpoint?.replace(/\/$/, ''),

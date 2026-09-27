@@ -30,6 +30,41 @@ export interface CourseSummary {
   programId: string | null;
 }
 
+/** Paid-course checkout with Khalti and eSewa (ADR-023). */
+export type PaymentProvider = 'KHALTI' | 'ESEWA';
+
+export interface CheckoutOptions {
+  available: boolean;
+  providers: PaymentProvider[];
+  amountMinor: number;
+  currency: string;
+  owned: boolean;
+  reason?: string;
+  mode: 'sandbox' | 'live';
+}
+
+export type PaymentRedirect =
+  | { method: 'GET'; url: string }
+  | { method: 'POST'; url: string; fields: Record<string, string> };
+
+export interface Checkout {
+  paymentId: string;
+  provider: PaymentProvider;
+  redirect: PaymentRedirect;
+}
+
+export interface Payment {
+  id: string;
+  courseId: string;
+  provider: PaymentProvider;
+  amountMinor: number;
+  currency: string;
+  status: 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'REFUNDED';
+  transactionId: string | null;
+  createdAt: string;
+  verifiedAt: string | null;
+}
+
 export interface LessonOutline {
   id: string;
   title: string;
@@ -431,6 +466,12 @@ export const eduApi = {
   enroll: (token: string, tenantId: string, courseId: string) =>
     request<Enrollment>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/enrollments`, { method: 'POST' }),
   myEnrollments: (token: string, tenantId: string) => request<Enrollment[]>(token, `${tenantPath(tenantId)}/me/enrollments`),
+  checkoutOptions: (token: string, tenantId: string, courseId: string) =>
+    request<CheckoutOptions>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/checkout`),
+  startCheckout: (token: string, tenantId: string, courseId: string, provider: PaymentProvider) =>
+    request<Checkout>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/checkout`, { method: 'POST', body: { provider } }),
+  verifyPayment: (token: string, tenantId: string, paymentId: string) =>
+    request<Payment>(token, `${tenantPath(tenantId)}/payments/${encodeURIComponent(paymentId)}/verify`, { method: 'POST' }),
   exams: (token: string, tenantId: string, courseId: string) =>
     request<ExamSummary[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/exams`),
   startAttempt: (token: string, tenantId: string, examId: string) =>

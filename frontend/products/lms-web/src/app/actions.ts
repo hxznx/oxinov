@@ -3,7 +3,7 @@
 import { safeReturnTo } from '@oxinov/web-auth';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth.ts';
-import { EduApiError, eduApi } from '@/lib/edu-api.ts';
+import { EduApiError, eduApi, type PaymentProvider } from '@/lib/edu-api.ts';
 
 export interface FormState {
   error?: string;
@@ -47,10 +47,47 @@ export async function enroll(_: FormState, form: FormData): Promise<FormState> {
     await eduApi.enroll(session.accessToken, tenantId, courseId);
   } catch (error) {
     if (error instanceof EduApiError && error.code === 'PAYMENT_REQUIRED') {
-      return { error: 'This is a paid course. Online payment with Khalti and eSewa is coming soon.' };
+      return { error: 'This is a paid course. Buy it with Khalti or eSewa below.' };
     }
     if (error instanceof EduApiError) return { error: error.message };
     return { error: 'Oxinov Edu is unavailable. Try again shortly.' };
   }
   redirect(returnTo);
+}
+
+export interface CheckoutState {
+  error?: string;
+  /** eSewa takes a signed form posted by the browser; Khalti is a plain redirect done on the server. */
+  form?: { url: string; fields: Record<string, string> };
+}
+
+const PROVIDER_HOSTS: Record<PaymentProvider, RegExp> = {
+  KHALTI: /^https:\/\/([a-z0-9-]+\.)*khalti\.com\//,
+  ESEWA: /^https:\/\/([a-z0-9-]+\.)*esewa\.com\.np\//,
+};
+
+/**
+ * Starts a Khalti or eSewa checkout (FR-CATALOG-303, ADR-023). The API creates the pending payment and
+ * says where to send the learner; access is granted only after the return page has the API verify it.
+ */
+export async function startCheckout(_: CheckoutState, form: FormData): Promise<CheckoutState> {
+  const tenantId = String(form.get('tenantId') ?? '');
+  const courseId = String(form.get('courseId') ?? '');
+  const provider = String(form.get('provider') ?? '') as PaymentProvider;
+  const returnTo = safeReturnTo(String(form.get('returnTo') ?? '/'));
+  if (provider !== 'KHALTI' && provider !== 'ESEWA') return { error: 'Choose Khalti or eSewa.' };
+  const session = await auth.currentSession(returnTo);
+  if (!session) redirect(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
+
+  let redirectTo;
+  try {
+    ({ redirect: redirectTo } = await eduApi.startCheckout(session.accessToken, tenantId, courseId, provider));
+  } catch (error) {
+    if (error instanceof EduApiError) return { error: error.message };
+    return { error: 'Payment could not be started. Try again shortly.' };
+  }
+  // Only ever send people to the provider's own site.
+  if (!PROVIDER_HOSTS[provider].test(redirectTo.url)) return { error: 'Payment could not be started. Try again shortly.' };
+  if (redirectTo.method === 'POST') return { form: { url: redirectTo.url, fields: redirectTo.fields } };
+  redirect(redirectTo.url);
 }

@@ -9,6 +9,7 @@ import request from 'supertest';
 import { createApp } from '../src/app.factory';
 import { JsonLogger, type SecurityEvent } from '@oxinov/server-kit';
 import { loadConfig } from '../src/config/app-config';
+import type { PaymentProviders } from '../src/payments/providers';
 
 const ROOT = path.resolve(__dirname, '../../../..');
 
@@ -91,7 +92,7 @@ export interface TestContext {
   idpToken: (subject: string, claims?: Record<string, unknown>) => Promise<string>;
 }
 
-export async function createTestContext(): Promise<TestContext> {
+export async function createTestContext(options: { paymentProviders?: PaymentProviders } = {}): Promise<TestContext> {
   const config = loadConfig();
   const logs: string[] = [];
   const logger = new JsonLogger(
@@ -109,6 +110,7 @@ export async function createTestContext(): Promise<TestContext> {
     logger,
     jwks,
     securityEventSink: (event) => securityEvents.push(event),
+    paymentProviders: options.paymentProviders,
   });
   await app.init();
 

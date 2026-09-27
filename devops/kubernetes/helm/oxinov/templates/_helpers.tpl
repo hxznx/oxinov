@@ -64,6 +64,18 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 {{ include "oxinov.secretEnv" (dict "root" $root "name" "APP_DB_PASSWORD") }}
 - name: DATABASE_URL
   value: {{ include "oxinov.dbUrl" (dict "root" $root "user" "oxinov_app" "passwordVar" "APP_DB_PASSWORD" "database" "oxinov_lms") | quote }}
+{{- /* Paid courses (ADR-023): provider keys are optional Secret entries; a missing key keeps that provider off. */}}
+- { name: PAYMENTS_MODE, value: {{ $root.Values.payments.mode | quote }} }
+- { name: PAYMENTS_SELLER_TENANT_IDS, value: {{ $root.Values.payments.sellerTenantIds | quote }} }
+- { name: EDU_WEB_URL, value: {{ printf "https://edu.%s" $root.Values.global.domain | quote }} }
+{{- range list "KHALTI_SECRET_KEY" "ESEWA_PRODUCT_CODE" "ESEWA_SECRET_KEY" }}
+- name: {{ . }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $root.Values.global.existingSecret }}
+      key: {{ . }}
+      optional: true
+{{- end }}
 {{- else if eq .name "platform-api" }}
 - { name: NODE_ENV, value: production }
 - { name: DEPLOY_ENVIRONMENT, value: production }

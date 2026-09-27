@@ -5,17 +5,20 @@ import { EduApiError, eduApi } from '@/lib/edu-api.ts';
 import { dueLabel, STATUS_LABEL, STATUS_TONE } from '@/lib/assignment.ts';
 import { formatDate, formatDuration, formatPrice } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
+import { BuyPanel } from './BuyPanel';
 import { EnrollButton } from './EnrollButton';
 import { StartExamButton } from './StartExamButton';
 
-type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ locked?: string }> };
+type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ locked?: string; paid?: string }> };
 
 export const metadata: Metadata = { title: 'Course' };
 
 /** Course page (FR-CATALOG-302): outcomes, curriculum, price, and enrollment or access. */
 export default async function CoursePage({ params, searchParams }: Props) {
   const { slug, courseId } = await params;
-  const lockedNotice = (await searchParams).locked === '1';
+  const query = await searchParams;
+  const lockedNotice = query.locked === '1';
+  const paidNotice = query.paid === '1';
   const here = `/w/${slug}/courses/${courseId}`;
   const { token, workspace } = await workspaceContext(slug, here);
   const course = await load(here, () => eduApi.course(token, workspace.id, courseId));
@@ -36,6 +39,11 @@ export default async function CoursePage({ params, searchParams }: Props) {
         })
       : null;
   const latest = stream?.announcements[0];
+  // Paid courses show Khalti and eSewa when the school may sell (ADR-023); a failure here hides the panel only.
+  const checkout =
+    !entitled && course.price.amountMinor > 0
+      ? await eduApi.checkoutOptions(token, workspace.id, courseId).catch(() => null)
+      : null;
   const lessons = course.curriculum.flatMap((section) => section.lessons);
   const firstLesson = lessons.find((lesson) => entitled || lesson.isPreview);
 
@@ -199,7 +207,9 @@ export default async function CoursePage({ params, searchParams }: Props) {
             ) : null}
             {entitled ? (
               <>
-                <p className="notice">You are enrolled.</p>
+                <p className="notice" role={paidNotice ? 'status' : undefined}>
+                  {paidNotice ? 'Payment confirmed. The course is yours.' : 'You are enrolled.'}
+                </p>
                 <Link href={`${here}/stream`} className="btn btn-secondary justify-center">
                   Class stream
                 </Link>
@@ -214,7 +224,13 @@ export default async function CoursePage({ params, searchParams }: Props) {
               </>
             ) : (
               <>
-                <EnrollButton tenantId={workspace.id} courseId={course.id} returnTo={here} free={course.price.amountMinor === 0} />
+                {course.price.amountMinor === 0 ? (
+                  <EnrollButton tenantId={workspace.id} courseId={course.id} returnTo={here} free />
+                ) : checkout ? (
+                  <BuyPanel tenantId={workspace.id} courseId={course.id} returnTo={here} options={checkout} />
+                ) : (
+                  <p className="notice">Buying is unavailable right now. Try again shortly.</p>
+                )}
                 {firstLesson ? (
                   <Link href={`${here}/lessons/${firstLesson.id}`} className="btn btn-secondary justify-center">
                     Try a free lesson

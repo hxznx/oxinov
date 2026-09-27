@@ -66,6 +66,22 @@ Kubernetes Secret `oxinov/oxinov-app` by `bootstrap-node.sh`; k3s encrypts Secre
 session secret, overwrite the parameter and run `oxctl deploy` (everyone signs in again). Database
 password rotation needs `ALTER ROLE` first.
 
+
+### Turning on payments (Khalti and eSewa, ADR-023)
+
+Production starts with payments off: the course page says online payment is not set up. To sell Oxinov's courses:
+
+1. Open merchant accounts for Oxinov Pvt. Ltd. with Khalti (admin.khalti.com) and eSewa. Test first with Khalti's sandbox (test-admin.khalti.com) and eSewa's published test merchant `EPAYTEST`.
+2. Enter the keys yourself (never in chat, Git, or a ticket), from a terminal signed in with `aws sso login`:
+   ```bash
+   aws ssm put-parameter --name /oxinov/production/starter/KHALTI_SECRET_KEY --type SecureString --value '<key>' --overwrite
+   aws ssm put-parameter --name /oxinov/production/starter/ESEWA_PRODUCT_CODE --type SecureString --value '<code>' --overwrite
+   aws ssm put-parameter --name /oxinov/production/starter/ESEWA_SECRET_KEY --type SecureString --value '<key>' --overwrite
+   ```
+3. Set `payments.sellerTenantIds` in `helm/oxinov/values-production.yaml` to the UUID of Oxinov's own workspace, and `payments.mode` to `live` only with live keys. Push; the next deploy renders the keys into the Secret.
+4. Price the course in NPR (Rs 10 or more for Khalti) and buy it once with each provider to confirm.
+
+Payments are checked when the learner returns or opens the payment page again; there is no webhook or nightly reconciliation yet, so compare the providers' statements with `payments` rows until FR-PAY-2704 is built.
 ## Backups and restore
 
 - Nightly `pg_dumpall` at 02:30 Nepal time (CronJob `postgres-backup`) to

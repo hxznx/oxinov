@@ -11,6 +11,8 @@ export type ErrorCode =
   | 'EMAIL_NOT_VERIFIED'
   | 'SLUG_UNAVAILABLE'
   | 'PAYMENT_REQUIRED'
+  | 'NOT_FOR_SALE'
+  | 'PAYMENT_UNAVAILABLE'
   | 'NOT_ENTITLED'
   | 'COURSE_NOT_AVAILABLE'
   | 'ATTEMPT_LIMIT_REACHED'
@@ -43,6 +45,9 @@ export const Errors = {
     new DomainError('SLUG_UNAVAILABLE', 409, 'That workspace address is already taken.'),
   paymentRequired: () =>
     new DomainError('PAYMENT_REQUIRED', 402, 'This course must be purchased before enrolling.'),
+  notForSale: (message = 'This course cannot be bought here yet.') => new DomainError('NOT_FOR_SALE', 409, message),
+  paymentUnavailable: (message = 'Payment is not available right now. Try again in a few minutes.') =>
+    new DomainError('PAYMENT_UNAVAILABLE', 503, message),
   notEntitled: () =>
     new DomainError('NOT_ENTITLED', 403, 'You need access to this course first.'),
   courseNotAvailable: () =>

@@ -49,6 +49,9 @@ import { StreamService } from './stream/stream.service';
 import { QuizzesController } from './quizzes/quizzes.controller';
 import { QuizzesService } from './quizzes/quizzes.service';
 import { MediaService } from './media/media.service';
+import { PaymentsController } from './payments/payments.controller';
+import { PaymentsService } from './payments/payments.service';
+import { PAYMENT_PROVIDERS, providersFromConfig, type PaymentProviders } from './payments/providers';
 import { ObjectStorage } from './media/object-storage';
 import { InviteRedemptionController, TenantInvitesController } from './tenants/invites.controller';
 import { InvitesService } from './tenants/invites.service';
@@ -61,6 +64,8 @@ export interface AppModuleOptions {
   /** Tests inject a local key set instead of fetching the identity provider's JWKS. */
   jwks?: JWTVerifyGetKey;
   securityEventSink?: SecurityEventSink;
+  /** Tests replace Khalti and eSewa with fakes; by default the providers come from the configuration. */
+  paymentProviders?: PaymentProviders;
 }
 
 /**
@@ -99,6 +104,8 @@ export class AppModule implements NestModule {
       CatalogService,
       EnrollmentsService,
       ExamsService,
+      { provide: PAYMENT_PROVIDERS, useValue: options.paymentProviders ?? providersFromConfig(options.config.payments) },
+      PaymentsService,
     ];
     return {
       module: AppModule,
@@ -117,6 +124,7 @@ export class AppModule implements NestModule {
         StreamController,
         EnrollmentsController,
         ExamsController,
+        PaymentsController,
       ],
       providers,
     };

@@ -70,6 +70,13 @@ migrations:
     requests: { cpu: 50m, memory: 128Mi }
     limits: { memory: 384Mi }
 
+# Paid courses with Khalti and eSewa (ADR-023). Provider keys live in Parameter Store, never here.
+payments:
+  # sandbox uses the providers' test systems; switch to live only with Oxinov's live merchant keys in place.
+  mode: sandbox
+  # Comma-separated tenant UUIDs allowed to sell courses (Oxinov's own workspace); empty sells nothing.
+  sellerTenantIds: ""
+
 media:
   bucket: oxinov-edu-media-614130400110
   region: ap-south-1

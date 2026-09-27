@@ -164,6 +164,12 @@ sync_app_secret() {
     value=$(param "$name")
     args+=("--from-literal=$name=${value:-pending-realm-configuration}")
   done
+  # Payment provider keys (ADR-023) are entered by the owner in Parameter Store and never generated; a
+  # missing key is left out of the Secret, which keeps that provider switched off.
+  for name in KHALTI_SECRET_KEY ESEWA_PRODUCT_CODE ESEWA_SECRET_KEY; do
+    value=$(param "$name")
+    if [ -n "$value" ]; then args+=("--from-literal=$name=$value"); fi
+  done
   kubectl -n "$NAMESPACE" create secret generic oxinov-app "${args[@]}" --dry-run=client -o yaml | kubectl apply -f - >/dev/null
 }
 sync_app_secret

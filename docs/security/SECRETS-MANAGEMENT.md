@@ -11,6 +11,7 @@
 | PostgreSQL passwords (owner and request roles per database) | SSM Parameter Store SecureString under `/oxinov/production/starter/` | Generated on the server on the first deploy | Rotate by replacing the parameter and redeploying; update the database role in the same step |
 | Keycloak administrator and client secrets | Parameter Store | Generated on the server; realm configured by `devops/keycloak/configure-realm.sh` | On staff change or exposure |
 | Web session secrets | Parameter Store | Generated on the server | Yearly or on exposure (signs everyone out) |
+| Khalti and eSewa merchant keys (`KHALTI_SECRET_KEY`, `ESEWA_PRODUCT_CODE`, `ESEWA_SECRET_KEY`) | Parameter Store, same path | Entered by the owner from the providers' merchant dashboards; never generated or committed (ADR-023) | On staff change or exposure: regenerate in the merchant dashboard, replace the parameter, redeploy |
 | AWS access for workloads | None: instance role through IMDSv2 | Terraform | Automatic (temporary credentials) |
 | CI and deploy access to AWS | None: GitHub OIDC roles | Terraform | Automatic |
 

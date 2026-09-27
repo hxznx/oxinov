@@ -757,6 +757,8 @@ enum PaymentProvider {
   STRIPE
   GOOGLE_PLAY
   APP_STORE
+  KHALTI
+  ESEWA
 
   @@map("payment_provider")
 }
@@ -772,17 +774,22 @@ enum PaymentStatus {
 
 /// Learner course purchase. Tenant SaaS subscriptions are a separate, future ledger.
 model Payment {
-  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId          String          @map("tenant_id") @db.Uuid
-  userId            String          @map("user_id") @db.Uuid
-  courseId          String          @map("course_id") @db.Uuid
-  provider          PaymentProvider
-  providerPaymentId String          @map("provider_payment_id") @db.VarChar(255)
-  amountMinor       Int             @map("amount_minor")
-  currency          String          @db.Char(3)
-  status            PaymentStatus   @default(PENDING)
-  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt         DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  id                    String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String          @map("tenant_id") @db.Uuid
+  userId                String          @map("user_id") @db.Uuid
+  courseId              String          @map("course_id") @db.Uuid
+  provider              PaymentProvider
+  providerPaymentId     String          @map("provider_payment_id") @db.VarChar(255)
+  amountMinor           Int             @map("amount_minor")
+  currency              String          @db.Char(3)
+  status                PaymentStatus   @default(PENDING)
+  /// The provider's own transaction reference (Khalti transaction_id, eSewa ref_id), set on verification.
+  providerTransactionId String?         @map("provider_transaction_id") @db.VarChar(255)
+  /// When the server verified the payment with the provider; required for SUCCEEDED.
+  verifiedAt            DateTime?       @map("verified_at") @db.Timestamptz(3)
+  failureReason         String?         @map("failure_reason") @db.VarChar(500)
+  createdAt             DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   user        UserProfile  @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -791,6 +798,7 @@ model Payment {
 
   @@unique([tenantId, id])
   @@unique([provider, providerPaymentId])
+  @@index([tenantId, userId, courseId, createdAt(sort: Desc)], map: "payments_tenant_user_course_idx")
   @@map("payments")
 }
 

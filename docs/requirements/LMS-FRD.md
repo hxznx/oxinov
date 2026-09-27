@@ -17,7 +17,7 @@ Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web R
 | FR-AUTH-102 Tenant roles | Partly | Join codes and member list; instructor-approval requests open |
 | FR-CATALOG-301 Catalogue and search | Implemented | With "Continue learning" |
 | FR-CATALOG-302 Course page | Implemented | Outcomes, curriculum, locked and preview lessons |
-| FR-CATALOG-303 Purchase and enrollment | Partly | Free enrollment; paid courses unlock only after a verified payment event, which is not built |
+| FR-CATALOG-303 Purchase and enrollment | Partly | Free enrollment; one-time purchase of Oxinov's own NPR courses with Khalti or eSewa, granted only after server-side verification (ADR-023). Subscriptions, coupons, refunds, and reconciliation open |
 | FR-COURSE-201, FR-COURSE-203 Authoring and review | Implemented | Chapters, lessons, reordering, review, publishing |
 | FR-COURSE-202, FR-COURSE-204, FR-COURSE-205 Lesson content, resources, media | Implemented | Text, video, audio, transcripts; PDF, EPUB, Office, images, ZIP, links (S3, ADR-021) |
 | FR-PLAYER-401 to FR-PLAYER-404 Player, progress, notes | Implemented | Speed, resume, completion; private notes with video moments |
