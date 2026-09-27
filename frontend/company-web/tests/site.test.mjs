@@ -86,6 +86,17 @@ describe('static export', () => {
     }
   });
 
+  it('connects the website to the products: sign-in on every page, Edu from the home and product pages', () => {
+    for (const route of routes) {
+      assert.match(html(route), /<a[^>]+href="https:\/\/app\.oxinov\.com\/"[^>]*>\s*Sign in\s*<\/a>/, `${route} has no Sign in link`);
+    }
+    for (const route of ['/', '/products/edu/']) {
+      // React separates adjacent text with <!-- --> markers.
+      assert.match(html(route).replaceAll('<!-- -->', ''), /<a[^>]+href="https:\/\/edu\.oxinov\.com\/"[^>]*>\s*Open Oxinov Edu\s*<\/a>/, `${route} has no Open Oxinov Edu link`);
+    }
+    assert.doesNotMatch(html('/'), /Sign in · soon/);
+  });
+
   it('labels regulated divisions and never offers them', () => {
     for (const route of ['/space/', '/production/']) {
       assert.match(text(html(route)), /Subject to regulatory approval/, route);

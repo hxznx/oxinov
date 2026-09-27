@@ -7,6 +7,8 @@ import { defaultDescription, defaultTitle, pageMetadata, productPath } from '@/s
 export const metadata: Metadata = pageMetadata({ path: '/', absoluteTitle: defaultTitle, description: defaultDescription });
 
 export default function HomePage() {
+  // The product people can use today; the others show their status on the products page.
+  const edu = products.find((product) => product.slug === 'edu' && product.status === 'in-development');
   return (
     <>
       <section className="grid-bg scanlines border-b border-line">
@@ -18,7 +20,12 @@ export default function HomePage() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted">{home.subheadline}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/products/" className="btn btn-primary">
+            {edu ? (
+              <a href={`https://${edu.address}/`} className="btn btn-primary">
+                {home.productCta}
+              </a>
+            ) : null}
+            <Link href="/products/" className={edu ? 'btn btn-secondary' : 'btn btn-primary'}>
               {home.primaryCta}
             </Link>
             <Link href="/divisions/" className="btn btn-secondary">

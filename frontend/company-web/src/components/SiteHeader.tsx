@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { accountUrl } from '@/content/site';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -34,10 +35,10 @@ export function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <ThemeToggle />
-          {/* One Oxinov account arrives with id.oxinov.com in Phase 2 (FR-ID-2201). */}
-          <span className="btn btn-secondary text-sm text-muted" aria-disabled="true" title="Sign-in opens with the first product launch">
-            Sign in · soon
-          </span>
+          {/* One Oxinov account for every product (FR-ID-2201): sign-in, profile, and the product launcher. */}
+          <a href={accountUrl} className="btn btn-secondary text-sm">
+            Sign in
+          </a>
         </div>
       </div>
     </header>

@@ -5,6 +5,9 @@
 
 export type Status = 'in-development' | 'coming-soon' | 'future' | 'long-horizon';
 
+/** The one Oxinov account (sign-in, profile, product launcher). id.oxinov.com/ also redirects here. */
+export const accountUrl = 'https://app.oxinov.com/';
+
 export const company = {
   name: 'Oxinov',
   legalName: 'Oxinov Pvt. Ltd.',
@@ -35,6 +38,8 @@ export const home = {
   ],
   primaryCta: 'Explore our products',
   secondaryCta: 'See our divisions',
+  /** Button on the home page that opens the product people can use today. */
+  productCta: 'Open Oxinov Edu',
 };
 
 export const about = {

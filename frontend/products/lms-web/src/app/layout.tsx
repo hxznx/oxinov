@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Noto_Sans_Devanagari, Orbitron, Rajdhani } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { SiteFooter } from '@/components/SiteFooter';
 import { themeInitScript } from '@/components/ThemeToggle';
 import './globals.css';
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to main content
         </a>
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
