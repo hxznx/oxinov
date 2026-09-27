@@ -1,6 +1,6 @@
 # Functional Requirements Document: Oxinov HR
 
-**Version:** 0.1 (draft for owner review)
+**Version:** 0.2 (draft for owner review)
 **Date:** 2026-09-28
 **Status:** Proposed. Drafted at the owner's request; not approved for implementation until the release gate in the [product record](../products/hr/README.md) is passed.
 **Scope:** `hr.oxinov.com`: a verified, global network of HR professionals and agencies, and the workspace where client companies engage them to take candidates from CV to deployment.
@@ -19,7 +19,7 @@ Oxinov HR solves this with two things:
 1. **A verified network.** HR professionals and agencies prove their identity, credentials, experience, licences, and placement record. Companies anywhere search them by skill, sector, role type, country, language, and experience.
 2. **One workspace from CV to deployment.** A company engages an HR professional for a hiring mandate. Together they run the whole process on Oxinov: sourcing, candidate consent, screening, submission, interviews, offer, pre-deployment (documents, work permit, medical, travel), deployment, and the guarantee period, with fees paid against milestones.
 
-Oxinov HR is global and English only (ADR-020). It is the third product plane on the Oxinov platform, and it relies on the platform for identity, trust levels, organizations, verification (KYC), notifications, messaging, payments, and policies.
+Oxinov HR is global and English only (ADR-020). It is a candidate product plane on the Oxinov platform, and it relies on the platform for identity, trust levels, organizations, verification (KYC), notifications, messaging, payments, and policies.
 
 **Relationship to Oxinov Jobs.** Oxinov Jobs is a job board in Nepal where employers post jobs and candidates apply directly. Oxinov HR is where companies hire *HR professionals* to recruit for them, worldwide, and where those professionals manage candidates end to end. An HR professional may publish an engagement's opening to Oxinov Jobs (FR-HR-8141) and use verified Oxinov Edu certificates (FR-HR-8142). The two products keep separate databases and talk only through versioned APIs.
 
@@ -133,6 +133,11 @@ Sources: owner request of 2026-09-28; [platform blueprint](../company/PLATFORM-B
 - Acceptance: Given three shortlisted professionals, when the member opens compare, then their attributes appear in columns.
 - Acceptance: Given a member of another client, when they request that shortlist, then it is refused.
 
+**FR-HR-8025 — Verified employer and hiring authority.** Every mandate must identify the legal employer and the client organization authorized to recruit for it. Before a mandate can receive proposals or candidate data, the client must attest that it has authority to hire for the employer; when the client and employer differ, an operator must verify that authority and the mandate must show both organizations. A suspended or unverified employer cannot open or receive candidates for a mandate.
+*Priority:* Must. *Status:* Proposed. *Access:* T4 client admin submits; operator verifies third-party authority; candidates and engaged HR professionals read the verified employer identity. *Source:* owner request (authentic platform); threat model (fake jobs and recruitment scams).
+- Acceptance: Given a verified client hiring for itself, when an admin opens a mandate, then the legal employer is shown to invited professionals and candidates before consent.
+- Acceptance: Given a staffing intermediary hiring for another employer without verified authority, when it tries to open the mandate, then publication, proposals, and candidate submission are blocked.
+
 ### 3.4 Mandates and engagements
 
 **FR-HR-8031 — Mandates.** A client member must be able to create a mandate: role titles, number of openings, work locations (country and city), requirements (skills, experience, certifications, languages), employment terms (salary range with currency, contract length, benefits, accommodation and travel where relevant), target start date, budget, and whether it is exclusive (one HR professional) or open (several). Mandates are private unless the client invites professionals or opens it for proposals.
@@ -160,22 +165,27 @@ Sources: owner request of 2026-09-28; [platform blueprint](../company/PLATFORM-B
 - Acceptance: Given two agencies on one mandate, when agency A opens the pipeline, then it sees only its own candidates.
 - Acceptance: Given agency B, when it requests agency A's candidate, then the request is refused.
 
+**FR-HR-8036 — Engagement team access.** A client admin and an agency admin must explicitly assign organization members to each engagement with the minimum role needed: view mandate, manage candidates, make decisions, manage agreements, or manage payments. Organization membership alone must not reveal candidate records, messages, documents, agreements, or payment details. Removing a member revokes access immediately without removing their past audit entries.
+*Priority:* Must. *Status:* Proposed. *Access:* T4 organization admin manages its own team; assigned members use only their granted engagement roles. *Source:* NFR-11; privacy; owner request (collaboration).
+- Acceptance: Given a client interviewer assigned to one engagement with candidate-view access, when they open that engagement, then they can review its submitted candidates but cannot change agreements or payments.
+- Acceptance: Given another member of the same client who is not assigned, when they request a candidate URL from the engagement, then the response is "not found" and `authorization.denied` is emitted.
+
 ### 3.5 Candidates: from CV to deployment
 
-**FR-HR-8041 — Candidate records and consent.** An HR professional must be able to create a candidate record from a CV and details the candidate provides. Before the record is submitted to any client, the candidate must give explicit, recorded consent to be represented by that professional for that mandate or for a stated period, through their own Oxinov account or a one-time consent link. Consent shows who will see their data and in which countries, and can be withdrawn at any time.
+**FR-HR-8041 — Candidate records and consent.** An HR professional may store only the candidate's name and one contact channel to send an invitation until the candidate has initiated contact or given recorded permission to hold their recruitment data. Before a CV or full record is stored or shared, the candidate must confirm through their own Oxinov account or a single-use, expiring link, see the verified employer, professional, purpose, recipients, countries, and retention period, and consent to representation for that mandate or a stated period. Consent is versioned, may be withdrawn at any time, and withdrawal stops new processing and sharing while preserving only records under a disclosed legal hold.
 *Priority:* Must. *Status:* Proposed. *Access:* HR professional, own records only; candidate for own data. *Source:* owner request; privacy law (GDPR, Nepal Privacy Act 2075).
-- Acceptance: Given a candidate who consents through the link, when the professional submits them, then the client sees the submission and the consent date.
-- Acceptance: Given no consent or withdrawn consent, when the professional tries to submit, then the submission is refused and the candidate's data is not shared.
+- Acceptance: Given a candidate who confirms the disclosed consent, when the professional uploads the CV and submits them, then only the assigned client team sees the submission and the consent version and date.
+- Acceptance: Given no consent, an expired or reused link, or withdrawn consent, when the professional tries to upload a CV or submit the candidate, then the action is refused and no candidate data is disclosed.
 
 **FR-HR-8042 — CV intake assistance.** The system may extract structured fields (experience, skills, education, languages) from an uploaded CV (PDF or Word, up to 10 MB, content-checked, stored privately) to prefill the record. The professional must review every extracted field before it is saved.
 *Priority:* Could. *Status:* Proposed. *Access:* HR professional. *Source:* owner request; AI governance.
 - Acceptance: Given a CV upload, when extraction finishes, then fields are shown as suggestions until the professional confirms them.
 - Acceptance: Given a file that is not a real PDF or Word document, when uploaded, then it is rejected and deleted.
 
-**FR-HR-8043 — Candidate ownership and duplicates.** When two HR professionals submit the same candidate to the same client, the system must detect the duplicate (verified email, phone, or document number) and credit the first submission made with valid consent, time-stamped by the server. The client sees one candidate with the credited professional. The candidate may choose a different professional for future mandates.
+**FR-HR-8043 — Candidate representation and duplicates.** When two HR professionals submit the same candidate to the same mandate, the system must compare normalized, protected identifiers without revealing them to either professional and credit the first server-timestamped submission with mandate-specific valid consent. The client sees one candidate with the credited professional; the later professional learns only that the candidate is already represented for that mandate. The candidate may dispute the result or choose another professional for a future mandate.
 *Priority:* Must. *Status:* Proposed. *Access:* system rule; operators for disputes. *Source:* owner request (fair collaboration).
 - Acceptance: Given agency A submits a consenting candidate at 10:00 and agency B the same candidate at 10:05, when the client reviews, then agency A is credited and agency B is told the candidate is already represented.
-- Acceptance: Given agency A's consent was withdrawn before its submission, when B submits with valid consent, then B is credited.
+- Acceptance: Given agency A's consent was withdrawn before its submission, when B submits with valid consent, then B is credited without either agency receiving the other's contact data or identifier.
 
 **FR-HR-8044 — Pipeline.** Each engagement must show its candidates through the stages sourced → screened → submitted → client review → interview → offered → offer accepted → pre-deployment → deployed → guarantee → completed, or rejected or withdrawn at any stage with a reason. Every change records who, when, and an optional note; candidates see their own stage but never internal notes.
 *Priority:* Must. *Status:* Proposed. *Access:* engagement parties by role; candidate for own stage. *Source:* owner request (CV to deployment).
@@ -211,6 +221,16 @@ Sources: owner request of 2026-09-28; [platform blueprint](../company/PLATFORM-B
 *Priority:* Should. *Status:* Proposed. *Access:* client member; HR professional. *Source:* owner request.
 - Acceptance: Given a candidate leaves on day 30 of a 90-day guarantee, when the client reports it, then a replacement opening is added to the engagement.
 - Acceptance: Given the guarantee has ended, when the client reports a departure, then no replacement or refund is created.
+
+**FR-HR-8051 — Fair screening and reasonable accommodation.** Every mandate and screening scorecard must use job-related criteria disclosed to the candidate. Candidates must be able to request a reasonable accommodation for application, assessment, or interview without that request affecting ranking. Protected characteristics and accommodation requests must not be used as filters, ranking inputs, rejection reasons, or client-visible screening signals except where a launch-country law both permits and requires a documented occupational condition.
+*Priority:* Must. *Status:* Proposed. *Access:* candidate requests; assigned engagement members arrange accommodation; operators review exceptions. *Source:* accessibility standard; AI governance; fair-recruitment principles.
+- Acceptance: Given a candidate requests a screen-reader-compatible assessment, when the interview team reviews the candidate, then the accommodation is arranged and neither the request nor disability is shown as a ranking factor.
+- Acceptance: Given a client adds a protected characteristic as a screening filter without an operator-approved legal basis, when it tries to open the mandate, then the filter is rejected and the mandate stays closed.
+
+**FR-HR-8052 — Decision notice and correction.** When a candidate is rejected, withdrawn by a client, or removed after screening, the candidate must receive a timely status notice with a job-related reason category, the responsible human decision maker, and a way to correct inaccurate profile or screening data or report discrimination. Correcting data does not automatically reverse the decision, but the assigned decision maker must review a timely correction before the mandate closes.
+*Priority:* Must. *Status:* Proposed. *Access:* assigned client decision maker records; candidate reads and requests correction for own application. *Source:* fair-recruitment principles; AI governance; privacy accuracy rights.
+- Acceptance: Given a client rejects a candidate for a missing required licence, when it records the decision, then the candidate sees the reason category and may provide evidence that the licence record is wrong.
+- Acceptance: Given a client tries to reject a candidate with only an AI score or a protected characteristic as the reason, when it submits the decision, then the action is refused and requires a job-related human-authored reason.
 
 ### 3.6 Collaboration workspace
 
@@ -290,6 +310,11 @@ Sources: owner request of 2026-09-28; [platform blueprint](../company/PLATFORM-B
 - Acceptance: Given a client downloads a candidate's CV, when the download completes, then an audit entry records who, when, and which document.
 - Acceptance: Given anyone, when they try to edit or delete an audit entry, then it is refused.
 
+**FR-HR-8094 — Security events.** The product must emit schema-valid security events for denied cross-organization access, unauthorized engagement access, malware uploads, bulk or unusual candidate-data exports, privilege changes, fee-request reports, and worker-safety escalations. Events must use actions registered in the [security event catalog](../security/soc/EVENT-CATALOG.md), contain no CV text, document contents, medical data, private messages, or raw AI prompts, and preserve the request and audit correlation identifiers.
+*Priority:* Must. *Status:* Proposed. *Access:* system emits; authorized security operators read. *Source:* NFR-15; security event schema and catalog.
+- Acceptance: Given a member requests another organization's candidate record, when access is denied, then `tenant.cross_access.denied` is emitted without candidate personal data.
+- Acceptance: Given an ordinary authorized candidate view, when it succeeds, then no high-severity security event is emitted merely for viewing the record.
+
 ### 3.10 Privacy
 
 **FR-HR-8101 — Purpose, transfer, and retention notice.** Before consenting (FR-HR-8041), a candidate must see which parties will receive their data, in which countries, for what purpose, and for how long. Candidate data is used only for the consented mandates and is deleted or anonymized when retention ends.
@@ -301,6 +326,11 @@ Sources: owner request of 2026-09-28; [platform blueprint](../company/PLATFORM-B
 *Priority:* Must. *Status:* Proposed. *Access:* own data only. *Source:* platform privacy (FR-PRIV).
 - Acceptance: Given a candidate requests deletion, when it completes, then their CV and documents are gone and clients see "Former candidate".
 - Acceptance: Given a candidate deployed within the legal retention period, when they request deletion, then the employment record is kept until the period ends and they are told why.
+
+**FR-HR-8103 — Retention schedule and legal holds.** Before a launch country is enabled, the data owner must configure a reviewed retention period for invitations, declined or rejected candidates, completed placements, messages, agreements, financial records, documents, consent evidence, audit entries, and backups. A legal or dispute hold must name its reason, owner, review date, and affected records; it pauses deletion only for those records and ends through a recorded decision. Talent-pool retention requires separate, expiring candidate consent and must not be inferred from consent to one mandate.
+*Priority:* Must. *Status:* Proposed. *Access:* privacy operator configures; candidates read the applicable periods; authorized legal operators manage holds. *Source:* data retention standard; platform privacy (FR-PRIV).
+- Acceptance: Given a rejected candidate whose disclosed retention period ends with no hold or talent-pool consent, when the deletion job runs, then the CV and candidate documents are deleted and the minimal audit record is pseudonymized.
+- Acceptance: Given a client marks every candidate as indefinitely retained without a reviewed schedule or separate talent-pool consent, when it saves, then the request is refused.
 
 ### 3.11 Integrations and AI
 
@@ -345,11 +375,11 @@ Sources: owner request of 2026-09-28; [platform blueprint](../company/PLATFORM-B
 ## 6. Build order
 
 1. Foundation: `hr-web`, `hr-api`, database `oxinov_hr` with row-level security; HR professional and agency profiles with identity and credential verification (8001–8006).
-2. Discovery: client verification, search, ranking, shortlists, public pages, and track record (8011–8013, 8021–8024).
-3. Engagements: mandates, proposals, agreements, lifecycle (8031–8035), messaging and documents (8061–8063).
-4. Candidates from CV to deployment: consent, pipeline, submissions, interviews, offers, pre-deployment, deployment, guarantee (8041–8050).
+2. Discovery: client and hiring-authority verification, search, ranking, shortlists, public pages, and track record (8011–8013, 8021–8025).
+3. Engagements: mandates, proposals, agreements, lifecycle, and least-privilege teams (8031–8036), messaging and documents (8061–8063).
+4. Candidates from CV to deployment: consent, pipeline, submissions, interviews, offers, pre-deployment, deployment, guarantee, fair screening, accommodation, and correction (8041–8052).
 5. Fees and payments: milestones, platform payments, no-fee rule, disputes (8071–8074); needs FR-PAY.
-6. Cross-border rules, safety, moderation, audit, and privacy (8081–8084, 8091–8093, 8101–8102). Required before any cross-border engagement opens.
+6. Cross-border rules, safety, moderation, audit, security events, privacy, and retention (8081–8084, 8091–8094, 8101–8103). The moderation, audit, security-event, privacy, and retention requirements are required before any engagement opens; the cross-border requirements and legal review are additionally required before any cross-border engagement opens.
 7. Integrations and AI: Jobs, Edu certificates, AI assistance (8141–8143).
 
-Each step ships through the normal pipeline. `hr.oxinov.com` is published after step 4 for domestic engagements; cross-border engagements open only after step 6 and the legal review.
+Each step ships through the normal pipeline. Steps describe dependency order, not permission to expose incomplete controls: `hr.oxinov.com` remains private until steps 1–4 and the domestic parts of step 6 pass their acceptance tests and the owner closes the release gate. Cross-border engagements open only after all of step 6 and the country-specific legal review. Steps 5 and 7 may launch later only if their unavailable features are hidden and the owner approves that reduced release scope.

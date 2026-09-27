@@ -27,7 +27,7 @@ It differs from [Oxinov Jobs](../jobs/README.md): Jobs is a job board in Nepal w
 
 | Document | Purpose |
 | --- | --- |
-| [FRD](../../requirements/HR-FRD.md) | Functional requirements FR-HR-8001 to 8143, dependencies, open decisions, and build order |
+| [FRD](../../requirements/HR-FRD.md) | Functional requirements FR-HR-8001 to 8143 (53 proposed requirements across the allocated block), dependencies, open decisions, and build order |
 | [NFR](../../requirements/NFR.md) | Company-wide non-functional requirements Oxinov HR must meet |
 
 ## Canonical locations (planned)
