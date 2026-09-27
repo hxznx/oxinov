@@ -39,7 +39,7 @@ Every product uses one technical slug and the same shelves, so a new product is 
 | Shelf | Path pattern | Oxinov Edu (`lms`) |
 | --- | --- | --- |
 | Product record | `docs/products/<slug>/README.md` | [docs/products/lms](docs/products/lms/README.md) |
-| Requirements | `docs/requirements/<SLUG>-FRD.md` | [LMS-FRD.md](docs/requirements/LMS-FRD.md) |
+| Requirements | `docs/requirements/<PRODUCT>-FRD.md` | [EDU-FRD.md](docs/requirements/EDU-FRD.md) |
 | Web client | `frontend/products/<slug>-web/` | [lms-web](frontend/products/lms-web/README.md) |
 | API | `backend/products/<slug>-api/` | [lms-api](backend/products/lms-api/README.md) |
 | Worker, realtime | `backend/products/<slug>-worker/`, `<slug>-chat/` | planned |

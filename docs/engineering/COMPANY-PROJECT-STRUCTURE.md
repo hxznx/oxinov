@@ -19,11 +19,11 @@ frontend/
   products/
     lms-web/                   edu.oxinov.com
     market-web/                market.oxinov.com       after release gate
-    jobs-web/                  jobs.oxinov.com         after release gate
+    hr-web/                    hr.oxinov.com           after unified HR release gate
     services-web/              services.oxinov.com     after release gate
   mobile/
     lms/                       Oxinov Edu Android and iOS
-    marketplace/               shared Commodity, Jobs, and Services mobile app if approved
+    marketplace/               shared Commodity and Services mobile app if approved
 
 backend/
   gateway/                     api.oxinov.com routing and edge policy
@@ -36,7 +36,7 @@ backend/
     lms-chat/                  LMS realtime gateway
     market-api/                listings, orders, escrow, price indices    after release gate
     market-worker/             price feeds, escrow timers, dispute SLAs  after release gate
-    jobs-api/                  postings, applications, matching          after release gate
+    hr-api/                    HR network, recruitment, jobs, applications after unified HR release gate
     services-api/              services, demands, bookings               after release gate
 
 database/
@@ -44,7 +44,7 @@ database/
   products/
     lms/                       LMS schema, migrations, seeds, RLS policies
     market/                    Commodity Market schema                    after release gate
-    jobs/                      Jobs schema                                after release gate
+    hr/                        HR and direct-hiring schema                after unified HR release gate
     services/                  Services Market schema                     after release gate
 
 packages/

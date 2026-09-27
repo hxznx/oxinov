@@ -45,7 +45,7 @@ export const home = {
 export const about = {
   paragraphs: [
     'Oxinov Pvt. Ltd. is a technology company registered in Lalitpur, Nepal. We build digital products and services that solve practical problems for people, schools, and businesses.',
-    'Our first product is Oxinov Edu, a learning platform now in development. It is designed for training providers who teach languages, IT, and exam preparation. Next, we plan three marketplace products for commodities, jobs, and local services.',
+    'Our first product is Oxinov Edu, a learning platform now in development. Oxinov HR is the second product module, planned for verified recruitment, direct jobs, and applications. Commodity and local-service marketplaces remain future candidates.',
     'Our work is organised into ten divisions. They cover education, AI, engineering, services, robotics, media, agriculture, space, research, and production. Education is our current focus. The other divisions are future initiatives. We will open each one only when it has a clear customer need, an owner, and the approvals it requires.',
     'Every product shares one Oxinov account, so people sign in once. We research user needs before we build and test with real users before we launch.',
   ],
@@ -70,7 +70,7 @@ export const divisions: Division[] = [
     tagline: 'Learning tools for training providers and learners.',
     status: 'in-development',
     description:
-      'Education is our first division and our current focus. We are building Oxinov Edu, a platform where training providers can run courses, exams, and assignments in one place. It supports language, IT, and exam preparation subjects. Over time, we plan to link learning to real opportunities through Oxinov Jobs, so learners can show verified skills to employers.',
+      'Education is our first division and our current focus. We are building Oxinov Edu, a platform where training providers can run courses, exams, and assignments in one place. It supports language, IT, and exam preparation subjects. Over time, Oxinov HR will link learning to real opportunities, so learners can show verified skills to employers.',
     focus: ['Oxinov Edu learning platform', 'Mock exams and practice', 'Links between training and jobs'],
   },
   {
@@ -164,7 +164,7 @@ export interface Question {
 }
 
 export interface Product {
-  key: 'lms' | 'market' | 'jobs' | 'services';
+  key: 'lms' | 'market' | 'hr' | 'services';
   /** Page at oxinov.com/products/<slug>/. */
   slug: string;
   name: string;
@@ -289,32 +289,32 @@ export const products: Product[] = [
     ],
   },
   {
-    key: 'jobs',
-    slug: 'jobs',
-    name: 'Oxinov Jobs',
-    address: 'jobs.oxinov.com',
-    division: 'education',
-    purpose: 'Connecting verified candidates with verified employers.',
+    key: 'hr',
+    slug: 'hr',
+    name: 'Oxinov HR',
+    address: 'hr.oxinov.com',
+    division: 'services',
+    purpose: 'Verified recruitment, direct jobs, and applications in one product.',
     description:
-      'Oxinov Jobs is planned to help employers find skilled people, and help learners find relevant work. Candidates will build profiles with their skills and experience. Employers will post jobs and manage applications. Candidates can show verified Oxinov Edu certificates. Matching will be explainable, and a person will always make the hiring decision.',
+      'Oxinov HR is planned as one product for two hiring paths. Companies can engage verified HR professionals and agencies to manage recruitment from CV to deployment, or publish jobs for candidates to apply directly. Candidates can show verified Oxinov Edu certificates. Matching will be explainable, consent will control candidate data, and a person will always make the hiring decision.',
     status: 'coming-soon',
-    searchTitle: 'Oxinov Jobs: verified jobs and skill matching',
+    searchTitle: 'Oxinov HR: verified recruitment and direct hiring',
     summary:
-      'Oxinov Jobs is a planned jobs platform that connects verified candidates, including Oxinov Edu learners, with verified employers.',
-    audience: ['Job seekers and learners', 'Employers and recruiters', 'Training providers placing graduates'],
+      'Oxinov HR is a planned recruitment product connecting candidates, verified employers, and verified HR professionals.',
+    audience: ['Job seekers and learners', 'Employers and hiring teams', 'HR professionals and recruitment agencies'],
     features: [
-      { title: 'Skill profiles', body: 'Candidates build profiles with their skills and experience, and can show verified Oxinov Edu certificates.' },
-      { title: 'Jobs and applications', body: 'Employers post jobs and manage applications in one place.' },
-      { title: 'Explainable matching', body: 'Matches come with reasons, and a person always makes the hiring decision.' },
+      { title: 'Verified HR network', body: 'Companies find identity-, credential-, and licence-verified HR professionals and agencies.' },
+      { title: 'Managed or direct hiring', body: 'Use an HR professional from CV to deployment, or publish a job for direct applications.' },
+      { title: 'Skills with consent', body: 'Candidates can show verified Edu certificates; matching is explained and candidate data is shared only with consent.' },
     ],
     faqs: [
       {
-        question: 'How does Oxinov Jobs connect to Oxinov Edu?',
-        answer: 'Learners will be able to show verified Oxinov Edu certificates on their Oxinov Jobs profile, so employers can trust the skills they list.',
+        question: 'How does Oxinov HR connect to Oxinov Edu?',
+        answer: 'Learners will be able to show verified Oxinov Edu certificates on their Oxinov HR profile, so employers can trust the skills they list.',
       },
       {
-        question: 'When will Oxinov Jobs launch?',
-        answer: 'It is coming soon, after Oxinov Edu and Oxinov Commodity Market. No launch date is set yet.',
+        question: 'When will Oxinov HR launch?',
+        answer: 'It is coming soon after its unified legal, safety, privacy, and operating release gate closes. No launch date is set yet.',
       },
     ],
   },
@@ -344,7 +344,7 @@ export const products: Product[] = [
       },
       {
         question: 'When will Oxinov Services Market launch?',
-        answer: 'It is coming soon, after Oxinov Jobs. No launch date is set yet.',
+        answer: 'It is coming soon after Oxinov HR. No launch date is set yet.',
       },
     ],
   },

@@ -10,12 +10,11 @@ Each Oxinov product plane has a charter before implementation starts. A charter 
 | Product | Address | Pillar | Origin | Charter status |
 | --- | --- | --- | --- | --- |
 | [Oxinov Commodity Market](COMMODITY-MARKET.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`) expanded to all commodities & second-hand items ([Agri Market](AGRI-MARKET.md) superseded) | Draft |
-| [Oxinov Edu](lms/README.md) | `edu.oxinov.com` | Education | Oxinov | Approved (existing FRD in `docs/requirements/LMS-FRD.md`) |
-| [Oxinov HR](hr/README.md) | `hr.oxinov.com` | Services | Oxinov (owner request 2026-09-28) | Candidate: FRD drafted for owner review ([FRD](../requirements/HR-FRD.md)); not approved |
-| [Oxinov Jobs](jobs/README.md) | `jobs.oxinov.com` | Education | Flo Softwares concept (`hr-backend`, `hr-frontend`) | Approved 2026-09-27; in development ([charter](JOBS.md), [FRD](../requirements/JOBS-FRD.md)) |
+| [Oxinov Edu](lms/README.md) | `edu.oxinov.com` | Education | Oxinov | Approved and live ([FRD](../requirements/EDU-FRD.md)); internal technical slug remains `lms` |
+| [Oxinov HR](hr/README.md) | `hr.oxinov.com` | Services / talent | Oxinov plus adopted Flo Softwares HR/jobs concept | Candidate unified product: direct-hiring requirements approved; managed recruitment proposed ([FRD](../requirements/HR-FRD.md), ADR-024) |
 | [Oxinov Services Market](SERVICES-MARKET.md) | `services.oxinov.com` | Services | Flo Softwares concept (`service-platform`, `service-platform-frontend`) | Draft |
 
-A draft charter does not authorize scaffolding product folders, databases, or deployments. The product moves to implementation only after every release-gate item is resolved and recorded here. See [ADR-010](../architecture/ADR.md#adr-010-adopt-flo-softwares-marketplace-concepts-as-oxinov-product-planes) for the adoption rules that apply to all three Flo Softwares concepts.
+A draft charter does not authorize scaffolding product folders, databases, or deployments. The product moves to implementation only after every release-gate item is resolved and recorded here. See [ADR-010](../architecture/ADR.md#adr-010-adopt-flo-softwares-marketplace-concepts-as-oxinov-product-planes) and its consolidation amendment [ADR-024](../architecture/ADR.md#adr-024-two-product-modules-nowoxinov-edu-and-unified-oxinov-hr).
 
 ## Shared rules for all products
 
@@ -25,8 +24,7 @@ A draft charter does not authorize scaffolding product folders, databases, or de
 | --- | --- | --- |
 | Commodity Market | `market` | Draft charter above; no application scaffold authorized |
 | Edu | `lms` | [Product record](lms/README.md), [web](../../frontend/products/lms-web/README.md), [API](../../backend/products/lms-api/README.md), [database](../../database/products/lms/README.md), [release history](../planning/CHANGELOG.md) |
-| HR | `hr` | [Product record](hr/README.md); FRD draft only, no application scaffold authorized |
-| Jobs | `jobs` | [Product record](jobs/README.md); `frontend/products/jobs-web`, `backend/products/jobs-api`, `database/products/jobs` (in development) |
+| HR and direct hiring | `hr` | [Product record](hr/README.md); unified FRD only, no application scaffold exists |
 | Services Market | `services` | Draft charter above; no application scaffold authorized |
 
 These are location and charter records, not assertions that every release condition is satisfied.

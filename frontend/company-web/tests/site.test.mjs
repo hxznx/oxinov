@@ -13,7 +13,7 @@ const routes = [
   '/legal/terms/', '/legal/privacy/', '/legal/acceptable-use/', '/legal/cookies/',
   '/education/', '/ai/', '/engineering/', '/services/', '/robotics/', '/studio/', '/agritech/', '/space/',
   '/research/', '/production/',
-  '/products/edu/', '/products/commodity-market/', '/products/jobs/', '/products/services-market/',
+  '/products/edu/', '/products/commodity-market/', '/products/hr/', '/products/services-market/',
 ];
 
 const fileFor = (route) => join(out, route, 'index.html');
@@ -75,7 +75,7 @@ describe('static export', () => {
     const products = text(html('/products/')).replace(/\s+/g, ' ');
     // Each card shows its status badge immediately before the product name.
     assert.match(products, /In development Oxinov Edu/);
-    for (const name of ['Oxinov Commodity Market', 'Oxinov Jobs', 'Oxinov Services Market']) {
+    for (const name of ['Oxinov Commodity Market', 'Oxinov HR', 'Oxinov Services Market']) {
       assert.match(products, new RegExp(name));
     }
     assert.match(products, /Coming soon/);
@@ -183,7 +183,7 @@ describe('search and sharing', () => {
   });
 
   it('gives each product its own page with application, breadcrumb, and FAQ data that match the page', () => {
-    for (const slug of ['edu', 'commodity-market', 'jobs', 'services-market']) {
+    for (const slug of ['edu', 'commodity-market', 'hr', 'services-market']) {
       const route = `/products/${slug}/`;
       const page = html(route);
       const data = jsonLd(page);
@@ -198,7 +198,7 @@ describe('search and sharing', () => {
       assert.match(html('/products/'), new RegExp(`href="${route}"`), `${route}: linked from products`);
     }
     assert.match(html('/products/edu/'), /href="https:\/\/edu\.oxinov\.com\/"/, 'Edu page opens the app');
-    assert.doesNotMatch(html('/products/jobs/'), /href="https:\/\/jobs\.oxinov\.com/, 'no link to an unreleased product');
+    assert.doesNotMatch(html('/products/hr/'), /href="https:\/\/hr\.oxinov\.com/, 'no link to an unreleased product');
     const pricing = jsonLd(html('/pricing/')).find((item) => item['@type'] === 'FAQPage');
     assert.ok(pricing?.mainEntity.length >= 3, 'pricing FAQ');
   });

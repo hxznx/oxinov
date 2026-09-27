@@ -23,7 +23,7 @@ REQUIRED = [
     "devops/kubernetes/helm/oxinov/values.yaml", "devops/kubernetes/scripts/deploy.sh",
     "devops/kubernetes/scripts/bootstrap-node.sh", "devops/kubernetes/README.md",
     "devops/README.md", "devops/docker/README.md",
-    "docs/products/lms/BRIEF.md", "docs/products/lms/PRD.md", "docs/requirements/LMS-FRD.md", "docs/requirements/NFR.md",
+    "docs/products/lms/BRIEF.md", "docs/products/lms/PRD.md", "docs/requirements/EDU-FRD.md", "docs/requirements/NFR.md",
     "docs/README.md", "docs/company/PLATFORM-BLUEPRINT.md",
     "docs/company/PLATFORM-POLICIES.md", "docs/company/SUBSCRIPTION-MODEL.md",
     "docs/company/AI-IMPLEMENTATION-STRATEGY.md",
@@ -34,7 +34,7 @@ REQUIRED = [
     "docs/requirements/README.md", "docs/requirements/PLATFORM-FRD.md",
     "docs/products/README.md", "docs/products/AGRI-MARKET.md",
     "docs/products/COMMODITY-MARKET.md",
-    "docs/products/JOBS.md", "docs/products/SERVICES-MARKET.md",
+    "docs/products/hr/README.md", "docs/products/SERVICES-MARKET.md",
     "docs/architecture/ARCHITECTURE.md", "docs/architecture/TECH-STACK.md",
     "docs/architecture/COMPANY-PLATFORM-ARCHITECTURE.md",
     "docs/architecture/COMPANY-TECH-STACK.md",
@@ -111,7 +111,7 @@ def check_docs(errors: list[str]) -> None:
         elif not path.read_bytes().strip():
             errors.append(f"Empty: {relative}")
 
-    frd = ROOT / "docs/requirements/LMS-FRD.md"
+    frd = ROOT / "docs/requirements/EDU-FRD.md"
     if frd.is_file():
         text = frd.read_text(encoding="utf-8")
         ids = re.findall(r"(?m)^\*\*(FR-[A-Z]+-\d{3,4})", text)

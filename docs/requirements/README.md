@@ -11,8 +11,9 @@ Product charter (docs/products/)                           problem, scope, exclu
         │
 FRD                                                        what the system must do (this standard)
   ├── Platform FRD   docs/requirements/PLATFORM-FRD.md      website, identity, trust, policies, orgs, plans, KYC, payments, notifications
-  └── Product FRDs   docs/requirements/LMS-FRD.md           Oxinov Edu; one FRD per product plane
-                     docs/requirements/<PRODUCT>-FRD.md     created when a product passes its release gate
+  └── Product FRDs   docs/requirements/EDU-FRD.md           Oxinov Edu (`lms` is its internal technical slug)
+                     docs/requirements/HR-FRD.md            Unified HR and direct hiring
+                     docs/requirements/<PRODUCT>-FRD.md     created when another product passes its release gate
         │
 NFR (docs/requirements/NFR.md) and acceptance criteria     how well, and how we prove it
         │
@@ -34,7 +35,7 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 
 | Block | Areas | FRD | Owner |
 | --- | --- | --- | --- |
-| 101–1799 | AUTH, COURSE, CATALOG, PLAYER, ASSESS, CERT, COMM, ANALYTICS, LANG, SSW, IT, EXAM, CHAT, MGMT, MOBILE, TENANT, AI | [Oxinov Edu FRD](LMS-FRD.md) | LMS product owner |
+| 101–1799 | AUTH, COURSE, CATALOG, PLAYER, ASSESS, CERT, COMM, ANALYTICS, LANG, SSW, IT, EXAM, CHAT, MGMT, MOBILE, TENANT, AI | [Oxinov Edu FRD](EDU-FRD.md) | Edu product owner |
 | 2101–2199 | SITE | [Platform FRD](PLATFORM-FRD.md) | Company website owner |
 | 2201–2299 | ID | Platform FRD | Identity owner |
 | 2301–2399 | TRUST | Platform FRD | Identity owner |
@@ -49,9 +50,9 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 | 3201–3299 | PRIV | Platform FRD | Privacy owner |
 | 3301–3399 | OPS | Platform FRD | Operations owner |
 | 5000–5999 | MKT | Commodity Market FRD (after release gate) | Commodity Market owner |
-| 6000–6999 | JOB | [Jobs FRD](JOBS-FRD.md) | Jobs owner |
+| 6000–6999 | JOB | [Oxinov HR FRD](HR-FRD.md), direct-hiring module (retained IDs) | HR product owner |
 | 7000–7999 | SVC | Services Market FRD (after release gate) | Services Market owner |
-| 8000–8499 | HR | [Oxinov HR FRD](HR-FRD.md) (draft, not approved) | HR product owner |
+| 8000–8499 | HR | [Oxinov HR FRD](HR-FRD.md), managed-recruitment module (proposed) | HR product owner |
 | 8500–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
 
 LMS areas keep their historical numbers. New LMS requirements continue in the LMS block.

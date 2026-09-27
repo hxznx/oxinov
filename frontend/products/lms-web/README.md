@@ -1,6 +1,6 @@
 # Oxinov Edu web app (`edu.oxinov.com`)
 
-Next.js 16 app for learners, instructors, and school administrators ([Oxinov Edu FRD](../../../docs/requirements/LMS-FRD.md)). It signs people in with their one Oxinov account through [`@oxinov/web-auth`](../../../packages/web-auth/README.md) (client `oxinov-edu-web`, tokens for the `oxinov-lms-api` audience only) and calls the Edu API (`backend/products/lms-api`) from the server. The browser never sees tokens and never calls the API directly; the API enforces tenant membership, roles, and course entitlement on every request.
+Next.js 16 app for learners, instructors, and school administrators ([Oxinov Edu FRD](../../../docs/requirements/EDU-FRD.md)). It signs people in with their one Oxinov account through [`@oxinov/web-auth`](../../../packages/web-auth/README.md) (client `oxinov-edu-web`, tokens for the `oxinov-lms-api` audience only) and calls the Edu API (`backend/products/lms-api`) from the server. The browser never sees tokens and never calls the API directly; the API enforces tenant membership, roles, and course entitlement on every request.
 
 ## What works today
 

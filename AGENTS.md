@@ -13,7 +13,7 @@ The monorepo of **Oxinov Pvt. Ltd.**, organized as **company website → Oxinov 
 | Company website | `oxinov.com` | Live (S3 + CloudFront); SEO in `frontend/company-web/src/seo` |
 | Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Identity (email code) and portal foundation live; gateway folder remains planned |
 | Oxinov Edu | `edu.oxinov.com` | Live, in development; must stay working |
-| Oxinov Jobs | `jobs.oxinov.com` | Approved 2026-09-27, in development ([record](docs/products/jobs/README.md), [FRD](docs/requirements/JOBS-FRD.md)); not public until its release gate closes |
+| Oxinov HR | `hr.oxinov.com` | Candidate unified HR product: managed recruitment plus the approved direct-hiring requirements; not built or public ([record](docs/products/hr/README.md), [FRD](docs/requirements/HR-FRD.md), ADR-024) |
 | Commodity Market, Services Market | `market.`, `services.oxinov.com` | Draft charters only; do not scaffold |
 
 Do not claim that an application, deployment, or integration works unless it was executed and verified. What is verified today is recorded in [current state](docs/architecture/CURRENT-STATE.md); update it in the same change as any runtime, data, security, or cost change.
@@ -58,7 +58,7 @@ Start with [docs/README.md](docs/README.md), the documentation map. Then read wh
 | Deployment, Kubernetes, the server | [production runbook](devops/kubernetes/README.md), [CI/CD](docs/devops/CI-CD.md), [rollback](docs/devops/ROLLBACK.md), [backup and recovery](docs/devops/BACKUP-RECOVERY.md), [service catalog](docs/engineering/SERVICE-CATALOG.md) |
 | Logging, metrics, alerts | [observability](docs/devops/OBSERVABILITY.md), [logging](docs/engineering/LOGGING.md), [SOC](docs/security/SOC.md) |
 | Platform feature (sign-in, trust, policies, plans, payments, KYC, portal) | [Platform FRD](docs/requirements/PLATFORM-FRD.md), [identity and access](docs/architecture/IDENTITY-AND-ACCESS.md), [policies](docs/company/PLATFORM-POLICIES.md), [subscription model](docs/company/SUBSCRIPTION-MODEL.md) |
-| Oxinov Edu feature | [Edu product record](docs/products/lms/README.md), [LMS FRD](docs/requirements/LMS-FRD.md), [NFR](docs/requirements/NFR.md), [LMS architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
+| Oxinov Edu feature | [Edu product record](docs/products/lms/README.md), [Edu FRD](docs/requirements/EDU-FRD.md), [NFR](docs/requirements/NFR.md), [Edu architecture](docs/architecture/ARCHITECTURE.md), [current code structure](docs/engineering/PROJECT-STRUCTURE.md) |
 | Other product | Its charter in [docs/products/](docs/products/README.md); build nothing until its release gate is approved |
 | Website or any UI | [brand](docs/design/BRAND.md), [design system](docs/design/DESIGN-SYSTEM.md), [accessibility](docs/design/ACCESSIBILITY.md), [user-centred product standard](docs/research/USER-CENTERED-PRODUCT-STANDARD.md) |
 | AI feature | [AI strategy](docs/company/AI-IMPLEMENTATION-STRATEGY.md), [AI architecture](docs/architecture/AI-PLATFORM-ARCHITECTURE.md), [AI governance](docs/security/AI-GOVERNANCE.md), [AI roadmap](docs/planning/AI-IMPLEMENTATION-ROADMAP.md) |

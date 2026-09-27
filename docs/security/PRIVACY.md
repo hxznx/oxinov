@@ -11,7 +11,7 @@ Oxinov Pvt. Ltd. is responsible for personal data processed by the Oxinov platfo
 | KYC (T3/T4) | Citizenship or passport images, date of birth, address, business registration and PAN documents, reviewer decisions | Verify sellers, providers, employers, and payout recipients |
 | Oxinov Edu | Enrollment, progress, exam attempts and results, assignments, chat, certificates | Deliver learning |
 | Commodity Market | Listings, orders, RFQs, escrow records, delivery locations, inspection reports, vehicle and machinery ownership documents, messages, reviews | Operate the commodity and second-hand marketplace |
-| Jobs | Candidate profile, CV, employment history, applications, employer messages | Match candidates and employers |
+| Oxinov HR | Candidate profile, CV, employment history, direct applications, managed-recruitment consent, engagement messages, and deployment documents | Match candidates and employers and operate consented recruitment engagements |
 | Services Market | Service demands, bookings, service addresses, messages, reviews | Operate the services marketplace |
 
 ## Rules

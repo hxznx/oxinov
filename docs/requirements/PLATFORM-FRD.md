@@ -348,7 +348,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 | --- | --- |
 | Oxinov Edu | FR-ID-2201–2208, FR-PLAN-2602–2605, FR-PAY-2701–2702, FR-POLICY-2403 (instructors), FR-PORTAL-3102 |
 | Oxinov Commodity Market | FR-TRUST-2302–2304, FR-POLICY-2403, FR-PAY-2701–2703, FR-KYC-2801–2803, FR-MSG-3001–3002 |
-| Oxinov Jobs | FR-TRUST-2302, FR-KYC-2802, FR-POLICY-2403, FR-MSG-3001–3002 |
+| Oxinov HR (managed recruitment and direct hiring) | FR-TRUST-2302–2304, FR-KYC-2801–2802, FR-POLICY-2403, FR-PAY-2701–2702, FR-MSG-3001–3002 |
 | Oxinov Services Market | FR-TRUST-2302–2304, FR-KYC-2801–2802, FR-PAY-2701–2702, FR-MSG-3001–3002 |
 
 ## 5. Open decisions

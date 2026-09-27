@@ -40,4 +40,4 @@
 | 2 | Shared KYC (T3/T4), SMS verification (T2), messaging, and reviews primitives | Trust-level enforcement tests; audited reviewer workflow | Engineering |
 | 2 | Staging and preview environments ([DevOps roadmap](../devops/ROADMAP.md) Phase 4) | A bad commit is stopped before production | Engineering |
 | 2 | SIEM detections and incident routing ([SOC](../security/SOC.md)) | Synthetic findings routed; three runbook exercises | Engineering |
-| 3 | Oxinov Commodity Market, Jobs, and Services Market, each after its release gate | Approved charter; journeys pass end to end; per-plane Helm release (ADR-019) | Founder, engineering |
+| 3 | Unified Oxinov HR after its release gate; Commodity Market and Services Market remain later candidates | Approved scope; journeys pass end to end; per-plane Helm release (ADR-019, ADR-024) | Founder, engineering |

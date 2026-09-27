@@ -5,7 +5,7 @@
 
 export type ThemeName = 'dark' | 'light';
 /** Internal product keys keep the `lms` prefix for Oxinov Edu (ADR-015). */
-export type ProductKey = 'lms' | 'market' | 'jobs' | 'services' | 'ai';
+export type ProductKey = 'lms' | 'hr' | 'market' | 'services' | 'ai';
 
 export interface ThemeColors {
   bg: string;
@@ -48,7 +48,7 @@ export const themes: Record<ThemeName, ThemeColors> = {
     product: {
       lms: '#B388FF',
       market: '#39FF14',
-      jobs: '#FF8A00',
+      hr: '#FF8A00',
       services: '#3D8BFF',
       ai: '#FF3EEC',
     },
@@ -73,7 +73,7 @@ export const themes: Record<ThemeName, ThemeColors> = {
     product: {
       lms: '#6B2FD6',
       market: '#2E7D0B',
-      jobs: '#B34700',
+      hr: '#B34700',
       services: '#1F5FD1',
       ai: '#B0128F',
     },

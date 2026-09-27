@@ -14,7 +14,7 @@ Content is what ranks. Technical SEO only makes sure search engines can read it.
 | 4 | Online classroom for small schools | LMS for small schools | Costs, setup time, what a school needs | Planned |
 | 5 | Oxinov Edu vs Moodle | Moodle alternative | Same format as #2 | Planned |
 
-The other products have pages too (`/products/commodity-market/`, `/products/jobs/`, `/products/services-market/`) that describe planned features and say clearly that they are not open yet. Product copy, features, and FAQs live in `products` in `src/content/site.ts`; list only features that work today for a product people can use.
+The other products have pages too (`/products/hr/`, `/products/commodity-market/`, `/products/services-market/`) that describe planned features and say clearly that they are not open yet. Product copy, features, and FAQs live in `products` in `src/content/site.ts`; list only features that work today for a product people can use.
 
 Each new page follows the [new page checklist](checklist.md#new-public-page).
 

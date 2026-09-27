@@ -173,7 +173,7 @@ Every release identifies which of these journeys changed and attaches research a
 | Oxinov Edu | Discover a course, understand price and access, enroll/pay, resume learning, complete practice/exam/assignment, understand results, verify certificate |
 | LMS creator/admin | Create workspace, invite staff, author and submit, review/publish, support learner, understand payments and tenant status |
 | Commodity Market | Discover and compare an item, understand seller/condition/inspection, list, order, verify payment or escrow state, arrange completion, dispute and review |
-| Oxinov Jobs | Discover a suitable job, create profile, understand match, apply, track status, message safely; employer verifies, posts, reviews, and decides |
+| Oxinov HR | Find a verified HR professional or direct job, consent to representation, create a profile, understand a match, apply, track status, message safely; employer verifies, posts, reviews, and decides |
 | Services Market | Discover a provider, post a need, compare quote, book, pay, track completion, dispute and review; provider verifies and responds |
 | AI-assisted work | Understand what AI will do, inspect sources and uncertainty, preview exact changes, confirm or reject, edit manually, report a problem |
 
@@ -269,4 +269,3 @@ This is an Oxinov operating standard, not a claim of external certification. It 
 - [GOV.UK user research guidance](https://www.gov.uk/service-manual/user-research/how-user-research-improves-service-design) for inclusive, continuous research with real users;
 - [GOV.UK usability benchmarking guidance](https://www.gov.uk/service-manual/measuring-success/usability-benchmarking-a-website-or-whole-service) for task success, time, ease, confidence, and repeated benchmarking; and
 - [Google's Web Vitals guidance](https://web.dev/articles/vitals) for current LCP, INP, and CLS responsiveness thresholds.
-

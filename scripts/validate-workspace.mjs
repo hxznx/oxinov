@@ -38,13 +38,13 @@ if (lmsManifest.name !== '@oxinov/lms-api') {
 
 for (const forbidden of [
   'frontend/products/market-web',
-  'frontend/products/jobs-web',
+  'frontend/products/hr-web',
   'frontend/products/services-web',
   'backend/products/market-api',
-  'backend/products/jobs-api',
+  'backend/products/hr-api',
   'backend/products/services-api',
   'database/products/market',
-  'database/products/jobs',
+  'database/products/hr',
   'database/products/services',
 ]) {
   if (existsSync(join(root, forbidden))) {

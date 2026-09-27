@@ -13,7 +13,7 @@ Retention periods are product and legal decisions for each launch region. The pe
 | KYC documents (images) | Platform | Rejected: 90 days after decision. Approved: while the verified role is active plus the legally required period; then delete images and keep only status, reviewer, and decision date |
 | Orders, bookings, payments, refunds, invoices | Product and platform ledger | As required by Nepal tax and accounting law |
 | Marketplace messages | Product | 2 years after the related order, booking, or application closes, unless held for a dispute |
-| Job applications and CVs | Jobs | 12 months after the posting closes, unless the candidate opts into a longer talent pool |
+| Direct job applications and CVs | Oxinov HR | 12 months after the posting closes, unless a documented legal hold or separate, expiring talent-pool consent applies |
 | Listings, service offers, job postings | Product | Life of account; archived listings 2 years |
 | Reviews | Product | Life of the reviewed profile; reviewer identity removed on account deletion |
 | LMS recordings, exams, results, certificates | LMS | Per tenant owner settings and LMS requirements |

@@ -1,6 +1,6 @@
 # Non-functional requirements
 
-**Source:** Oxinov Edu FRD v1.3. Related: [FRD](LMS-FRD.md), [security](../security/SECURITY.md), and [deployment](../devops/DEPLOYMENT.md).
+**Source:** Oxinov Edu FRD. Related: [FRD](EDU-FRD.md), [security](../security/SECURITY.md), and [deployment](../devops/DEPLOYMENT.md).
 
 ## Requirements
 

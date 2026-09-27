@@ -40,7 +40,7 @@
 | Rotation of secrets committed to Flo Softwares repositories | `.env` files and test credentials were found in those repositories; any live value must be treated as compromised. |
 | Marketplace payment model: direct provider payment, licensed escrow, or payouts | Holding customer funds or operating a wallet may require Nepal Rastra Bank authorization; determines Commodity Market escrow and Services Market checkout. |
 | Nepal e-commerce registration and consumer protection obligations | Applies to Commodity Market and Services Market before public launch. |
-| Foreign employment licensing | Required if Oxinov Jobs or Oxinov Edu ever arranges overseas placements such as Japan SSW. |
+| Foreign employment licensing | Required before Oxinov HR arranges overseas placements; Oxinov Edu training alone is not placement. |
 | KYC provider, reviewer staffing, and document retention | Determines T3/T4 verification speed, cost, privacy risk, and seller or employer onboarding time. |
 | SMS provider for phone verification in Nepal | Required for trust level T2 before messaging, orders, bookings, or applications. |
 | Email one-time-code sign-in implementation in Keycloak | May require a reviewed extension or custom authenticator (ADR-011). |

@@ -25,13 +25,13 @@ People and businesses in Nepal find local service providers through word of mout
 ## Out of scope for the first release
 
 - Real estate listings, transport services, entertainment bookings, product listings, and public resources found in the source concept. Each needs its own product decision.
-- Job postings (owned by Oxinov Jobs) and courses, class bookings, exams, and certifications (owned by Oxinov Edu).
+- Job postings and recruitment (owned by Oxinov HR) and courses, class bookings, exams, and certifications (owned by Oxinov Edu).
 - Oxinov's own consulting and engineering client projects, which remain a module of the account portal.
 - Its own login, OTP, KYC, notifications, or payment code.
 
 ## Reuse from the source concept
 
-Reuse as reference: `Service`, `ServiceCategory`, `ServiceSubcategory`, `ServiceDemand`, `ServiceDemandResponse`, `ServiceBooking`, `ServiceReview`, `ServiceReport`, and provider and seeker statistics; seeker and admin dashboard screens. Replace with platform services: `User`, `OTP`, `RefreshToken`, `IndividualKYC`, `IndustrialKYC`, `PaymentMethod`, `PaymentTransaction`, `Notification`, and `Conversation`/`Message`. Move learning models to Oxinov Edu and job models to Oxinov Jobs.
+Reuse as reference: `Service`, `ServiceCategory`, `ServiceSubcategory`, `ServiceDemand`, `ServiceDemandResponse`, `ServiceBooking`, `ServiceReview`, `ServiceReport`, and provider and seeker statistics; seeker and admin dashboard screens. Replace with platform services: `User`, `OTP`, `RefreshToken`, `IndividualKYC`, `IndustrialKYC`, `PaymentMethod`, `PaymentTransaction`, `Notification`, and `Conversation`/`Message`. Move learning models to Oxinov Edu and job or recruitment models to Oxinov HR.
 
 ## Product plane
 
