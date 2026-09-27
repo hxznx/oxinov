@@ -115,9 +115,9 @@ jobs:
           { echo "context=$context"; echo "file=$file"; echo "ignore=$ignore"; } >> "$GITHUB_OUTPUT"
           echo "target=$target" >> "$GITHUB_OUTPUT"
           echo "image=$REGISTRY/oxinov/${{ matrix.service }}:$RELEASE_SHA" >> "$GITHUB_OUTPUT"
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Build ${{ matrix.service }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ${{ steps.recipe.outputs.context }}
           file: ${{ steps.recipe.outputs.file }}
