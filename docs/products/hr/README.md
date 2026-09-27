@@ -21,7 +21,7 @@ Structure follows the [company library standard](../../engineering/COMPANY-LIBRA
 
 HR professionals with real skills and experience work in every country, and companies search for them all the time, but there is no authenticated platform where companies can trust who they are hiring and collaborate with them. Oxinov HR verifies HR professionals and agencies (identity, credentials, licences, and a placement record that only counts confirmed placements), lets companies anywhere find them by skill, sector, role type, country, and experience, and gives both one workspace to take candidates from CV to deployment, with candidate consent, fair-recruitment rules, and milestone payments.
 
-The former Oxinov Jobs scope is now HR's direct-hiring module: verified employers publish Nepal jobs and candidates apply directly under `hr.oxinov.com/jobs`. It shares the HR service and database boundary but keeps explicit permissions between direct applications and professional-managed engagements (ADR-024). There is no standalone Jobs product or `jobs.oxinov.com` release.
+The former Oxinov Jobs scope is now HR's direct-hiring module: verified employers publish Nepal jobs and candidates apply directly under `hr.oxinov.com/jobs`. It shares the HR service and database boundary but keeps explicit permissions between direct applications and professional-managed engagements (ADR-025). There is no standalone Jobs product or `jobs.oxinov.com` release.
 
 ## Product documents
 

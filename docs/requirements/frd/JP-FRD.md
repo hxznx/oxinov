@@ -4,7 +4,7 @@
 **Status:** Proposed discovery draft; product definition requires owner validation  
 **Product address:** To be decided after release gate  
 **Technical slug:** `jp` (reserved; not authorized for scaffolding)  
-**Source:** Owner direction of 2026-09-28, Platform Blueprint, Edu and HR product boundaries, and ADR-025
+**Source:** Owner direction of 2026-09-28, Platform Blueprint, Edu and HR product boundaries, and ADR-026
 
 ## 1. Purpose and scope
 
@@ -32,22 +32,22 @@ JP reuses Platform identity, consent, trust, organizations, notifications, messa
 ### 4.1 Guidance and journey planning
 
 **FR-JP-8601 — Goal-based journey.** A member must be able to select a lawful goal such as language study, skills preparation, education exploration, or employment exploration and receive a versioned checklist with prerequisites, responsible party, evidence type, and official source.
-*Priority:* Must. *Status:* Proposed. *Access:* T1 owner scope. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* T1 owner scope. *Source:* ADR-026.
 - Acceptance: The checklist identifies assumptions, last-reviewed date, source, and which steps are optional or authority-controlled.
 - Acceptance: The portal does not present an uncertain, expired, or unofficial rule as guaranteed current law.
 
 **FR-JP-8602 — Official-source guidance.** Public guidance must cite the responsible Japanese or local authority, source URL, reviewed date, applicable route, language availability, and a plain-language disclaimer.
-*Priority:* Must. *Status:* Proposed. *Access:* T0 reads; authorized content reviewer writes. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* T0 reads; authorized content reviewer writes. *Source:* ADR-026.
 - Acceptance: A visitor can reach the cited primary source and see when Oxinov last reviewed the summary.
 - Acceptance: Guidance with a failed review date or withdrawn source is marked stale and excluded from decisive checklists.
 
 **FR-JP-8603 — Change alerts.** Members may follow selected guidance topics and receive material-change notices with the old and new reviewed summary and effective date.
-*Priority:* Should. *Status:* Proposed. *Access:* T1 owner scope. *Source:* ADR-025.
+*Priority:* Should. *Status:* Proposed. *Access:* T1 owner scope. *Source:* ADR-026.
 - Acceptance: A subscriber receives only opted-in, material guidance changes and can unsubscribe.
 - Acceptance: The system does not infer legal eligibility or send promotional messages under a guidance subscription.
 
 **FR-JP-8604 — Readiness self-check.** Members may complete a non-decisive self-check for language, skills, education, documentation, timing, and budget readiness and receive explainable gaps and official next steps.
-*Priority:* Should. *Status:* Proposed. *Access:* T1 owner scope. *Source:* ADR-025.
+*Priority:* Should. *Status:* Proposed. *Access:* T1 owner scope. *Source:* ADR-026.
 - Acceptance: Results clearly state that they are guidance, show inputs used, and allow correction or deletion.
 - Acceptance: The self-check cannot approve immigration, employment, admission, certification, or financial eligibility.
 
@@ -81,12 +81,12 @@ JP reuses Platform identity, consent, trust, organizations, notifications, messa
 - Acceptance: Public links, unscanned files, expired grants, and unrelated staff cannot access documents.
 
 **FR-JP-8622 — Appointment booking.** Members may request available appointments with approved advisers or partners, with service description, price if any, time zone, language, cancellation terms, and role disclaimer.
-*Priority:* Should. *Status:* Proposed. *Access:* T2 member and approved partner. *Source:* ADR-025.
+*Priority:* Should. *Status:* Proposed. *Access:* T2 member and approved partner. *Source:* ADR-026.
 - Acceptance: Confirmation preserves the service, provider, price, schedule, terms, and participant time zones.
 - Acceptance: Concurrent requests cannot double-book capacity, and an unapproved partner cannot receive bookings.
 
 **FR-JP-8623 — Partner directory and verification.** JP operations must maintain partner legal identity, service category, territory, licence or registration evidence where required, conflicts, status, review date, and complaint route.
-*Priority:* Must before referrals. *Status:* Proposed. *Access:* Operations writes; T0 reads approved claims. *Source:* ADR-025.
+*Priority:* Must before referrals. *Status:* Proposed. *Access:* Operations writes; T0 reads approved claims. *Source:* ADR-026.
 - Acceptance: Users can distinguish Oxinov, government, employer, school, recruiter, translator, and independent adviser roles.
 - Acceptance: Expired or suspended partners cannot receive new referrals or appear as currently verified.
 
@@ -98,7 +98,7 @@ JP reuses Platform identity, consent, trust, organizations, notifications, messa
 ### 4.4 Safety, money, and records
 
 **FR-JP-8630 — Fee and claim transparency.** Every paid or partner-provided service must disclose provider, scope, fee and currency, taxes, refund terms, government fees versus service fees, and claims the provider is prohibited from making.
-*Priority:* Must. *Status:* Proposed. *Access:* T0 for offered services. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* T0 for offered services. *Source:* ADR-026.
 - Acceptance: A user can distinguish an official fee from an Oxinov or partner service fee before payment.
 - Acceptance: No page or message may guarantee a visa, job, admission, exam result, salary, or processing time.
 

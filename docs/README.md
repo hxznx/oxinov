@@ -58,7 +58,7 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 | --- | --- | --- |
 | [Oxinov Edu](products/lms/README.md) | `edu.oxinov.com` | [Product record](products/lms/README.md), [brief](products/lms/BRIEF.md), [PRD](products/lms/PRD.md), [FRD](requirements/frd/EDU-FRD.md), [NFR](requirements/NFR.md), [Edu architecture](architecture/ARCHITECTURE.md), [Edu tech stack](architecture/TECH-STACK.md), [Edu roadmap](planning/ROADMAP.md), [acceptance criteria](planning/ACCEPTANCE-CRITERIA.md), [user flows](design/USER-FLOWS.md), [Edu UI and UX](design/UI-UX.md), [ERD](data/ERD.md), [current code structure](engineering/PROJECT-STRUCTURE.md) |
 | [Oxinov Market](products/COMMODITY-MARKET.md) | `market.oxinov.com` | [Commodity Market charter](products/COMMODITY-MARKET.md), [proposed FRD](requirements/frd/MARKET-FRD.md) ([Agri Market](products/AGRI-MARKET.md) superseded) |
-| [Oxinov HR](products/hr/README.md) | `hr.oxinov.com` | [Product record](products/hr/README.md), [unified HR and direct-hiring FRD](requirements/frd/HR-FRD.md); standalone Jobs was merged by ADR-024 |
+| [Oxinov HR](products/hr/README.md) | `hr.oxinov.com` | [Product record](products/hr/README.md), [unified HR and direct-hiring FRD](requirements/frd/HR-FRD.md); standalone Jobs was merged by ADR-025 |
 | Oxinov Services Market | `services.oxinov.com` | [Charter](products/SERVICES-MARKET.md), [proposed FRD](requirements/frd/SERVICES-MARKET-FRD.md) |
 | Oxinov Studio | Future | [Proposed FRD](requirements/frd/STUDIO-FRD.md) |
 | Oxinov JP | To be decided | [Proposed FRD](requirements/frd/JP-FRD.md); definition requires owner validation |

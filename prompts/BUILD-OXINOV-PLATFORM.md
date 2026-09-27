@@ -29,7 +29,7 @@ Context:
 - Oxinov Edu is the first Oxinov product and its current code must remain functional.
 - The platform needs one company website, one Oxinov identity, one account portal, shared organizations and product entitlements, and independently owned product planes.
 - Use oxinov.com for the company site, app.oxinov.com for the account portal, id.oxinov.com for OIDC identity, api.oxinov.com for the API gateway, and edu.oxinov.com for Oxinov Edu.
-- Oxinov HR (`hr.oxinov.com`, ADR-024) is the second product module and combines managed recruitment with the former direct-hiring Jobs scope. Commodity Market and Services Market remain future candidates. Each product gets its own frontend, backend, and database only after its release gate is approved.
+- Oxinov HR (`hr.oxinov.com`, ADR-025) is the second product module and combines managed recruitment with the former direct-hiring Jobs scope. Commodity Market and Services Market remain future candidates. Each product gets its own frontend, backend, and database only after its release gate is approved.
 - Future AI, engineering, robotics, IoT, media, research, and space products are roadmap items. Do not create empty services for them.
 - One Oxinov account works across all products. Customers sign in with Continue with Google or an email one-time code, never a password, and higher-risk actions require trust levels and policy acceptance (ADR-011).
 

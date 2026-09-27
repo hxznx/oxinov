@@ -4,7 +4,7 @@
 **Status:** Proposed discovery draft; release gate remains closed  
 **Product address:** `market.oxinov.com` after approval  
 **Technical slug:** `market`  
-**Source:** [Commodity Market charter](../../products/COMMODITY-MARKET.md), ADR-010, ADR-013, and ADR-025
+**Source:** [Commodity Market charter](../../products/COMMODITY-MARKET.md), ADR-010, ADR-013, and ADR-026
 
 ## 1. Purpose and scope
 

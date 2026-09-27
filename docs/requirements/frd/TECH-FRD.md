@@ -4,7 +4,7 @@
 **Status:** Proposed discovery draft; product definition requires owner validation  
 **Product address:** Client portal module in `app.oxinov.com` unless a later ADR approves a product plane  
 **Technical slug:** `tech` (reserved; not authorized for scaffolding)  
-**Source:** Platform Blueprint Engineering and Services candidates and ADR-025
+**Source:** Platform Blueprint Engineering and Services candidates and ADR-026
 
 ## 1. Purpose and scope
 
@@ -38,24 +38,24 @@ Tech reuses Platform identity, organizations, policy acceptance, plans, payments
 - Acceptance: An unauthorized user cannot publish a service or remove its legal, security, or capacity prerequisite.
 
 **FR-TECH-8702 — Client intake.** An authorized organization member must be able to submit a private request with business outcome, current environment, users, constraints, desired date, budget range, data classification, compliance needs, and safe attachments.
-*Priority:* Must. *Status:* Proposed. *Access:* T2 organization member. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* T2 organization member. *Source:* ADR-026.
 - Acceptance: A valid request receives an owner-visible reference, triage state, and expected next step.
 - Acceptance: Secret values, malware, unsupported files, or a member without organization authority are rejected with safe guidance.
 
 **FR-TECH-8703 — Discovery and risk assessment.** The delivery lead must record assumptions, dependencies, architecture or security constraints, data access, third parties, feasibility, delivery risks, and a proceed, revise, refer, or decline outcome.
-*Priority:* Must. *Status:* Proposed. *Access:* Assigned delivery team; client sees approved summary. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Assigned delivery team; client sees approved summary. *Source:* ADR-026.
 - Acceptance: The client sees the information and approvals required before a proposal.
 - Acceptance: A declined or unsafe request cannot become active work without a new authorized review.
 
 **FR-TECH-8704 — Proposal and statement of work.** A proposal must specify outcomes, deliverables, acceptance criteria, responsibilities, milestones, schedule, price and currency, taxes, assumptions, exclusions, support, security, data handling, IP terms, and validity.
-*Priority:* Must. *Status:* Proposed. *Access:* Assigned delivery and finance roles; client approver reads. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Assigned delivery and finance roles; client approver reads. *Source:* ADR-026.
 - Acceptance: The client can compare the current proposal with its intake and review all material terms before acceptance.
 - Acceptance: An expired, superseded, incomplete, or unauthorized proposal cannot start a project.
 
 ### 4.2 Project delivery
 
 **FR-TECH-8710 — Project authorization.** Work may begin only after an authorized client accepts the exact proposal, required policies and agreements, and any prerequisite payment or access plan.
-*Priority:* Must. *Status:* Proposed. *Access:* Client approver and delivery lead. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Client approver and delivery lead. *Source:* ADR-026.
 - Acceptance: One confirmed action creates one project baseline and audit record.
 - Acceptance: A requester without authority, duplicate request, or unmet prerequisite cannot authorize work.
 
@@ -75,12 +75,12 @@ Tech reuses Platform identity, organizations, policy acceptance, plans, payments
 - Acceptance: Shared credentials, indefinite access, access without named approval, and secrets pasted into the portal are prohibited.
 
 **FR-TECH-8714 — Change control.** Material scope, architecture, security, schedule, price, or data changes must be proposed with impact and accepted by authorized roles before execution.
-*Priority:* Must. *Status:* Proposed. *Access:* Client approver and delivery lead. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Client approver and delivery lead. *Source:* ADR-026.
 - Acceptance: An accepted change creates a numbered baseline and preserves previous decisions.
 - Acceptance: Specialists and commenters cannot authorize commercial or risk acceptance changes.
 
 **FR-TECH-8715 — Acceptance and handover.** Deliverables must be tested against agreed criteria and handed over with results, exceptions, documentation, ownership, training where included, backup or rollback information, warranty or support terms, and client decision.
-*Priority:* Must. *Status:* Proposed. *Access:* Delivery lead and client approver. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Delivery lead and client approver. *Source:* ADR-026.
 - Acceptance: Acceptance records the exact deliverable versions, test evidence, approver, UTC time, and known exceptions.
 - Acceptance: Download, silence, or an internal completion flag does not constitute client acceptance unless the agreement explicitly provides a lawful process.
 
@@ -97,7 +97,7 @@ Tech reuses Platform identity, organizations, policy acceptance, plans, payments
 - Acceptance: Sensitive vulnerability details are not exposed to ordinary project members or public notifications.
 
 **FR-TECH-8722 — Service reporting.** Clients must receive agreement-scoped reports for delivery status, support volume, response and resolution performance, availability only when measured and contracted, changes, risks, costs, and recommendations.
-*Priority:* Should. *Status:* Proposed. *Access:* Client organization and assigned delivery roles. *Source:* ADR-025.
+*Priority:* Should. *Status:* Proposed. *Access:* Client organization and assigned delivery roles. *Source:* ADR-026.
 - Acceptance: Reports identify measurement source, period, time zone, exclusions, and whether a value is measured, estimated, or unavailable.
 - Acceptance: The system does not invent uptime, compliance, security, or savings claims and never exposes another client.
 

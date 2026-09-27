@@ -4,7 +4,7 @@
 **Status:** Proposed discovery draft; release gate remains closed  
 **Product address:** `services.oxinov.com` after approval  
 **Technical slug:** `services`  
-**Source:** [Services Market charter](../../products/SERVICES-MARKET.md), ADR-010, and ADR-025
+**Source:** [Services Market charter](../../products/SERVICES-MARKET.md), ADR-010, and ADR-026
 
 ## 1. Purpose and scope
 

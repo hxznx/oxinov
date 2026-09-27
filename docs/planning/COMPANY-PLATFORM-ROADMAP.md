@@ -40,7 +40,7 @@
 
 ## Phase 5 Additional product pilots
 
-- Deliver the current product modules one at a time: Oxinov Edu first, then unified [Oxinov HR](../products/hr/README.md) when its release gate closes. Commodity Market and Services Market remain future candidates (ADR-010, ADR-024).
+- Deliver the current product modules one at a time: Oxinov Edu first, then unified [Oxinov HR](../products/hr/README.md) when its release gate closes. Commodity Market and Services Market remain future candidates (ADR-010, ADR-025).
 - Before the first of them: confirm written rights to the Flo Softwares code, designs, and names, and rotate secrets committed to those repositories.
 - Select any further product using customer evidence and company strategy.
 - Approve its product charter, product owner, budget, architecture boundary, regulatory assessment, data policy, and exit criteria.

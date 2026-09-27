@@ -13,7 +13,7 @@ The monorepo of **Oxinov Pvt. Ltd.**, organized as **company website → Oxinov 
 | Company website | `oxinov.com` | Live (S3 + CloudFront); SEO in `frontend/company-web/src/seo` |
 | Identity, account portal, API gateway | `id.`, `app.`, `api.oxinov.com` | Identity (email code) and portal foundation live; gateway folder remains planned |
 | Oxinov Edu | `edu.oxinov.com` | Live, in development; must stay working |
-| Oxinov HR | `hr.oxinov.com` | Candidate unified HR product: managed recruitment plus the approved direct-hiring requirements; not built or public ([record](docs/products/hr/README.md), [FRD](docs/requirements/frd/HR-FRD.md), ADR-024) |
+| Oxinov HR | `hr.oxinov.com` | Candidate unified HR product: managed recruitment plus the approved direct-hiring requirements; not built or public ([record](docs/products/hr/README.md), [FRD](docs/requirements/frd/HR-FRD.md), ADR-025) |
 | Oxinov Market, Services Market | `market.`, `services.oxinov.com` | Draft charters and proposed FRDs only; do not scaffold |
 | Oxinov Studio, JP, Tech | Future or undecided | Proposed discovery FRDs only; definitions and release gates remain open; do not scaffold |
 

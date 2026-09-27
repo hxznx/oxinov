@@ -47,7 +47,7 @@ List prices for Mumbai (ap-south-1) on 2026-09-26, not billed amounts. Replace t
 
 ## Rules for new spend
 
-- New products add workloads, never infrastructure: they share the one k3s node, PostgreSQL instance, Keycloak, and Traefik, and fit the CI-checked memory budget (ADR-022). Unified Oxinov HR replaces the previously planned separate Jobs workload and adds no infrastructure by itself (ADR-024).
+- New products add workloads, never infrastructure: they share the one k3s node, PostgreSQL instance, Keycloak, and Traefik, and fit the CI-checked memory budget (ADR-022). Unified Oxinov HR replaces the previously planned separate Jobs workload and adds no infrastructure by itself (ADR-025).
 - No always-on service without a roadmap trigger and the owner's approval; state its monthly cost in the plan shown before "yes apply".
 - Prefer serverless and pay-per-use (SNS, SQS, Lambda, S3) over always-on managed services at this scale.
 - Prefer a bundled component on the node (Traefik, the in-cluster PostgreSQL) until the roadmap moves it to a managed service.

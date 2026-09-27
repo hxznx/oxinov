@@ -10,7 +10,7 @@
 | `id.oxinov.com` | One Oxinov account (Keycloak, email one-time code) | Live; sign-in emails through Amazon SES (sandbox until production access is granted) |
 | `app.oxinov.com` | Account portal and product launcher (`platform-web`, `platform-api`) | Live, foundation only |
 | `edu.oxinov.com` | Oxinov Edu (`lms-web`, `lms-api`) | Live, in development: courses, video and audio lessons, timed quizzes and mock exams, assignments, notes, resources, class stream, join codes ([Edu web](../../frontend/products/lms-web/README.md)) |
-| `hr.oxinov.com` | Unified Oxinov HR: managed recruitment and direct hiring | Consolidated FRD and product record only; nothing is built or public until its unified release gate closes (ADR-024) |
+| `hr.oxinov.com` | Unified Oxinov HR: managed recruitment and direct hiring | Consolidated FRD and product record only; nothing is built or public until its unified release gate closes (ADR-025) |
 | `market.`, `services.oxinov.com` | Oxinov Market, Services Market | Draft charters and proposed FRDs only; nothing is built until each release gate is approved |
 | Future or undecided | Oxinov Studio, Oxinov JP, Oxinov Tech | Proposed discovery FRDs only; definitions and release gates remain open, with no runtime or production address |
 

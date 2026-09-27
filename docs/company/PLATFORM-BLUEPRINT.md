@@ -25,8 +25,8 @@ The control plane knows that a person or organization can use a product. It does
 | Oxinov company website | Explain the company, products, research, services, and contact routes | Public frontend with managed content | First |
 | Oxinov account portal | One login, organization switcher, product launcher, plans, invoices, support, and privacy controls | Shared control plane | First |
 | Oxinov Edu | Multi-tenant language, SSW, IT, exam, media, assignment, chat, and administration platform | First independent product plane | First |
-| [Oxinov HR](../products/hr/README.md) | Verified HR network, managed recruitment, direct job discovery, applications, and skill matching linked to Edu certificates | One unified `hr` product plane; direct hiring absorbs the former standalone Jobs plan (ADR-024) | Second product after Edu |
-| [Oxinov Market](../requirements/frd/MARKET-FRD.md) | Verified marketplace for agricultural produce, raw materials, commercial machinery, and circular second-hand goods | Independent `market` product plane; Commodity Market charter remains the source (ADR-010, ADR-013, ADR-025) | Proposed FRD; future candidate after HR |
+| [Oxinov HR](../products/hr/README.md) | Verified HR network, managed recruitment, direct job discovery, applications, and skill matching linked to Edu certificates | One unified `hr` product plane; direct hiring absorbs the former standalone Jobs plan (ADR-025) | Second product after Edu |
+| [Oxinov Market](../requirements/frd/MARKET-FRD.md) | Verified marketplace for agricultural produce, raw materials, commercial machinery, and circular second-hand goods | Independent `market` product plane; Commodity Market charter remains the source (ADR-010, ADR-013, ADR-026) | Proposed FRD; future candidate after HR |
 | [Oxinov Services Market](../requirements/frd/SERVICES-MARKET-FRD.md) | Book verified local service providers or post service needs | Independent `services` product plane; adopted Flo Softwares concept (ADR-010) | Proposed FRD; future candidate |
 | Oxinov AI | AI tools, model services, evaluation, and governed agent capabilities | Independent product; reuse identity, billing, audit, and AI gateway | After platform foundation |
 | [Oxinov Tech](../requirements/frd/TECH-FRD.md) | Software, cloud, networking, cybersecurity, consulting, and managed-service delivery | Begin as a client portal module; product plane requires a later ADR | Proposed definition; after platform foundation |
@@ -68,7 +68,7 @@ These are candidate product modules derived from the incorporation objectives. T
 | Education | Oxinov Edu | Courses, exams, assignments, certificates | In development (first product) |
 | Education | Oxinov Academy | Bootcamps and professional training programs | Education approvals where applicable |
 | Education | Virtual Labs | Online practice environments for robotics, IoT, networking, and cloud | |
-| Services / Education | [Oxinov HR direct hiring](../products/hr/README.md) | Jobs, internships, applications, verified recruiters, and skill matching | Unified HR module (ADR-024); absorbs the former Jobs plan and Internship and Fellowship Portal |
+| Services / Education | [Oxinov HR direct hiring](../products/hr/README.md) | Jobs, internships, applications, verified recruiters, and skill matching | Unified HR module (ADR-025); absorbs the former Jobs plan and Internship and Fellowship Portal |
 | AI | AI Studio | Business chat, document Q&A, and AI tools | Uses the shared AI gateway |
 | AI | Model Hub and AI API | Hosted vision, speech, and Nepali language models | |
 | AI | Data Labeling Platform | Dataset creation and annotation | Privacy and copyright review |
@@ -109,7 +109,7 @@ These are candidate product modules derived from the incorporation objectives. T
 | 1 | Company website, identity, and account portal | Every product depends on them |
 | 2 | Oxinov Edu | Existing product |
 | 3 | Oxinov Commodity Market | Most complete adopted concept; expanded to all commodities and circular second-hand trade (ADR-010) |
-| 4 | Oxinov HR | Connects Oxinov Edu graduates to employers and supports verified professional recruitment (ADR-024) |
+| 4 | Oxinov HR | Connects Oxinov Edu graduates to employers and supports verified professional recruitment (ADR-025) |
 | 5 | Oxinov Services Market | Reuses shared KYC, bookings, and payments (ADR-010) |
 | 6 | Client Project Portal | Services revenue for Oxinov's own consulting |
 | 7 | AI Studio and AI API | Market demand; reuses LMS content and the AI gateway |

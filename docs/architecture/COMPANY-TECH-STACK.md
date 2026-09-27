@@ -14,7 +14,7 @@
 | Identity | Keycloak 26 (OIDC) at `id.oxinov.com`, email one-time code, one account for every product (ADR-011, ADR-016) | Google and Apple sign-in, staff MFA, organizations |
 | Transaction data | PostgreSQL 18 in the cluster with Prisma 7 migrations and row-level security; one database and role pair per plane | Amazon RDS for PostgreSQL |
 | Cache, queues, realtime | None (ADR-021) | SQS workers first; Redis-compatible cache only for measured hot reads; WebSocket gateway for chat |
-| Events between products | None yet | Transactional outbox to SNS with an SQS queue per consumer, first for Edu certificates to Oxinov Jobs (trial T3) |
+| Events between products | None yet | Transactional outbox to SNS with an SQS queue per consumer, first for Edu certificates to Oxinov HR candidate profiles (trial T3) |
 | Files and media | Private S3 with presigned URLs; SeaweedFS locally | HLS delivery through CloudFront when needed (ADR-021) |
 | Search | PostgreSQL | OpenSearch only when search scale or analytics requires it |
 | Generative AI | None yet | Provider-neutral AI gateway with Amazon Bedrock first (ADR-014) |

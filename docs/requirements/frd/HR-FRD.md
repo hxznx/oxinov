@@ -2,7 +2,7 @@
 
 **Version:** 1.0 (consolidated HR and direct hiring)
 **Date:** 2026-09-28
-**Status:** Mixed. The managed-recruitment `FR-HR-*` scope remains Proposed; the direct-hiring `FR-JOB-*` scope retains its earlier owner approval but is now delivered only inside the unified HR product (ADR-024). Publication still requires the unified release gate in the [product record](../../products/hr/README.md).
+**Status:** Mixed. The managed-recruitment `FR-HR-*` scope remains Proposed; the direct-hiring `FR-JOB-*` scope retains its earlier owner approval but is now delivered only inside the unified HR product (ADR-025). Publication still requires the unified release gate in the [product record](../../products/hr/README.md).
 **Scope:** `hr.oxinov.com`: verified HR professionals and agencies, managed recruitment from CV to deployment, and direct job discovery and applications.
 **Standard:** [Oxinov requirements standard](../README.md). Number blocks **6000–6999** (`JOB`, retained IDs) and **8000–8499** (`HR`).
 
@@ -24,7 +24,7 @@ Oxinov HR solves this with three connected capabilities:
 
 Oxinov HR is global and English only (ADR-020). It is a candidate product plane on the Oxinov platform, and it relies on the platform for identity, trust levels, organizations, verification (KYC), notifications, messaging, payments, and policies.
 
-**Direct hiring boundary.** The former Oxinov Jobs product is merged into Oxinov HR (ADR-024). Direct employer-to-candidate hiring and professional-managed recruitment share the `hr` product plane and database, while remaining separate modules with explicit authorization boundaries. A candidate chooses whether to apply directly or consent to representation by an HR professional. No standalone `jobs` service, database, subdomain, or product entitlement is created.
+**Direct hiring boundary.** The former Oxinov Jobs product is merged into Oxinov HR (ADR-025). Direct employer-to-candidate hiring and professional-managed recruitment share the `hr` product plane and database, while remaining separate modules with explicit authorization boundaries. A candidate chooses whether to apply directly or consent to representation by an HR professional. No standalone `jobs` service, database, subdomain, or product entitlement is created.
 
 **Out of scope for the first release:**
 
@@ -34,7 +34,7 @@ Oxinov HR is global and English only (ADR-020). It is a candidate product plane 
 - Automated hiring or rejection decisions. AI may summarize and rank with explanations; a person decides every step (FR-HR-8143).
 - Its own login, one-time codes, KYC, notification delivery, or payment processing.
 
-Sources: owner requests of 2026-09-28; [platform blueprint](../../company/PLATFORM-BLUEPRINT.md); [identity and access](../../architecture/IDENTITY-AND-ACCESS.md); [platform policies](../../company/PLATFORM-POLICIES.md); ADR-008, ADR-011, ADR-019, ADR-020, ADR-022, ADR-024.
+Sources: owner requests of 2026-09-28; [platform blueprint](../../company/PLATFORM-BLUEPRINT.md); [identity and access](../../architecture/IDENTITY-AND-ACCESS.md); [platform policies](../../company/PLATFORM-POLICIES.md); ADR-008, ADR-011, ADR-019, ADR-020, ADR-022, ADR-025.
 
 ### Shared terms
 
@@ -338,7 +338,7 @@ Sources: owner requests of 2026-09-28; [platform blueprint](../../company/PLATFO
 ### 3.11 Integrations and AI
 
 **FR-HR-8141 — Publish an engagement opening to direct hiring.** An HR professional must be able to publish an engagement's Nepal opening to the Oxinov HR direct-hiring board on the client's behalf, with the client named as employer and the professional as recruiter. The posting follows FR-JOB-6021 to FR-JOB-6023, remains linked to the engagement, and applications enter that engagement only after candidate consent. No candidate record is copied across product databases.
-*Priority:* Should. *Status:* Proposed. *Access:* HR professional with client approval. *Source:* owner request; ADR-024.
+*Priority:* Should. *Status:* Proposed. *Access:* HR professional with client approval. *Source:* owner request; ADR-025.
 - Acceptance: Given client approval, when the professional publishes, then the posting appears under `hr.oxinov.com/jobs` and links back to the engagement.
 - Acceptance: Given no client approval, when the professional tries to publish, then it is refused.
 
@@ -389,7 +389,7 @@ Each step ships through the normal pipeline. Steps describe dependency order, no
 
 ## 7. Direct hiring and job board requirements (JOB)
 
-The former standalone Oxinov Jobs scope is now the direct-hiring module of Oxinov HR (ADR-024). It uses the same `hr` product plane, service boundary, and database as managed recruitment. The permanent `FR-JOB-*` IDs remain unchanged for traceability. Public job discovery lives under `hr.oxinov.com/jobs`; there is no separate Jobs product, database, or release gate.
+The former standalone Oxinov Jobs scope is now the direct-hiring module of Oxinov HR (ADR-025). It uses the same `hr` product plane, service boundary, and database as managed recruitment. The permanent `FR-JOB-*` IDs remain unchanged for traceability. Public job discovery lives under `hr.oxinov.com/jobs`; there is no separate Jobs product, database, or release gate.
 
 ### 7.1 Direct-hiring terms
 

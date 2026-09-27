@@ -4,7 +4,7 @@
 **Status:** Proposed discovery draft; release gate remains closed  
 **Product address:** `studio.oxinov.com` after approval  
 **Technical slug:** `studio`  
-**Source:** Platform Blueprint Media & Studio candidates and ADR-025
+**Source:** Platform Blueprint Media & Studio candidates and ADR-026
 
 ## 1. Purpose and scope
 
@@ -37,17 +37,17 @@ Studio reuses Platform identity, organizations, policies, plans, payments, notif
 - Acceptance: Unsafe files, missing mandatory fields, or an unauthorized organization member cannot submit the brief.
 
 **FR-STUDIO-8502 — Feasibility review and estimate.** Studio staff must record scope assumptions, exclusions, schedule, revision allowance, price and currency, taxes, third-party costs, rights dependencies, and estimate expiry.
-*Priority:* Must. *Status:* Proposed. *Access:* Assigned producer and finance reviewer; client reads. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Assigned producer and finance reviewer; client reads. *Source:* ADR-026.
 - Acceptance: The client can compare the brief version with the proposed scope before acceptance.
 - Acceptance: Expired or superseded estimates cannot be accepted or silently changed.
 
 **FR-STUDIO-8503 — Project authorization.** A project may start only after an authorized client approver accepts the scope, estimate, applicable policies, rights responsibilities, and payment milestone plan.
-*Priority:* Must. *Status:* Proposed. *Access:* Client approver and assigned producer. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Client approver and assigned producer. *Source:* ADR-026.
 - Acceptance: Acceptance creates one project from the exact commercial snapshot using an idempotency key.
 - Acceptance: A requester without approval authority, an expired estimate, or an unmet prerequisite cannot start work.
 
 **FR-STUDIO-8504 — Change request.** Either party may propose a scoped change that states schedule, deliverable, cost, rights, and revision impacts; material changes require authorized acceptance before work proceeds.
-*Priority:* Must. *Status:* Proposed. *Access:* Project parties. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Project parties. *Source:* ADR-026.
 - Acceptance: Accepted changes create a numbered project baseline while preserving prior baselines.
 - Acceptance: A contributor cannot alter commercial scope or apply an unapproved change.
 
@@ -69,7 +69,7 @@ Studio reuses Platform identity, organizations, policies, plans, payments, notif
 - Acceptance: Feedback on an older version is not silently treated as approval of a newer version.
 
 **FR-STUDIO-8513 — Revision control.** The system must track included and additional revision rounds, consolidate conflicting client feedback, and require approval for chargeable or schedule-changing revisions.
-*Priority:* Must. *Status:* Proposed. *Access:* Client approver and producer. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Client approver and producer. *Source:* ADR-026.
 - Acceptance: Both parties can see remaining included rounds and the effect of a proposed extra round.
 - Acceptance: Ordinary commenters cannot authorize a paid revision or overwrite another review decision.
 
@@ -81,12 +81,12 @@ Studio reuses Platform identity, organizations, policies, plans, payments, notif
 ### 4.3 Rights, approval, and delivery
 
 **FR-STUDIO-8520 — Rights and releases register.** The project must record ownership, license source, permitted territories, channels, duration, attribution, talent releases, music or stock terms, restrictions, and expiry for each governed asset.
-*Priority:* Must. *Status:* Proposed. *Access:* Rights reviewer, producer, and authorized client. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Rights reviewer, producer, and authorized client. *Source:* ADR-026.
 - Acceptance: A rights reviewer can block a deliverable whose required evidence is missing or incompatible with intended use.
 - Acceptance: Contributors cannot mark rights cleared without the required role and evidence.
 
 **FR-STUDIO-8521 — Client approval.** Authorized client approvers must accept, reject with reasons, or request permitted revision of milestone and final deliverables against the current baseline.
-*Priority:* Must. *Status:* Proposed. *Access:* Client approver. *Source:* ADR-025.
+*Priority:* Must. *Status:* Proposed. *Access:* Client approver. *Source:* ADR-026.
 - Acceptance: Final approval records approver, UTC time, version, deliverables, and disclosed exceptions.
 - Acceptance: Comments, downloads, or silence do not count as approval unless the accepted agreement explicitly defines a lawful timed process.
 
@@ -106,7 +106,7 @@ Studio reuses Platform identity, organizations, policies, plans, payments, notif
 - Acceptance: A deletion request cannot remove another client's data, active legal-hold evidence, or licensed company records outside the approved rule.
 
 **FR-STUDIO-8530 — Project reporting.** Clients and Studio operations must receive role-scoped reporting for milestones, review turnaround, revision use, storage, delivery, rights expiry, invoices, and project outcome.
-*Priority:* Should. *Status:* Proposed. *Access:* Project or authorized aggregate scope. *Source:* ADR-025.
+*Priority:* Should. *Status:* Proposed. *Access:* Project or authorized aggregate scope. *Source:* ADR-026.
 - Acceptance: Client reports contain only their projects and identify filters, currency, and generation time.
 - Acceptance: Operations aggregates exclude client media contents and unnecessary personal data.
 
