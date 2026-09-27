@@ -39,6 +39,9 @@ export default async function CoursePage({ params, searchParams }: Props) {
         })
       : null;
   const latest = stream?.announcements[0];
+  // Completion and the certificate (FR-PLAYER-402, FR-CERT-601): checking progress also issues the
+  // certificate the first time the course is complete.
+  const progress = entitled ? await eduApi.progress(token, workspace.id, courseId).catch(() => null) : null;
   // Paid courses show Khalti and eSewa when the school may sell (ADR-023); a failure here hides the panel only.
   const checkout =
     !entitled && course.price.amountMinor > 0
@@ -210,6 +213,40 @@ export default async function CoursePage({ params, searchParams }: Props) {
                 <p className="notice" role={paidNotice ? 'status' : undefined}>
                   {paidNotice ? 'Payment confirmed. The course is yours.' : 'You are enrolled.'}
                 </p>
+                {progress ? (
+                  <div className="grid gap-2" aria-label="Your progress">
+                    <p className="hud-label">
+                      // {progress.completedRequiredLessons} of {progress.requiredLessons} required lessons
+                    </p>
+                    <progress
+                      className="w-full"
+                      max={Math.max(progress.requiredLessons, 1)}
+                      value={progress.completedRequiredLessons}
+                      aria-label="Required lessons completed"
+                    />
+                    {progress.exams
+                      .filter((exam) => !exam.passed)
+                      .map((exam) => (
+                        <p key={exam.id} className="text-sm">
+                          Pass the mock exam: {exam.title}
+                        </p>
+                      ))}
+                    {progress.assignments
+                      .filter((assignment) => !assignment.passed)
+                      .map((assignment) => (
+                        <p key={assignment.id} className="text-sm">
+                          Get a pass on: {assignment.title}
+                        </p>
+                      ))}
+                    {progress.certificate ? (
+                      <Link href={`/w/${slug}/certificates/${progress.certificate.code}`} className="btn btn-primary justify-center">
+                        {progress.certificate.status === 'VALID' ? 'View your certificate' : 'Certificate revoked'}
+                      </Link>
+                    ) : (
+                      <p className="text-sm opacity-80">Finish everything above to receive your certificate.</p>
+                    )}
+                  </div>
+                ) : null}
                 <Link href={`${here}/stream`} className="btn btn-secondary justify-center">
                   Class stream
                 </Link>

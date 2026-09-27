@@ -7,6 +7,7 @@ import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { formatBytes } from '@/lib/assignment.ts';
 import { resourceLabel } from '@/lib/resources.ts';
+import { CompleteLessonButton } from './CompleteLessonButton';
 import { LessonQuestions } from './LessonQuestions';
 import { MediaPlayer } from './MediaPlayer';
 import { NotesPanel } from './NotesPanel';
@@ -39,6 +40,10 @@ export default async function LessonPage({ params }: Props) {
           throw error;
         })
       : null;
+
+  // Completion (FR-PLAYER-402) is tracked for learners with access; a failure here only hides the control.
+  const progress = course.access.entitled ? await eduApi.progress(token, workspace.id, courseId).catch(() => null) : null;
+  const completed = progress?.lessons.find((item) => item.id === lesson.id)?.completed ?? false;
 
   const open = course.curriculum.flatMap((section) => section.lessons).filter((item) => course.access.entitled || item.isPreview);
   const index = open.findIndex((item) => item.id === lesson.id);
@@ -130,6 +135,25 @@ export default async function LessonPage({ params }: Props) {
             timeZone={workspace.timeZone}
             streamPage={`${courseHref}/stream`}
           />
+        ) : null}
+
+        {progress ? (
+          <section aria-label="Lesson completion" className="flex flex-wrap items-center gap-3">
+            {completed ? (
+              <p className="notice" role="status">
+                Lesson complete.
+              </p>
+            ) : lesson.kind === 'TEXT' ? (
+              <CompleteLessonButton tenantId={workspace.id} courseId={courseId} lessonId={lesson.id} returnTo={here} />
+            ) : (
+              <p className="text-sm opacity-80">This lesson is complete once you have played at least 90% of it.</p>
+            )}
+            {progress.certificate ? (
+              <Link href={`/w/${slug}/certificates/${progress.certificate.code}`} className="btn btn-primary">
+                View certificate
+              </Link>
+            ) : null}
+          </section>
         ) : null}
 
         <nav aria-label="Lessons" className="flex flex-wrap justify-between gap-3">

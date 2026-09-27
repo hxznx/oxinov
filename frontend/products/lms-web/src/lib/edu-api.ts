@@ -65,6 +65,41 @@ export interface Payment {
   verifiedAt: string | null;
 }
 
+/** Course certificates and progress (FR-PLAYER-402, FR-CERT-601/602). */
+export interface Certificate {
+  id: string;
+  courseId: string;
+  code: string;
+  holderName: string;
+  courseTitle: string;
+  instructorName: string | null;
+  schoolName: string;
+  issuedAt: string;
+  status: 'VALID' | 'REVOKED';
+  revokedAt: string | null;
+  revokeReason: string | null;
+}
+
+export interface CertificateVerification {
+  code: string;
+  holderName: string;
+  courseTitle: string;
+  schoolName: string;
+  issuedAt: string;
+  status: 'VALID' | 'REVOKED';
+}
+
+export interface CourseProgress {
+  courseId: string;
+  complete: boolean;
+  requiredLessons: number;
+  completedRequiredLessons: number;
+  lessons: { id: string; title: string; kind: string; required: boolean; completed: boolean }[];
+  exams: { id: string; title: string; passed: boolean }[];
+  assignments: { id: string; title: string; passed: boolean }[];
+  certificate: Certificate | null;
+}
+
 export interface LessonOutline {
   id: string;
   title: string;
@@ -451,6 +486,16 @@ async function request<T>(token: string, path: string, init: { method?: string; 
   return json.data;
 }
 
+/** Public endpoints (certificate verification) take no token. */
+async function publicRequest<T>(path: string): Promise<T> {
+  const response = await fetch(`${eduApiBaseUrl()}${path}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+  const json = (await response.json().catch(() => ({}))) as { data?: T; error?: { code: string; message: string } };
+  if (!response.ok || json.data === undefined) {
+    throw new EduApiError(response.status, json.error?.code ?? 'UNAVAILABLE', json.error?.message ?? 'Oxinov Edu is unavailable. Try again shortly.');
+  }
+  return json.data;
+}
+
 const tenantPath = (tenantId: string) => `/v1/tenants/${encodeURIComponent(tenantId)}`;
 
 export const eduApi = {
@@ -470,6 +515,18 @@ export const eduApi = {
     request<CheckoutOptions>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/checkout`),
   startCheckout: (token: string, tenantId: string, courseId: string, provider: PaymentProvider) =>
     request<Checkout>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/checkout`, { method: 'POST', body: { provider } }),
+  progress: (token: string, tenantId: string, courseId: string) =>
+    request<CourseProgress>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/progress`),
+  completeLesson: (token: string, tenantId: string, courseId: string, lessonId: string) =>
+    request<CourseProgress>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/complete`, { method: 'POST' }),
+  myCertificates: (token: string, tenantId: string) => request<Certificate[]>(token, `${tenantPath(tenantId)}/me/certificates`),
+  certificate: (token: string, tenantId: string, code: string) =>
+    request<Certificate>(token, `${tenantPath(tenantId)}/certificates/${encodeURIComponent(code)}`),
+  courseCertificates: (token: string, tenantId: string, courseId: string) =>
+    request<Certificate[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/certificates`),
+  revokeCertificate: (token: string, tenantId: string, code: string, reason: string) =>
+    request<Certificate>(token, `${tenantPath(tenantId)}/certificates/${encodeURIComponent(code)}/revoke`, { method: 'POST', body: { reason } }),
+  verifyCertificate: (code: string) => publicRequest<CertificateVerification>(`/v1/certificates/${encodeURIComponent(code)}`),
   verifyPayment: (token: string, tenantId: string, paymentId: string) =>
     request<Payment>(token, `${tenantPath(tenantId)}/payments/${encodeURIComponent(paymentId)}/verify`, { method: 'POST' }),
   exams: (token: string, tenantId: string, courseId: string) =>

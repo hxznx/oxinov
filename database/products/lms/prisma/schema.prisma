@@ -47,36 +47,38 @@ model Tenant {
   createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt       DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  createdBy       UserProfile            @relation("TenantCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  memberships     TenantMembership[]
-  programs        Program[]
-  courses         Course[]
-  courseVersions  CourseVersion[]
-  sections        Section[]
-  lessons         Lesson[]
-  enrollments     Enrollment[]
-  entitlements    Entitlement[]
-  payments        Payment[]
-  questions       Question[]
-  blueprints      ExamBlueprint[]
-  blueprintSects  ExamBlueprintSection[]
-  attempts        ExamAttempt[]
-  attemptItems    ExamAttemptItem[]
-  results         ExamResult[]
-  auditEvents     AuditEvent[]
-  invites         TenantInvite[]
-  mediaAssets     MediaAsset[]
-  mediaProgress   MediaProgress[]
-  assignments     Assignment[]
-  submissions     AssignmentSubmission[]
-  revisions       SubmissionRevision[]
-  lessonNotes     LessonNote[]
-  resourceFiles   ResourceFile[]
-  lessonResources LessonResource[]
-  announcements   CourseAnnouncement[]
-  lessonQuestions LessonQuestion[]
-  lessonAnswers   LessonAnswer[]
-  answerVotes     AnswerVote[]
+  createdBy         UserProfile            @relation("TenantCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  memberships       TenantMembership[]
+  programs          Program[]
+  courses           Course[]
+  courseVersions    CourseVersion[]
+  sections          Section[]
+  lessons           Lesson[]
+  enrollments       Enrollment[]
+  entitlements      Entitlement[]
+  payments          Payment[]
+  questions         Question[]
+  blueprints        ExamBlueprint[]
+  blueprintSects    ExamBlueprintSection[]
+  attempts          ExamAttempt[]
+  attemptItems      ExamAttemptItem[]
+  results           ExamResult[]
+  auditEvents       AuditEvent[]
+  invites           TenantInvite[]
+  mediaAssets       MediaAsset[]
+  mediaProgress     MediaProgress[]
+  assignments       Assignment[]
+  submissions       AssignmentSubmission[]
+  revisions         SubmissionRevision[]
+  lessonNotes       LessonNote[]
+  resourceFiles     ResourceFile[]
+  lessonResources   LessonResource[]
+  announcements     CourseAnnouncement[]
+  lessonQuestions   LessonQuestion[]
+  lessonAnswers     LessonAnswer[]
+  answerVotes       AnswerVote[]
+  lessonCompletions LessonCompletion[]
+  certificates      Certificate[]
 
   @@map("tenants")
 }
@@ -91,26 +93,29 @@ model UserProfile {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  tenantsCreated     Tenant[]               @relation("TenantCreatedBy")
-  memberships        TenantMembership[]
-  coursesCreated     Course[]
-  enrollments        Enrollment[]
-  entitlements       Entitlement[]
-  payments           Payment[]
-  attempts           ExamAttempt[]
-  auditEvents        AuditEvent[]
-  invitesCreated     TenantInvite[]
-  mediaUploaded      MediaAsset[]
-  mediaProgress      MediaProgress[]
-  assignmentsCreated Assignment[]
-  submissions        AssignmentSubmission[]
-  gradedRevisions    SubmissionRevision[]   @relation("RevisionGrader")
-  lessonNotes        LessonNote[]
-  resourceFiles      ResourceFile[]
-  announcements      CourseAnnouncement[]
-  lessonQuestions    LessonQuestion[]       @relation("QuestionAuthor")
-  lessonAnswers      LessonAnswer[]         @relation("AnswerAuthor")
-  answerVotes        AnswerVote[]
+  tenantsCreated      Tenant[]               @relation("TenantCreatedBy")
+  memberships         TenantMembership[]
+  coursesCreated      Course[]
+  enrollments         Enrollment[]
+  entitlements        Entitlement[]
+  payments            Payment[]
+  attempts            ExamAttempt[]
+  auditEvents         AuditEvent[]
+  invitesCreated      TenantInvite[]
+  mediaUploaded       MediaAsset[]
+  mediaProgress       MediaProgress[]
+  assignmentsCreated  Assignment[]
+  submissions         AssignmentSubmission[]
+  gradedRevisions     SubmissionRevision[]   @relation("RevisionGrader")
+  lessonNotes         LessonNote[]
+  resourceFiles       ResourceFile[]
+  announcements       CourseAnnouncement[]
+  lessonQuestions     LessonQuestion[]       @relation("QuestionAuthor")
+  lessonAnswers       LessonAnswer[]         @relation("AnswerAuthor")
+  answerVotes         AnswerVote[]
+  lessonCompletions   LessonCompletion[]
+  certificates        Certificate[]          @relation("CertificateHolder")
+  certificatesRevoked Certificate[]          @relation("CertificateRevokedBy")
 
   @@map("user_profiles")
 }
@@ -245,19 +250,21 @@ model Course {
   createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  tenant           Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  program          Program?             @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
-  publishedVersion CourseVersion?       @relation("CoursePublishedVersion", fields: [tenantId, publishedVersionId], references: [tenantId, id], onDelete: Restrict)
-  createdBy        UserProfile          @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
-  versions         CourseVersion[]      @relation("CourseVersions")
-  enrollments      Enrollment[]
-  entitlements     Entitlement[]
-  payments         Payment[]
-  blueprints       ExamBlueprint[]
-  assignments      Assignment[]
-  lessonNotes      LessonNote[]
-  announcements    CourseAnnouncement[]
-  lessonQuestions  LessonQuestion[]
+  tenant            Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  program           Program?             @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
+  publishedVersion  CourseVersion?       @relation("CoursePublishedVersion", fields: [tenantId, publishedVersionId], references: [tenantId, id], onDelete: Restrict)
+  createdBy         UserProfile          @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  versions          CourseVersion[]      @relation("CourseVersions")
+  enrollments       Enrollment[]
+  entitlements      Entitlement[]
+  payments          Payment[]
+  blueprints        ExamBlueprint[]
+  assignments       Assignment[]
+  lessonNotes       LessonNote[]
+  announcements     CourseAnnouncement[]
+  lessonQuestions   LessonQuestion[]
+  lessonCompletions LessonCompletion[]
+  certificates      Certificate[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, slug])
@@ -693,6 +700,69 @@ enum EnrollmentStatus {
   REVOKED
 
   @@map("enrollment_status")
+}
+
+/// A text lesson the learner confirmed as done (FR-PLAYER-402). Keyed by lesson lineage so it survives
+/// republished course versions; video and audio completion is MediaProgress.completedAt.
+model LessonCompletion {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  courseId        String   @map("course_id") @db.Uuid
+  lessonLineageId String   @map("lesson_lineage_id") @db.Uuid
+  completedAt     DateTime @default(now()) @map("completed_at") @db.Timestamptz(3)
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user   UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
+  course Course      @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, userId, lessonLineageId])
+  @@index([tenantId, userId, courseId])
+  @@map("lesson_completions")
+}
+
+/// One course certificate per learner (FR-CERT-601). Name, course, and teacher are copied at issue.
+model Certificate {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String    @map("tenant_id") @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  courseId        String    @map("course_id") @db.Uuid
+  /// Unguessable public ID for /verify/{code}.
+  code            String    @unique @db.VarChar(16)
+  holderName      String    @map("holder_name") @db.VarChar(120)
+  courseTitle     String    @map("course_title") @db.VarChar(200)
+  instructorName  String?   @map("instructor_name") @db.VarChar(120)
+  issuedAt        DateTime  @default(now()) @map("issued_at") @db.Timestamptz(3)
+  revokedAt       DateTime? @map("revoked_at") @db.Timestamptz(3)
+  revokeReason    String?   @map("revoke_reason") @db.VarChar(500)
+  revokedByUserId String?   @map("revoked_by_user_id") @db.Uuid
+
+  tenant       Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user         UserProfile              @relation("CertificateHolder", fields: [userId], references: [id], onDelete: Restrict)
+  revokedBy    UserProfile?             @relation("CertificateRevokedBy", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+  course       Course                   @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  verification CertificateVerification?
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, userId, courseId])
+  @@index([tenantId, courseId])
+  @@map("certificates")
+}
+
+/// The only certificate facts /verify/{code} shows (FR-CERT-602). No row-level security: verification has
+/// no signed-in person or tenant; written with its certificate and read by exact code only.
+model CertificateVerification {
+  code        String    @id @db.VarChar(16)
+  holderName  String    @map("holder_name") @db.VarChar(120)
+  courseTitle String    @map("course_title") @db.VarChar(200)
+  schoolName  String    @map("school_name") @db.VarChar(120)
+  issuedAt    DateTime  @map("issued_at") @db.Timestamptz(3)
+  revokedAt   DateTime? @map("revoked_at") @db.Timestamptz(3)
+
+  certificate Certificate @relation(fields: [code], references: [code], onDelete: Restrict)
+
+  @@map("certificate_verifications")
 }
 
 model Enrollment {

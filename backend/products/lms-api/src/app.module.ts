@@ -49,6 +49,8 @@ import { StreamService } from './stream/stream.service';
 import { QuizzesController } from './quizzes/quizzes.controller';
 import { QuizzesService } from './quizzes/quizzes.service';
 import { MediaService } from './media/media.service';
+import { CertificatesController, CertificateVerificationController } from './certificates/certificates.controller';
+import { CertificatesService } from './certificates/certificates.service';
 import { PaymentsController } from './payments/payments.controller';
 import { PaymentsService } from './payments/payments.service';
 import { PAYMENT_PROVIDERS, providersFromConfig, type PaymentProviders } from './payments/providers';
@@ -106,6 +108,7 @@ export class AppModule implements NestModule {
       ExamsService,
       { provide: PAYMENT_PROVIDERS, useValue: options.paymentProviders ?? providersFromConfig(options.config.payments) },
       PaymentsService,
+      CertificatesService,
     ];
     return {
       module: AppModule,
@@ -125,6 +128,8 @@ export class AppModule implements NestModule {
         EnrollmentsController,
         ExamsController,
         PaymentsController,
+        CertificatesController,
+        CertificateVerificationController,
       ],
       providers,
     };

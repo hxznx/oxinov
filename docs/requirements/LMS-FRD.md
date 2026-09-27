@@ -20,13 +20,13 @@ Built and verified in CI and live at `edu.oxinov.com` (details in the [Edu web R
 | FR-CATALOG-303 Purchase and enrollment | Partly | Free enrollment; one-time purchase of Oxinov's own NPR courses with Khalti or eSewa, granted only after server-side verification (ADR-023). Subscriptions, coupons, refunds, and reconciliation open |
 | FR-COURSE-201, FR-COURSE-203 Authoring and review | Implemented | Chapters, lessons, reordering, review, publishing |
 | FR-COURSE-202, FR-COURSE-204, FR-COURSE-205 Lesson content, resources, media | Implemented | Text, video, audio, transcripts; PDF, EPUB, Office, images, ZIP, links (S3, ADR-021) |
-| FR-PLAYER-401 to FR-PLAYER-404 Player, progress, notes | Implemented | Speed, resume, completion; private notes with video moments |
+| FR-PLAYER-401 to FR-PLAYER-404 Player, progress, notes | Implemented | Speed, resume, completion (text lessons by confirmation, media at 90% played); course completion rule; private notes with video moments |
 | FR-ASSESS-501, FR-ASSESS-502 Quizzes and exams | Implemented | Four question types, random sections, timed attempts with autosave and auto-submit, results, answer review |
 | FR-ASSESS-503 Assignments | Implemented | Text, links, files, deadlines, grading, revisions |
 | FR-EXAM-1204 Mock exam attempts | Implemented | Timed practice and mock exams |
 | FR-COMM-701, FR-COMM-702 Class stream and Q&A | Implemented | Announcements, lesson questions, best answers, votes, moderation |
 | FR-ANALYTICS-801 Learner progress | Partly | "Continue learning"; dashboards open |
-| FR-CERT-601, FR-CERT-602 Certificates | Not built | Next after payments |
+| FR-CERT-601, FR-CERT-602 Certificates | Implemented | Issued once when the completion rule holds (approved mock exams must be passed; practice quizzes never block), print layout for saving as PDF, Add to LinkedIn, public `/verify/{id}`, revocation with a reason |
 
 ## 0. Platform dependencies
 

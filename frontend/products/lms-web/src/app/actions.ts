@@ -1,6 +1,7 @@
 'use server';
 
 import { safeReturnTo } from '@oxinov/web-auth';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth.ts';
 import { EduApiError, eduApi, type PaymentProvider } from '@/lib/edu-api.ts';
@@ -90,4 +91,41 @@ export async function startCheckout(_: CheckoutState, form: FormData): Promise<C
   if (!PROVIDER_HOSTS[provider].test(redirectTo.url)) return { error: 'Payment could not be started. Try again shortly.' };
   if (redirectTo.method === 'POST') return { form: { url: redirectTo.url, fields: redirectTo.fields } };
   redirect(redirectTo.url);
+}
+
+/** FR-PLAYER-402: the learner confirms a text lesson as done; the page then shows the new progress. */
+export async function completeLesson(_: FormState, form: FormData): Promise<FormState> {
+  const tenantId = String(form.get('tenantId') ?? '');
+  const courseId = String(form.get('courseId') ?? '');
+  const lessonId = String(form.get('lessonId') ?? '');
+  const returnTo = safeReturnTo(String(form.get('returnTo') ?? '/'));
+  const session = await auth.currentSession(returnTo);
+  if (!session) redirect(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
+  try {
+    await eduApi.completeLesson(session.accessToken, tenantId, courseId, lessonId);
+  } catch (error) {
+    if (error instanceof EduApiError) return { error: error.message };
+    return { error: 'Oxinov Edu is unavailable. Try again shortly.' };
+  }
+  revalidatePath(returnTo);
+  return {};
+}
+
+/** FR-CERT-602: school administrators revoke a certificate with a recorded reason. */
+export async function revokeCertificate(_: FormState, form: FormData): Promise<FormState> {
+  const tenantId = String(form.get('tenantId') ?? '');
+  const code = String(form.get('code') ?? '');
+  const reason = String(form.get('reason') ?? '').trim();
+  const returnTo = safeReturnTo(String(form.get('returnTo') ?? '/'));
+  if (reason.length < 3) return { error: 'Give a reason of at least 3 characters.' };
+  const session = await auth.currentSession(returnTo);
+  if (!session) redirect(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
+  try {
+    await eduApi.revokeCertificate(session.accessToken, tenantId, code, reason);
+  } catch (error) {
+    if (error instanceof EduApiError) return { error: error.message };
+    return { error: 'Oxinov Edu is unavailable. Try again shortly.' };
+  }
+  revalidatePath(returnTo);
+  return {};
 }
