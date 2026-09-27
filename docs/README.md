@@ -35,6 +35,8 @@ If two documents disagree and it matters, stop and ask the owner.
 
 ## Conventions
 
+The full rules are in the [documentation standard](08-engineering/documentation-standard.md). In short:
+
 - **Names:** folders are `NN-topic`; files are lowercase kebab-case (`current-state.md`). Product documents are prefixed with the product slug (`edu-roadmap.md`). The validator enforces lowercase names.
 - **Links:** every document must be reachable by following links from this page. `python scripts/validate_project.py` fails on an unreachable document or a broken link.
 - **Placement:** company-wide documents go in the numbered topic folder; a document about one product goes in `02-products/<slug>/`; every FRD goes in `03-requirements/frd/`.

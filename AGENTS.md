@@ -46,7 +46,7 @@ Use [PROJECT-LIBRARY.md](PROJECT-LIBRARY.md) for category navigation and the
 [file catalog](docs/08-engineering/file-catalog.md) for alphabetical paths. After adding,
 removing or renaming repository files, run `python scripts/project_catalog.py` before validation.
 
-Start with [docs/README.md](docs/README.md), the documentation map. Documents are grouped in numbered folders (`docs/01-company` to `docs/13-marketing`), each with a README index; file names are lowercase kebab-case, and a document about one product lives in `docs/02-products/<slug>/`. Then read what matches the task:
+Start with [docs/README.md](docs/README.md), the documentation map. Documents are grouped in numbered folders (`docs/01-company` to `docs/13-marketing`), each with a README index; file names are lowercase kebab-case, and a document about one product lives in `docs/02-products/<slug>/`. Write and file documents by the [documentation standard](docs/08-engineering/documentation-standard.md). Then read what matches the task:
 
 | Task | Read first |
 | --- | --- |

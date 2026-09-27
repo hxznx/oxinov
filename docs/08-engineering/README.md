@@ -4,6 +4,7 @@ How code is written, tested, organized, and found. The [service catalog](service
 
 | Document | Purpose |
 | --- | --- |
+| [Documentation standard](documentation-standard.md) | Where documents go, the four kinds of document, how to write them, and how to keep them true |
 | [Coding standards](coding-standards.md) | TypeScript, NestJS, and Next.js conventions |
 | [Testing strategy](testing-strategy.md) | Unit, integration, end-to-end, accessibility, and load testing |
 | [Dependency policy](dependency-policy.md) | Pinning, the pnpm catalog, updates, and licences |

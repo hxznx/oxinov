@@ -21,6 +21,29 @@
         "frontend/company-web/out"
       ],
       "port": 3010
+    },
+    {
+      "name": "edu-api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@oxinov/edu-api",
+        "exec",
+        "node",
+        "--env-file=.env",
+        "dist/main.js"
+      ],
+      "port": 4000
+    },
+    {
+      "name": "edu-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@oxinov/edu-web",
+        "start"
+      ],
+      "port": 3002
     }
   ]
 }
