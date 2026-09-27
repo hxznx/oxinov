@@ -2,25 +2,25 @@
 
 ## Selected baseline
 
-**Updated:** 2026-09-26. "Today" is verified in production or CI ([CURRENT-STATE.md](CURRENT-STATE.md)); "Target" is where each area goes when its trigger in the [DevOps roadmap](../devops/ROADMAP.md) or ADR-021 is met.
+**Updated:** 2026-09-28. "Today" is verified in production or CI ([CURRENT-STATE.md](CURRENT-STATE.md)); "Target" is where each area goes when its trigger in the [DevOps roadmap](../devops/ROADMAP.md), ADR-021, or the [technology radar](TECH-RADAR.md) (ADR-024) is met. New services follow the radar's [golden path](TECH-RADAR.md#golden-path-for-a-new-service).
 
 | Area | Today | Target |
 | --- | --- | --- |
-| Monorepo | pnpm 12.6 workspaces (strict catalog, one lockfile) and Turborepo; Node.js 22; TypeScript 5.9 | Same; Turborepo `--affected` runs in CI |
-| Websites and portals | Next.js 16 App Router, React 19, Tailwind CSS 4, shared `@oxinov/design-system`; `oxinov.com` is a static export on S3 and CloudFront | Same; Playwright end-to-end tests |
-| Mobile apps | None yet | React Native with Expo per product when the product needs one |
-| Backend | NestJS 11 with strict TypeScript, class-validator, `@oxinov/server-kit` | Same; OpenTelemetry in `server-kit` (ADR-019) |
-| API style | REST with generated OpenAPI; APIs reachable only from the web apps' servers | Versioned public APIs with generated clients and a compatibility check in CI |
+| Monorepo | pnpm 12.6 workspaces (strict catalog, one lockfile) and Turborepo; Node.js 22; TypeScript 5.9 | Node.js 24 LTS (radar A8); Turborepo `--affected` runs in CI; assess the TypeScript 7 native compiler |
+| Websites and portals | Next.js 16 App Router, React 19, Tailwind CSS 4, shared `@oxinov/design-system`; `oxinov.com` is a static export on S3 and CloudFront | React Compiler (A7); Playwright and axe end-to-end tests (A3) |
+| Mobile apps | None yet | Expo with Expo Router and the generated API client (trial T6) |
+| Backend | NestJS 11 with strict TypeScript, class-validator, `@oxinov/server-kit` (custom JSON logger), Jest | OpenTelemetry (A1) and pino (A6) in `server-kit`; Vitest (trial T1) |
+| API style | REST with generated OpenAPI; APIs reachable only from the web apps' servers; web clients hand-written | Generated clients (`openapi-typescript`, `openapi-fetch`) and an `oasdiff` breaking-change check (A2) |
 | Identity | Keycloak 26 (OIDC) at `id.oxinov.com`, email one-time code, one account for every product (ADR-011, ADR-016) | Google and Apple sign-in, staff MFA, organizations |
 | Transaction data | PostgreSQL 18 in the cluster with Prisma 7 migrations and row-level security; one database and role pair per plane | Amazon RDS for PostgreSQL |
 | Cache, queues, realtime | None (ADR-021) | SQS workers first; Redis-compatible cache only for measured hot reads; WebSocket gateway for chat |
-| Events between products | None yet (one product) | Transactional outbox to SNS with an SQS queue per consumer (ADR-019) |
+| Events between products | None yet | Transactional outbox to SNS with an SQS queue per consumer, first for Edu certificates to Oxinov Jobs (trial T3) |
 | Files and media | Private S3 with presigned URLs; SeaweedFS locally | HLS delivery through CloudFront when needed (ADR-021) |
 | Search | PostgreSQL | OpenSearch only when search scale or analytics requires it |
 | Generative AI | None yet | Provider-neutral AI gateway with Amazon Bedrock first (ADR-014) |
 | Payments | None yet | Provider adapter and internal ledger; Khalti and eSewa for Nepal, an international provider for other markets |
-| Observability | CloudWatch alarms, Kubernetes health checks, release smoke test, JSON logs; Prometheus, Alertmanager, and Grafana configuration checked in CI and run locally | OpenTelemetry metrics and traces with a right-sized or hosted backend |
-| Security operations | Trivy (images, repository, secrets, IaC), Dependabot, pinned digests, security-event schema | CloudTrail trail, GuardDuty, image signing, CodeQL, WAF, SIEM ([security roadmap](../security/SECURITY.md#roadmap)) |
+| Observability | CloudWatch alarms, Kubernetes health checks, release smoke test, JSON logs; Prometheus, Alertmanager, and Grafana configuration checked in CI and run locally | OpenTelemetry to the Grafana Cloud free tier (A1); `pg_stat_statements` (A9) |
+| Security operations | Trivy (images, repository, secrets, IaC), Dependabot, pinned digests, security-event schema, CloudTrail, GuardDuty with email alerts, staff MFA in Keycloak | Semgrep SAST (A4), SBOMs and cosign-signed images (A5), WAF, SIEM ([security roadmap](../security/SECURITY.md#roadmap)) |
 | Local delivery | Docker Compose (PostgreSQL, SeaweedFS object storage, Keycloak, Mailpit, and a monitoring profile; its Redis service is not used by any app yet) and a throwaway local k3s for delivery rehearsal | Same |
 | Production delivery | AWS Mumbai; one k3s node on EC2 with Helm 4; GitHub Actions with OIDC; ECR with immutable tags; automatic deploy of every green `main` (ADR-018, NFR-17) | Amazon EKS with the same chart, a staging namespace, and GitOps (Argo CD) |
 | Infrastructure as code | Terraform 1.16 for every AWS resource, S3 state with lockfile | Same, with per-product accounts for regulated products |

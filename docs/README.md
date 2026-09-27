@@ -38,6 +38,7 @@ Built in Phase 1 as `frontend/company-web`. Scope is in the [roadmap](planning/C
 | --- | --- |
 | [Identity server setup](../devops/keycloak/README.md) | Local Keycloak, email-code extension checks, realm settings |
 | [Identity and access](architecture/IDENTITY-AND-ACCESS.md) | Google and email sign-in, single sign-on, universal product access, trust levels |
+| [Technology radar](architecture/TECH-RADAR.md) | Adopt, trial, assess, and hold decisions for every technology, and the golden path for new services (ADR-024) |
 | [Current state](architecture/CURRENT-STATE.md) | **What runs today**, verified: services, data, delivery, security controls, cost, and known gaps |
 | [Company platform architecture](architecture/COMPANY-PLATFORM-ARCHITECTURE.md) | Control plane, product planes, data ownership, events |
 | [Company tech stack](architecture/COMPANY-TECH-STACK.md) | Selected technologies |
