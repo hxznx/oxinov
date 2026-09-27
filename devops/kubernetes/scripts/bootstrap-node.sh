@@ -147,7 +147,9 @@ ensure_secret() {
     log "generated $1"
   fi
 }
-for name in POSTGRES_PASSWORD APP_DB_PASSWORD PLATFORM_APP_DB_PASSWORD KEYCLOAK_DB_PASSWORD KEYCLOAK_ADMIN_PASSWORD; do
+# KEYCLOAK_AUTOMATION_SECRET is read only by deploy.sh (the realm script's service account); pods never see it.
+for name in POSTGRES_PASSWORD APP_DB_PASSWORD PLATFORM_APP_DB_PASSWORD KEYCLOAK_DB_PASSWORD KEYCLOAK_ADMIN_PASSWORD \
+  KEYCLOAK_AUTOMATION_SECRET; do
   ensure_secret "$name"
 done
 ensure_secret EDU_SESSION_SECRET 64

@@ -25,7 +25,14 @@ SMTP_FROM=${SMTP_FROM:-no-reply@oxinov.test}
 
 # KCADM_EXEC runs a command in the Keycloak container: Docker Compose locally, kubectl on the k3s node.
 kcadm() { ${KCADM_EXEC:-docker compose exec -T keycloak} /opt/keycloak/bin/kcadm.sh "$@"; }
+# Automation signs in as the `oxinov-automation` service account (client credentials) once it exists, so
+# people who administer Keycloak can be required to use a one-time code (staff MFA, FR-ID-2209). The first
+# run, and any run without KEYCLOAK_AUTOMATION_SECRET, falls back to the administrator's password.
 kc_login() {
+  if [ -n "${KEYCLOAK_AUTOMATION_SECRET:-}" ] && kcadm config credentials --server http://localhost:8080 \
+    --realm master --client oxinov-automation --secret "$KEYCLOAK_AUTOMATION_SECRET" >/dev/null 2>&1; then
+    return 0
+  fi
   kcadm config credentials --server http://localhost:8080 --realm master \
     --user "$KEYCLOAK_ADMIN_USER" --password "$KEYCLOAK_ADMIN_PASSWORD" >/dev/null
 }
@@ -202,5 +209,38 @@ if [ -n "${CLIENT_SECRETS_OUT:-}" ]; then
 ' "$client" "$(kc get "clients/$id/client-secret" -r "$REALM" --fields value --format csv --noquotes)" >> "$CLIENT_SECRETS_OUT"
   done
 fi
+
+# --- Staff sign-in (master realm, FR-ID-2209): people who administer Keycloak sign in with a password and
+# a code from an authenticator app; the first console sign-in asks them to set the app up. Automation uses
+# the `oxinov-automation` service account, so a person's second factor never blocks a deploy.
+USER_REALM=$REALM
+REALM=master
+if [ -n "${KEYCLOAK_AUTOMATION_SECRET:-}" ]; then
+  id=$(kc get clients -r "$REALM" -q clientId=oxinov-automation --fields id --format csv --noquotes)
+  if [ -z "$id" ]; then
+    kc create clients -r "$REALM" -s clientId=oxinov-automation -s protocol=openid-connect \
+      -s publicClient=false -s serviceAccountsEnabled=true -s standardFlowEnabled=false \
+      -s directAccessGrantsEnabled=false -s implicitFlowEnabled=false \
+      -s 'description=Realm configuration by devops/keycloak/configure-realm.sh' >/dev/null
+    id=$(kc get clients -r "$REALM" -q clientId=oxinov-automation --fields id --format csv --noquotes)
+  fi
+  kc update "clients/$id" -r "$REALM" -s "secret=$KEYCLOAK_AUTOMATION_SECRET"
+  kc add-roles -r "$REALM" --uusername service-account-oxinov-automation --rolename admin
+fi
+if ! flow_exists oxinov-staff-browser; then
+  kc create authentication/flows -r "$REALM" -s alias=oxinov-staff-browser -s providerId=basic-flow \
+    -s topLevel=true -s builtIn=false -s 'description=Staff sign-in with a password and an authenticator code (FR-ID-2209)' >/dev/null
+  add_exec oxinov-staff-browser auth-cookie
+  add_subflow oxinov-staff-browser oxinov-staff-browser-forms
+  add_exec oxinov-staff-browser-forms auth-username-password-form
+  add_exec oxinov-staff-browser-forms auth-otp-form
+fi
+require oxinov-staff-browser "$(exec_id oxinov-staff-browser auth-cookie)" ALTERNATIVE
+require oxinov-staff-browser "$(exec_id oxinov-staff-browser oxinov-staff-browser-forms)" ALTERNATIVE
+require oxinov-staff-browser-forms "$(exec_id oxinov-staff-browser-forms auth-username-password-form)" REQUIRED
+require oxinov-staff-browser-forms "$(exec_id oxinov-staff-browser-forms auth-otp-form)" REQUIRED
+kc update "realms/$REALM" -s browserFlow=oxinov-staff-browser -s bruteForceProtected=true -s failureFactor=5 \
+  -s otpPolicyType=totp -s otpPolicyAlgorithm=HmacSHA1 -s otpPolicyDigits=6 -s otpPolicyPeriod=30
+REALM=$USER_REALM
 
 echo "Realm '$REALM' configured for $EDU_URL and $PORTAL_URL (email via $SMTP_HOST:$SMTP_PORT)"

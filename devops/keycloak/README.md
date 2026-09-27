@@ -28,7 +28,7 @@ bash devops/keycloak/configure-realm.sh
 
 - Sign-in page: `http://localhost:8080/realms/oxinov/account`
 - Local inbox with every sign-in code and confirmation email (Mailpit): `http://localhost:8025`
-- Admin console: `http://localhost:8080/admin` with `KEYCLOAK_ADMIN_USER` and `KEYCLOAK_ADMIN_PASSWORD` from `.env`
+- Admin console: `http://localhost:8080/admin` with `KEYCLOAK_ADMIN_USER` and `KEYCLOAK_ADMIN_PASSWORD` from `.env`, plus a code from an authenticator app (the first sign-in shows a QR code to scan). Set `KEYCLOAK_AUTOMATION_SECRET` in `.env` so the script signs in as its own service account.
 
 ## What the realm enforces
 
@@ -36,6 +36,8 @@ bash devops/keycloak/configure-realm.sh
 | --- | --- | --- |
 | Browser flow `oxinov-browser` | Cookie, or Identity Provider Redirector, or Username Form then Email OTP Form (six digits, 10 minutes, single use, IP and device trust off) | FR-ID-2202, FR-ID-2204 |
 | First broker login `oxinov-first-broker` | Review missing profile fields, create the user if unique, otherwise link only after an emailed confirmation | FR-ID-2206 |
+| Staff sign-in (master realm) `oxinov-staff-browser` | Password **and** a six-digit authenticator-app code (TOTP, 30 seconds); the first console sign-in requires setting the app up; brute-force lockout after 5 failures | FR-ID-2209 |
+| `oxinov-automation` client (master realm) | Confidential service account with the master `admin` role, secret `KEYCLOAK_AUTOMATION_SECRET` (Parameter Store in production); `configure-realm.sh` signs in with it, so an administrator's second factor never blocks a deploy | FR-ID-2209 |
 | Access tokens | 10 minutes; refresh tokens rotate and cannot be reused | FR-ID-2208 |
 | Sessions | 30 days idle, 90 days maximum | Identity and access design |
 | Brute-force detection | On, lockout after 5 failures | Threat model |

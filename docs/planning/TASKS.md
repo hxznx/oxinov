@@ -12,14 +12,13 @@
 | Platform slice | Accounts, policy acceptance, product catalogue, entitlements, owner isolation (`platform-api`, `platform-web`) |
 | Edu tenancy | Spaces, members, join codes, row-level security, two-tenant allowed and denied tests |
 | Edu learning | Catalogue, authoring with review and publishing, video and audio lessons, resources, free enrollment, notes, quizzes, timed mock exams with autosave and auto-submit, assignments with grading, class stream and Q&A |
-| Security baseline | Trivy gates, Dependabot, pinned digests, security-event schema, keyless access, network policies; CloudTrail and GuardDuty with email alerts (2026-09-26) |
+| Security baseline | Trivy gates, Dependabot, pinned digests, security-event schema, keyless access, network policies; CloudTrail and GuardDuty with email alerts (2026-09-26); staff MFA for Keycloak administrators (2026-09-27) |
 
 ## Open, in priority order
 
 | Priority | Task | Acceptance evidence | Owner |
 | --- | --- | --- | --- |
 | 0 | Request SES production access | Sign-in code reaches an address that is not verified in SES | Founder |
-| 0 | Staff MFA (TOTP) for Keycloak administrators and operators | Admin sign-in requires a second factor; tested in rehearsal | Engineering |
 | 0 | Remove or retarget the stale `.github/workflows/deploy.yml` preflight | Only live workflows remain | Engineering |
 | 0 | Playwright end-to-end tests for sign-in, join, enrol, lesson, timed exam, assignment | Run in CI on every push | Engineering |
 | 0 | Quarterly restore test from the nightly dump | Restored database passes smoke checks; time recorded against NFR-05 | Engineering |

@@ -71,6 +71,7 @@ configure_realm() {
   secrets=$(mktemp)
   KCADM_EXEC="kubectl -n $NAMESPACE exec -i deploy/keycloak --" SKIP_DOTENV=1 \
     KEYCLOAK_ADMIN_USER=oxinov-admin KEYCLOAK_ADMIN_PASSWORD="$(param KEYCLOAK_ADMIN_PASSWORD)" \
+    KEYCLOAK_AUTOMATION_SECRET="$(param KEYCLOAK_AUTOMATION_SECRET)" \
     PLATFORM_WEB_URL=https://app.oxinov.com EDU_WEB_URL=https://edu.oxinov.com \
     SMTP_HOST=mail-relay SMTP_PORT=2525 SMTP_FROM=no-reply@oxinov.com \
     CLIENT_SECRETS_OUT="$secrets" bash devops/keycloak/configure-realm.sh

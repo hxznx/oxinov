@@ -22,7 +22,7 @@ Built and verified in production or CI. Requirements not listed are not built ye
 | FR-ID-2204 No customer passwords | Partly | Sign-in has no password form; password-free registration is in progress |
 | FR-ID-2205 First-sign-in welcome | Implemented | `app.oxinov.com/welcome` with policy acceptance |
 | FR-ID-2207 Single sign-on across products | Implemented | One Keycloak session for `app.` and `edu.` |
-| FR-ID-2209 Staff identities | Partly | Admin console not public; staff MFA (TOTP) open |
+| FR-ID-2209 Staff identities | Partly | Admin console not public; administrators need an authenticator-app code (TOTP); automation has its own service account. Separate staff realm and operator roles open |
 | FR-POLICY-2401 Versioned policies | Partly | Policy pages live; text awaits legal review |
 | FR-POLICY-2402 Acceptance records | Implemented | `PolicyAcceptance` in the platform database |
 | FR-PLAN-2602 Automatic member access | Implemented | Granted on first sign-in (`accounts.service.ts`) |

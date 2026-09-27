@@ -138,6 +138,7 @@ admin=$(kube get secret oxinov-app -o jsonpath='{.data.KEYCLOAK_ADMIN_PASSWORD}'
 secrets=$(mktemp)
 KCADM_EXEC="docker exec -i $NAME kubectl -n oxinov exec -i deploy/keycloak --" SKIP_DOTENV=1 \
   KEYCLOAK_ADMIN_USER=oxinov-admin KEYCLOAK_ADMIN_PASSWORD="$admin" \
+  KEYCLOAK_AUTOMATION_SECRET="$(openssl rand -hex 24)" \
   PLATFORM_WEB_URL=https://app.oxinov.com EDU_WEB_URL=https://edu.oxinov.com \
   SMTP_HOST=mail-relay SMTP_PORT=2525 SMTP_FROM=no-reply@oxinov.com CLIENT_SECRETS_OUT="$secrets" \
   bash devops/keycloak/configure-realm.sh >/dev/null

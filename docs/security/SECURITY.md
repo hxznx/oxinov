@@ -10,7 +10,7 @@ Use the OWASP ASVS 5.0 Level 2 controls relevant to deployed features, the OWASP
 
 | Layer | Required control | State |
 | --- | --- | --- |
-| Identity | One Oxinov account through Keycloak (OIDC, PKCE); passwordless for customers (ADR-011); MFA for staff and administrators; server-side trust levels and policy acceptance | Customer sign-in in place (email one-time code, realm brute-force protection, admin console not public); **staff MFA (TOTP) for administrators is open** |
+| Identity | One Oxinov account through Keycloak (OIDC, PKCE); passwordless for customers (ADR-011); MFA for staff and administrators; server-side trust levels and policy acceptance | Customer sign-in in place (email one-time code, realm brute-force protection, admin console not public); staff MFA: Keycloak administrators need a password and an authenticator-app code (2026-09-27), automation uses its own service account |
 | Authorization | Tenant membership in the API **and** PostgreSQL row-level security with a non-bypass request role (ADR-006); denied cross-tenant paths tested with two tenants | In place for Edu |
 | Input and output | Validation at every boundary (class-validator, DTOs); stable error codes; no stack traces to clients; output encoding by React; JSON-LD escaped | In place |
 | HTTP | HTTPS only with HSTS; security headers and rate limits from `@oxinov/server-kit`; APIs have no public host (browsers call the web apps, which call the APIs server-side), so no cross-origin access is allowed | In place |
@@ -29,7 +29,7 @@ Each item states its trigger and approximate monthly cost; none is enabled witho
 
 | # | Control | Why | Cost (approx.) | Trigger |
 | --- | --- | --- | --- | --- |
-| 0 | **Staff MFA (TOTP)** required for Keycloak administrators and platform operators | Stops takeover of privileged accounts | Free | **Now** |
+| 0 | **Staff MFA (TOTP)** required for Keycloak administrators | Stops takeover of privileged accounts | Free | **Done 2026-09-27** (`configure-realm.sh`); also keep MFA on AWS IAM Identity Center, GitHub, Zoho, and the domain registrar (owner accounts) |
 | 1 | **CloudTrail trail** for management events to an encrypted, lifecycle-managed S3 bucket (Terraform) | Keeps a tamper-evident record of every AWS API call beyond the 90-day console history | Under US$1 (one management-event trail is free; S3 storage only) | **Done 2026-09-26** (`starter/security.tf`) |
 | 2 | **GuardDuty** (foundational: CloudTrail, VPC flow, DNS) with findings emailed through SNS | Detects credential misuse, crypto-mining, and malicious traffic | About US$1–5 at current volume (30-day free trial shows the real figure) | **Done 2026-09-26**; findings of medium severity or higher are emailed |
 | 3 | Malware scanning of uploads (for example GuardDuty Malware Protection for S3) | Uploaded files are shared with other learners | Per GB scanned | Before public sign-up or first paying school |
