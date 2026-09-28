@@ -23,11 +23,13 @@ fi
 
 set -a
 # shellcheck disable=SC1090
+. "$ROOT/.env"
+# shellcheck disable=SC1090
 . "$ADMIN_ENV"
 set +a
 
 cd "$ROOT"
 docker compose --env-file .env --env-file "$ADMIN_ENV" --profile identity up -d --wait
-bash devops/keycloak/configure-realm.sh
+SKIP_DOTENV=1 bash devops/keycloak/configure-realm.sh
 
 echo "Keycloak is ready. Open http://localhost:${KEYCLOAK_PORT:-8080}/admin to manage users."
