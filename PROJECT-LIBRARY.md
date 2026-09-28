@@ -1,7 +1,7 @@
 # Oxinov company and product library
 
 Find any file using **category → responsibility → feature → alphabetical file list**.
-Runtime paths stay stable; folders are not renamed merely to change display order.
+Source folders keep stable runtime paths; only `docs/` folders carry number prefixes, in reading order.
 
 This is the company library, not an Edu-only structure. Browse by business offering through the
 [product register](docs/02-products/README.md), or by technical responsibility through the file catalog.
@@ -39,7 +39,7 @@ Every product uses one technical slug and the same shelves, so a new product is 
 | Shelf | Path pattern | Oxinov Edu (`edu`) |
 | --- | --- | --- |
 | Product record | `docs/02-products/<slug>/README.md` | [docs/02-products/edu](docs/02-products/edu/README.md) |
-| Requirements | `docs/03-requirements/frd/<product>-frd.md` | [EDU-FRD.md](docs/03-requirements/frd/edu-frd.md) |
+| Requirements | `docs/03-requirements/frd/<product>-frd.md` | [edu-frd.md](docs/03-requirements/frd/edu-frd.md) |
 | Web client | `frontend/products/<slug>-web/` | [edu-web](frontend/products/edu-web/README.md) |
 | API | `backend/products/<slug>-api/` | [edu-api](backend/products/edu-api/README.md) |
 | Worker, realtime | `backend/products/<slug>-worker/`, `<slug>-chat/` | planned |
@@ -68,9 +68,9 @@ Run from the root after adding, removing or renaming files:
 
 ```bash
 python scripts/project_catalog.py
-python scripts/project_catalog.py --check
 python scripts/validate_project.py
 node scripts/validate-workspace.mjs
+python scripts/quarantine.py --scan
 ```
 
 Shortcuts: `pnpm catalog:update` and `pnpm catalog:check`.
@@ -79,17 +79,12 @@ Update category descriptions and status classifications in the generator when bo
 
 The inventory includes tracked and non-ignored new files, not dependencies, caches, local environment files, Terraform state, private evidence or empty folders.
 It follows Git ignore rules; never add private material to Git. `.env.example` files are public configuration templates.
-Local temporary work belongs under ignored `.tmp/` instead of additional root folders.
+Local temporary work belongs under ignored `.tmp/` instead of additional root folders. Unwanted files and folders are never deleted by hand: `python scripts/quarantine.py --scan --move` (or `quarantine.py <path>`) moves them into the ignored `DELETE_ME/`, which the owner empties after checking it.
 
 ## Change discipline
 
 - Preserve functional boundaries and sort the indexes, rather than adding number prefixes to source folders.
-- Link each new document from `docs/README.md`; cite requirements for behavior changes.
+- File and link each new document by the [documentation standard](docs/08-engineering/documentation-standard.md): it must be reachable from its folder README. Cite requirement IDs for behavior changes.
 - Label placeholders. Catalog presence does not prove implementation or production readiness.
 - Coordinate path migrations with other agents and update imports, Docker, CI and tests together.
 - This user-requested reproducible Markdown index is versioned documentation; generated caches and build output remain excluded.
-
-## Rollback
-
-This milestone affects documentation and catalog checks, with no runtime or database migration.
-To undo it, remove the catalog hook and commands together with the library files and restore the previous guides. Re-run documentation and workspace validation.

@@ -49,7 +49,7 @@ Keycloak adds an audience mapper to the Edu client for the audience named in `co
 1. Prepare, but do not push, one change that renames `oxinov_lms` to `oxinov_edu` in:
    - the chart: `_helpers.tpl` (`dbUrl` database), and `templates/platform.yaml` (`POSTGRES_DB`, both `pg_isready` checks, and the migration URL)
    - `devops/kubernetes/scripts/rehearse-local.sh`
-   - `docker-compose.yml`, `.env.example`, and `backend/products/edu-api/.env.example`
+   - `docker-compose.yml`, `.env.example`, and `backend/products/edu-api/.env.example`, including the local Compose project name `oxinov-lms` (renaming it makes Compose create new, empty containers and volumes, so each developer re-creates their local stack)
    - the documents that name the database: AGENTS.md section 5, current state, and database design
 
    Rehearse it locally, including a restore of a dump into the renamed database.
