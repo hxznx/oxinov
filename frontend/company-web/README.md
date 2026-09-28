@@ -35,3 +35,7 @@ pnpm --filter @oxinov/company-web test
 | Reviewed policy text | `/legal/*` pages (FR-POLICY-2401) |
 | Contact form backend with rate limiting | Arrives with `api.oxinov.com` (FR-SITE-2104); until then contact details only |
 | Prices | `/pricing/` after the plan catalogue is approved (FR-SITE-2103) |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-seo](../../.claude/skills/oxinov-seo/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

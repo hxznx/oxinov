@@ -12,3 +12,7 @@ How Oxinov protects accounts, tenants, data, and the platform, and how it detect
 | [Secrets management](secrets-management.md) | Where secrets live and how they are rotated |
 | [AI governance](ai-governance.md) | Rules for every AI feature, model, prompt, and evaluation |
 | [Security operations (SOC)](soc.md) | Security events, detections, and incident handling |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

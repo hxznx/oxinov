@@ -24,6 +24,7 @@ New here? Read [AGENTS.md](../AGENTS.md) (how everyone works in this repository)
 | [11 · Planning](11-planning/README.md) | Roadmaps, tasks, risks, and the changelog | [Company roadmap](11-planning/company-roadmap.md) |
 | [12 · Research](12-research/README.md) | R&D operating system and user research standard | [User-centred product standard](12-research/user-centered-product-standard.md) |
 | [13 · Marketing](13-marketing/README.md) | Marketing plan and search engine optimization | [SEO](13-marketing/seo/README.md) |
+| [14 · AI knowledge](14-ai-knowledge/README.md) | Rule sets and step-by-step skills for coding assistants, by area and by service | [Skills map](14-ai-knowledge/README.md#which-skills-each-part-of-the-company-uses) |
 
 ## Which document wins
 

@@ -14,6 +14,7 @@ How every document under `docs/` is organized, written, and kept true. It applie
 | Company-wide architecture, current state, and decisions | `04-architecture/`, one file per decision in `04-architecture/adr/` |
 | Data, API, design, engineering, security, DevOps, planning, research, marketing | `05-data/` to `13-marketing/` |
 | Planned production procedures | `10-devops/runbooks/` |
+| Rule sets for coding assistants | `14-ai-knowledge/`; the matching skills live in `.claude/skills/oxinov-<task>/SKILL.md` |
 | Guides that belong to code (how to run, test, or change one folder) | A `README.md` beside the code, linked from the matching `docs/` page |
 
 Every folder has a `README.md` that indexes its documents, and every document must be reachable by links from [docs/README.md](../README.md). Folders are `NN-topic`; files are lowercase kebab-case.

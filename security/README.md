@@ -14,3 +14,7 @@ security/
 ```
 
 Application uptime and performance remain under `monitoring/`. Security events are sent to a separately access-controlled SIEM. See [SOC design](../docs/09-security/soc.md).
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-security](../.claude/skills/oxinov-security/SKILL.md). All rules and skills: [AI knowledge](../docs/14-ai-knowledge/README.md).

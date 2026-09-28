@@ -18,3 +18,7 @@ How code is written, tested, organized, and found. The [service catalog](service
 | [Company library standard](company-library-standard.md) | Classifying and growing the repository across products |
 | [Service catalog](service-catalog.md) | Every deployable service (generated from `services.yaml`) |
 | [File catalog](file-catalog.md) | Every repository file, by folder (generated) |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md), [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md), [oxinov-documentation](../../.claude/skills/oxinov-documentation/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

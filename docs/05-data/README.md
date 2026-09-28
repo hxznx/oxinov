@@ -10,3 +10,7 @@ How Oxinov stores, isolates, changes, and deletes data. PostgreSQL is the system
 | [Data model](data-model.md) | Core entities and their ownership |
 | [Migration strategy](migration-strategy.md) | Forward-only, reviewed, immutable migrations in expand, migrate, contract steps |
 | [Data retention](data-retention.md) | How long each kind of data is kept, and how it is deleted or exported |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

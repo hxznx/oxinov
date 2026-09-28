@@ -10,3 +10,7 @@ Contracts shared by every Oxinov API: how requests authenticate, how errors are 
 | [API authentication](api-auth.md) | Tokens, audiences, and authorization on every protected request |
 | [API errors](api-errors.md) | Stable error codes and response shape |
 | [API versioning](api-versioning.md) | `/v1` paths and additive-first changes |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

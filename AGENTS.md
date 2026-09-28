@@ -46,7 +46,7 @@ Use [PROJECT-LIBRARY.md](PROJECT-LIBRARY.md) for category navigation and the
 [file catalog](docs/08-engineering/file-catalog.md) for alphabetical paths. After adding,
 removing or renaming repository files, run `python scripts/project_catalog.py` before validation.
 
-Start with [docs/README.md](docs/README.md), the documentation map. Documents are grouped in numbered folders (`docs/01-company` to `docs/13-marketing`), each with a README index; file names are lowercase kebab-case, and a document about one product lives in `docs/02-products/<slug>/`. Write and file documents by the [documentation standard](docs/08-engineering/documentation-standard.md). Then read what matches the task:
+Start with [docs/README.md](docs/README.md), the documentation map. Documents are grouped in numbered folders (`docs/00-onboarding` to `docs/14-ai-knowledge`), each with a README index; file names are lowercase kebab-case, and a document about one product lives in `docs/02-products/<slug>/`. Write and file documents by the [documentation standard](docs/08-engineering/documentation-standard.md). Then read what matches the task:
 
 | Task | Read first |
 | --- | --- |
@@ -66,6 +66,8 @@ Start with [docs/README.md](docs/README.md), the documentation map. Documents ar
 | Data, API, security, or infrastructure | [company architecture](docs/04-architecture/platform-architecture.md), [company stack](docs/04-architecture/tech-stack.md), [AWS](docs/04-architecture/cloud-architecture.md), [ADRs](docs/04-architecture/adr/README.md) (ADR-021 for today's baseline), [security baseline](docs/09-security/security-baseline.md), [threat model](docs/09-security/threat-model.md) |
 | New product, service, or kind of offering | [company library standard](docs/08-engineering/company-library-standard.md), [target structure](docs/08-engineering/company-project-structure.md) |
 | Research or experiment | [R&D operating system](docs/12-research/README.md) |
+
+**Skills:** before a task, load the matching step-by-step skill in `.claude/skills/oxinov-<task>/SKILL.md` (backend, frontend, database, testing, security, CI/CD, Kubernetes, Terraform, and more). Claude Code loads them automatically; other assistants read the file. The [AI knowledge](docs/14-ai-knowledge/README.md) folder lists every skill, the short rule set for each area, and which skills each service uses. This file wins where they disagree.
 
 Milestone build commands live in [prompts/](prompts/). Implement one milestone at a time.
 

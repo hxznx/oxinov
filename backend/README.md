@@ -9,3 +9,7 @@ Backend processes enforce tenant membership and may use approved shared packages
 must not import product business logic, and one product must never read another product's
 database. See [the Edu API](products/edu-api/README.md) and the
 [target structure](../docs/08-engineering/company-project-structure.md).
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-backend](../.claude/skills/oxinov-backend/SKILL.md), [oxinov-mvc](../.claude/skills/oxinov-mvc/SKILL.md), [oxinov-api-design](../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-validation](../.claude/skills/oxinov-validation/SKILL.md), [oxinov-testing](../.claude/skills/oxinov-testing/SKILL.md), [oxinov-new-service](../.claude/skills/oxinov-new-service/SKILL.md). All rules and skills: [AI knowledge](../docs/14-ai-knowledge/README.md).

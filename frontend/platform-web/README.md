@@ -31,3 +31,7 @@ pnpm --filter @oxinov/platform-web test         # sealed sessions, PKCE vector, 
 ```
 
 Sign-in codes arrive in Mailpit at http://localhost:8025. Production runs the standalone server (`output: 'standalone'`) in a container; its image and deployment arrive with the AWS environment.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

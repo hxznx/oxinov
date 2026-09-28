@@ -19,3 +19,7 @@ The rules for working in this repository are in [AGENTS.md](../../AGENTS.md). Wh
 | Frontend | [Design system](../07-design/design-system.md), [accessibility](../07-design/accessibility.md), [coding standards](../08-engineering/coding-standards.md), [Edu UI and UX](../02-products/edu/edu-ui-ux.md) |
 | DevOps | [CI/CD](../10-devops/ci-cd.md), [deployment](../10-devops/deployment.md), [rollback](../10-devops/rollback.md), [production runbook](../../devops/kubernetes/README.md), [security baseline](../09-security/security-baseline.md) |
 | Product | [Requirements](../03-requirements/README.md), [Edu FRD](../03-requirements/frd/edu-frd.md), [company roadmap](../11-planning/company-roadmap.md), [tasks](../11-planning/tasks.md), [risks and decisions](../11-planning/risks.md) |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-documentation](../../.claude/skills/oxinov-documentation/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

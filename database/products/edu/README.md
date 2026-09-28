@@ -13,3 +13,7 @@ The [product record](../../../docs/02-products/edu/README.md) links the rest of 
 Every tenant-owned record carries an immutable `tenant_id`, enforced by API authorization, PostgreSQL RLS,
 and automated allowed and denied cross-tenant tests. Production applies these migrations through the
 `migrate` image (`backend/workers/migrate/edu.config.ts`).
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-database](../../../.claude/skills/oxinov-database/SKILL.md), [oxinov-security](../../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../../docs/14-ai-knowledge/README.md).

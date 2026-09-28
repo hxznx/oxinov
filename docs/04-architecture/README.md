@@ -19,3 +19,7 @@ Start with [current state](current-state.md): it wins for *what runs today*, and
 | [Integrations](integrations.md) | External providers and their required controls |
 | [Scalability](scalability.md) | When and how to scale containers, databases, and clusters |
 | [Architecture decisions](adr/README.md) | ADR-001 onward, one file per decision |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-mvc](../../.claude/skills/oxinov-mvc/SKILL.md), [oxinov-new-service](../../.claude/skills/oxinov-new-service/SKILL.md), [oxinov-aws](../../.claude/skills/oxinov-aws/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

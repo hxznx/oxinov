@@ -9,3 +9,7 @@ Every tenant-owned product record and operation carries and verifies `tenant_id`
 only their owned database or schema and communicate across boundaries through versioned APIs and
 events. Only controlled backend and CI tasks may apply migrations or seeds; frontend applications
 cannot import anything from this folder.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-database](../.claude/skills/oxinov-database/SKILL.md), [oxinov-security](../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../docs/14-ai-knowledge/README.md).

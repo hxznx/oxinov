@@ -265,3 +265,6 @@ This is an Oxinov operating model, not a claim of certification or formal compli
 - [NASA technology readiness definitions](https://www.nasa.gov/pdf/458490main_TRL_Definitions.pdf) for maturity communication; and
 - [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) and its [Generative AI Profile](https://doi.org/10.6028/NIST.AI.600-1) for AI risk governance and evaluation.
 
+## Assistant skills
+
+Coding assistants working here follow [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

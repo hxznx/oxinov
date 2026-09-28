@@ -133,3 +133,7 @@ Each FRD uses the product's number block from the registry and contains these pa
 9. Optionally, a **build order** or suggested delivery slices, and related documents.
 
 Section numbers help readers only. Always cite requirement IDs.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-requirements](../../.claude/skills/oxinov-requirements/SKILL.md), [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

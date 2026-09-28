@@ -16,3 +16,7 @@ How code reaches production and how production is operated. Every push to `main`
 | [Cost optimization](cost-optimization.md) | The US$50 monthly budget and every resource's cost |
 | [DevOps roadmap](devops-roadmap.md) | Phases and the triggers for scaling out |
 | [Runbooks](runbooks/README.md) | Step-by-step procedures for planned production changes |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-cicd](../../.claude/skills/oxinov-cicd/SKILL.md), [oxinov-docker](../../.claude/skills/oxinov-docker/SKILL.md), [oxinov-kubernetes](../../.claude/skills/oxinov-kubernetes/SKILL.md), [oxinov-terraform](../../.claude/skills/oxinov-terraform/SKILL.md), [oxinov-aws](../../.claude/skills/oxinov-aws/SKILL.md), [oxinov-server](../../.claude/skills/oxinov-server/SKILL.md), [oxinov-ansible](../../.claude/skills/oxinov-ansible/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

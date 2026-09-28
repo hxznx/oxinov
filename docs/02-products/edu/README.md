@@ -50,3 +50,7 @@ The structure follows the [company library standard](../../08-engineering/compan
 | API contract | [packages/contracts](../../../packages/contracts/README.md) | Scaffold |
 | Deployment and monitoring | [Production runbook](../../../devops/kubernetes/README.md), [observability](../../10-devops/observability.md) | Live; dashboards per product planned (ADR-019) |
 | Tests and release evidence | CI jobs `api`, `edu-web`, and `edu-api-image`; [changelog](../../11-planning/changelog.md) | Verified per release |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-backend](../../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-frontend](../../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-database](../../../.claude/skills/oxinov-database/SKILL.md), [oxinov-api-design](../../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-testing](../../../.claude/skills/oxinov-testing/SKILL.md), [oxinov-requirements](../../../.claude/skills/oxinov-requirements/SKILL.md). All rules and skills: [AI knowledge](../../14-ai-knowledge/README.md).

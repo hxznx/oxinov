@@ -141,3 +141,7 @@ By hand:
 3. Plan the starter Terraform stack: it creates the ECR repository from the catalog (then the owner's "yes apply").
 4. Run `bash devops/scripts/check-delivery.sh` and `bash devops/kubernetes/scripts/rehearse-local.sh`, then
    push. The next green `main` deploys it.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-server](../../.claude/skills/oxinov-server/SKILL.md), [oxinov-kubernetes](../../.claude/skills/oxinov-kubernetes/SKILL.md), [oxinov-cicd](../../.claude/skills/oxinov-cicd/SKILL.md), [oxinov-aws](../../.claude/skills/oxinov-aws/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

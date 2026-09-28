@@ -35,3 +35,7 @@ Settings, read at request time: `APP_URL`, `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OID
 ```bash
 pnpm --filter @oxinov/web-auth test
 ```
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

@@ -56,3 +56,7 @@ pnpm --filter @oxinov/edu-api db:test-policies
 ```
 
 Integration tests drop and recreate the schema, so the test database name must end in `_test`.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-backend](../../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-mvc](../../../.claude/skills/oxinov-mvc/SKILL.md), [oxinov-api-design](../../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-validation](../../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-database](../../../.claude/skills/oxinov-database/SKILL.md), [oxinov-security](../../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../../docs/14-ai-knowledge/README.md).

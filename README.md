@@ -10,6 +10,7 @@ The company and product monorepo of **Oxinov Pvt. Ltd.**: the public website, th
 | Find any document | [Documentation map](docs/README.md) |
 | Find any file | [Project library](PROJECT-LIBRARY.md) and the [file catalog](docs/08-engineering/file-catalog.md) |
 | Know the rules every contributor and coding assistant follows | [AGENTS.md](AGENTS.md) |
+| Give a coding assistant the right rules and step-by-step skills | [AI knowledge](docs/14-ai-knowledge/README.md) |
 | Know what runs in production today | [Current state](docs/04-architecture/current-state.md) |
 
 To work locally you need Node.js 22, pnpm 12.6.0, Python 3.9 or newer, and Docker. Run `pnpm install --frozen-lockfile` at the root, then follow [developer setup](docs/10-devops/dev-setup.md).
@@ -45,6 +46,6 @@ Production runs on one k3s node in AWS Mumbai. Terraform manages it, every green
 | `devops/` | Docker build, Keycloak, Kubernetes chart, Terraform, and delivery scripts |
 | `monitoring/` | Prometheus, Alertmanager, and Grafana provisioning |
 | `security/` | Security event schema, detections, SOC runbooks, and incident templates |
-| `docs/` | Numbered documentation, from company to marketing |
+| `docs/` | Numbered documentation, from onboarding to AI knowledge |
 | `prompts/` | Reviewed, milestone-scoped commands for coding assistants |
 | `scripts/` | Validation, catalogs, service scaffolding, and the quarantine tool |

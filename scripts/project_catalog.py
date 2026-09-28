@@ -9,7 +9,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = "docs/08-engineering/file-catalog.md"
 AREAS = {
-    ".claude": "Agent launch configuration", ".github": "CI and collaboration",
+    ".claude": "Agent launch configuration and assistant skills", ".github": "CI and collaboration",
     "backend": "APIs and workers", "database": "Schemas, migrations, policies and seeds",
     "devops": "Infrastructure and delivery", "docs": "Requirements and operating guides",
     "frontend": "Company, portal and product interfaces", "monitoring": "Metrics and alerts",

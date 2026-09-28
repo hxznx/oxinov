@@ -11,3 +11,7 @@ PostgreSQL schema for the Oxinov platform control plane, used only by `backend/p
 | `policies/local-app-role.sh` | Local Docker init: creates `oxinov_platform` and the request role login |
 
 Organizations, KYC, plans, and the payments ledger arrive in later Phase 2 slices, each with its own migration and isolation tests.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

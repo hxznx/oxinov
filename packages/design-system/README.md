@@ -31,3 +31,7 @@ import { themes, brandAssets } from '@oxinov/design-system';
 | `pnpm --filter @oxinov/design-system test` | Contrast checks (every text token at least WCAG AA 4.5:1 on its backgrounds) and generated-CSS checks |
 
 The contrast test is the automated check required by FR-SITE-2102; a token change that makes text unreadable fails the build.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

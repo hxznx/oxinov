@@ -18,3 +18,7 @@ Each API still owns its Prisma client, `DatabaseContext`, identity resolver, and
 pnpm --filter @oxinov/server-kit test
 pnpm --filter @oxinov/server-kit build   # APIs import the compiled CommonJS output
 ```
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

@@ -54,3 +54,7 @@ Verified end to end on 2026-09-24: email-only sign-in page, code delivered to Ma
 - Google identity provider: needs an OAuth client from Google Cloud (owner action), then `Trust Email` on and the `oxinov-first-broker` flow.
 - Refusing Google accounts with unverified emails at Keycloak (today the platform API refuses them at the welcome step with `EMAIL_NOT_VERIFIED`).
 - Oxinov cyberpunk login theme, Apple sign-in, the separate `oxinov-staff` realm, and production hostname, TLS, and proxy settings.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-kubernetes](../../.claude/skills/oxinov-kubernetes/SKILL.md), [oxinov-server](../../.claude/skills/oxinov-server/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

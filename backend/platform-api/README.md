@@ -33,3 +33,7 @@ pnpm --filter @oxinov/platform-api test:integration   # needs TEST_DATABASE_URL 
 ```
 
 Tokens come from `id.oxinov.com` (Keycloak, ADR-016). Tests sign their own RS256 tokens against a local key set.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-mvc](../../.claude/skills/oxinov-mvc/SKILL.md), [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
