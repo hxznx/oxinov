@@ -1,5 +1,7 @@
 # AI governance and safety
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Purpose
 
 This policy controls AI used by Oxinov staff, products, learners, customers, and automated jobs. It adapts the NIST AI Risk Management Framework's govern, map, measure, and manage functions and covers the major risks in the OWASP Top 10 for LLM Applications 2025.

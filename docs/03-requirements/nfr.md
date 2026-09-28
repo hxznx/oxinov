@@ -1,10 +1,14 @@
 # Non-functional requirements
 
-**Source:** Oxinov Edu FRD. Related: [FRD](frd/edu-frd.md), [security](../09-security/security-baseline.md), and [deployment](../10-devops/deployment.md).
+How well Oxinov systems must perform, and how each target is verified: performance, security, accessibility, recovery, privacy, delivery, cost, and search. The [requirements standard](README.md) shares these requirements across every FRD; cite them by number (for example NFR-18).
+
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-28
+
+These requirements were first written for the [Oxinov Edu FRD](frd/edu-frd.md). Related documents: [security baseline](../09-security/security-baseline.md) and [deployment](../10-devops/deployment.md).
 
 ## Requirements
 
-Numeric targets below are proposed acceptance targets. Confirm regions, traffic, and budget in [open decisions](../11-planning/risks.md) before final approval.
+The numeric targets below are proposed acceptance targets. Confirm regions, traffic, and budget in [risks and decisions](../11-planning/risks.md) before final approval.
 
 | ID | Requirement and verification |
 | --- | --- |

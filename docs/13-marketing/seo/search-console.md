@@ -2,6 +2,8 @@
 
 [SEO index](README.md) · Terraform: `devops/terraform/environments/production/edge` (`search_verification_txt` in `variables.tf`, used in `mail.tf`)
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 Search engines show search data (queries, clicks, countries, indexing errors) only to verified owners. Verification is a DNS TXT record, managed in Terraform like every other AWS resource.
 
 ## Verify Google (one time; done 2026-09-26)

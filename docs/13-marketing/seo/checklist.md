@@ -2,6 +2,8 @@
 
 [SEO index](README.md)
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## New public page
 
 - [ ] Added to `sitemapEntries` in `frontend/company-web/src/seo/routes.ts`.

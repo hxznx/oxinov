@@ -2,6 +2,8 @@
 
 One Oxinov account gives a person access to every launched Oxinov product. Signing in is as simple as a mainstream consumer AI product: one tap with Google, or an email one-time code, with no password to create. Stronger checks happen later and only when a person wants to do something that needs them, such as selling, posting a job, offering a service, or receiving money. This document is the source of truth for sign-in, single sign-on, trust levels, and policy acceptance. See [ADR-011](adr/adr-011-one-account-simple-signin.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Sign-in experience
 
 ```text

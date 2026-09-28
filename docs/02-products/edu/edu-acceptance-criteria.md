@@ -2,6 +2,8 @@
 
 **Source:** FRD v1.3. Each journey must pass on relevant web and mobile clients; tenant isolation must fail closed.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## End-to-end acceptance journeys
 
 1. **Paid learner:** A visitor registers and verifies email, buys a course, receives access only after a verified payment event, finishes required work, then downloads a certificate whose public verification page is valid.

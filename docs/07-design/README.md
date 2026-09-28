@@ -2,6 +2,8 @@
 
 The brand and interface rules every Oxinov website and product follows. Product screens and flows live with their product, for example [Edu user flows](../02-products/edu/edu-user-flows.md) and [Edu UI and UX](../02-products/edu/edu-ui-ux.md).
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 | Document | Purpose |
 | --- | --- |
 | [Brand](brand.md) | Brand system, voice, logo, color, and typography |

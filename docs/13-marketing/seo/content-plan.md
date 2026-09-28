@@ -2,6 +2,8 @@
 
 [SEO index](README.md) · Keywords: [keywords.md](keywords.md) · Copy source: `frontend/company-web/src/content/site.ts`
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 Content is what ranks. Technical SEO only makes sure search engines can read it.
 
 ## Page briefs (in order)

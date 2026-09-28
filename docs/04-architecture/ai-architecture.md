@@ -1,5 +1,7 @@
 # AI platform architecture
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Decision
 
 Create a shared `platform-ai` capability behind the Oxinov backend. All company and product applications use versioned internal APIs or typed application commands. The gateway initially uses Amazon Bedrock in AWS Mumbai (`ap-south-1`) through a provider adapter. It can add other providers without changing product domain logic.

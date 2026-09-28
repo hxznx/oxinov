@@ -4,6 +4,8 @@
 Related: [ADR-017 starter hosting and ADR-019 multi-product architecture](../04-architecture/adr/README.md), [AWS architecture](../04-architecture/cloud-architecture.md),
 [CI/CD](ci-cd.md), [rollback](rollback.md), [backup and recovery](backup-recovery.md), [production runbook](../../devops/kubernetes/README.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Guiding rules
 
 - **Every push to `main` that passes CI reaches production automatically.** People never deploy by hand;

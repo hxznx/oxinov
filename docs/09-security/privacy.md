@@ -2,6 +2,8 @@
 
 Oxinov Pvt. Ltd. is responsible for personal data processed by the Oxinov platform and its products. Tenant owners control their educational data in Oxinov Edu subject to platform operations and law. The public Privacy Policy is part of the [platform policies](../01-company/platform-policies.md); its legal text requires review by qualified Nepal counsel against the Individual Privacy Act and the laws of each launch market.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Data collected by layer
 
 | Layer | Data | Purpose |

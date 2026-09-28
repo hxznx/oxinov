@@ -2,12 +2,15 @@
 
 This is the entry point to every document about **Oxinov Pvt. Ltd.**: the company, its shared platform, and its products. Folders are numbered in reading order, from *why the company exists* to *how it is marketed*. Each folder has a README that indexes its documents.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 New here? Read [AGENTS.md](../AGENTS.md) (how everyone works in this repository), then [current state](04-architecture/current-state.md) (what actually runs today), then the folder for your task.
 
 ## Folders
 
 | Folder | What it answers | Start with |
 | --- | --- | --- |
+| [00 · Onboarding](00-onboarding/README.md) | How to get the code running and what to read for your role | [Quickstart](00-onboarding/quickstart.md) |
 | [01 · Company](01-company/README.md) | Why Oxinov exists; policies, subscriptions, AI strategy | [Platform blueprint](01-company/platform-blueprint.md) |
 | [02 · Products](02-products/README.md) | What each product is, and its release gate | [Oxinov Edu](02-products/edu/README.md) |
 | [03 · Requirements](03-requirements/README.md) | What the system must do, requirement by requirement | [Area registry and FRDs](03-requirements/README.md#area-registry) |

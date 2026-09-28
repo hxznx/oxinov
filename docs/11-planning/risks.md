@@ -2,6 +2,8 @@
 
 **Owner and due date:** assign before implementation of the affected feature. Open items are not silent defaults.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Decisions needed before final approval
 
 | Decision | Why it matters |

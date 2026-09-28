@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26 (ADR-021).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 `.env.example` files contain names and non-secret examples only; local `.env` files are ignored by Git. Secrets never appear in Docker images, Compose files, Kubernetes ConfigMaps, Terraform code or state, GitHub variables, logs, prompts, test fixtures, or mobile bundles.
 
 ## Production today

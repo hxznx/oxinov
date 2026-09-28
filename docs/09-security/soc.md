@@ -2,6 +2,8 @@
 
 **Status (2026-09-26, ADR-021):** this is the target SOC design. Today production has CI scanning (Trivy), the security-event schema, CloudWatch alarms, and no SIEM; the next steps with costs are in the [security roadmap](security-baseline.md#roadmap). Production runs on k3s on EC2 (ADR-018), so runtime detection is GuardDuty (EC2 and, at scale, EKS Runtime Monitoring) or Falco, not ECS Fargate.
 
+**Status:** Proposed · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Purpose
 
 Security operations is separate from product observability. Prometheus and Grafana answer whether the platform is healthy and fast. The SOC pipeline answers whether an attacker, compromised account, unsafe configuration, vulnerable component, or policy violation threatens the platform or tenant data.

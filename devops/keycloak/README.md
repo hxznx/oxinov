@@ -9,6 +9,7 @@ Keycloak implements the one Oxinov account (ADR-011) with the sign-in design in 
 | `Dockerfile` | Keycloak 26.7.3 pinned by digest, plus `email-otp-authenticator` v1.5.0 fetched by exact release URL and SHA-256 |
 | `configure-realm.sh` | Idempotent local setup of the `oxinov` realm: flows, token lifetimes, SMTP, and the account portal client |
 | `init-db.sh` | Local Docker init: creates the `keycloak` database and role on a fresh PostgreSQL volume |
+| `admin/` | Separate local administrator environment and operator instructions; real credentials stay untracked |
 
 ## Supply chain
 
@@ -22,13 +23,15 @@ The email-code extension (`for-keycloak/email-otp-authenticator`, Unlicense) was
 ## Run locally
 
 ```bash
-docker compose --profile identity up -d --wait
-bash devops/keycloak/configure-realm.sh
+cp devops/keycloak/admin/.env.example devops/keycloak/admin/.env
+# Replace every change-me value, then:
+bash devops/keycloak/admin/start-local.sh
 ```
 
 - Sign-in page: `http://localhost:8080/realms/oxinov/account`
 - Local inbox with every sign-in code and confirmation email (Mailpit): `http://localhost:8025`
-- Admin console: `http://localhost:8080/admin` with `KEYCLOAK_ADMIN_USER` and `KEYCLOAK_ADMIN_PASSWORD` from `.env`, plus a code from an authenticator app (the first sign-in shows a QR code to scan). Set `KEYCLOAK_AUTOMATION_SECRET` in `.env` so the script signs in as its own service account.
+- Admin console: `http://localhost:8080/admin` with `KEYCLOAK_ADMIN_USER` and `KEYCLOAK_ADMIN_PASSWORD` from `admin/.env`, plus a code from an authenticator app (the first sign-in shows a QR code to scan). The separate `KEYCLOAK_AUTOMATION_SECRET` lets realm configuration use its service account instead of a person's session.
+- User management: use the **Users** area in the admin console. Customer accounts remain in the `oxinov` realm; staff administration stays in `master` until the planned separate staff realm is implemented (FR-ID-2209).
 
 ## What the realm enforces
 

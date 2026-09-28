@@ -2,6 +2,8 @@
 
 [SEO index](README.md) · Pages that target them: [content-plan.md](content-plan.md)
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 All keywords are English and worldwide. Volumes and difficulty are **not yet measured**: validate each cluster in Search Console (after verification) and a keyword tool before writing, then record the numbers here.
 
 | Cluster | Example searches | Intent | Target page | Priority |

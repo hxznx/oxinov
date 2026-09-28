@@ -2,6 +2,8 @@
 
 **Scope:** Oxinov Edu delivery. Coordinate with the [company platform roadmap](../../11-planning/company-roadmap.md) and the [DevOps roadmap](../../10-devops/devops-roadmap.md); platform identity and entitlements must not duplicate Edu roles. **Updated:** 2026-09-26. These are phases, not promised dates; tasks and evidence are in the [backlog](../../11-planning/tasks.md), and what runs today is in [current state](../../04-architecture/current-state.md).
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 | Phase | Scope | Status (2026-09-26) |
 | --- | --- | --- |
 | 0. Foundation | Monorepo, migrations, CI with security scanning, OpenAPI, tenant identity, two-tenant isolation tests, security-event schema, metrics endpoints, production deployment with automatic rollback | **Done** (production on k3s, ADR-018) |

@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26 (ADR-017, ADR-018, ADR-021). Runbook: [devops/kubernetes/README.md](../../devops/kubernetes/README.md). Pipeline: [CI/CD](ci-cd.md). Rollback: [ROLLBACK.md](rollback.md). Current facts: [CURRENT-STATE.md](../04-architecture/current-state.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Today: one k3s node, deployed on every green `main`
 
 | Part | How it works |

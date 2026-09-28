@@ -2,6 +2,8 @@
 
 [SEO index](README.md) · Data: [Search Console and Bing](search-console.md)
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 The website has no analytics or cookies. Search data comes from Search Console and Bing Webmaster Tools, which need nothing on the site.
 
 ## Targets by month 6

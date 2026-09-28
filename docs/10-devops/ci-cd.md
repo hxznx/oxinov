@@ -4,6 +4,8 @@
 production automatically. Nobody deploys by hand; a manual run exists only for forced rebuilds and
 emergencies. Keep `main` always releasable.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Continuous integration (`.github/workflows/ci.yml`, every push and pull request)
 
 | Job | Checks |

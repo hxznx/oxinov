@@ -1,5 +1,7 @@
 # Oxinov company platform technology stack
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Selected baseline
 
 **Updated:** 2026-09-28. "Today" is verified in production or CI ([CURRENT-STATE.md](current-state.md)); "Target" is where each area goes when its trigger in the [DevOps roadmap](../10-devops/devops-roadmap.md), ADR-021, or the [technology radar](tech-radar.md) (ADR-024) is met. New services follow the radar's [golden path](tech-radar.md#golden-path-for-a-new-service).

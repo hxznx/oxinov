@@ -51,7 +51,7 @@ FRDs, ADRs, and the changelog keep their own established headers.
 - **Define each abbreviation** the first time a document uses it, except the everyday ones (API, URL, AWS).
 - **Tables** for comparisons and anything with more than two attributes; lists of up to about seven items; code, paths, commands, and identifiers in backticks.
 - **Formats:** dates `YYYY-MM-DD`; times in UTC unless a reader's local time is the point; money as an amount with a currency code (`US$50`, `NPR 1,500`).
-- **Product names:** "Oxinov Edu" (short: "Edu"), "Oxinov HR", "Oxinov Market", "Oxinov Services Market", "Oxinov Studio", "Oxinov JP", "Oxinov Tech". Do not call Edu "LMS" or "OxinovLMS". Say "learning platform" or "Edu workspace" instead of "LMS". Three exceptions:
+- **Product names:** "Oxinov Edu" (short: "Edu"), "Oxinov HR", "Oxinov Market", "Oxinov Services Market", "Oxinov Studio", "Oxinov JP", "Oxinov Tech". Do not call Edu "LMS" or "Oxinov Edu". Say "learning platform" or "Edu workspace" instead of "LMS". Three exceptions:
   - quoted history in records
   - SEO keyword research, because it records what people search for
   - the production identifiers listed in [ADR-027](../04-architecture/adr/adr-027-edu-technical-slug.md) until their cutover

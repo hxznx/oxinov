@@ -1,23 +1,50 @@
-# Oxinov Edu project brief
+# Oxinov Edu brief
 
-**Portfolio context:** Oxinov Edu is the first product on the wider [Oxinov company platform](../../01-company/platform-blueprint.md). This document defines the LMS product, not every Oxinov business objective.
+Why Oxinov Edu exists, who it serves, and where its boundaries are. Read it before the [PRD](edu-prd.md) or the [FRD](../../03-requirements/frd/edu-frd.md); it describes the Edu product, not every Oxinov business objective.
+
+**Status:** Current · **Owner:** Edu product owner · **Last reviewed:** 2026-09-28
+
+Oxinov Edu is the first product on the wider [Oxinov company platform](../../01-company/platform-blueprint.md). It is live at `edu.oxinov.com`; what already works is listed in [current state](../../04-architecture/current-state.md) and the implementation table of the [FRD](../../03-requirements/frd/edu-frd.md).
 
 ## Vision
 
-A customer can create a branded LMS in the cloud, teach specialized subjects, manage learners and payments, and reach students through web and mobile apps using their Oxinov identity and product entitlement.
+A customer creates a branded learning platform in the cloud, teaches specialized subjects, manages learners and payments, and reaches students through web and mobile apps. People use their Oxinov identity, and access follows their product entitlement.
 
 ## Problem
 
-Training providers need one system for recorded lessons, chapter practice, full mock exams, assignments, chat, results, student administration, and sales. JLPT and SSW preparation also require frequently updated, clearly labeled exam content.
+Training providers need one system for:
+
+- recorded lessons and chapter practice
+- full mock exams, assignments, and results
+- chat and student administration
+- sales
+
+JLPT (Japanese-Language Proficiency Test) and SSW (Specified Skilled Worker) preparation also need exam content that is updated often and clearly labeled.
 
 ## Customers and learners
 
-Tenant owners and administrators run an LMS. Instructors create courses and assess work. Learners study Japanese N5–N1, SSW fields, Korean, Chinese, Nepali, English, Russian, Arabic, Spanish, and IT subjects. Platform operators run the SaaS without unrestricted tenant-data access.
+| Group | What they do |
+| --- | --- |
+| Tenant owners and administrators | Run an Edu workspace |
+| Instructors | Create courses and assess work |
+| Learners | Study Japanese N5–N1, SSW fields, Korean, Chinese, Nepali, English, Russian, Arabic, Spanish, and IT subjects |
+| Platform operators | Run the service without unrestricted access to tenant data |
 
 ## Product boundaries
 
-One LMS codebase serves logically isolated tenant workspaces as an independent product plane. PostgreSQL is the LMS transactional source of truth. Web and native Android/iOS apps use one LMS backend. Shared identity, organization, catalogue, subscription, and entitlement capabilities belong to the company control plane and integrate through versioned APIs and events. Live teaching and offline video downloads require separate decisions.
+- **One codebase, many workspaces.** One Edu codebase serves logically isolated tenant workspaces as an independent product plane.
+- **One source of truth.** PostgreSQL is Edu's transactional source of truth.
+- **One backend.** Web and native Android and iOS apps use one Edu backend. The web app is live; the native apps are planned.
+- **Shared platform.** Identity, organizations, catalogue, subscriptions, and entitlements belong to the company control plane and integrate through versioned APIs and events.
+- **Separate decisions.** Live teaching and offline video downloads need their own product decisions.
 
-## Success measures to agree before launch
+## Success measures
 
-Time to create a tenant and publish its first course; completion of paid enrollment; mock-exam completion; mobile crash-free sessions; tenant-isolation test coverage; and course/tenant retention. Set numerical targets after launch market and traffic assumptions are approved.
+These measures are to be agreed before launch. Their numerical targets are an open decision for the Edu product owner, set after the launch market and traffic assumptions are approved.
+
+- Time to create a tenant and publish its first course
+- Completion of paid enrollment
+- Mock-exam completion
+- Mobile crash-free sessions
+- Tenant-isolation test coverage
+- Course and tenant retention

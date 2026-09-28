@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26 (ADR-021).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 | Environment | Purpose | Where | Data |
 | --- | --- | --- | --- |
 | Local | Development | Docker Compose on the developer's machine ([setup](dev-setup.md)) | Synthetic seeds only |

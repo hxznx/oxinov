@@ -1,5 +1,7 @@
 # AWS cloud architecture
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Decision
 
 AWS is the production cloud for Oxinov Platform. Use Asia Pacific Mumbai (`ap-south-1`) as the primary region. Use Asia Pacific Hyderabad (`ap-south-2`) initially for encrypted backup copies and a documented recovery path; do not pay for active multi-region compute until recovery objectives or measured business risk require it.

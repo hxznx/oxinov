@@ -2,6 +2,8 @@
 
 Retention periods are product and legal decisions for each launch region. The periods below are proposed defaults for review by the data owner and qualified Nepal counsel before launch; they are not legal conclusions. Financial records and legally held security evidence may need longer retention than user-facing content.
 
+**Status:** Proposed · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Proposed defaults
 
 | Data | Owner | Proposed retention |

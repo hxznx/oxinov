@@ -15,4 +15,6 @@ erDiagram
   TENANT ||--o{ PAYMENT : records
 ```
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 This is the logical model; see [DATA-MODEL.md](../../05-data/data-model.md) for ownership and [DATABASE-DESIGN.md](../../05-data/database-design.md) for physical constraints. Add detailed cardinality with the first migration.

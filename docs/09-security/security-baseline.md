@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26. What runs today is recorded in [current state](../04-architecture/current-state.md#security-controls-in-production); related documents are the [threat model](threat-model.md), [SOC design](soc.md), [secrets](secrets-management.md), and [privacy](privacy.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Standard
 
 Use the OWASP ASVS 5.0 Level 2 controls relevant to deployed features, the OWASP Top 10 for web apps and APIs, and the CIS Kubernetes and AWS Foundations benchmarks as review checklists. Security gates are never weakened to ship (AGENTS.md).

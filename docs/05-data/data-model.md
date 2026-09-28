@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26 from the Prisma schemas (`database/products/edu/prisma/schema.prisma`, `database/platform/prisma/schema.prisma`). Each plane has its own database; no product reads another's (ADR-008).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Platform database (`database/platform`)
 
 | Domain | Entities | Ownership |

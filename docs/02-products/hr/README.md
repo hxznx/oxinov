@@ -3,6 +3,8 @@
 The front page for everything about Oxinov HR. Files stay on their subject shelves; this page links them.
 Structure follows the [company library standard](../../08-engineering/company-library-standard.md).
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Identity and ownership
 
 | Field | Value |

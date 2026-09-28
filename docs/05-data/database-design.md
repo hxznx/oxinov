@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26 (ADR-001, ADR-006, ADR-021). Entities: [data model](data-model.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Today
 
 - **PostgreSQL 18** is the system of record. In production it runs as a StatefulSet on the node's encrypted disk (ADR-018); locally and in CI it runs in Docker. Amazon RDS replaces it at scale-out with the same migrations.

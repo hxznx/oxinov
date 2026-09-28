@@ -5,6 +5,8 @@ This guide describes current paths; the [target structure](company-project-struc
 Source presence does not establish production readiness.
 For future product types and lifecycle registration, follow the [company library standard](company-library-standard.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ```text
 frontend/
   company-web/      implemented public company site

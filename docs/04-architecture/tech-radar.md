@@ -2,6 +2,8 @@
 
 **Owner:** lead engineer; the founder approves anything with a cost. **Updated:** 2026-09-28 (ADR-024). Reviewed every quarter. What runs today is in [CURRENT-STATE.md](current-state.md); the full stack, today and target, is in the [company stack](tech-stack.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 Every item is placed in one ring, with its reason, monthly cost, effort, and trigger. Moving an item between rings is a pull request to this file; adopting a new runtime, database, or cloud service also needs an ADR.
 
 | Ring | Meaning |

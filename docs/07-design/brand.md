@@ -16,7 +16,7 @@ Oxinov uses a **masterbrand** model, like a large multi-product technology compa
 
 Naming rules:
 
-- Always write "Oxinov" with a capital O and no space. Write product names as two or three words with a space (for example, "Oxinov HR"). The first product, formerly "OxinovLMS", is named "Oxinov Edu" at `edu.oxinov.com` (ADR-015). Its existing internal technical identifiers (packages, folders, databases, entitlement keys, tokens, and requirement IDs) keep the `lms` prefix and are never shown to customers (ADR-025).
+- Always write "Oxinov" with a capital O and no space. Write product names as two or three words with a space (for example, "Oxinov HR"). The first product, formerly "Oxinov Edu", is named "Oxinov Edu" at `edu.oxinov.com` (ADR-015). Its existing internal technical identifiers (packages, folders, databases, entitlement keys, tokens, and requirement IDs) keep the `lms` prefix and are never shown to customers (ADR-025).
 - Do not use the legacy concept names KrishiConnect, Kaji, or BT-Bazz on Oxinov products.
 - Product names describe the job to be done; avoid invented sub-brands.
 

@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26. Live today: Keycloak, Amazon SES, and Amazon S3. Everything else is planned and needs its provider decision and secret record ([secrets](../09-security/secrets-management.md)) before use.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 | System | Purpose | Required controls |
 | --- | --- | --- |
 | OIDC provider / Keycloak baseline | Company-wide identity, organizations, MFA, and sessions | Validate issuer, audience, signature, expiry, and scopes server-side; map identity to platform and product authorization records. |

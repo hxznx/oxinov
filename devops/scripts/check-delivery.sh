@@ -23,7 +23,7 @@ run() { docker run --rm -v "$HOST_ROOT:/src" -w /src "$@"; }
 step "executable bits"
 # Git on Windows ignores file modes; a script stored as 100644 fails when an image or runner executes it.
 # (Database init scripts are sourced by the postgres entrypoint, so they are not in this list.)
-bad=$(git ls-files -s -- 'devops/scripts/*' 'devops/kubernetes/scripts/*' 'devops/keycloak/configure-realm.sh' 'backend/workers/*/*.sh'   | awk '$1 != "100755" {print $4}')
+bad=$(git ls-files -s -- 'devops/scripts/*' 'devops/kubernetes/scripts/*' 'devops/keycloak/configure-realm.sh' 'devops/keycloak/admin/*.sh' 'backend/workers/*/*.sh'   | awk '$1 != "100755" {print $4}')
 if [ -n "$bad" ]; then
   echo "not executable in git (fix: git update-index --chmod=+x <file>):"
   echo "$bad"
@@ -32,7 +32,7 @@ fi
 echo "all scripts executable"
 
 step "shellcheck"
-mapfile -t scripts < <(ls devops/scripts/*.sh devops/scripts/oxctl devops/kubernetes/scripts/*.sh devops/keycloak/configure-realm.sh)
+mapfile -t scripts < <(ls devops/scripts/*.sh devops/scripts/oxctl devops/kubernetes/scripts/*.sh devops/keycloak/configure-realm.sh devops/keycloak/admin/*.sh)
 run "$SHELLCHECK" -S warning "${scripts[@]}"
 echo "${#scripts[@]} scripts clean"
 

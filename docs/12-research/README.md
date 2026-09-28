@@ -1,5 +1,7 @@
 # Oxinov research and development operating system
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Purpose
 
 This document is the company operating system for turning uncertainty into reusable knowledge, validated technology, and evidence-backed product decisions. It applies across Oxinov Education, AI, Engineering, Services, Robotics and Automation, Media, AgriTech, Space, Research, and Production.

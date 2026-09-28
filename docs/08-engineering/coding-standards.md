@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26. Applies to every contributor and coding assistant ([AGENTS.md](../../AGENTS.md)). Related: [testing](testing-strategy.md), [dependencies](dependency-policy.md), [project structure](project-structure.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Everywhere
 
 - Strict TypeScript (`strict: true`, no `any` without a comment explaining why). Small focused modules; names that say what and in which unit (`priceMinor`, `timeLimitMin`, `expiresAt`).

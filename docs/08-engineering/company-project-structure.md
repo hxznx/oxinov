@@ -1,5 +1,7 @@
 # Oxinov company platform target structure
 
+**Status:** Proposed · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Migration rule
 
 Oxinov Edu now lives at its product-plane paths (`frontend/products/edu-web`, `backend/products/edu-api`, `database/products/edu`). Any later move or rename happens only in a dedicated migration with import, Docker, CI, and test updates in the same change.

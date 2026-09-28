@@ -22,7 +22,8 @@ Tokens never reach browser JavaScript: cookies are `HttpOnly`, `SameSite=Lax`, `
 ## Local development
 
 ```bash
-docker compose --profile identity up -d --wait && bash devops/keycloak/configure-realm.sh
+cp devops/keycloak/admin/.env.example devops/keycloak/admin/.env
+bash devops/keycloak/admin/start-local.sh
 cp frontend/platform-web/.env.example frontend/platform-web/.env.local   # add the client secret from Keycloak and a session secret
 pnpm --filter @oxinov/design-system build
 pnpm --filter @oxinov/platform-web dev          # http://localhost:3001 (platform API on :4200)

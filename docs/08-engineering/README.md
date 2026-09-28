@@ -2,6 +2,8 @@
 
 How code is written, tested, organized, and found. The [service catalog](service-catalog.md) and [file catalog](file-catalog.md) are generated; edit their generators in `scripts/`, never the files.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 | Document | Purpose |
 | --- | --- |
 | [Documentation standard](documentation-standard.md) | Where documents go, the four kinds of document, how to write them, and how to keep them true |

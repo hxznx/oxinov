@@ -2,6 +2,8 @@
 
 How code reaches production and how production is operated. Every push to `main` that passes CI deploys automatically (ADR-018), so read the relevant page before changing delivery. Day-to-day commands and the server procedure are in the [production runbook](../../devops/kubernetes/README.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 | Document | Purpose |
 | --- | --- |
 | [Developer setup](dev-setup.md) | Run the stack locally |

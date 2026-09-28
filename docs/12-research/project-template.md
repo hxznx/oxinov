@@ -2,6 +2,8 @@
 
 Copy this file to an approved project record and replace every bracketed instruction. Use ID format `RD-YYYY-NNN`; experiments use `RD-YYYY-NNN-EXP-NN`. Do not place secrets, personal data, restricted datasets, raw participant records, incident evidence, customer confidential material, or unpublished patent-enabling detail in Git.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Project identity
 
 | Field | Value |

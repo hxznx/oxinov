@@ -2,6 +2,8 @@
 
 > **Target architecture.** Today one k3s node runs the platform and Oxinov Edu (ADR-017, ADR-018, ADR-021); see [CURRENT-STATE.md](current-state.md). How products are added and isolated is decided in ADR-019.
 
+**Status:** Proposed · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Architecture choice
 
 Build a multi-product platform with a shared control plane and independently owned product planes. Start as a modular monorepo with a small number of deployable applications. Preserve module and data boundaries so a high-growth product can be extracted without redesigning every product.
@@ -96,13 +98,12 @@ Use a payment-provider adapter and one internal order, payment, refund, subscrip
 
 ## Deployment evolution
 
-1. **Local development:** Docker Compose for PostgreSQL, Redis, object storage, identity, observability, and application containers.
-2. **Initial production:** AWS Mumbai with ECS Fargate, RDS PostgreSQL, ElastiCache, S3, CloudFront/WAF, Route 53, Secrets Manager, and environment VPCs created through Terraform. See the [AWS cloud architecture](cloud-architecture.md).
-3. **Growth:** Amazon EKS namespaces by environment and product, autoscaling, network policies, workload identity, managed backups, and independent product deployments after an approved operating plan.
-4. **Regulated or high-scale products:** dedicated accounts/projects, clusters, databases, keys, regions, or networks where risk and regulation require them.
+1. **Local development** (*Live*): Docker Compose for PostgreSQL, Keycloak, and application containers, or throwaway local k3s for deployment rehearsals.
+2. **Current production** (*Live*): A single AWS EC2 `t3a.medium` in Mumbai running k3s, Traefik, PostgreSQL 18 (StatefulSet), and Keycloak. This lean setup strictly bounds costs while establishing the foundation (ADR-017, ADR-018). See the [current state](current-state.md) and [AWS cloud architecture](cloud-architecture.md).
+3. **Target scale-out** (*Planned*): Amazon EKS namespaces by environment and product, autoscaling, network policies, workload identity, managed backups (RDS PostgreSQL Multi-AZ), and independent product deployments triggered by approved operating plans and budget expansions (ADR-021).
+4. **Regulated or high-scale products** (*Planned*): Dedicated accounts/projects, clusters, databases, keys, regions, or networks where risk and regulation require them.
 
-Kubernetes is a later deployment target, not a requirement for the first customer. ECS Fargate is the initial container runtime. Moving to EKS requires staffing, cost, recovery, security ownership, and a measured reason.
-
+*Note on runtime:* Kubernetes via k3s is the current production baseline. Moving to managed EKS requires staffing, cost, recovery, security ownership, and a measured reason (e.g., a paying school needing an availability commitment).
 ## Observability and security
 
 - Instrument applications with OpenTelemetry and propagate trace and correlation IDs.

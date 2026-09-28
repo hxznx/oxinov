@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26. Everything runs on your machine with synthetic data ([environments](environments.md)).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## 1. Tools
 
 Docker with Compose, Node.js 22, pnpm 12.6.0 (`corepack enable`), Python 3.12, and for infrastructure work Terraform 1.16, Helm 4, and ShellCheck.

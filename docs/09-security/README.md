@@ -2,6 +2,8 @@
 
 How Oxinov protects accounts, tenants, data, and the platform, and how it detects and responds to security events. Detection rules, event schemas, and incident runbooks live in [`security/`](../../security/README.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 | Document | Purpose |
 | --- | --- |
 | [Security baseline](security-baseline.md) | Controls every service and change must meet |

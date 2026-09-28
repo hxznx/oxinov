@@ -2,6 +2,8 @@
 
 Every Oxinov product uses the shared Oxinov shell (header, app launcher, account menu, footer, sign-in, upgrade and verification prompts) from the [design system](../../07-design/design-system.md), so people move between products with one account and one familiar layout. The rules below add LMS-specific behavior.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Product evidence rule
 
 The [user-centred product research and usability standard](../../12-research/user-centered-product-standard.md) is normative for every product. A material journey starts from an evidence-backed user need, is tested with intended users before build, and is benchmarked end to end before release. Research evidence links through the user need, FR/NFR, design, implementation, acceptance evidence, and live outcome.

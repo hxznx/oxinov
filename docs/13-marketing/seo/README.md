@@ -2,6 +2,8 @@
 
 **Owner:** founder (content, profiles, approvals); engineering (website code, DNS). **Updated:** 2026-09-26. Related: [marketing plan](../marketing-plan.md), [brand](../../07-design/brand.md), [ADR-020 English only](../../04-architecture/adr/README.md).
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 Oxinov's audience is **global** and its only language is **English** (ADR-020). Search is planned as **one English site ranked worldwide**: people search in English from every country, and people who prefer another language read our pages through browser translation. No language subfolders, no `hreflang`, and no redirects by country.
 
 ## Where everything lives

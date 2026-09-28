@@ -1,5 +1,7 @@
 # Oxinov R&D portfolio
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Status and use
 
 This is the decision register for research opportunities. Every item below is a **candidate**, not an approved product, budget, customer pilot, or production capability. Funding starts only after G0-G1 approval under the [R&D operating system](README.md). New product folders and customer-facing pilots remain blocked by the company release gate.

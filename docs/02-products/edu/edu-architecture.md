@@ -2,9 +2,11 @@
 
 **Scope:** the Oxinov Edu product. The shared company control plane and cross-product boundaries are in the [company platform architecture](../../04-architecture/platform-architecture.md); what runs today is in [CURRENT-STATE.md](../../04-architecture/current-state.md). **Updated:** 2026-09-26.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 One SaaS platform serves many learning spaces (tenants). A person holds memberships in several spaces with a role in each; the active space is resolved from verified membership and the address, never from email text. Tenant-owned data carries `tenant_id`.
 
-## Today
+## Today (*Live*)
 
 ```text
 Browser ─HTTPS─> Traefik (k3s ingress, Let's Encrypt)
@@ -17,7 +19,7 @@ Helm hook: migrate job before each release     CronJob: nightly backup ─> S3
 
 Everything runs on one k3s node (ADR-018). The APIs have no public host: browsers call the web apps, which call the APIs with the person's token from the server. Uploads and playback go directly between the browser and S3 with short-lived presigned URLs issued after tenant and role checks.
 
-## At scale
+## At scale (*Planned*)
 
 The same images and chart move to Amazon EKS with RDS (ADR-018). Workers (`edu-worker`) and a chat gateway (`edu-chat`) are added when their features are approved; products exchange events through an outbox and SNS/SQS (ADR-019); OpenTelemetry traces connect portal, APIs, and sign-in.
 

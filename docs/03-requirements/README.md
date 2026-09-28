@@ -1,6 +1,8 @@
 # Oxinov requirements standard
 
-This standard governs every functional requirements document (FRD) at Oxinov Pvt. Ltd. It keeps requirements for the company website, the shared platform, and each product consistent, traceable to code and tests, and safe to change.
+How Oxinov Pvt. Ltd. writes, numbers, and changes functional requirements documents (FRDs) for the company website, the shared platform, and each product. Read it before you add or change a requirement: code, tests, and migrations cite the IDs it defines.
+
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-28
 
 ## Requirement hierarchy
 
@@ -25,8 +27,8 @@ A product FRD may use platform capabilities but never redefines them. When a pro
 Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 
 - `AREA` is an uppercase code from the registry below. Each area belongs to exactly one FRD.
-- `NUMBER` is unique across the company. Each area owns a number block, so an ID never collides even when areas move between documents.
-- IDs are permanent. Never renumber or reuse an ID. A removed requirement stays in its FRD marked **Superseded** or **Withdrawn** with a pointer to its replacement.
+- `NUMBER` is unique across the company. Each area owns a number block, so IDs never collide, even when an area moves to another document.
+- IDs are permanent. Never renumber or reuse an ID. A removed requirement stays in its FRD, marked **Superseded** or **Withdrawn**, with a pointer to its replacement.
 - Code comments, test names, migrations, commit messages, and pull requests cite IDs, never section numbers.
 
 ### Area registry
@@ -60,7 +62,7 @@ Edu areas keep their historical numbers. New Edu requirements continue in the Ed
 
 ## Requirement template
 
-Each requirement is one paragraph that starts with its bold ID and title, followed by a compact attribute line and testable acceptance statements.
+Each requirement is one paragraph that starts with its bold ID and title. An attribute line and testable acceptance statements follow it.
 
 ```markdown
 **FR-AREA-0000 — Short title.** The system must <observable behavior>. <Rules, limits, and edge cases.>
@@ -71,12 +73,12 @@ Each requirement is one paragraph that starts with its bold ID and title, follow
 
 Writing rules:
 
-- Use **must** for mandatory behavior and **may** for optional behavior. Avoid "should" inside a requirement statement; use the Priority attribute instead.
-- Describe observable behavior, not implementation. Put technology choices in ADRs and architecture documents.
-- Every requirement that reads or writes protected data states its access rule (trust level, role, tenant or owner scope, entitlement key).
+- Use **must** for mandatory behavior and **may** for optional behavior. Avoid "should" in a requirement statement; express importance with the Priority attribute instead.
+- Describe observable behavior, not implementation. Technology choices belong in ADRs and architecture documents.
+- A requirement that reads or writes protected data states its access rule: trust level, role, tenant or owner scope, or entitlement key.
 - Every requirement has at least one allowed path and one denied or failure path in its acceptance statements.
-- Money, time, identity, and personal data rules state units, time zones, retention, and audit behavior.
-- Keep one behavior per requirement. Split a requirement when parts can ship or fail independently.
+- Rules about money, time, identity, and personal data state units, time zones, retention, and audit behavior.
+- Keep one behavior per requirement. Split a requirement when its parts can ship or fail independently.
 
 ## Priorities and status
 
@@ -99,21 +101,35 @@ Writing rules:
 | From | To | Rule |
 | --- | --- | --- |
 | Charter or ADR | FR | Each FR names its source in the *Source* attribute |
-| FR | Acceptance criteria | Acceptance statements live with the FR; cross-product journeys live in [acceptance criteria](../02-products/edu/edu-acceptance-criteria.md) |
+| FR | Acceptance criteria | Acceptance statements live with the FR; end-to-end Edu journeys live in the [Edu acceptance criteria](../02-products/edu/edu-acceptance-criteria.md) |
 | FR | Code and tests | Implementations and tests cite the FR ID in a comment or test name |
 | FR | OpenAPI | Operations that implement an FR list its ID in their description |
-| FR | Security events | Security-relevant FRs name the event emitted from `security/soc/EVENT-CATALOG.md` |
+| FR | Security events | Security-relevant FRs name the event they emit from the [security event catalog](../../security/soc/EVENT-CATALOG.md) |
 
 ## Change process
 
-1. Propose the change in the owning FRD with status **Proposed**; add new IDs from the area's block.
+1. Propose the change in the owning FRD with status **Proposed**. Take new IDs from the area's block.
 2. If the change alters a company decision, add or update an ADR in the same change.
-3. The area owner approves; the status becomes **Approved**.
-4. When code, tests, and documentation are merged and verified, set **Implemented**.
-5. Run `python scripts/validate_project.py`; it fails on duplicate IDs across all FRDs.
+3. The area owner approves, and the status becomes **Approved**.
+4. When code, tests, and documentation are merged and verified, set the status to **Implemented**.
+5. Run `python scripts/validate_project.py`. It fails on duplicate IDs across all FRDs.
 
-## FRD location and product creation
+## FRD location and layout
 
-Every functional requirements document lives in [`docs/03-requirements/frd/`](frd/), named `<product>-frd.md` in lowercase. This folder holds the standard (this page) and the shared [non-functional requirements](nfr.md).
+Every FRD lives in [`frd/`](frd/) and is named `<product>-frd.md` in lowercase. This folder also holds this standard and the shared [non-functional requirements](nfr.md).
 
-Normally, a product FRD is created when its charter passes the release gate. ADR-026 records the owner's exception for early discovery drafts for Market, Services Market, Studio, JP, and Tech. Those files remain **Proposed**, do not authorize application scaffolding or spending, and keep their release gates closed until the missing owner, customer, legal, operating, data, and budget decisions are approved. Copy the section layout of the Platform FRD: purpose and scope, roles, dependencies on platform FRs, functional requirements by area, out of scope, and open decisions. Use the product's number block from the registry.
+A product FRD is normally created when its charter passes the release gate. [ADR-026](../04-architecture/adr/adr-026-central-frd-folder.md) records the owner's exception for early discovery drafts for Market, Services Market, Studio, JP, and Tech. Those FRDs stay **Proposed**. They do not authorize application scaffolding or spending, and their release gates stay closed until the owner approves the missing owner, customer, legal, operating, data, and budget decisions.
+
+Each FRD uses the product's number block from the registry and contains these parts:
+
+1. **Header block:** Version, Date, Status, scope or product address, technical slug, a link to this standard with the number block, and sources.
+2. **Implementation status**, once any requirement is built: a table of what is verified today.
+3. **Purpose and scope**, with shared terms where the product needs them.
+4. **Roles and access.**
+5. **Dependencies:** the Platform FRs (and other products' APIs) the product relies on. The Platform FRD lists the products that depend on it instead.
+6. **Functional requirements**, grouped by area.
+7. **Out of scope**, as its own section or inside purpose and scope.
+8. **Open decisions**, including the release gate for products that are not yet approved.
+9. Optionally, a **build order** or suggested delivery slices, and related documents.
+
+Section numbers help readers only. Always cite requirement IDs.

@@ -2,6 +2,8 @@
 
 [SEO index](README.md) · Code: [`frontend/company-web/src/seo`](../../../frontend/company-web/src/seo/README.md) · Tests: `frontend/company-web/tests/site.test.mjs` ("search and sharing")
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 oxinov.com is a static Next.js export served from S3 through CloudFront (HTTPS, HSTS, worldwide edge locations). All search settings are in one folder, one file per job:
 
 | File | Owns |

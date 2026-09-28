@@ -2,6 +2,8 @@
 
 **Owner:** founder (budget and commitments), lead engineer (engineering). **Updated:** 2026-09-26. Related: [current state](../04-architecture/current-state.md), [DevOps roadmap](devops-roadmap.md), ADR-017, ADR-018.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 Cost is a requirement (AGENTS.md, ADR-018): total AWS spend stays within **US$50 a month** until revenue justifies more. Terraform (`devops/terraform/environments/production/starter/cost.tf`) owns the budget and emails the owner at 85% and 100% of actual spend and at 100% of forecast.
 
 ## Where the money goes (estimate)

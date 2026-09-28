@@ -4,6 +4,8 @@ Oxinov is the company; Edu is one product. Organize by stable responsibility, no
 This guide applies the existing [company blueprint](../01-company/platform-blueprint.md), [product boundaries](company-project-structure.md) and [research process](../12-research/README.md).
 It does not approve additional products, introduce new runtime technologies or move existing applications.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Two navigation views, one source
 
 - **By responsibility:** the [file catalog](file-catalog.md) groups all repository files by engineering area and sorts paths alphabetically.

@@ -2,6 +2,8 @@
 
 The Oxinov design system makes every Oxinov product look and behave like one family while each product keeps its own app. The visual direction is **cyberpunk**: dark-first, neon accents, clipped corners, grid backgrounds, and HUD-style labels, with readability and accessibility always taking priority over effects. Brand, color, type, spacing, and naming are defined in the [brand system](brand.md). Tokens and shared components live in `packages/design-system` and are consumed by `company-web`, `platform-web`, every product web app, and (as equivalent native components) every mobile app.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Tokens
 
 Use shared semantic tokens for background, surface, border, text, muted text, focus, success, warning, danger, brand, and product accent. Never hard-code a color, font, spacing, glow, or shape value in a product. LMS tenant themes may change logo, accent, and public-page content while semantic contrast and focus visibility remain valid. The dark cyberpunk theme is the default; the light Daylight theme is required in every product and follows the system setting when the user has not chosen.

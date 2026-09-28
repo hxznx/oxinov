@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 - **One package manager and lockfile:** the exact pnpm version in the root `package.json` and one root `pnpm-lock.yaml`; nested npm, Yarn, or pnpm lockfiles are not allowed.
 - **Strict catalog:** shared versions live once in `pnpm-workspace.yaml` (`catalogMode: strict`) so every package uses the same version (for example one `@nestjs/core`).
 - **Exact pins:** exact versions in manifests; container images pinned by digest; downloaded tools verified by SHA-256; GitHub Actions pinned to a version.

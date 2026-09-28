@@ -1,33 +1,44 @@
 # Oxinov AI implementation strategy
 
-**Status:** Proposed company strategy  
-**Date:** 2026-09-24  
-**Decision owner:** To be assigned  
-**Applies to:** Oxinov Platform, Oxinov Edu, future Oxinov products, internal operations, and R&D
+How Oxinov plans to build and govern AI across the company: the service choice, the first use cases, language limits, roles, cost rules, and the launch gate. Read it before you propose or build any AI feature.
 
-## Executive decision
+**Status:** Proposed · **Owner:** Founder · **Last reviewed:** 2026-09-28
 
-Build one governed AI capability for the whole company. Products call it through an internal **AI gateway**; browser and mobile clients never call a model provider directly. Use **Amazon Bedrock first** for generative AI and retrieval-augmented generation (RAG). Use **Amazon SageMaker AI later** for predictive, computer-vision, anomaly-detection, and custom models when a validated use case needs training or deeper control.
+| Item | Value |
+| --- | --- |
+| Written | 2026-09-24 |
+| Decision owner | To be assigned: naming the AI product owner is an open decision for the founder |
+| Applies to | Oxinov Platform, Oxinov Edu, future Oxinov products, internal operations, and research and development (R&D) |
+| Decision record | [ADR-014](../04-architecture/adr/adr-014-bedrock-ai-platform.md): accepted as the target architecture; implementation is gated |
+| State today | Nothing in this strategy is built; no AI feature runs in production ([current state](../04-architecture/current-state.md)) |
 
-Start with two narrow, reviewable use cases:
+## Decision
+
+Build one governed AI capability for the whole company.
+
+- Products call it through an internal **AI gateway**. Browser and mobile clients never call a model provider directly.
+- Use **Amazon Bedrock first** for generative AI and retrieval-augmented generation (RAG).
+- Use **Amazon SageMaker AI later** for predictive, computer-vision, anomaly-detection, and custom models, when a validated use case needs training or deeper control.
+
+Start with two narrow use cases that people can review:
 
 1. An internal knowledge assistant grounded only in approved company documents.
 2. An Oxinov Edu authoring copilot that creates drafts for instructors to review.
 
-Do not train a foundation model, launch a general autonomous agent, or build every proposed AI product in the first release. RAG, prompt design, evaluation, and human review should be exhausted before fine-tuning is approved.
+The first release does not train a foundation model, launch a general autonomous agent, or build every proposed AI product. Exhaust RAG, prompt design, evaluation, and human review before anyone approves fine-tuning.
 
 ## Why this approach
 
-- Amazon Bedrock provides managed access to foundation models, Guardrails, Knowledge Bases, evaluation, and agent capabilities without Oxinov operating model infrastructure.
-- SageMaker AI is appropriate for custom training, classical machine learning, vision, time-series, and MLOps. It adds cost and operating work that the first generative use cases do not need.
-- A provider-neutral gateway keeps domain code independent of one model vendor and provides a single place for access control, tenant isolation, safety, cost attribution, audit, and shutdown.
-- Small pilots create the evaluation data and operating experience needed for later customer-facing features.
+- Amazon Bedrock provides managed access to foundation models, Guardrails, Knowledge Bases, evaluation, and agent capabilities, without Oxinov operating model infrastructure.
+- SageMaker AI suits custom training, classical machine learning, vision, time series, and machine-learning operations (MLOps). It adds cost and operating work that the first generative use cases do not need.
+- A provider-neutral gateway keeps domain code independent of one model vendor. It is the single place for access control, tenant isolation, safety, cost attribution, audit, and shutdown.
+- Small pilots create the evaluation data and operating experience that later customer-facing features need.
 
-The service choice follows the [AWS Bedrock or SageMaker decision guide](https://docs.aws.amazon.com/decision-guides/latest/decision-guides/bedrock-or-sagemaker.html). The technical boundary is defined in the [AI platform architecture](../04-architecture/ai-architecture.md).
+The service choice follows the [AWS Bedrock or SageMaker decision guide](https://docs.aws.amazon.com/decision-guides/latest/decision-guides/bedrock-or-sagemaker.html). The [AI platform architecture](../04-architecture/ai-architecture.md) defines the technical boundary.
 
 ## Business outcomes
 
-AI work must improve a measured business or learner outcome. A demo is not a launch reason.
+AI work must improve a measured business or learner outcome. A demo is not a reason to launch.
 
 | Outcome | First measure | Initial target for a pilot |
 | --- | --- | --- |
@@ -38,7 +49,7 @@ AI work must improve a measured business or learner outcome. A demo is not a lau
 | Controlled cost | Cost per accepted task by product and tenant | Within the approved per-task and monthly budget |
 | Safe operation | Critical data, authorization, or tenant-isolation incidents | Zero |
 
-Targets are hypotheses until the owner approves a baseline, evaluation set, and budget.
+These targets are hypotheses until the owner approves a baseline, an evaluation set, and a budget.
 
 ## Use-case portfolio
 
@@ -47,40 +58,44 @@ Targets are hypotheses until the owner approves a baseline, evaluation set, and 
 | Order | Use case | Value | Risk | Launch condition |
 | --- | --- | --- | --- | --- |
 | 1 | Internal policy and engineering knowledge assistant | High | Low to medium | Approved sources, citations, access filters, staff pilot |
-| 2 | LMS course, quiz, rubric, summary, and feedback drafts | High | Medium | Instructor approval; licensed sources; no automatic publishing |
+| 2 | Edu course, quiz, rubric, summary, and feedback drafts | High | Medium | Instructor approval; licensed sources; no automatic publishing |
 | 3 | Transcripts, subtitles, translation drafts, and media metadata | High | Medium | Native-speaker sampling by language and rights review |
 | 4 | Learner tutor grounded in published course content | High | Medium | Citation and refusal thresholds; exam boundary tests; escalation path |
 | 5 | Customer-support answer drafts | Medium | Medium | Read-only context, human send approval, privacy controls |
 | 6 | Assignment and short-answer grading assistance | Medium | High | Rubric evidence, instructor decision, appeal and audit trail |
-| 7 | SOC analyst assistant | Medium | High | Read-only SIEM access, evidence links, analyst approval, no response execution |
-| 8 | Media-production workflow assistance | Medium | Medium | Rights metadata, review, watermark/disclosure where required |
-| 9 | IoT, robotics, agriculture, and equipment prediction | High | High | Separate dataset, safety case, SageMaker/edge pilot, domain owner |
+| 7 | Security operations centre (SOC) analyst assistant | Medium | High | Read-only SIEM access, evidence links, analyst approval, no response execution |
+| 8 | Media-production workflow assistance | Medium | Medium | Rights metadata, review, watermark or disclosure where required |
+| 9 | IoT, robotics, agriculture, and equipment prediction | High | High | Separate dataset, safety case, SageMaker or edge pilot, domain owner |
+
+SIEM is security information and event management.
 
 ### Sector opportunities
 
 | Oxinov area | Appropriate AI | Technology direction |
 | --- | --- | --- |
-| Education and LMS | Authoring drafts, grounded tutor, adaptive practice suggestions, translation, transcripts, feedback assistance | Bedrock through AI gateway; RAG on approved content; speech adapters |
+| Education (Oxinov Edu) | Authoring drafts, grounded tutor, adaptive practice suggestions, translation, transcripts, feedback assistance | Bedrock through the AI gateway; RAG on approved content; speech adapters |
 | AI products | Governed document Q&A, workflow assistants, evaluation services, customer AI API | Reuse the gateway as the platform boundary; approve each product separately |
-| Engineering, cloud, and cyber | Code/document assistance, cloud knowledge search, SOC triage summaries | Bedrock; read-only tools first; analyst or engineer approval |
-| Media and studio | Transcripts, captions, localization drafts, scripts, asset metadata | Speech/media adapters plus Bedrock; rights and review controls |
-| Robotics and IoT | Anomaly detection, vision, predictive maintenance, edge inference | SageMaker AI and AWS IoT Greengrass; deterministic control remains outside the LLM |
-| AgriTech | Sensor and image analysis, disease or yield models, grounded advisory drafts | SageMaker AI and edge/cloud pipelines; agronomist validation for advice |
-| Research and space | Document search, experiment analysis, geospatial model assistance | Restricted RAG or task-specific ML with dataset and licence review |
+| Engineering, cloud, and cyber | Code and document assistance, cloud knowledge search, SOC triage summaries | Bedrock; read-only tools first; analyst or engineer approval |
+| Media and studio | Transcripts, captions, localization drafts, scripts, asset metadata | Speech and media adapters plus Bedrock; rights and review controls |
+| Robotics and IoT | Anomaly detection, vision, predictive maintenance, edge inference | SageMaker AI and AWS IoT Greengrass; deterministic control stays outside the large language model (LLM) |
+| AgriTech | Sensor and image analysis, disease or yield models, grounded advisory drafts | SageMaker AI and edge or cloud pipelines; agronomist validation for advice |
+| Research and space | Document search, experiment analysis, geospatial model assistance | Restricted RAG or task-specific machine learning with dataset and licence review |
 
 ## Language and speech plan
 
-Oxinov Edu needs Japanese, Korean, Chinese, Nepali, English, Russian, Arabic, and Spanish. Model capability must be tested by **language, dialect, task, and learner level** rather than inferred from a provider's general multilingual claim.
+Oxinov Edu needs Japanese, Korean, Chinese, Nepali, English, Russian, Arabic, and Spanish. Test model capability by **language, dialect, task, and learner level**; do not infer it from a provider's general multilingual claim.
 
-As of this review:
+At the time of writing (2026-09-24):
 
-- [Amazon Translate's language table](https://docs.aws.amazon.com/translate/latest/dg/what-is-languages.html) lists Japanese, Korean, Chinese, English, Russian, Arabic, and Spanish, but does not list Nepali.
-- [Amazon Transcribe's language table](https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html) lists Nepali (`ne-NP`) and the other target languages, although feature support differs by language.
-- [Amazon Polly's language table](https://docs.aws.amazon.com/polly/latest/dg/supported-languages.html) lists several target languages but does not list Nepali.
+| AWS service | Target languages listed | Nepali |
+| --- | --- | --- |
+| [Amazon Translate](https://docs.aws.amazon.com/translate/latest/dg/what-is-languages.html) | Japanese, Korean, Chinese, English, Russian, Arabic, Spanish | Not listed |
+| [Amazon Transcribe](https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html) | The other target languages; feature support differs by language | Listed (`ne-NP`) |
+| [Amazon Polly](https://docs.aws.amazon.com/polly/latest/dg/supported-languages.html) | Several target languages | Not listed |
 
 Therefore:
 
-- Implement translation, speech-to-text, text-to-speech, and pronunciation scoring as separate provider ports.
+- Build translation, speech-to-text, text-to-speech, and pronunciation scoring as separate provider ports.
 - Do not label generic speech recognition confidence as pronunciation proficiency.
 - Build native-speaker evaluation sets for every launched language.
 - Provide a human-review workflow and a fallback provider for language gaps.
@@ -88,25 +103,23 @@ Therefore:
 
 ## Operating model
 
-One person may hold several roles while the company is small, but each role must be named.
+While the company is small, one person may hold several roles, but each role must be named. The [AI governance](../09-security/ai-governance.md) policy defines the governance lifecycle.
 
-| Role | Accountability |
+| Role | Accountable for |
 | --- | --- |
-| Executive sponsor | Approves budget, risk appetite, and stop/continue decisions |
-| AI product owner | Owns use-case outcome, scope, users, and launch decision |
-| AI platform lead | Owns gateway, provider adapters, reliability, evaluation plumbing, and cost controls |
-| Data steward | Approves sources, classifications, rights, retention, and deletion |
-| Domain reviewer | Defines truth and quality for education, language, cyber, agriculture, or another field |
-| Security and privacy owner | Threat model, access review, incident response, legal-review coordination |
+| Executive sponsor | Budget, risk appetite, and stop or continue decisions |
+| AI product owner | Use-case outcome, scope, users, and the launch decision |
+| AI platform lead | Gateway, provider adapters, reliability, evaluation plumbing, and cost controls |
+| Data steward | Approving sources, classifications, rights, retention, and deletion |
+| Domain reviewer | Defining truth and quality for education, language, cyber, agriculture, or another field |
+| Security and privacy owner | Threat model, access review, incident response, and legal-review coordination |
 | Operations and FinOps owner | Service quotas, dashboards, budgets, on-call, and cost attribution |
-
-The governance lifecycle is defined in [AI governance](../09-security/ai-governance.md).
 
 ## Investment rules
 
 - Approve a use case before choosing a model.
 - Record the baseline process, expected benefit, risk tier, data sources, user group, owner, budget, and stop threshold.
-- Use model aliases such as `text-fast`, `text-quality`, `embedding`, `vision`, and `speech`; keep vendor model IDs out of domain code.
+- Use model aliases such as `text-fast`, `text-quality`, `embedding`, `vision`, and `speech`. Keep vendor model IDs out of domain code.
 - Route all use through application inference profiles or an equivalent tagged provider construct.
 - Set per-user, per-tenant, per-feature, and company-wide limits.
 - Cache safe reusable results, cap input and output size, and reject unbounded batch work.
@@ -120,7 +133,7 @@ AWS documents application inference profiles and request metadata for [cost allo
 Every production AI feature reports:
 
 - business outcome and adoption;
-- grounded correctness, completeness, faithfulness, citation precision, and refusal quality where applicable;
+- grounded correctness, completeness, faithfulness, citation precision, and refusal quality, where applicable;
 - human acceptance, edit, override, and appeal rates;
 - safety block and false-block rates;
 - quality by language and customer segment;
@@ -129,26 +142,26 @@ Every production AI feature reports:
 - retrieval hit quality and stale-source rate;
 - confirmed data, authorization, or tenant-isolation incidents.
 
-[Amazon Bedrock evaluation](https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation.html) supports automatic, human, and model-based evaluation. Oxinov's release decision must still be based on its own representative cases and domain reviewers.
+[Amazon Bedrock evaluation](https://docs.aws.amazon.com/bedrock/latest/userguide/evaluation.html) supports automatic, human, and model-based evaluation. Oxinov's release decision must still rest on its own representative cases and domain reviewers.
 
 ## Go/no-go gate
 
 An AI feature may launch only when:
 
-1. a product owner and operating owner are named;
+1. a product owner and an operating owner are named;
 2. the data inventory, rights, retention, processing regions, and privacy review are recorded;
-3. evaluation cases represent each launch language and important failure mode;
+3. evaluation cases represent each launch language and each important failure mode;
 4. the feature meets approved quality and safety thresholds;
 5. tenant, role, prompt-injection, tool-authorization, and data-leakage tests pass;
 6. user disclosure, review, correction, appeal, and support paths exist where applicable;
 7. budgets, quotas, latency objectives, fallback behavior, monitoring, and alerts are active;
 8. a kill switch, rollback procedure, incident runbook, and responsible on-call contact exist;
-9. high-impact outputs remain human decisions; and
-10. the release gate is saved with model, prompt, retriever, guardrail, dataset, and evaluation versions.
+9. high-impact outputs remain human decisions;
+10. the release gate is saved with the model, prompt, retriever, guardrail, dataset, and evaluation versions.
 
 ## First decision to make
 
-Name an AI product owner and approve a 90-day foundation pilot with the internal knowledge assistant and LMS authoring copilot. Do not begin a learner-facing tutor until the gateway, evaluation harness, approved content pipeline, and tenant-isolation tests are working.
+Name an AI product owner and approve a 90-day foundation pilot with the internal knowledge assistant and the Edu authoring copilot. Do not begin a learner-facing tutor until the gateway, evaluation harness, approved content pipeline, and tenant-isolation tests work.
 
 ## Research basis
 
@@ -163,4 +176,3 @@ Name an AI product owner and approve a 90-day foundation pilot with the internal
 - [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework)
 - [OWASP Top 10 for LLM Applications 2025](https://genai.owasp.org/llm-top-10/)
 - [Nepal Privacy Act, 2075](https://lawcommission.gov.np/content/12261/the-privacy-act-2075/)
-

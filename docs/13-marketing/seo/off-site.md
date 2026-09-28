@@ -2,6 +2,8 @@
 
 [SEO index](README.md)
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Google Business Profile (owner)
 
 1. Create the profile for **Oxinov Pvt. Ltd.** at the Lalitpur headquarters, category "Software company".

@@ -2,6 +2,8 @@
 
 Covers the Oxinov platform (sign-in, account portal, shared services), Oxinov Edu, and the adopted marketplace products (Commodity Market, Jobs, Services Market). Update this model when a new product, integration, tenant isolation tier, sign-in method, or payment route is added.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Platform and identity
 
 | Threat | Primary control | Verification |

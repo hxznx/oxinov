@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26. Tests prove behaviour, including failure paths; they never merely mirror implementation details.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## In place (run in CI on every push)
 
 | Layer | Tools | Covers |

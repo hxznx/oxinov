@@ -2,6 +2,8 @@
 
 [SEO index](README.md) · Code: `frontend/company-web/src/seo/schema/` · Rendered by `src/seo/JsonLd.tsx`
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 Structured data tells search engines facts about Oxinov in a machine-readable form. It can earn rich results (logo, breadcrumbs, FAQs) and connects the company, its office, its products, and its profiles.
 
 ## Live

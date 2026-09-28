@@ -2,6 +2,8 @@
 
 User flows are research hypotheses until intended users demonstrate that they can complete them accurately and confidently. Apply the [user-centred product standard](../../12-research/user-centered-product-standard.md): link every material flow to a user need, test the content and prototype before build, benchmark the implemented end-to-end journey, and continue research after launch.
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 The shared platform flows—sign in, welcome, product launch, organization and role switch, trust-level step-up, policy acceptance, billing, support, export, and deletion—must remain familiar across products. Test the whole journey, including email/SMS, payment-provider, support, and offline steps, not only the screens owned by one application.
 
 ## Current LMS flows

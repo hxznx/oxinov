@@ -2,6 +2,8 @@
 
 **Updated:** 2026-09-26 (ADR-018, ADR-021). Scale by evidence, not in advance: each step below has a measured trigger, and the [DevOps roadmap](../10-devops/devops-roadmap.md) holds the exact thresholds.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Principles
 
 - Web apps and APIs are stateless; durable state lives only in PostgreSQL and S3 (NFR-12), so any service can run more replicas.

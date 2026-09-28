@@ -2,6 +2,8 @@
 
 How the company platform and its products fit together, what runs today, and why each decision was made. Product-specific architecture lives with its product in [02 · Products](../02-products/README.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 Start with [current state](current-state.md): it wins for *what runs today*, and the [architecture decisions](adr/README.md) win for *why*.
 
 | Document | Purpose |

@@ -1,10 +1,30 @@
 # Oxinov subscription and pricing model
 
-**Status:** Proposed (research). Prices are hypotheses to validate with customers; they are not approved. See [ADR-012](../04-architecture/adr/adr-012-feature-subscriptions.md).
+How Oxinov plans, prices, entitlements, and billing channels are meant to work across every product. Read it before you propose a price, a plan, a paid feature, or a billing flow.
 
-## Model in one picture
+**Status:** Proposed · **Owner:** Billing owner · **Last reviewed:** 2026-09-28
 
-Oxinov follows the pattern used by multi-product companies and consumer AI assistants: one account, a free tier that is genuinely useful, paid tiers that unlock features and raise limits, and team and enterprise plans for organizations. Every product ships as its own app, but plans, billing, and entitlements are governed centrally by `oxinov.com`.
+This model is research, recorded as [ADR-012](../04-architecture/adr/adr-012-feature-subscriptions.md) (Proposed). Prices are hypotheses to validate with customers; they are not approved. The required behavior is in the PLAN and PAY requirements of the [Platform FRD](../03-requirements/frd/platform-frd.md).
+
+## State today
+
+| Part | State |
+| --- | --- |
+| Pricing page (`oxinov.com/pricing`) | Plan ladder and FAQ live; prices wait for approval (FR-SITE-2103) |
+| Free member access | Implemented: first sign-in grants a free member entitlement to every launched product (FR-PLAN-2602) |
+| Paid plans, Oxinov One, subscriptions, metering | Not built |
+| Payments | [ADR-023](../04-architecture/adr/adr-023-khalti-esewa.md) decides that Oxinov Edu first sells only Oxinov's own courses, as one-time NPR purchases through Khalti and eSewa; subscriptions, coupons, and refunds are later steps. [Current state](../04-architecture/current-state.md#known-gaps-in-priority-order) still lists paid checkout as not yet in place |
+
+## The model at a glance
+
+Oxinov follows the pattern of multi-product companies and consumer AI assistants:
+
+- one account;
+- a free tier that is useful on its own;
+- paid tiers that unlock features and raise limits;
+- team and enterprise plans for organizations.
+
+Every product ships as its own app, but `oxinov.com` governs plans, billing, and entitlements centrally.
 
 ```text
                     oxinov.com  (one account, one billing, one plan page: oxinov.com/pricing)
@@ -12,17 +32,17 @@ Oxinov follows the pattern used by multi-product companies and consumer AI assis
           ┌──────────────────────┼───────────────────────────┐
           │                      │                           │
    Oxinov One             Product plans               Marketplace fees
-   (bundle across         (per product, when           (Commodity Market, Services
-    all products)          a product needs its own)     Market, Jobs)
+   (bundle across         (per product, when           (Market, Services
+    all products)          a product needs its own)     Market, HR direct hiring)
           │                      │                           │
           └──────────── entitlements and usage limits ───────┘
                                  │
-        edu app · market app · jobs app · services app · future apps
+        edu app · market app · hr app · services app · future apps
 ```
 
 ## Plan ladder
 
-The same five tiers are used everywhere so customers learn one ladder.
+Every product uses the same five tiers, so customers learn one ladder.
 
 | Tier | Who it is for | Pattern |
 | --- | --- | --- |
@@ -30,24 +50,24 @@ The same five tiers are used everywhere so customers learn one ladder.
 | **Plus** | Individuals who use Oxinov regularly | Higher limits, premium features, no ads, priority processing |
 | **Pro** | Power users and professionals | Highest individual limits, advanced and AI features, early access |
 | **Business** | Teams and organizations (per seat) | Shared workspace, admin console, roles, invoices, data controls, support |
-| **Enterprise** | Large institutions and government | Custom limits, SSO/SCIM, contracts, dedicated support, data residency options |
+| **Enterprise** | Large institutions and government | Custom limits, single sign-on and user provisioning (SSO/SCIM), contracts, dedicated support, data residency options |
 
-## Oxinov One (bundle)
+## Oxinov One bundle
 
-Like a single membership across a family of products, **Oxinov One** is the default paid plan. A person subscribes once and gets the Plus or Pro tier in every launched product, plus shared benefits:
+**Oxinov One** is the default paid plan: one membership across the family of products. A person subscribes once and gets the Plus or Pro tier in every launched product, plus shared benefits:
 
-- shared monthly Oxinov AI credits usable in any product (LMS tutor, listing writer, CV helper, and later AI products);
+- shared monthly Oxinov AI credits usable in any product (Edu tutor, listing writer, CV helper, and later AI products);
 - more storage for uploads and media;
 - premium support and early access to new products.
 
-Individual product plans exist only where a product has a distinct buyer (for example, an LMS institution or a high-volume seller). A product plan never removes features a person already has through Oxinov One.
+A product has its own plan only when it has a distinct buyer, for example an Edu institution or a high-volume seller. A product plan never removes features a person already has through Oxinov One.
 
 ## Features by product and tier (initial proposal)
 
 | Product | Free | Plus / Pro (Oxinov One) | Business / Enterprise |
 | --- | --- | --- | --- |
 | **Oxinov Edu** | Free courses, limited mock exams per month, basic progress | All included practice content, unlimited mock exams, AI tutor and explanations, certificates, offline-ready content later | Institution workspaces (tenants), instructor seats, cohorts, analytics, branding, custom domain |
-| **Oxinov Commodity Market** | Browse, buy, and list commodities or second-hand items with standard commission | Price alerts, market price history, more active listings, AI listing writer, condition badges | Dealer, cooperative & liquidator workspaces, member/fleet management, bulk listings & auctions, lower commission, reports |
+| **Oxinov Market** (Commodity Market) | Browse, buy, and list commodities or second-hand items with standard commission | Price alerts, market price history, more active listings, AI listing writer, condition badges | Dealer, cooperative, and liquidator workspaces, member and fleet management, bulk listings and auctions, lower commission, reports |
 | **Oxinov HR** | Candidate profile, apply to direct jobs, browse verified HR professionals | Application insights and governed CV help | Employer and agency plans: job posts, applicant search, hiring seats, mandates, engagement workspace, and verified profile tools |
 | **Oxinov Services Market** | Browse, book, and offer services with standard commission | Priority booking, saved providers, AI request writer | Provider business plans: more categories and areas, staff accounts, featured placement, lower commission |
 | **Oxinov AI** (future) | Limited daily messages | Higher limits, stronger models, file and image tools | Team workspace, admin and data controls, API credits |
@@ -58,59 +78,64 @@ Individual product plans exist only where a product has a distinct buyer (for ex
 | --- | --- |
 | Subscriptions (monthly or annual; annual about two months cheaper) | Oxinov One, product plans, Business seats |
 | Usage-based credits | AI usage beyond included limits, API access |
-| Transaction commission | Commodity Market orders & escrow releases, and Services Market bookings; never charged to job candidates |
+| Transaction commission | Market orders and escrow releases, and Services Market bookings; never charged to job candidates |
 | Promotion | Featured listings, featured jobs, featured providers |
-| Institutional contracts | LMS institutions, cooperatives, employers, enterprise and government |
+| Institutional contracts | Edu institutions, cooperatives, employers, enterprise and government |
 
 ## Price hypotheses (NPR, to validate)
 
 | Plan | Monthly | Annual |
 | --- | --- | --- |
-| Free | 0 | 0 |
-| Oxinov One Plus | 499 | 4,990 |
-| Oxinov One Pro | 1,499 | 14,990 |
-| Business (per seat) | 999 | 9,990 |
+| Free | NPR 0 | NPR 0 |
+| Oxinov One Plus | NPR 499 | NPR 4,990 |
+| Oxinov One Pro | NPR 1,499 | NPR 14,990 |
+| Business (per seat) | NPR 999 | NPR 9,990 |
 | Enterprise | Contract | Contract |
 
-International pricing uses purchasing-power-adjusted local prices once an eligible international payment route exists. Validate with pilot users before publishing.
+International pricing uses local prices adjusted for purchasing power, once an eligible international payment route exists. Validate prices with pilot users before publishing them.
 
 ## Entitlements, not plan names
 
-Products never check a plan name such as "Pro". The platform turns plans into **entitlements** and **limits**, and products check those:
+Products never check a plan name such as "Pro". The platform turns plans into **entitlements** and **limits**, and products check those (FR-PLAN-2601, FR-PLAN-2603):
 
 ```text
 plan: oxinov-one-plus
-  entitlements: edu.mock_exams.unlimited, edu.ai_tutor, market.price_alerts, jobs.cv_helper, ...
+  entitlements: edu.mock_exams.unlimited, edu.ai_tutor, market.price_alerts, hr.cv_helper, ...
   limits:       ai.credits.monthly = 1000, storage.gb = 20, market.active_listings = 50
 ```
 
-- A plan is a named bundle of entitlement keys and limits stored in the platform catalogue.
+- A plan is a named bundle of entitlement keys and limits, stored in the platform catalogue.
 - Products ask the platform "does this user or organization have `edu.ai_tutor`?" and "how much of `ai.credits.monthly` is left?"
 - Changing a plan's contents, running a promotion, or adding a regional plan needs no product code change.
-- Usage is metered by products as events to the platform; the platform enforces limits and shows usage in the account portal, like usage bars in consumer AI apps.
-- Free-tier limits reset on a published schedule; reaching a limit shows one clear upgrade or wait message.
+- Products report usage as events to the platform. The platform enforces limits and shows usage in the account portal, like the usage bars in consumer AI apps (FR-PLAN-2604).
+- Free-tier limits reset on a published schedule. Reaching a limit shows one clear upgrade or wait message.
 
 ## Where people subscribe
 
 | Channel | Rule |
 | --- | --- |
-| Web, `oxinov.com/pricing` and `app.oxinov.com/billing` | Main place to compare plans, subscribe, change plan, see invoices, and cancel |
+| Web: `oxinov.com/pricing` and `app.oxinov.com/billing` | Main place to compare plans, subscribe, change plan, see invoices, and cancel |
 | Android app | Digital subscriptions sold inside the app use Google Play Billing where Google Play policy requires it |
 | iOS app | Digital subscriptions sold inside the app use Apple In-App Purchase where App Store rules require it |
 | Marketplace goods and in-person services | Not digital content; paid through Oxinov payments (Khalti, eSewa), not app store billing |
 
-A subscription bought on any channel unlocks the same entitlements on every device and every product. The platform stores one subscription record per purchase with its channel, verifies app-store receipts server-side, and processes renewal and cancellation notifications idempotently. A person cannot hold two active subscriptions for the same plan through different channels without a warning.
+A subscription bought on any channel unlocks the same entitlements on every device and in every product. The platform:
+
+- stores one subscription record per purchase, with its channel;
+- verifies app-store receipts on the server;
+- processes renewal and cancellation notifications idempotently (each notification takes effect once);
+- warns a person before they hold two active subscriptions for the same plan through different channels.
 
 ## Billing in Nepal
 
-- Khalti and eSewa are the first payment routes. Automatic recurring charges may not be available from local wallets, so the first release supports **prepaid periods** (1, 3, 6, or 12 months) with renewal reminders, a grace period, and one-tap renewal. Add auto-renewal when a provider supports it.
-- Prices are shown in NPR including applicable VAT once tax treatment is confirmed.
-- Downgrade and cancellation keep access until the end of the paid period. Refunds follow the published Payments, Escrow, Refunds, and Disputes Policy.
-- International card subscriptions need an eligible provider or a merchant-of-record service for the Nepal entity; this is an open decision.
+- Khalti and eSewa are the first payment routes. Local wallets may not support automatic recurring charges, so the first release supports **prepaid periods** (1, 3, 6, or 12 months) with renewal reminders, a grace period, and one-tap renewal (FR-PLAN-2606). Add auto-renewal when a provider supports it.
+- Prices are shown in NPR including applicable VAT, once the tax treatment is confirmed.
+- Downgrade and cancellation keep access until the end of the paid period. Refunds follow the Payments, Escrow, Refunds, and Disputes Policy in the [platform policies](platform-policies.md).
+- International card subscriptions need an eligible provider or a merchant-of-record service for the Nepal entity. This is an open decision for the founder.
 
 ## Governance
 
 - `oxinov.com/pricing` is the single public source of plans and prices. Product apps link to it and show only the plans relevant to them.
-- Every plan, entitlement key, and limit has an owner and a version. Changes that reduce what paying customers receive require advance notice.
+- Every plan, entitlement key, and limit has an owner and a version. A change that reduces what paying customers receive needs advance notice.
 - Pricing experiments run on new customers only and are recorded.
-- Students, schools, NGOs, and cooperatives may receive published discount programs verified through the platform.
+- Students, schools, NGOs, and cooperatives may receive published discount programs, verified through the platform.

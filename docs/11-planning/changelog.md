@@ -88,5 +88,3 @@
 - **2026-09-22, v1.2:** Added JLPT, SSW, languages, IT, recorded media, chapter and mock exams, results, chat, administration, and Android/iOS scope.
 - **2026-09-22, v1.1:** Clarified core LMS business rules and recommended stack.
 - **Scaffold:** Split the original FRD into canonical documentation files and added architecture, design, data, API, engineering, security, DevOps, and planning documents.
-# Changelog
-

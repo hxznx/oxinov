@@ -2,6 +2,8 @@
 
 **Scope:** the Oxinov Edu product. Company-wide choices are in the [company stack](../../04-architecture/tech-stack.md); what runs today is in [CURRENT-STATE.md](../../04-architecture/current-state.md). **Updated:** 2026-09-26 (ADR-017, ADR-018, ADR-021). Record changes in [ADR.md](../../04-architecture/adr/README.md).
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 PostgreSQL is the system of record. Add any other data technology only for a documented need, with an owner, backup policy, and tenant-isolation design. Versions are pinned exactly (pnpm strict catalog, image digests).
 
 | Layer | Today | Next step and trigger |

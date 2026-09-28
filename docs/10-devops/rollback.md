@@ -4,6 +4,8 @@
 workload does not become healthy, the node's public checks fail, or the public smoke test fails, the
 previous Helm revision is restored without anyone acting, and the deploy run fails with the reason.
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 **By hand:** `bash devops/scripts/oxctl rollback` returns to the previous revision (`oxctl history` lists
 them); to go further back, run **Deploy production** from an older commit. Images and chart versions in ECR
 are immutable and the last ten (thirty for charts) are kept.

@@ -1,5 +1,7 @@
 # Data flow
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Sign-in and single sign-on (platform)
 
 Person chooses Continue with Google or email one-time code at `id.oxinov.com` -> identity provider verifies the account -> platform links or creates the Oxinov user by internal ID -> first sign-in shows the welcome screen and records Terms and Privacy acceptance -> platform grants member entitlements for launched products -> the requesting app receives tokens through its backend -> opening another Oxinov app reuses the `id.oxinov.com` session without another sign-in. See [identity and access](identity-and-access.md).

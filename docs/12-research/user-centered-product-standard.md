@@ -1,5 +1,7 @@
 # Oxinov user-centred product research and usability standard
 
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+
 ## Company decision
 
 Research is the evidence base of every Oxinov product. Product strategy, requirements, design, delivery, and improvement must start from observed user needs and continue learning after launch.

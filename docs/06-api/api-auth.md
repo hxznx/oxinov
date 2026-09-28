@@ -2,6 +2,8 @@
 
 Customers sign in once at `id.oxinov.com` with Google or an email one-time code and use every launched Oxinov product with the same session. The sign-in experience, trust levels, and policy acceptance are defined in [identity and access](../04-architecture/identity-and-access.md).
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 An approved OpenID Connect provider verifies identity; Keycloak is the company-platform default. The platform PostgreSQL database holds users, trust levels, policy acceptances, KYC status, organizations, and product entitlements. Each product database holds its own memberships, roles, and ownership; the LMS database holds tenant memberships, roles, instructor approval, and LMS access rules.
 
 Before protected work, the backend verifies:

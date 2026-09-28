@@ -1,5 +1,7 @@
 # Observability
 
+**Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
+
 ## Baseline stack
 
 | Component | Purpose | Local service |
