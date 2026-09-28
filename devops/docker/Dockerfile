@@ -1,7 +1,7 @@
 # Production images for the canonical pnpm workspace. Targets: backend (Edu API), platform-api, edu-web,
 # platform-web, migrate (database migrations, run once per deploy), mail-relay, and backup. The worker and chat
 # targets remain templates until their source is implemented.
-FROM node:22-alpine AS base
+FROM node:26-alpine AS base
 WORKDIR /app
 RUN npm install --global pnpm@12.6.0
 ENV NODE_ENV=production
@@ -79,7 +79,7 @@ COPY backend/workers/mail-relay/ ./backend/workers/mail-relay/
 RUN pnpm --filter @oxinov/mail-relay --prod deploy /app/deploy
 
 # Runtime images carry Node.js only: no npm, npx, corepack, yarn, or pnpm.
-FROM node:22-alpine AS runtime
+FROM node:26-alpine AS runtime
 ENV NODE_ENV=production
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack     /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /opt/yarn* /usr/local/bin/yarn /usr/local/bin/yarnpkg
 
