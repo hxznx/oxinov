@@ -25,4 +25,4 @@ Source: [AGENTS.md](../../AGENTS.md) sections 4.2 and 6.1, [API specification](.
 - Remove or rename a field, route, or code before every caller has moved.
 - Give an API a public host; APIs sit behind their web apps.
 
-Skills: [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md).
+Skills: [oxinov-backend-architecture](../../.claude/skills/oxinov-backend-architecture/SKILL.md), [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md).

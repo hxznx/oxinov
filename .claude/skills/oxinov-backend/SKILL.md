@@ -5,7 +5,7 @@ description: Build or change an Oxinov NestJS API (edu-api, platform-api) - endp
 
 # Oxinov backend (NestJS APIs)
 
-Rules: [API rules](../../../docs/14-ai-knowledge/api-rules.md), [coding rules](../../../docs/14-ai-knowledge/coding-rules.md), [database rules](../../../docs/14-ai-knowledge/database-rules.md). Binding: [AGENTS.md](../../../AGENTS.md) sections 4-6.
+Rules: [API rules](../../../docs/14-ai-knowledge/api-rules.md), [coding rules](../../../docs/14-ai-knowledge/coding-rules.md), [database rules](../../../docs/14-ai-knowledge/database-rules.md). Binding: [AGENTS.md](../../../AGENTS.md) sections 4-6. Plan non-trivial, data, money, or security-sensitive features first with the oxinov-backend-architecture skill (domain, boundaries, integrity, concurrency, reliability).
 
 ## Where things are
 

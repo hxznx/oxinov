@@ -13,4 +13,4 @@ Contracts shared by every Oxinov API: how requests authenticate, how errors are 
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-access-control](../../.claude/skills/oxinov-access-control/SKILL.md), [oxinov-secure-input-output](../../.claude/skills/oxinov-secure-input-output/SKILL.md), [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-backend-architecture](../../.claude/skills/oxinov-backend-architecture/SKILL.md), [oxinov-access-control](../../.claude/skills/oxinov-access-control/SKILL.md), [oxinov-secure-input-output](../../.claude/skills/oxinov-secure-input-output/SKILL.md), [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

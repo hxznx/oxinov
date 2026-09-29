@@ -4,4 +4,4 @@ Planned TypeScript worker for retryable email, media, payment fulfillment, AI dr
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-events-and-jobs](../../../.claude/skills/oxinov-events-and-jobs/SKILL.md), [oxinov-new-service](../../../.claude/skills/oxinov-new-service/SKILL.md), [oxinov-observability](../../../.claude/skills/oxinov-observability/SKILL.md). All rules and skills: [AI knowledge](../../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-backend-architecture](../../../.claude/skills/oxinov-backend-architecture/SKILL.md), [oxinov-events-and-jobs](../../../.claude/skills/oxinov-events-and-jobs/SKILL.md), [oxinov-new-service](../../../.claude/skills/oxinov-new-service/SKILL.md), [oxinov-observability](../../../.claude/skills/oxinov-observability/SKILL.md). All rules and skills: [AI knowledge](../../../docs/14-ai-knowledge/README.md).
