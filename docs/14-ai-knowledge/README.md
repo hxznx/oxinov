@@ -80,7 +80,7 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md) | Build or review any page, component, email, or mobile screen |
 | [oxinov-ai-feature](../../.claude/skills/oxinov-ai-feature/SKILL.md) | Add a model call, copilot, chatbot, or other AI capability to a product |
 | [oxinov-architecture-decision](../../.claude/skills/oxinov-architecture-decision/SKILL.md) | Change the stack or architecture, or reverse an earlier decision |
-| [oxinov-project-delivery](../../.claude/skills/oxinov-project-delivery/SKILL.md) | Plan and deliver a project or milestone, or report progress |
+| [oxinov-project-delivery](../../.claude/skills/oxinov-project-delivery/SKILL.md) | Plan and deliver a project or milestone, check a plan against the 18 areas of a software product (requirements to continuous improvement), or report progress |
 | [oxinov-code-review](../../.claude/skills/oxinov-code-review/SKILL.md) | Review a change, a pull request, or a helper's work |
 
 ## From idea to a scaled product
@@ -100,7 +100,7 @@ Use the skills in this order when the company grows. Each step names what the ow
 | 9. Operation | Health, logs, alarms, incidents, backups | oxinov-observability, oxinov-server, oxinov-aws | Restores and deletions |
 | 10. Growth | Events between products, workers, bigger node, RDS, EKS, isolation tiers | oxinov-events-and-jobs, oxinov-scaling, oxinov-architecture-decision | Every scale-out step and its cost |
 
-Every stage uses oxinov-project-delivery to plan and oxinov-code-review before work is accepted.
+Every stage uses oxinov-project-delivery to plan and oxinov-code-review before work is accepted. Within a stage, the [18 areas of a software product](../../.claude/skills/oxinov-project-delivery/SKILL.md#the-18-areas-of-a-software-product) cover every area from requirements to continuous improvement. For each area they show what Oxinov uses today, what is not in use yet, and which skill applies.
 
 ## Which skills each part of the company uses
 
