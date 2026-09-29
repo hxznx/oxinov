@@ -55,6 +55,7 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md) | Branch, commit, or push, especially in a shared checkout |
 | [oxinov-devops-architecture](../../.claude/skills/oxinov-devops-architecture/SKILL.md) | Plan or review any infrastructure, pipeline, deployment, or operations change: tool ownership, today's production against the reference architecture, safety rules |
 | [oxinov-docker](../../.claude/skills/oxinov-docker/SKILL.md) | Change the Dockerfile, an image target, or the local Compose stack |
+| [oxinov-ingress-tls](../../.claude/skills/oxinov-ingress-tls/SKILL.md) | Add or change a public host, route, certificate, replica count, or autoscaling, or debug an unreachable app (404, 502, 503, TLS, redirects) |
 | [oxinov-kubernetes](../../.claude/skills/oxinov-kubernetes/SKILL.md) | Change the Helm chart, a workload, probes, resources, or network policy |
 | [oxinov-cicd](../../.claude/skills/oxinov-cicd/SKILL.md) | Change a GitHub Actions workflow, a delivery script, or the release plan |
 | [oxinov-terraform](../../.claude/skills/oxinov-terraform/SKILL.md) | Change any AWS resource through Terraform |
@@ -115,7 +116,7 @@ Every stage uses oxinov-project-delivery to plan and oxinov-code-review before w
 | Future products (HR, Market, Services Market, Studio, JP, Tech) | None until the release gate | oxinov-new-product, oxinov-requirements, oxinov-research; after approval oxinov-platform-integration and oxinov-new-service |
 | AI features (planned) | None yet | oxinov-ai-feature, oxinov-security |
 | Shared packages | `packages/*` | oxinov-shared-package, oxinov-authentication-sessions, oxinov-secrets-and-crypto, oxinov-backend, oxinov-frontend, oxinov-branding, oxinov-testing |
-| Delivery | `.github/workflows`, `devops/scripts`, `devops/docker`, `devops/kubernetes` | oxinov-devops-architecture, oxinov-cicd, oxinov-docker, oxinov-kubernetes, oxinov-version-control |
+| Delivery | `.github/workflows`, `devops/scripts`, `devops/docker`, `devops/kubernetes` | oxinov-devops-architecture, oxinov-ingress-tls, oxinov-cicd, oxinov-docker, oxinov-kubernetes, oxinov-version-control |
 | Infrastructure | `devops/terraform`, `devops/ansible` | oxinov-devops-architecture, oxinov-rds, oxinov-terraform, oxinov-aws, oxinov-ansible, oxinov-scaling |
 | Production operations | The k3s node, `oxctl`, `monitoring/` | oxinov-devops-architecture, oxinov-server, oxinov-observability, oxinov-scaling, oxinov-aws, oxinov-kubernetes |
 | Security operations | `security/` | oxinov-security, oxinov-security-operations, oxinov-observability |

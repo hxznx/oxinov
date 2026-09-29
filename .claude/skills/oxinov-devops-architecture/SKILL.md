@@ -45,7 +45,7 @@ oxinov.com ─▶ CloudFront ─▶ private S3          Route 53 · SES · Param
 | --- | --- | --- |
 | Dev, test, staging, production | Local, CI, production only; delivery rehearsed on a throwaway local k3s | Staging with DevOps roadmap Phase 4 (second developer or first paying school) |
 | Separate AWS accounts per environment | One account | With staging or a compliance need |
-| ALB or NLB | None; Traefik on the node terminates TLS (Let's Encrypt) | With EKS |
+| ALB or NLB | None; Traefik on the node terminates TLS (Let's Encrypt); details in oxinov-ingress-tls | With EKS |
 | Private subnets and NAT gateway | One public subnet, no NAT (a NAT gateway costs more than the budget allows); the security group allows only 80 and 443 inbound | With EKS or RDS |
 | Multiple Availability Zones | One node in one AZ; host failure means minutes of downtime (ADR-017) | When an availability commitment exists |
 | EKS, cluster autoscaler, HPA | k3s on one node, one replica per service | Two or more live products or availability needs (scalability step 4) |
