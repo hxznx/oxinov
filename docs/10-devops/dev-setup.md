@@ -25,7 +25,7 @@ docker compose --profile identity up -d
 
 - `postgres`: PostgreSQL 18. A fresh volume creates the `oxinov_app` request role from `APP_DB_PASSWORD`; for an existing volume, run the `ALTER ROLE` command in the [Edu API README](../../backend/products/edu-api/README.md) once.
 - `object-storage`: SeaweedFS with an S3 API on `127.0.0.1:9000`. Set `MEDIA_BUCKET`, `MEDIA_S3_ENDPOINT`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY` in `backend/products/edu-api/.env`, then create the bucket and its CORS rule once with `pnpm --filter @oxinov/edu-api media:bucket`.
-- `identity` profile: Keycloak and Mailpit (every email, including sign-in codes, at `http://localhost:8025`). Run `bash devops/keycloak/configure-realm.sh` once to create the realm and clients.
+- `identity` profile: Keycloak and Mailpit (every email, including sign-in codes, at `http://localhost:8025`). Copy `devops/keycloak/admin/.env.example` to `devops/keycloak/admin/.env` once, replace every value, then run `bash devops/keycloak/admin/start-local.sh`: it starts the profile and applies the same realm script production uses, so it doubles as the rehearsal for a realm change ([Keycloak](../../devops/keycloak/README.md#run-locally)). If Keycloak already has a database, keep the administrator name and password it was created with.
 - The Compose `redis` service is not used by any app yet (ADR-021).
 
 ## 4. Database
@@ -54,6 +54,22 @@ python scripts/validate_project.py
 ```
 
 Add `pnpm test:integration` for database or tenant-isolation changes, and `bash devops/scripts/check-delivery.sh` for scripts, the chart, or workflows (see [AGENTS.md](../../AGENTS.md#checks-to-run)).
+
+## When Docker Desktop hangs (Windows)
+
+Symptoms:
+- `docker` commands never return;
+- or Docker Desktop stays on "starting", or shows an error with **Reset to factory defaults**.
+
+Never click that button, and never run `wsl --unregister` or `wsl --uninstall`: each one deletes local data.
+
+1. **Stop Docker and WSL.** Quit Docker Desktop, then run `wsl --shutdown`. If that hangs, run `taskkill /F /IM wslservice.exe` in an Administrator Command Prompt. Windows restarts the service cleanly. Also stop any leftover `Docker Desktop.exe`, `com.docker.backend.exe`, and `wsl.exe` processes.
+2. **Clear stale sockets if the start still fails.** A Docker Desktop that was force-closed can leave socket files behind. The start then fails with `rename ... .sock ... .sock.stale: The file cannot be accessed by the system`. Windows cannot delete these files, but you can rename the folder that holds them:
+   - `%LOCALAPPDATA%\Docker\run`
+   - `%LOCALAPPDATA%\docker-secrets-engine`
+
+   Docker creates fresh folders on the next start. Containers and volumes are not stored there.
+3. **Start Docker Desktop.** Wait for **Engine running**, then start the stack again. Containers stop after the engine restarts; `start-local.sh` or `docker compose up -d` brings them back.
 
 ## Optional: monitoring
 
