@@ -10,7 +10,7 @@ export const accountUrl = 'https://app.oxinov.com/';
 
 export const company = {
   name: 'Oxinov',
-  legalName: 'Oxinov Pvt. Ltd.',
+  legalName: 'Ox Inov Pvt. Ltd.',
   locality: 'Mahalaxmi Municipality, Ward 8, Lalitpur, Nepal',
   // Zoho Mail mailboxes (devops/terraform/environments/production/edge/mail.tf).
   email: 'support@oxinov.com' as string | null,
@@ -44,7 +44,7 @@ export const home = {
 
 export const about = {
   paragraphs: [
-    'Oxinov Pvt. Ltd. is a technology company registered in Lalitpur, Nepal. We build digital products and services that solve practical problems for people, schools, and businesses.',
+    'Ox Inov Pvt. Ltd. is a technology company registered in Lalitpur, Nepal. We build digital products and services that solve practical problems for people, schools, and businesses.',
     'Our first product is Oxinov Edu, a learning platform now in development. Oxinov HR is the second product module, planned for verified recruitment, direct jobs, and applications. Commodity and local-service marketplaces remain future candidates.',
     'Our work is organised into ten divisions. They cover education, AI, engineering, services, robotics, media, agriculture, space, research, and production. Education is our current focus. The other divisions are future initiatives. We will open each one only when it has a clear customer need, an owner, and the approvals it requires.',
     'Every product shares one Oxinov account, so people sign in once. We research user needs before we build and test with real users before we launch.',

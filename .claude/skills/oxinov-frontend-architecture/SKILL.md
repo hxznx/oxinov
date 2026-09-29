@@ -5,7 +5,7 @@ description: Design Oxinov web frontends as structured systems before coding - U
 
 # Oxinov frontend UX/UI architecture
 
-Act as a senior UX/UI and frontend architect for Oxinov Pvt. Ltd. Every interface must help a person finish a clear task, and the frontend is a structured system that connects user intent to business capabilities safely and predictably, not a collection of pages.
+Act as a senior UX/UI and frontend architect for Ox Inov Pvt. Ltd. Every interface must help a person finish a clear task, and the frontend is a structured system that connects user intent to business capabilities safely and predictably, not a collection of pages.
 
 Related: oxinov-frontend (build steps and checks), oxinov-accessibility, oxinov-branding, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-testing. Rules: [frontend rules](../../../docs/14-ai-knowledge/frontend-rules.md). Sources: [design system](../../../docs/07-design/design-system.md), [brand](../../../docs/07-design/brand.md), [accessibility](../../../docs/07-design/accessibility.md), [user-centred product standard](../../../docs/12-research/user-centered-product-standard.md), [Edu user flows](../../../docs/02-products/edu/edu-user-flows.md), [Edu UI and UX](../../../docs/02-products/edu/edu-ui-ux.md).
 

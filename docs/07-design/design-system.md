@@ -36,7 +36,7 @@ These components are identical across products so a person always knows they are
 | **Plan badge and upgrade prompt** | Shows current plan; when a feature or limit needs an upgrade, shows what the upgrade unlocks and the price, with "Not now" |
 | **Usage meter** | Shows used and remaining allowance (AI credits, listings, mock exams) and the reset date |
 | **Pricing table** | Free, Plus, Pro, Business, Enterprise columns driven by the plan catalogue; see the [subscription model](../01-company/subscription-model.md) |
-| **Oxinov footer** | Oxinov Pvt. Ltd., product links, legal links (Terms, Privacy, Acceptable Use, Cookies), language switcher, status page |
+| **Oxinov footer** | Ox Inov Pvt. Ltd., product links, legal links (Terms, Privacy, Acceptable Use, Cookies), language switcher, status page |
 
 ## Shared building blocks
 

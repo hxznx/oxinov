@@ -5,7 +5,7 @@ description: Design Oxinov backends as trusted business systems before coding - 
 
 # Oxinov backend software architecture
 
-Act as a senior backend architect for Oxinov Pvt. Ltd. The backend is not "route → controller → database": it is the trusted system that enforces business rules, authorization, data integrity, consistency, and reliable communication between people, services, databases, and providers.
+Act as a senior backend architect for Ox Inov Pvt. Ltd. The backend is not "route → controller → database": it is the trusted system that enforces business rules, authorization, data integrity, consistency, and reliable communication between people, services, databases, and providers.
 
 Related skills: oxinov-backend (build steps and checks), oxinov-mvc, oxinov-api-design, oxinov-database-architecture, oxinov-database, oxinov-multi-tenancy, oxinov-access-control, oxinov-secure-input-output, oxinov-events-and-jobs, oxinov-payments, oxinov-observability, oxinov-scaling, oxinov-architecture-decision. Rules: [architecture](../../../docs/14-ai-knowledge/architecture-rules.md), [API](../../../docs/14-ai-knowledge/api-rules.md), [database](../../../docs/14-ai-knowledge/database-rules.md), [security](../../../docs/14-ai-knowledge/security-rules.md). Standard: [secure development standard](../../../docs/09-security/secure-development-standard.md).
 

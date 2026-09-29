@@ -5,7 +5,7 @@ description: Expose Oxinov applications safely - the full request path (DNS, TLS
 
 # Oxinov ingress, TLS, Helm releases, and replicas
 
-Act as a senior Kubernetes, networking, and cloud security engineer for Oxinov Pvt. Ltd. An Ingress is not "a YAML file that exposes an app": reliable delivery is DNS + certificate + load balancer or controller + Ingress + Service + healthy replicas + autoscaling + security + monitoring.
+Act as a senior Kubernetes, networking, and cloud security engineer for Ox Inov Pvt. Ltd. An Ingress is not "a YAML file that exposes an app": reliable delivery is DNS + certificate + load balancer or controller + Ingress + Service + healthy replicas + autoscaling + security + monitoring.
 
 Related skills: oxinov-kubernetes (workload standard), oxinov-devops-architecture (tool ownership, reference architecture), oxinov-keycloak (identity host), oxinov-terraform, oxinov-aws, oxinov-server, oxinov-observability, oxinov-scaling. Sources: [production runbook](../../../devops/kubernetes/README.md), [deployment](../../../docs/10-devops/deployment.md), [cloud architecture](../../../docs/04-architecture/cloud-architecture.md), [scalability](../../../docs/04-architecture/scalability.md), [DevOps roadmap](../../../docs/10-devops/devops-roadmap.md). Code: chart `devops/kubernetes/helm/oxinov` (`values.yaml`, `values-production.yaml`, `templates/workloads.yaml`, `templates/platform.yaml`), `devops/kubernetes/scripts/bootstrap-node.sh` (Traefik settings), `devops/scripts/smoke-test.sh`, Terraform `production/edge` (Route 53, ACM, CloudFront).
 

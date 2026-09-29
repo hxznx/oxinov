@@ -6,7 +6,7 @@
 
 ## Google Business Profile (owner)
 
-1. Create the profile for **Oxinov Pvt. Ltd.** at the Lalitpur headquarters, category "Software company".
+1. Create the profile for **Ox Inov Pvt. Ltd.** at the Lalitpur headquarters, category "Software company".
 2. Use exactly the same name, address, phone, and hours as the contact page (`company` in `frontend/company-web/src/content/site.ts`) and its `LocalBusiness` data. Any difference weakens both.
 3. Website: `https://oxinov.com/`. Add the logo, office photos, and a short English description that says Oxinov serves people everywhere.
 4. Verify by the method Google offers (postcard, phone, or video).

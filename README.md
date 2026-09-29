@@ -1,6 +1,6 @@
 # Oxinov Platform
 
-The company and product monorepo of **Oxinov Pvt. Ltd.**: the public website, the shared Oxinov platform (one account, sign-in, account portal, platform API), and the products built on it. The first product, **Oxinov Edu**, is a cloud-hosted, multi-tenant online classroom for schools and teachers covering languages (such as JLPT N5–N1), SSW skills, IT, and exam preparation. Everything is written in English only (ADR-020).
+The company and product monorepo of **Ox Inov Pvt. Ltd.**: the public website, the shared Oxinov platform (one account, sign-in, account portal, platform API), and the products built on it. The first product, **Oxinov Edu**, is a cloud-hosted, multi-tenant online classroom for schools and teachers covering languages (such as JLPT N5–N1), SSW skills, IT, and exam preparation. Everything is written in English only (ADR-020).
 
 ## Start here
 

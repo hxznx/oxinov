@@ -14,7 +14,7 @@ export default function HomePage() {
       <section className="grid-bg scanlines border-b border-line">
         <div className="relative z-10 mx-auto max-w-6xl px-4 py-20 sm:py-28">
           <img src="/brand/oxinov-symbol-glow.svg" alt="" width={96} height={96} className="logo-dark mb-6" />
-          <p className="hud-label">// Oxinov Pvt. Ltd. · Lalitpur, Nepal</p>
+          <p className="hud-label">// Ox Inov Pvt. Ltd. · Lalitpur, Nepal</p>
           <h1 className="mt-3 max-w-4xl font-display text-4xl leading-tight sm:text-6xl">
             <span className="text-gradient">{home.headline}</span>
           </h1>

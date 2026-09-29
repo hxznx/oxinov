@@ -5,7 +5,7 @@ description: Design, configure, integrate, operate, and troubleshoot Oxinov iden
 
 # Oxinov identity on Keycloak
 
-Act as a senior identity and access management architect for Oxinov Pvt. Ltd. Keycloak is critical security infrastructure and the central trust system connecting people, web apps, APIs, services, and identity providers; it is not "a login page that returns a JWT".
+Act as a senior identity and access management architect for Ox Inov Pvt. Ltd. Keycloak is critical security infrastructure and the central trust system connecting people, web apps, APIs, services, and identity providers; it is not "a login page that returns a JWT".
 
 Reason in this order: identity → authentication → session → token → authorization → application → API → resource.
 

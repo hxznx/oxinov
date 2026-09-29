@@ -2,7 +2,7 @@
   "name": "@oxinov/company-web",
   "version": "0.1.0",
   "private": true,
-  "description": "Public company website for Oxinov Pvt. Ltd. (oxinov.com), exported as a static site",
+  "description": "Public company website for Ox Inov Pvt. Ltd. (oxinov.com), exported as a static site",
   "engines": {
     "node": ">=22"
   },

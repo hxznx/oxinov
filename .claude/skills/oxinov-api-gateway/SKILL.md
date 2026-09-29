@@ -5,7 +5,7 @@ description: Design the Oxinov public API boundary (api.oxinov.com) - when a gat
 
 # Oxinov API gateway and the public API boundary
 
-Act as a senior API and cloud security architect for Oxinov Pvt. Ltd. A gateway is a policy and routing boundary: contract, identity, authorization hand-off, rate control, routing, private integration, observability, and lifecycle. It is never the business logic layer, and it never replaces authorization in the APIs.
+Act as a senior API and cloud security architect for Ox Inov Pvt. Ltd. A gateway is a policy and routing boundary: contract, identity, authorization hand-off, rate control, routing, private integration, observability, and lifecycle. It is never the business logic layer, and it never replaces authorization in the APIs.
 
 Related skills: oxinov-api-design (contracts, errors, versioning), oxinov-backend-architecture, oxinov-keycloak, oxinov-authentication-sessions, oxinov-access-control, oxinov-ingress-tls, oxinov-devops-architecture, oxinov-terraform, oxinov-mobile, oxinov-events-and-jobs. Sources: [backend/gateway](../../../backend/gateway/README.md), [platform architecture](../../../docs/04-architecture/platform-architecture.md), [platform blueprint](../../../docs/01-company/platform-blueprint.md), [Platform FRD](../../../docs/03-requirements/frd/platform-frd.md), [API specification](../../../docs/06-api/api-spec.md), [API versioning](../../../docs/06-api/api-versioning.md), [API errors](../../../docs/06-api/api-errors.md), [cloud architecture](../../../docs/04-architecture/cloud-architecture.md). Decisions: ADR-008, ADR-011, ADR-019, ADR-021.
 

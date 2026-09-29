@@ -7,7 +7,7 @@ export const metadata: Metadata = pageMetadata({
   path: '/contact/',
   title: 'Contact',
   description:
-    'Contact Oxinov Pvt. Ltd. by email or phone. Support, billing, legal, and security contacts for customers and partners in every country.',
+    'Contact Ox Inov Pvt. Ltd. by email or phone. Support, billing, legal, and security contacts for customers and partners in every country.',
 });
 
 const toBeAnnounced = 'To be announced';

@@ -71,7 +71,7 @@ password rotation needs `ALTER ROLE` first.
 
 Production starts with payments off: the course page says online payment is not set up. To sell Oxinov's courses:
 
-1. Open merchant accounts for Oxinov Pvt. Ltd. with Khalti (admin.khalti.com) and eSewa. Test first with Khalti's sandbox (test-admin.khalti.com) and eSewa's published test merchant `EPAYTEST`.
+1. Open merchant accounts for Ox Inov Pvt. Ltd. with Khalti (admin.khalti.com) and eSewa. Test first with Khalti's sandbox (test-admin.khalti.com) and eSewa's published test merchant `EPAYTEST`.
 2. Enter the keys yourself (never in chat, Git, or a ticket), from a terminal signed in with `aws sso login`:
    ```bash
    aws ssm put-parameter --name /oxinov/production/starter/KHALTI_SECRET_KEY --type SecureString --value '<key>' --overwrite
@@ -109,7 +109,7 @@ console → Identities → Create identity → Email address). The account owner
 once (SES console → Account dashboard → Request production access): mail type **Transactional**, website
 `https://oxinov.com`, and a use case such as:
 
-> Oxinov Pvt. Ltd. (Lalitpur, Nepal) sends only transactional email from no-reply@oxinov.com: six-digit
+> Ox Inov Pvt. Ltd. (Lalitpur, Nepal) sends only transactional email from no-reply@oxinov.com: six-digit
 > sign-in codes and email-address confirmations for people who request them on edu.oxinov.com and
 > app.oxinov.com. There is no marketing or bulk mail. Recipients are people signing in themselves, so
 > addresses are never bought or imported. The domain is verified with DKIM, SPF (custom MAIL FROM), and

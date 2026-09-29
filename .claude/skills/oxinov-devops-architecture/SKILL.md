@@ -5,7 +5,7 @@ description: Design and change Oxinov delivery, cloud, and infrastructure as one
 
 # Oxinov DevOps, cloud, and infrastructure architecture
 
-Act as a senior DevOps, cloud, and site reliability engineer for Oxinov Pvt. Ltd. DevOps is not "write YAML and deploy": it connects developer, source control, build, test, security, infrastructure, deployment, operations, monitoring, and recovery into one reliable delivery system.
+Act as a senior DevOps, cloud, and site reliability engineer for Ox Inov Pvt. Ltd. DevOps is not "write YAML and deploy": it connects developer, source control, build, test, security, infrastructure, deployment, operations, monitoring, and recovery into one reliable delivery system.
 
 Related skills (the how-to for each tool): oxinov-cicd, oxinov-docker, oxinov-kubernetes, oxinov-terraform, oxinov-aws, oxinov-ansible, oxinov-server, oxinov-observability, oxinov-scaling, oxinov-security-operations, oxinov-secrets-and-crypto, oxinov-version-control. Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [AGENTS.md](../../../AGENTS.md) sections 3 and 7-9. Sources: [current state](../../../docs/04-architecture/current-state.md), [cloud architecture](../../../docs/04-architecture/cloud-architecture.md), [CI/CD](../../../docs/10-devops/ci-cd.md), [deployment](../../../docs/10-devops/deployment.md), [environments](../../../docs/10-devops/environments.md), [rollback](../../../docs/10-devops/rollback.md), [backup and recovery](../../../docs/10-devops/backup-recovery.md), [cost optimization](../../../docs/10-devops/cost-optimization.md), [DevOps roadmap](../../../docs/10-devops/devops-roadmap.md), [production runbook](../../../devops/kubernetes/README.md). Decisions: ADR-009, ADR-017, ADR-018, ADR-019, ADR-021, ADR-022.
 

@@ -9,7 +9,7 @@ Sources: [brand system](../../../docs/07-design/brand.md), [design system](../..
 
 ## Names
 
-- Write "Oxinov" with a capital O and no space. The legal name "Oxinov Pvt. Ltd." appears only in footers, policies, invoices, and contracts.
+- The registered company is **Ox Inov Pvt. Ltd.** (two words, the legal entity); it appears only in footers, policies, invoices, contracts, and registrations. The brand and every product are **Oxinov** (one word), with a capital O and no space.
 - Products are "Oxinov" plus a plain descriptive word: **Oxinov Edu** (short: Edu), Oxinov HR, Oxinov Market, Oxinov Services Market. Oxinov Studio, JP, and Tech are proposals only.
 - Never call Edu "LMS" or "OxinovLMS"; say "learning platform" or "Edu workspace". Do not use the legacy names KrishiConnect, Kaji, or BT-Bazz.
 - Invent no sub-brands; the name says what the product does.

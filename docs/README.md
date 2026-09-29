@@ -1,6 +1,6 @@
 # Oxinov documentation
 
-This is the entry point to every document about **Oxinov Pvt. Ltd.**: the company, its shared platform, and its products. Folders are numbered in reading order, from *why the company exists* to *how it is marketed*. Each folder has a README that indexes its documents.
+This is the entry point to every document about **Ox Inov Pvt. Ltd.**: the company, its shared platform, and its products. Folders are numbered in reading order, from *why the company exists* to *how it is marketed*. Each folder has a README that indexes its documents.
 
 **Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
 

@@ -7,7 +7,7 @@ export const metadata: Metadata = pageMetadata({
   path: '/about/',
   title: 'About',
   description:
-    'Oxinov Pvt. Ltd. is a technology company headquartered in Lalitpur, Nepal, building useful, tested products for people everywhere.',
+    'Ox Inov Pvt. Ltd. is a technology company headquartered in Lalitpur, Nepal, building useful, tested products for people everywhere.',
 });
 
 export default function AboutPage() {

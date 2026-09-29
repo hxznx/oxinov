@@ -1,6 +1,6 @@
 # Oxinov company website (`frontend/company-web`)
 
-Public website of **Oxinov Pvt. Ltd.** at `oxinov.com`. It is a Next.js App Router site exported as static files (`output: 'export'`) for Amazon S3 behind CloudFront. There is no Node server in production.
+Public website of **Ox Inov Pvt. Ltd.** at `oxinov.com`. It is a Next.js App Router site exported as static files (`output: 'export'`) for Amazon S3 behind CloudFront. There is no Node server in production.
 
 ## What it contains
 

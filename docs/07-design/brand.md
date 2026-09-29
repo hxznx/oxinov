@@ -8,7 +8,7 @@ Oxinov uses a **masterbrand** model, like a large multi-product technology compa
 
 | Level | Name | Visual treatment |
 | --- | --- | --- |
-| Company | Oxinov Pvt. Ltd. | Legal name in footers, policies, invoices, and contracts only |
+| Company | Ox Inov Pvt. Ltd. | Legal name in footers, policies, invoices, and contracts only |
 | Masterbrand | Oxinov | Neon wordmark and symbol on `oxinov.com`, sign-in, account portal, and app launcher |
 | Product | Oxinov Edu, Oxinov HR, Oxinov Commodity Market, Oxinov Services Market, later Oxinov AI | Oxinov symbol + product name; each product has one neon accent and one app icon |
 | Plan | Oxinov One Plus, Pro; Business; Enterprise | Neon plan badge in the account menu and pricing page |
@@ -16,6 +16,7 @@ Oxinov uses a **masterbrand** model, like a large multi-product technology compa
 
 Naming rules:
 
+- The registered company is **Ox Inov Pvt. Ltd.** (two words); use it only where the legal entity is meant (footers, policies, invoices, contracts, registrations). The brand, the platform, and every product are **Oxinov** (one word).
 - Always write "Oxinov" with a capital O and no space. Write product names as two or three words with a space (for example, "Oxinov HR"). The first product, formerly "Oxinov Edu", is named "Oxinov Edu" at `edu.oxinov.com` (ADR-015). Its existing internal technical identifiers (packages, folders, databases, entitlement keys, tokens, and requirement IDs) keep the `lms` prefix and are never shown to customers (ADR-025).
 - Do not use the legacy concept names KrishiConnect, Kaji, or BT-Bazz on Oxinov products.
 - Product names describe the job to be done; avoid invented sub-brands.

@@ -1,6 +1,6 @@
 # Company
 
-Why Oxinov Pvt. Ltd. exists and the commitments every product inherits. Read these documents before you propose a product, a price, or a policy change.
+Why Ox Inov Pvt. Ltd. exists and the commitments every product inherits. Read these documents before you propose a product, a price, or a policy change.
 
 **Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-28
 

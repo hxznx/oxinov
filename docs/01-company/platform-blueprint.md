@@ -1,6 +1,6 @@
 # Oxinov company platform blueprint
 
-How Oxinov Pvt. Ltd. is structured as a company website, one shared platform, and separate products, and which products may come next. Read it before you propose a product, a subdomain, or a change to the platform boundary.
+How Ox Inov Pvt. Ltd. is structured as a company website, one shared platform, and separate products, and which products may come next. Read it before you propose a product, a subdomain, or a change to the platform boundary.
 
 **Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-28
 
@@ -8,7 +8,7 @@ The blueprint describes the target structure. What runs today is recorded in [cu
 
 ## Purpose
 
-Oxinov Platform is the digital foundation for Oxinov Pvt. Ltd. and its products. It gives customers:
+Oxinov Platform is the digital foundation for Ox Inov Pvt. Ltd. and its products. It gives customers:
 
 - one Oxinov account;
 - one company portal;

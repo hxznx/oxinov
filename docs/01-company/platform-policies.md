@@ -4,7 +4,7 @@ The framework for the policies that govern every Oxinov product: which policies 
 
 **Status:** Proposed · **Owner:** Legal and trust owner · **Last reviewed:** 2026-09-28
 
-Oxinov Pvt. Ltd. runs every product under one set of company-wide policies plus short product-role policies. This framework does not state legal conclusions. Qualified Nepal counsel must draft or review the legal text of each policy before publication. The required behavior is in the POLICY requirements of the [Platform FRD](../03-requirements/frd/platform-frd.md) (FR-POLICY-2401 to FR-POLICY-2404).
+Ox Inov Pvt. Ltd. runs every product under one set of company-wide policies plus short product-role policies. This framework does not state legal conclusions. Qualified Nepal counsel must draft or review the legal text of each policy before publication. The required behavior is in the POLICY requirements of the [Platform FRD](../03-requirements/frd/platform-frd.md) (FR-POLICY-2401 to FR-POLICY-2404).
 
 ## Policy set
 
@@ -29,7 +29,7 @@ Trust levels T0 to T4 are defined in [identity and access](../04-architecture/id
 
 | Policy | Must cover |
 | --- | --- |
-| Terms | Eligibility and minimum age, account responsibilities, one account per person, Oxinov's role as a platform versus a party to trades, prohibited conduct, content licence, termination, liability limits, governing law (Nepal), and contact details for Oxinov Pvt. Ltd., Lalitpur, Nepal |
+| Terms | Eligibility and minimum age, account responsibilities, one account per person, Oxinov's role as a platform versus a party to trades, prohibited conduct, content licence, termination, liability limits, governing law (Nepal), and contact details for Ox Inov Pvt. Ltd., Lalitpur, Nepal |
 | Privacy | Data collected per product, Google sign-in data used (name, email, photo), purpose and lawful basis, KYC document handling, processors and cross-border transfers, retention, and how to export or delete data |
 | Acceptable use | Fraud, fake listings or jobs, impersonation, harassment, spam, prohibited goods and services, off-platform payment steering, scraping, and security abuse |
 | Product-role policies | For that role: listing accuracy, condition disclosures and inspection reports for second-hand equipment and commodities, quality and quantity claims, pricing and fees, delivery and escrow milestones, cancellations, reviews, and disputes |

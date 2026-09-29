@@ -7,7 +7,7 @@ Give the command below to the coding agent at the start of the platform-foundati
 ## Master command
 
 ```text
-You are building the Oxinov company platform for Oxinov Pvt. Ltd. in the existing repository.
+You are building the Oxinov company platform for Ox Inov Pvt. Ltd. in the existing repository.
 
 Read these files before changing code:
 - README.md
@@ -64,7 +64,7 @@ Implement only this milestone now:
 ## First command to run
 
 ```text
-Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with packages/design-system (cyberpunk tokens from docs/07-design/brand.md, dark default and Daylight theme, self-hosted Orbitron, Rajdhani, Inter, Noto Sans Devanagari, and JetBrains Mono, and the approved logo SVGs), the Full effect level on hero sections, accessible responsive navigation, company and product landing pages, one division page for each of the ten strategic pillars listed in docs/01-company/platform-blueprint.md (education, ai, engineering, services, robotics, studio, agritech, space, research, production), placeholder routes for careers, contact, privacy, terms, and security contact, company identity (Oxinov Pvt. Ltd., registered in Lalitpur, Nepal), health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify Oxinov Edu as the first product, show unified Oxinov HR, Oxinov Commodity Market, and Oxinov Services Market as coming soon, and label all unlaunched sectors as future initiatives. Include a pricing page placeholder at /pricing and legal routes under /legal. Do not move the current Edu applications or rename their technical identifiers in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
+Use the Oxinov company platform master command. Implement Phase 1 foundation slice: scaffold frontend/company-web as the public oxinov.com application with packages/design-system (cyberpunk tokens from docs/07-design/brand.md, dark default and Daylight theme, self-hosted Orbitron, Rajdhani, Inter, Noto Sans Devanagari, and JetBrains Mono, and the approved logo SVGs), the Full effect level on hero sections, accessible responsive navigation, company and product landing pages, one division page for each of the ten strategic pillars listed in docs/01-company/platform-blueprint.md (education, ai, engineering, services, robotics, studio, agritech, space, research, production), placeholder routes for careers, contact, privacy, terms, and security contact, company identity (Ox Inov Pvt. Ltd., registered in Lalitpur, Nepal), health/readiness endpoints, Docker target, CI checks, and basic OpenTelemetry instrumentation. Content must identify Oxinov Edu as the first product, show unified Oxinov HR, Oxinov Commodity Market, and Oxinov Services Market as coming soon, and label all unlaunched sectors as future initiatives. Include a pricing page placeholder at /pricing and legal routes under /legal. Do not move the current Edu applications or rename their technical identifiers in this milestone. Add tests for navigation, metadata, accessibility-critical markup, and health endpoints, then update the relevant documentation and validation script.
 ```
 
 ## Second command after Phase 1 passes

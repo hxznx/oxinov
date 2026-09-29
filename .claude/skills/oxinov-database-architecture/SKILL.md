@@ -5,7 +5,7 @@ description: Design Oxinov data and databases before writing SQL or Prisma model
 
 # Oxinov database architecture
 
-Act as a senior database architect for Oxinov Pvt. Ltd. The database is not just storage: it preserves the truth of each product's data. Never trade correctness or recoverability for premature performance.
+Act as a senior database architect for Ox Inov Pvt. Ltd. The database is not just storage: it preserves the truth of each product's data. Never trade correctness or recoverability for premature performance.
 
 Related: oxinov-database (step-by-step changes and checks), oxinov-multi-tenancy, oxinov-access-control, oxinov-backend-architecture, oxinov-scaling, oxinov-security-operations. Rules: [database rules](../../../docs/14-ai-knowledge/database-rules.md). Sources: [database design](../../../docs/05-data/database-design.md), [data model](../../../docs/05-data/data-model.md), [migration strategy](../../../docs/05-data/migration-strategy.md), [data retention](../../../docs/05-data/data-retention.md), [privacy](../../../docs/09-security/privacy.md), [backup and recovery](../../../docs/10-devops/backup-recovery.md), [Edu ERD](../../../docs/02-products/edu/edu-erd.md). Decisions: ADR-001 (PostgreSQL), ADR-006 (tenant context and RLS), ADR-008 and ADR-019 (database per product), ADR-021 (no cache or queue yet).
 

@@ -68,7 +68,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 
 ### 3.1 Company website (SITE)
 
-**FR-SITE-2101 — Company presence.** `oxinov.com` must present Oxinov Pvt. Ltd., its ten divisions, launched products, coming-soon products, research, careers, contact, and legal pages in English, readable through browser translation (no `translate="no"` except on brand names and code). Unlaunched products and divisions are labeled as future initiatives. *Changed 2026-09-26 by owner decision (ADR-020): English only; was English and Nepali.*
+**FR-SITE-2101 — Company presence.** `oxinov.com` must present Ox Inov Pvt. Ltd., its ten divisions, launched products, coming-soon products, research, careers, contact, and legal pages in English, readable through browser translation (no `translate="no"` except on brand names and code). Unlaunched products and divisions are labeled as future initiatives. *Changed 2026-09-26 by owner decision (ADR-020): English only; was English and Nepali.*
 *Priority:* Must. *Status:* Proposed. *Access:* T0. *Source:* [blueprint](../../01-company/platform-blueprint.md).
 - Acceptance: Given a visitor on any page, the header shows the Oxinov logo, division and product navigation, and a Sign in action.
 - Acceptance: Given an unlaunched product, its page states "coming soon" and offers no sign-up or purchase.
@@ -255,7 +255,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given an authorized refund within the operator's limit, when the provider confirms it, then the ledger, entitlement or order, and receipt update once.
 - Acceptance: Given a reconciliation mismatch, an alert is raised to billing operations.
 
-**FR-PAY-2705 — Invoices.** The platform must issue invoices and receipts in NPR with Oxinov Pvt. Ltd. details and applicable tax once tax treatment is confirmed.
+**FR-PAY-2705 — Invoices.** The platform must issue invoices and receipts in NPR with Ox Inov Pvt. Ltd. details and applicable tax once tax treatment is confirmed.
 *Priority:* Must. *Status:* Proposed. *Access:* Payer. *Source:* [subscription model](../../01-company/subscription-model.md).
 - Acceptance: Given a completed payment, the invoice is downloadable from the portal.
 - Acceptance: Given a different payer or an unverified payment, when an invoice is requested, then the response is "not found" and no tax document is issued.

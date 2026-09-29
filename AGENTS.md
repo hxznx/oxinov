@@ -6,7 +6,7 @@ These rules bind every coding assistant (Claude, Copilot, and others) and every 
 
 ## 1. What this repository is
 
-The monorepo of **Oxinov Pvt. Ltd.**, organized as **company website → Oxinov platform → products**. The founder is the owner and decision maker; assistants act as the engineering team and never decide business, spending, or data-deletion questions alone.
+The monorepo of **Ox Inov Pvt. Ltd.**, organized as **company website → Oxinov platform → products**. The founder is the owner and decision maker; assistants act as the engineering team and never decide business, spending, or data-deletion questions alone.
 
 | Layer | Address | State |
 | --- | --- | --- |

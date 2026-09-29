@@ -1,6 +1,6 @@
 # Oxinov requirements standard
 
-How Oxinov Pvt. Ltd. writes, numbers, and changes functional requirements documents (FRDs) for the company website, the shared platform, and each product. Read it before you add or change a requirement: code, tests, and migrations cite the IDs it defines.
+How Ox Inov Pvt. Ltd. writes, numbers, and changes functional requirements documents (FRDs) for the company website, the shared platform, and each product. Read it before you add or change a requirement: code, tests, and migrations cite the IDs it defines.
 
 **Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-28
 
