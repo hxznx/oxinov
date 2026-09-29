@@ -5,6 +5,8 @@ description: Handle requests for Ansible or host configuration management at Oxi
 
 # Oxinov and Ansible
 
+Plan larger or cross-cutting infrastructure changes first with the oxinov-devops-architecture skill (tool ownership, today's production against the reference architecture, and the production safety rules).
+
 Source: [devops/ansible](../../../devops/ansible/README.md), [deployment](../../../docs/10-devops/deployment.md).
 
 ## Today

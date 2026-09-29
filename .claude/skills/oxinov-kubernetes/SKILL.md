@@ -5,6 +5,8 @@ description: Change Oxinov's Kubernetes deployment - the shared Helm chart, work
 
 # Oxinov Kubernetes (k3s and the shared Helm chart)
 
+Plan larger or cross-cutting infrastructure changes first with the oxinov-devops-architecture skill (tool ownership, today's production against the reference architecture, and the production safety rules).
+
 Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [AGENTS.md](../../../AGENTS.md) section 8. Source: [production runbook](../../../devops/kubernetes/README.md). Decisions: ADR-017, ADR-018, ADR-019, ADR-022.
 
 ## The setup

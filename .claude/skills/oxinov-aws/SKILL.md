@@ -5,6 +5,8 @@ description: Use and reason about the AWS services Oxinov runs on - EC2 with k3s
 
 # Oxinov on AWS
 
+Plan larger or cross-cutting infrastructure changes first with the oxinov-devops-architecture skill (tool ownership, today's production against the reference architecture, and the production safety rules).
+
 Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [security rules](../../../docs/14-ai-knowledge/security-rules.md). Sources: [cloud architecture](../../../docs/04-architecture/cloud-architecture.md), [current state](../../../docs/04-architecture/current-state.md), [cost optimization](../../../docs/10-devops/cost-optimization.md).
 
 ## What Oxinov uses today (region `ap-south-1`, Mumbai)
@@ -21,6 +23,8 @@ Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [security 
 | IAM | GitHub OIDC roles for CI and deploy; the instance role for the node; no long-lived keys |
 | CloudWatch | Instance and system status alarms, SES bounce and complaint alarms |
 | Budgets | Alerts at 85%, 100%, and forecast 100% of US$50 a month (`cost.tf`) |
+| GuardDuty, EventBridge, SNS | Threat detection; findings and CloudTrail-tampering events routed to the `security_alerts` topic (`security.tf`) |
+| KMS | Customer-managed keys for the security alert topic and related encryption (`security.tf`) |
 
 Not used today: EKS, RDS, SQS, ElastiCache, Bedrock, SageMaker. They arrive only with a roadmap trigger and the owner's approval.
 

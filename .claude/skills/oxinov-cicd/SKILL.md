@@ -5,6 +5,8 @@ description: Change Oxinov continuous integration and delivery - GitHub Actions 
 
 # Oxinov CI/CD
 
+Plan larger or cross-cutting infrastructure changes first with the oxinov-devops-architecture skill (tool ownership, today's production against the reference architecture, and the production safety rules).
+
 Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [AGENTS.md](../../../AGENTS.md) section 7. Source: [CI/CD](../../../docs/10-devops/ci-cd.md), [deployment](../../../docs/10-devops/deployment.md), [rollback](../../../docs/10-devops/rollback.md).
 
 ## The pipeline

@@ -8,4 +8,4 @@ packages.
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-docker](../../.claude/skills/oxinov-docker/SKILL.md), [oxinov-cicd](../../.claude/skills/oxinov-cicd/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-devops-architecture](../../.claude/skills/oxinov-devops-architecture/SKILL.md), [oxinov-docker](../../.claude/skills/oxinov-docker/SKILL.md), [oxinov-cicd](../../.claude/skills/oxinov-cicd/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

@@ -5,6 +5,8 @@ description: Work with Oxinov containers - the shared multi-target Dockerfile, i
 
 # Oxinov Docker
 
+Plan larger or cross-cutting infrastructure changes first with the oxinov-devops-architecture skill (tool ownership, today's production against the reference architecture, and the production safety rules).
+
 Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md). Sources: [devops/docker](../../../devops/docker/README.md), [developer setup](../../../docs/10-devops/dev-setup.md).
 
 ## Images

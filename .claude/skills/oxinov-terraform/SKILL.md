@@ -5,6 +5,8 @@ description: Change Oxinov AWS infrastructure through Terraform - the bootstrap,
 
 # Oxinov Terraform
 
+Plan larger or cross-cutting infrastructure changes first with the oxinov-devops-architecture skill (tool ownership, today's production against the reference architecture, and the production safety rules).
+
 Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [AGENTS.md](../../../AGENTS.md) sections 3 and 7.2. Source: [devops/terraform](../../../devops/terraform/README.md), [cloud architecture](../../../docs/04-architecture/cloud-architecture.md), [cost optimization](../../../docs/10-devops/cost-optimization.md).
 
 ## Stacks

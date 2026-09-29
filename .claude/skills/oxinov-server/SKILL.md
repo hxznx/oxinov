@@ -5,6 +5,8 @@ description: Operate the Oxinov production server - the single k3s node, oxctl c
 
 # Operating the Oxinov server
 
+Plan larger or cross-cutting infrastructure changes first with the oxinov-devops-architecture skill (tool ownership, today's production against the reference architecture, and the production safety rules).
+
 Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [AGENTS.md](../../../AGENTS.md) section 9. Sources: [production runbook](../../../devops/kubernetes/README.md), [backup and recovery](../../../docs/10-devops/backup-recovery.md), [rollback](../../../docs/10-devops/rollback.md), [observability](../../../docs/10-devops/observability.md).
 
 ## The server

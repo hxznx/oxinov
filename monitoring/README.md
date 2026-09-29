@@ -4,4 +4,4 @@ Prometheus scrape configuration and rules, Alertmanager routing, and Grafana pro
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-observability](../.claude/skills/oxinov-observability/SKILL.md), [oxinov-server](../.claude/skills/oxinov-server/SKILL.md), [oxinov-kubernetes](../.claude/skills/oxinov-kubernetes/SKILL.md). All rules and skills: [AI knowledge](../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-devops-architecture](../.claude/skills/oxinov-devops-architecture/SKILL.md), [oxinov-observability](../.claude/skills/oxinov-observability/SKILL.md), [oxinov-server](../.claude/skills/oxinov-server/SKILL.md), [oxinov-kubernetes](../.claude/skills/oxinov-kubernetes/SKILL.md). All rules and skills: [AI knowledge](../docs/14-ai-knowledge/README.md).
