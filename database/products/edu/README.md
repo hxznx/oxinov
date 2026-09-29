@@ -16,4 +16,4 @@ and automated allowed and denied cross-tenant tests. Production applies these mi
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-access-control](../../../.claude/skills/oxinov-access-control/SKILL.md), [oxinov-database](../../../.claude/skills/oxinov-database/SKILL.md), [oxinov-multi-tenancy](../../../.claude/skills/oxinov-multi-tenancy/SKILL.md), [oxinov-security](../../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-database-architecture](../../../.claude/skills/oxinov-database-architecture/SKILL.md), [oxinov-access-control](../../../.claude/skills/oxinov-access-control/SKILL.md), [oxinov-database](../../../.claude/skills/oxinov-database/SKILL.md), [oxinov-multi-tenancy](../../../.claude/skills/oxinov-multi-tenancy/SKILL.md), [oxinov-security](../../../.claude/skills/oxinov-security/SKILL.md), [oxinov-testing](../../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../../docs/14-ai-knowledge/README.md).

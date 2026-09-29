@@ -24,6 +24,10 @@ Source: [AGENTS.md](../../AGENTS.md) section 5, [database design](../05-data/dat
 - Collect the minimum personal data and follow the retention and privacy rules for deletion and export.
 - State how any data outside PostgreSQL or S3 is backed up and restored.
 
+## Conventions already in the schema
+
+`snake_case` names; `uuid` keys from `gen_random_uuid()`; `tenant_id` with a composite unique `(tenant_id, id)` and composite foreign keys, so PostgreSQL rejects cross-tenant links; `ON DELETE RESTRICT`; named `CHECK` constraints for formats, ranges, and money; `timestamptz` in UTC; money as integer minor units plus an ISO currency; JSON only for semi-structured data; no soft delete. The full set, with indexing, concurrency, migration, and recovery guidance, is in the oxinov-database-architecture skill.
+
 ## Never
 
 - Edit, rename, or delete a migration once it is merged. Prisma checksums them, and an edit breaks every deploy.
@@ -36,4 +40,4 @@ Source: [AGENTS.md](../../AGENTS.md) section 5, [database design](../05-data/dat
 
 `pnpm edu:migrate`, `pnpm --filter @oxinov/edu-api db:test-policies`, and `pnpm --filter @oxinov/edu-api test:integration` (the platform API has the same scripts).
 
-Skills: [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md).
+Skills: [oxinov-database-architecture](../../.claude/skills/oxinov-database-architecture/SKILL.md), [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md).
