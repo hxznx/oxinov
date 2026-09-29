@@ -100,6 +100,15 @@ kc update "realms/$REALM" \
   -s "smtpServer.from=$SMTP_FROM" \
   -s smtpServer.fromDisplayName=Oxinov
 
+# --- Audit: security-relevant sign-in events and admin changes, kept one year (data retention: audit logs at
+# least one year). Routine token refreshes are not recorded. Events hold user IDs and IP addresses, never codes.
+EVENT_TYPES='["LOGIN","LOGIN_ERROR","REGISTER","REGISTER_ERROR","LOGOUT","LOGOUT_ERROR","CODE_TO_TOKEN_ERROR","REFRESH_TOKEN_ERROR","SEND_VERIFY_EMAIL","SEND_VERIFY_EMAIL_ERROR","VERIFY_EMAIL","VERIFY_EMAIL_ERROR","UPDATE_EMAIL","IDENTITY_PROVIDER_LOGIN","IDENTITY_PROVIDER_LOGIN_ERROR","IDENTITY_PROVIDER_FIRST_LOGIN","IDENTITY_PROVIDER_LINK_ACCOUNT","DELETE_ACCOUNT","CLIENT_LOGIN_ERROR"]'
+audit_events() {
+  kc update "realms/$1" -s eventsEnabled=true -s eventsExpiration=31536000 -s "enabledEventTypes=$EVENT_TYPES" \
+    -s adminEventsEnabled=true -s adminEventsDetailsEnabled=false
+}
+audit_events "$REALM"
+
 # --- Browser flow: cookie, or Google redirect, or email then a six-digit email code. No password form.
 if ! flow_exists oxinov-browser; then
   kc create authentication/flows -r "$REALM" -s alias=oxinov-browser -s providerId=basic-flow \
@@ -184,10 +193,10 @@ web_client() {
     id=$(kc get clients -r "$REALM" -q "clientId=$client" --fields id --format csv --noquotes)
   fi
   kc update "clients/$id" -r "$REALM" \
-    -s "redirectUris=[\"$url/*\"]" \
+    -s "redirectUris=[\"$url/auth/callback\"]" \
     -s "webOrigins=[\"$url\"]" \
     -s 'attributes."pkce.code.challenge.method"=S256' \
-    -s "attributes.\"post.logout.redirect.uris\"=$url/*"
+    -s "attributes.\"post.logout.redirect.uris\"=$url/"
   if ! kc get "clients/$id/protocol-mappers/models" -r "$REALM" --fields name --format csv --noquotes | has_line "$mapper"; then
     kc create "clients/$id/protocol-mappers/models" -r "$REALM" \
       -s "name=$mapper" -s protocol=openid-connect -s protocolMapper=oidc-audience-mapper \
@@ -240,7 +249,9 @@ require oxinov-staff-browser "$(exec_id oxinov-staff-browser oxinov-staff-browse
 require oxinov-staff-browser-forms "$(exec_id oxinov-staff-browser-forms auth-username-password-form)" REQUIRED
 require oxinov-staff-browser-forms "$(exec_id oxinov-staff-browser-forms auth-otp-form)" REQUIRED
 kc update "realms/$REALM" -s browserFlow=oxinov-staff-browser -s bruteForceProtected=true -s failureFactor=5 \
-  -s otpPolicyType=totp -s otpPolicyAlgorithm=HmacSHA1 -s otpPolicyDigits=6 -s otpPolicyPeriod=30
+  -s otpPolicyType=totp -s otpPolicyAlgorithm=HmacSHA1 -s otpPolicyDigits=6 -s otpPolicyPeriod=30 \
+  -s "displayName=Ox Inov Pvt. Ltd. Administration"
+audit_events "$REALM"
 REALM=$USER_REALM
 
 echo "Realm '$REALM' configured for $EDU_URL and $PORTAL_URL (email via $SMTP_HOST:$SMTP_PORT)"

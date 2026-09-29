@@ -69,7 +69,7 @@ Email codes are sent through SMTP to the in-cluster `mail-relay`, which sends th
 
 ## 4. Redirects, origins, logout
 
-- Redirect URIs and post-logout redirects are set to `<app URL>/*` and web origins to the exact app origin. Tighter is better: prefer the exact callback (`<app URL>/auth/callback`) when you next touch a client, and never use `*` or another origin.
+- Redirect URIs are exactly `<app URL>/auth/callback`, post-logout redirects exactly `<app URL>/`, and web origins the exact app origin (`configure-realm.sh`). Never use `*`, a path wildcard, or another origin.
 - The web apps accept only same-site relative `returnTo` paths (`safeReturnTo`).
 - Sign-out revokes the refresh token, clears the cookie, and ends the Keycloak session through the end-session endpoint; the other product's app then asks the realm session again. Back-channel logout is not configured.
 - CORS is not authorization; APIs never rely on it.
@@ -97,7 +97,7 @@ Local: `devops/keycloak/admin/` holds the separate local administrator environme
 
 ## 7. Events, monitoring, and recovery
 
-- Login and admin events are **not enabled** in the realm script today. Enabling them (with a retention period and no tokens or codes in the details) is the next audit improvement; until then, sign-in problems are read from `oxctl logs keycloak` and `oxctl logs mail-relay`.
+- Audit events are enabled in both realms by `configure-realm.sh`: security-relevant sign-in event types (the `EVENT_TYPES` list; routine token refreshes excluded) kept 365 days, and admin events without request bodies. Read them in the admin console under **Events**, and sign-in failures also in `oxctl logs keycloak`; delivery problems in `oxctl logs mail-relay`.
 - Watch: Keycloak ready, login failure spikes (brute force), email delivery failures (`MessageRejected` in the mail-relay log means the SES sandbox), certificate expiry, JVM memory, restarts.
 - Never log tokens, authorization codes, email codes, client secrets, or passwords; log client ID, request ID, and a failure reason.
 - If Keycloak is down, nobody can sign in to any product: it is a critical dependency. Recovery is `oxctl rollback` for a bad release, then database restore from the nightly dump with the owner's approval (RPO 24 hours, RTO 4 hours proposed). High availability (several replicas, RDS) comes with the EKS and RDS scale-out steps.

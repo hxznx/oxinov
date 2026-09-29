@@ -116,6 +116,8 @@ once (SES console → Account dashboard → Request production access): mail typ
 > DMARC. We watch the SES bounce and complaint metrics, and Keycloak limits repeated code requests. We
 > expect fewer than 1,000 messages a day at launch.
 
+The first request was **denied** (case 179052648600401). Reply to that case in the AWS Support Center rather than opening a new one, and add the controls AWS looks for: the `transactional` configuration set suppresses addresses that bounce or complain, sends bounce, complaint, reject, and rendering-failure events to the company mailbox, and raises CloudWatch alarms at a 5% bounce rate and a 0.1% complaint rate (`email-events.tf`); every message is requested by the recipient on the sign-in page; Keycloak locks an account after 5 failed attempts; the privacy policy is at `https://oxinov.com/legal/privacy`; include a sample message ("Your Oxinov sign-in code is 123456. It expires in 10 minutes. If you did not request it, ignore this email."). Until access is granted, only `@oxinov.com` addresses (the verified domain) receive codes.
+
 ## Capacity and cost
 
 The whole stack uses about 2.9 GiB (measured in a local k3s rehearsal), leaving roughly 0.9 GiB plus swap.

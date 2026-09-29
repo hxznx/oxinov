@@ -44,6 +44,9 @@ bash devops/keycloak/admin/start-local.sh
 | Access tokens | 10 minutes; refresh tokens rotate and cannot be reused | FR-ID-2208 |
 | Sessions | 30 days idle, 90 days maximum | Identity and access design |
 | Brute-force detection | On, lockout after 5 failures | Threat model |
+| Audit events (both realms) | Security-relevant sign-in events (sign-in, registration, sign-out, email verification, identity provider, errors) kept 365 days; admin changes recorded without request bodies; routine token refreshes not recorded | Data retention (audit logs at least one year) |
+| Redirects | Each web client accepts exactly `<app URL>/auth/callback` after sign-in and `<app URL>/` after sign-out | Threat model (open redirect, code theft) |
+| Admin realm name | `master` shows "Ox Inov Pvt. Ltd. Administration" | Brand system |
 | `oxinov-platform-web` client | Confidential, authorization code with PKCE S256, access tokens for audience `oxinov-platform-api` only | FR-ID-2207 |
 | `oxinov-edu-web` client | Same settings for Oxinov Edu (`EDU_WEB_URL`, default `http://localhost:3002`), access tokens for audience `oxinov-lms-api` only; shares the realm session, so a signed-in person is not asked again | FR-ID-2207 |
 
@@ -54,7 +57,7 @@ Verified end to end on 2026-09-24: email-only sign-in page, code delivered to Ma
 - Google identity provider: needs an OAuth client from Google Cloud (owner action), then `Trust Email` on and the `oxinov-first-broker` flow.
 - Refusing Google accounts with unverified emails at Keycloak (today the platform API refuses them at the welcome step with `EMAIL_NOT_VERIFIED`).
 - Oxinov cyberpunk login theme, Apple sign-in, and the separate `oxinov-staff` realm.
-- Login and admin event recording, and narrowing the `oxinov-automation` service account below the `master` `admin` role.
+- Narrowing the `oxinov-automation` service account below the `master` `admin` role.
 
 Production hostname, TLS, and proxy settings are set in the chart: `KC_HOSTNAME=https://id.oxinov.com`, `KC_HOSTNAME_ADMIN`, and `KC_PROXY_HEADERS=xforwarded`, with TLS terminated by Traefik; `/admin` and `/realms/master` are closed on the public host.
 
