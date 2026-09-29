@@ -41,7 +41,12 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md) | Build or change a page, component, or server action in a Next.js app |
 | [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md) | Name a product, write public copy, or use the logo, colors, and tokens |
 | [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md) | Write or run unit, integration, policy, or site tests |
-| [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md) | Touch sign-in, authorization, secrets, personal data, or security events |
+| [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md) | Start any security work: principles, threat check, and which security skill to use |
+| [oxinov-authentication-sessions](../../.claude/skills/oxinov-authentication-sessions/SKILL.md) | Touch JWT verification, OIDC sign-in, sessions, cookies, CSRF, or redirects |
+| [oxinov-access-control](../../.claude/skills/oxinov-access-control/SKILL.md) | Decide who may see or change something: guards, roles, RLS, IDOR, mass assignment, race conditions |
+| [oxinov-secure-input-output](../../.claude/skills/oxinov-secure-input-output/SKILL.md) | Accept input, render user content, build queries, fetch URLs, store files, or return errors |
+| [oxinov-secrets-and-crypto](../../.claude/skills/oxinov-secrets-and-crypto/SKILL.md) | Add a secret, key, signature check, token, or anything encrypted |
+| [oxinov-security-operations](../../.claude/skills/oxinov-security-operations/SKILL.md) | Add audit or security logging, rate limits, configuration, dependencies, or backups |
 | [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md) | Branch, commit, or push, especially in a shared checkout |
 | [oxinov-docker](../../.claude/skills/oxinov-docker/SKILL.md) | Change the Dockerfile, an image target, or the local Compose stack |
 | [oxinov-kubernetes](../../.claude/skills/oxinov-kubernetes/SKILL.md) | Change the Helm chart, a workload, probes, resources, or network policy |
@@ -94,24 +99,24 @@ Every stage uses oxinov-project-delivery to plan and oxinov-code-review before w
 | Part | Folders | Skills |
 | --- | --- | --- |
 | Company website (`oxinov.com`) | `frontend/company-web` | oxinov-frontend, oxinov-seo, oxinov-branding, oxinov-accessibility, oxinov-testing |
-| Account portal (`app.oxinov.com`) | `frontend/platform-web` | oxinov-frontend, oxinov-platform-integration, oxinov-branding, oxinov-accessibility, oxinov-security |
-| Platform API | `backend/platform-api`, `database/platform` | oxinov-backend, oxinov-platform-integration, oxinov-mvc, oxinov-api-design, oxinov-database, oxinov-payments, oxinov-security, oxinov-testing |
-| Identity (`id.oxinov.com`) | `devops/keycloak` | oxinov-platform-integration, oxinov-security, oxinov-kubernetes, oxinov-server |
-| [Oxinov Edu](../02-products/edu/README.md) web | `frontend/products/edu-web` | oxinov-frontend, oxinov-branding, oxinov-accessibility, oxinov-validation, oxinov-testing |
-| Oxinov Edu API | `backend/products/edu-api`, `database/products/edu` | oxinov-backend, oxinov-mvc, oxinov-multi-tenancy, oxinov-api-design, oxinov-validation, oxinov-database, oxinov-payments, oxinov-security, oxinov-observability, oxinov-testing |
+| Account portal (`app.oxinov.com`) | `frontend/platform-web` | oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-platform-integration, oxinov-branding, oxinov-accessibility, oxinov-security |
+| Platform API | `backend/platform-api`, `database/platform` | oxinov-backend, oxinov-access-control, oxinov-secure-input-output, oxinov-platform-integration, oxinov-mvc, oxinov-api-design, oxinov-database, oxinov-payments, oxinov-security, oxinov-testing |
+| Identity (`id.oxinov.com`) | `devops/keycloak` | oxinov-authentication-sessions, oxinov-platform-integration, oxinov-security, oxinov-kubernetes, oxinov-server |
+| [Oxinov Edu](../02-products/edu/README.md) web | `frontend/products/edu-web` | oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-branding, oxinov-accessibility, oxinov-validation, oxinov-testing |
+| Oxinov Edu API | `backend/products/edu-api`, `database/products/edu` | oxinov-backend, oxinov-access-control, oxinov-secure-input-output, oxinov-mvc, oxinov-multi-tenancy, oxinov-api-design, oxinov-validation, oxinov-database, oxinov-payments, oxinov-security, oxinov-observability, oxinov-testing |
 | Oxinov Edu mobile app (planned) | `frontend/mobile/` | oxinov-mobile, oxinov-accessibility |
 | Oxinov Edu worker and chat (placeholders) | `backend/products/edu-worker`, `edu-chat` | oxinov-events-and-jobs, oxinov-new-service |
 | Future products (HR, Market, Services Market, Studio, JP, Tech) | None until the release gate | oxinov-new-product, oxinov-requirements, oxinov-research; after approval oxinov-platform-integration and oxinov-new-service |
 | AI features (planned) | None yet | oxinov-ai-feature, oxinov-security |
-| Shared packages | `packages/*` | oxinov-shared-package, oxinov-backend, oxinov-frontend, oxinov-branding, oxinov-testing |
+| Shared packages | `packages/*` | oxinov-shared-package, oxinov-authentication-sessions, oxinov-secrets-and-crypto, oxinov-backend, oxinov-frontend, oxinov-branding, oxinov-testing |
 | Delivery | `.github/workflows`, `devops/scripts`, `devops/docker`, `devops/kubernetes` | oxinov-cicd, oxinov-docker, oxinov-kubernetes, oxinov-version-control |
 | Infrastructure | `devops/terraform`, `devops/ansible` | oxinov-terraform, oxinov-aws, oxinov-ansible, oxinov-scaling |
 | Production operations | The k3s node, `oxctl`, `monitoring/` | oxinov-server, oxinov-observability, oxinov-scaling, oxinov-aws, oxinov-kubernetes |
-| Security operations | `security/` | oxinov-security, oxinov-observability |
+| Security operations | `security/` | oxinov-security, oxinov-security-operations, oxinov-observability |
 | Architecture decisions | `docs/04-architecture/adr/` | oxinov-architecture-decision |
 | Documentation and planning | `docs/`, `prompts/` | oxinov-documentation, oxinov-requirements, oxinov-project-delivery |
 | Research | `docs/12-research` | oxinov-research |
-| Every change | - | oxinov-version-control, oxinov-code-review |
+| Every change | - | oxinov-version-control, oxinov-code-review, oxinov-security (threat check) |
 
 ## Keeping this folder true
 

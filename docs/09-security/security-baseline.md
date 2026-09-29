@@ -1,6 +1,6 @@
 # Security baseline
 
-**Updated:** 2026-09-26. What runs today is recorded in [current state](../04-architecture/current-state.md#security-controls-in-production); related documents are the [threat model](threat-model.md), [SOC design](soc.md), [secrets](secrets-management.md), and [privacy](privacy.md).
+**Updated:** 2026-09-26. What runs today is recorded in [current state](../04-architecture/current-state.md#security-controls-in-production); related documents are the [threat model](threat-model.md), [SOC design](soc.md), [secrets](secrets-management.md), and [privacy](privacy.md). How these controls are applied in code, risk by risk, is in the [secure development standard](secure-development-standard.md).
 
 **Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
 

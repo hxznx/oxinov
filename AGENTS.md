@@ -64,6 +64,7 @@ Start with [docs/README.md](docs/README.md), the documentation map. Documents ar
 | Website or any UI | [brand](docs/07-design/brand.md), [design system](docs/07-design/design-system.md), [accessibility](docs/07-design/accessibility.md), [user-centred product standard](docs/12-research/user-centered-product-standard.md) |
 | AI feature | [AI strategy](docs/01-company/ai-strategy.md), [AI architecture](docs/04-architecture/ai-architecture.md), [AI governance](docs/09-security/ai-governance.md), [AI roadmap](docs/11-planning/ai-roadmap.md) |
 | Data, API, security, or infrastructure | [company architecture](docs/04-architecture/platform-architecture.md), [company stack](docs/04-architecture/tech-stack.md), [AWS](docs/04-architecture/cloud-architecture.md), [ADRs](docs/04-architecture/adr/README.md) (ADR-021 for today's baseline), [security baseline](docs/09-security/security-baseline.md), [threat model](docs/09-security/threat-model.md) |
+| Anything that handles identity, sessions, permissions, user input, files, secrets, or money | [secure development standard](docs/09-security/secure-development-standard.md) (principles, request pipeline, and each risk mapped to its control) and the security skills it lists |
 | New product, service, or kind of offering | [company library standard](docs/08-engineering/company-library-standard.md), [target structure](docs/08-engineering/company-project-structure.md) |
 | Research or experiment | [R&D operating system](docs/12-research/README.md) |
 

@@ -25,7 +25,7 @@ Sources: [AGENTS.md](../../../AGENTS.md) sections 4-12, the [AI knowledge rule s
 | Validation | DTOs on every input; unknown fields rejected; uploads checked |
 | Migrations | New file only (never edited); expand-then-contract; works with the running image; schema has no drift |
 | API compatibility | No removed or renamed fields, routes, or error codes without a migration path; OpenAPI regenerated |
-| Security | No secrets or personal data in logs, events, fixtures; security events for denials; pinned dependencies |
+| Security | Every row of the [secure development standard](../../../docs/09-security/secure-development-standard.md#risk-and-control-map) that the change touches: injection, XSS, SSRF, path traversal, uploads, IDOR, mass assignment, race conditions, secrets, crypto, error handling, logging; no secrets or personal data in logs, events, fixtures; pinned dependencies |
 | Idempotency | Retried requests and provider events do not duplicate records or payments |
 | Tests | Allowed and denied paths; the FR ID cited; tests fail without the change |
 | Performance | N+1 queries, unpaginated lists, large payloads through the API instead of presigned URLs |

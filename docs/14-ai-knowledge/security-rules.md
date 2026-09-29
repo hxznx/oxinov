@@ -4,7 +4,15 @@ The security rules every change must keep, in short form. Read them before you t
 
 **Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
 
-Source: [AGENTS.md](../../AGENTS.md) sections 3, 6, and 9, [security baseline](../09-security/security-baseline.md), [threat model](../09-security/threat-model.md), [secrets management](../09-security/secrets-management.md), [privacy](../09-security/privacy.md), [SOC](../09-security/soc.md), and [identity and access](../04-architecture/identity-and-access.md).
+Source: [AGENTS.md](../../AGENTS.md) sections 3, 6, and 9, [security baseline](../09-security/security-baseline.md), [threat model](../09-security/threat-model.md), [secrets management](../09-security/secrets-management.md), [privacy](../09-security/privacy.md), [SOC](../09-security/soc.md), and [identity and access](../04-architecture/identity-and-access.md). How each rule is applied in code, risk by risk, is in the [secure development standard](../09-security/secure-development-standard.md).
+
+## Principles
+
+Zero trust, deny by default, least privilege, defense in depth, secure by default, fail securely, minimize attack surface, and data isolation. Each is defined, with the Oxinov control that implements it, in the [secure development standard](../09-security/secure-development-standard.md#principles).
+
+## Every API request passes, in order
+
+Security headers and rate limit → `AuthGuard` (JWT verified; private unless `@Public()`) → `TenantGuard` and `@RequireRole` → `ValidationPipe` (whitelist) → controller → service (ownership, entitlement, trust level) → `DatabaseContext` → row-level security → `HttpExceptionFilter` (stable error, no internals). Do not add a route or query that skips a step.
 
 ## Identity and access
 
@@ -36,4 +44,4 @@ Source: [AGENTS.md](../../AGENTS.md) sections 3, 6, and 9, [security baseline](.
 - Oxinov never holds a customer balance; escrow is a ledger state (ADR-013).
 - Do not copy official exam questions or imply official certification without rights.
 
-Skills: [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-multi-tenancy](../../.claude/skills/oxinov-multi-tenancy/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-payments](../../.claude/skills/oxinov-payments/SKILL.md).
+Skills: [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-authentication-sessions](../../.claude/skills/oxinov-authentication-sessions/SKILL.md), [oxinov-access-control](../../.claude/skills/oxinov-access-control/SKILL.md), [oxinov-secure-input-output](../../.claude/skills/oxinov-secure-input-output/SKILL.md), [oxinov-secrets-and-crypto](../../.claude/skills/oxinov-secrets-and-crypto/SKILL.md), [oxinov-security-operations](../../.claude/skills/oxinov-security-operations/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-multi-tenancy](../../.claude/skills/oxinov-multi-tenancy/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-payments](../../.claude/skills/oxinov-payments/SKILL.md).

@@ -17,4 +17,4 @@ Application uptime and performance remain under `monitoring/`. Security events a
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-security](../.claude/skills/oxinov-security/SKILL.md), [oxinov-observability](../.claude/skills/oxinov-observability/SKILL.md). All rules and skills: [AI knowledge](../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-security-operations](../.claude/skills/oxinov-security-operations/SKILL.md), [oxinov-secure-input-output](../.claude/skills/oxinov-secure-input-output/SKILL.md), [oxinov-security](../.claude/skills/oxinov-security/SKILL.md), [oxinov-observability](../.claude/skills/oxinov-observability/SKILL.md). All rules and skills: [AI knowledge](../docs/14-ai-knowledge/README.md).
