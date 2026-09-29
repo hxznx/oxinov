@@ -7,6 +7,8 @@ description: Design or change an Oxinov HTTP API contract - routes, request and 
 
 Rules: [API rules](../../../docs/14-ai-knowledge/api-rules.md). Sources: [API specification](../../../docs/06-api/api-spec.md), [API errors](../../../docs/06-api/api-errors.md), [API versioning](../../../docs/06-api/api-versioning.md), [API authentication](../../../docs/06-api/api-auth.md).
 
+Public, partner, or mobile access through `api.oxinov.com`, throttling, and API keys: the oxinov-api-gateway skill.
+
 ## Steps
 
 1. **Name the requirement** (FR ID) the contract serves.

@@ -17,7 +17,7 @@ Sources: [frontend/mobile](../../../frontend/mobile/README.md), [Edu FRD](../../
 | --- | --- |
 | Framework | Expo (React Native), TypeScript, one codebase for Android and iOS |
 | Location | `frontend/mobile/<slug>/` (the company library standard) |
-| Data | The same versioned product API as the web app; never a database, never a separate mobile backend |
+| Data | The same versioned product API as the web app; never a database, never a separate mobile backend. The APIs have no public host today, so the first app needs a public API boundary (oxinov-api-gateway) |
 | Sign-in | The Oxinov account through the system browser (OIDC with PKCE); tokens only in secure device storage (Keychain, Keystore) |
 | Rules | Server-side authorization exactly as for the web app; the app never decides access |
 | Brand | Design-system tokens and logo files; plain English (ADR-020) |

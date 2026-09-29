@@ -6,4 +6,4 @@ until the gateway milestone has an approved contract and deployment owner.
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-backend-architecture](../../.claude/skills/oxinov-backend-architecture/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-architecture-decision](../../.claude/skills/oxinov-architecture-decision/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-api-gateway](../../.claude/skills/oxinov-api-gateway/SKILL.md), [oxinov-backend-architecture](../../.claude/skills/oxinov-backend-architecture/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md), [oxinov-architecture-decision](../../.claude/skills/oxinov-architecture-decision/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

@@ -138,7 +138,7 @@ Migrations are new timestamped files, reviewed, immutable once merged, forward-o
 
 ## 14. Scaling and distribution
 
-APIs are stateless; state lives in PostgreSQL and S3, and sessions live in the web app's sealed cookie, so replicas can be added. Scale by measured bottleneck through the ordered steps in oxinov-scaling. When the system becomes distributed, design for partial failure, duplicates, reordering, clock differences, and compensating actions instead of distributed transactions; choose the consistency each operation needs (payments strong, dashboards eventual). An API gateway (`backend/gateway`, planned) would route and limit, never hold business logic.
+APIs are stateless; state lives in PostgreSQL and S3, and sessions live in the web app's sealed cookie, so replicas can be added. Scale by measured bottleneck through the ordered steps in oxinov-scaling. When the system becomes distributed, design for partial failure, duplicates, reordering, clock differences, and compensating actions instead of distributed transactions; choose the consistency each operation needs (payments strong, dashboards eventual). An API gateway (`backend/gateway`, planned; see oxinov-api-gateway) would route and limit, never hold business logic.
 
 ## 15. Existing code first
 

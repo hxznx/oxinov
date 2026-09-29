@@ -37,6 +37,7 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md) | Build or change a NestJS API endpoint, service, or module |
 | [oxinov-mvc](../../.claude/skills/oxinov-mvc/SKILL.md) | Decide which layer a piece of code belongs in (controller, service, data, view) |
 | [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md) | Design or change an API contract, error code, or OpenAPI description |
+| [oxinov-api-gateway](../../.claude/skills/oxinov-api-gateway/SKILL.md) | Plan public, partner, or mobile API access, `api.oxinov.com`, throttling, API keys, or a gateway (none exists today) |
 | [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md) | Validate input, configuration, or the repository itself |
 | [oxinov-database-architecture](../../.claude/skills/oxinov-database-architecture/SKILL.md) | Design tables, relationships, indexes, queries, concurrency, migrations, retention, and recovery before writing SQL |
 | [oxinov-rds](../../.claude/skills/oxinov-rds/SKILL.md) | Plan or carry out the move to Amazon RDS for PostgreSQL: triggers, Multi-AZ, backups and PITR, connections, cutover runbook (not in use today) |
