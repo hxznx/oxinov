@@ -49,7 +49,7 @@ oxinov.com ─▶ CloudFront ─▶ private S3          Route 53 · SES · Param
 | Private subnets and NAT gateway | One public subnet, no NAT (a NAT gateway costs more than the budget allows); the security group allows only 80 and 443 inbound | With EKS or RDS |
 | Multiple Availability Zones | One node in one AZ; host failure means minutes of downtime (ADR-017) | When an availability commitment exists |
 | EKS, cluster autoscaler, HPA | k3s on one node, one replica per service | Two or more live products or availability needs (scalability step 4) |
-| Managed database | PostgreSQL in the cluster with nightly dumps and snapshots | RDS at scalability step 3 |
+| Managed database | PostgreSQL in the cluster with nightly dumps and snapshots | RDS at scalability step 3 (oxinov-rds) |
 | Secrets Manager | SSM Parameter Store (SecureString) rendered into the `oxinov-app` Secret | If rotation automation needs it |
 | Ansible for configuration | Not used; `bootstrap-node.sh` and Terraform user data (oxinov-ansible) | Several hosts outside Kubernetes |
 | GitOps controller | Push-based deploy from Actions over Systems Manager | With EKS and a team that can run it |

@@ -31,7 +31,7 @@ Sources: [scalability strategy](../../../docs/04-architecture/scalability.md), [
 | --- | --- | --- |
 | 1. Tune the node | Memory pressure or slow queries | Indexes, N+1 fixes, right-sized limits, PostgreSQL settings, CloudFront for static assets |
 | 2. Bigger node | Sustained CPU or memory above the roadmap threshold | `t3a.large` or Graviton, with a Savings Plan decision |
-| 3. Managed database | Slow restores, or a paying school needs an availability commitment | Amazon RDS for PostgreSQL, same migrations |
+| 3. Managed database | Slow restores, or a paying school needs an availability commitment | Amazon RDS for PostgreSQL, same migrations (plan and runbook: oxinov-rds) |
 | 4. EKS | Two or more products live, or availability needs more than one node | EKS across two Availability Zones, same chart, a staging namespace |
 | 5. Async work and cache | Retries, schedules, bulk email, repeated expensive reads | SQS workers first (oxinov-events-and-jobs); cache only for measured hot reads |
 | 6. Media delivery | Playback failures on slow networks | HLS transcoding and CloudFront signed delivery |

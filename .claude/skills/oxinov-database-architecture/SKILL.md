@@ -140,7 +140,7 @@ Each API pod has one Prisma connection pool (default size about `2 × CPU cores 
 | --- | --- |
 | Backups | Nightly `pg_dumpall` to S3, kept 30 days; daily encrypted disk snapshots, kept 7 days |
 | Objectives | RPO 24 hours, RTO 4 hours (proposed, NFR-05) |
-| Point-in-time recovery | Not available (no WAL archiving); arrives with RDS or WAL archiving when an objective needs it |
+| Point-in-time recovery | Not available (no WAL archiving); arrives with RDS (oxinov-rds) or WAL archiving when an objective needs it |
 | High availability | None: one node, no replica (ADR-017). Replication is not a backup |
 | Restore | Owner approval required (it overwrites data); follow [backup and recovery](../../../docs/10-devops/backup-recovery.md); verify tenant isolation after restore |
 | Restore testing | Quarterly (NFR-05); the first test is still open |

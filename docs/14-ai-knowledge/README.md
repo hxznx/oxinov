@@ -39,6 +39,7 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md) | Design or change an API contract, error code, or OpenAPI description |
 | [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md) | Validate input, configuration, or the repository itself |
 | [oxinov-database-architecture](../../.claude/skills/oxinov-database-architecture/SKILL.md) | Design tables, relationships, indexes, queries, concurrency, migrations, retention, and recovery before writing SQL |
+| [oxinov-rds](../../.claude/skills/oxinov-rds/SKILL.md) | Plan or carry out the move to Amazon RDS for PostgreSQL: triggers, Multi-AZ, backups and PITR, connections, cutover runbook (not in use today) |
 | [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md) | Change a Prisma schema, write a migration, or change row-level security |
 | [oxinov-frontend-architecture](../../.claude/skills/oxinov-frontend-architecture/SKILL.md) | Plan a new screen, flow, feature, or web app: UX decisions, routes, state, API access, UI states, and design system |
 | [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md) | Build or change a page, component, or server action in a Next.js app |
@@ -115,7 +116,7 @@ Every stage uses oxinov-project-delivery to plan and oxinov-code-review before w
 | AI features (planned) | None yet | oxinov-ai-feature, oxinov-security |
 | Shared packages | `packages/*` | oxinov-shared-package, oxinov-authentication-sessions, oxinov-secrets-and-crypto, oxinov-backend, oxinov-frontend, oxinov-branding, oxinov-testing |
 | Delivery | `.github/workflows`, `devops/scripts`, `devops/docker`, `devops/kubernetes` | oxinov-devops-architecture, oxinov-cicd, oxinov-docker, oxinov-kubernetes, oxinov-version-control |
-| Infrastructure | `devops/terraform`, `devops/ansible` | oxinov-devops-architecture, oxinov-terraform, oxinov-aws, oxinov-ansible, oxinov-scaling |
+| Infrastructure | `devops/terraform`, `devops/ansible` | oxinov-devops-architecture, oxinov-rds, oxinov-terraform, oxinov-aws, oxinov-ansible, oxinov-scaling |
 | Production operations | The k3s node, `oxctl`, `monitoring/` | oxinov-devops-architecture, oxinov-server, oxinov-observability, oxinov-scaling, oxinov-aws, oxinov-kubernetes |
 | Security operations | `security/` | oxinov-security, oxinov-security-operations, oxinov-observability |
 | Architecture decisions | `docs/04-architecture/adr/` | oxinov-architecture-decision |

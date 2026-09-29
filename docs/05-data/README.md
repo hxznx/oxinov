@@ -13,4 +13,4 @@ How Oxinov stores, isolates, changes, and deletes data. PostgreSQL is the system
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-database-architecture](../../.claude/skills/oxinov-database-architecture/SKILL.md), [oxinov-access-control](../../.claude/skills/oxinov-access-control/SKILL.md), [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-multi-tenancy](../../.claude/skills/oxinov-multi-tenancy/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-rds](../../.claude/skills/oxinov-rds/SKILL.md), [oxinov-database-architecture](../../.claude/skills/oxinov-database-architecture/SKILL.md), [oxinov-access-control](../../.claude/skills/oxinov-access-control/SKILL.md), [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-multi-tenancy](../../.claude/skills/oxinov-multi-tenancy/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

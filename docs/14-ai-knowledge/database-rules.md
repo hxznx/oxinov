@@ -40,4 +40,4 @@ Source: [AGENTS.md](../../AGENTS.md) section 5, [database design](../05-data/dat
 
 `pnpm edu:migrate`, `pnpm --filter @oxinov/edu-api db:test-policies`, and `pnpm --filter @oxinov/edu-api test:integration` (the platform API has the same scripts).
 
-Skills: [oxinov-database-architecture](../../.claude/skills/oxinov-database-architecture/SKILL.md), [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md).
+Skills: [oxinov-database-architecture](../../.claude/skills/oxinov-database-architecture/SKILL.md), [oxinov-rds](../../.claude/skills/oxinov-rds/SKILL.md), [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md).
