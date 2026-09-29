@@ -38,6 +38,7 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-api-design](../../.claude/skills/oxinov-api-design/SKILL.md) | Design or change an API contract, error code, or OpenAPI description |
 | [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md) | Validate input, configuration, or the repository itself |
 | [oxinov-database](../../.claude/skills/oxinov-database/SKILL.md) | Change a Prisma schema, write a migration, or change row-level security |
+| [oxinov-frontend-architecture](../../.claude/skills/oxinov-frontend-architecture/SKILL.md) | Plan a new screen, flow, feature, or web app: UX decisions, routes, state, API access, UI states, and design system |
 | [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md) | Build or change a page, component, or server action in a Next.js app |
 | [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md) | Name a product, write public copy, or use the logo, colors, and tokens |
 | [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md) | Write or run unit, integration, policy, or site tests |
@@ -98,11 +99,11 @@ Every stage uses oxinov-project-delivery to plan and oxinov-code-review before w
 
 | Part | Folders | Skills |
 | --- | --- | --- |
-| Company website (`oxinov.com`) | `frontend/company-web` | oxinov-frontend, oxinov-seo, oxinov-branding, oxinov-accessibility, oxinov-testing |
-| Account portal (`app.oxinov.com`) | `frontend/platform-web` | oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-platform-integration, oxinov-branding, oxinov-accessibility, oxinov-security |
+| Company website (`oxinov.com`) | `frontend/company-web` | oxinov-frontend-architecture, oxinov-frontend, oxinov-seo, oxinov-branding, oxinov-accessibility, oxinov-testing |
+| Account portal (`app.oxinov.com`) | `frontend/platform-web` | oxinov-frontend-architecture, oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-platform-integration, oxinov-branding, oxinov-accessibility, oxinov-security |
 | Platform API | `backend/platform-api`, `database/platform` | oxinov-backend, oxinov-access-control, oxinov-secure-input-output, oxinov-platform-integration, oxinov-mvc, oxinov-api-design, oxinov-database, oxinov-payments, oxinov-security, oxinov-testing |
 | Identity (`id.oxinov.com`) | `devops/keycloak` | oxinov-authentication-sessions, oxinov-platform-integration, oxinov-security, oxinov-kubernetes, oxinov-server |
-| [Oxinov Edu](../02-products/edu/README.md) web | `frontend/products/edu-web` | oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-branding, oxinov-accessibility, oxinov-validation, oxinov-testing |
+| [Oxinov Edu](../02-products/edu/README.md) web | `frontend/products/edu-web` | oxinov-frontend-architecture, oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-branding, oxinov-accessibility, oxinov-validation, oxinov-testing |
 | Oxinov Edu API | `backend/products/edu-api`, `database/products/edu` | oxinov-backend, oxinov-access-control, oxinov-secure-input-output, oxinov-mvc, oxinov-multi-tenancy, oxinov-api-design, oxinov-validation, oxinov-database, oxinov-payments, oxinov-security, oxinov-observability, oxinov-testing |
 | Oxinov Edu mobile app (planned) | `frontend/mobile/` | oxinov-mobile, oxinov-accessibility |
 | Oxinov Edu worker and chat (placeholders) | `backend/products/edu-worker`, `edu-chat` | oxinov-events-and-jobs, oxinov-new-service |

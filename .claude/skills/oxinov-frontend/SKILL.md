@@ -5,7 +5,7 @@ description: Build or change an Oxinov Next.js web app (edu-web, platform-web, c
 
 # Oxinov frontend (Next.js App Router)
 
-Rules: [frontend rules](../../../docs/14-ai-knowledge/frontend-rules.md). Sources: [design system](../../../docs/07-design/design-system.md), [accessibility](../../../docs/07-design/accessibility.md), [Edu UI and UX](../../../docs/02-products/edu/edu-ui-ux.md).
+Rules: [frontend rules](../../../docs/14-ai-knowledge/frontend-rules.md). Plan non-trivial screens and flows first with the oxinov-frontend-architecture skill (UX decisions, routes, state, API access, UI states). Sources: [design system](../../../docs/07-design/design-system.md), [accessibility](../../../docs/07-design/accessibility.md), [Edu UI and UX](../../../docs/02-products/edu/edu-ui-ux.md).
 
 ## Where things are
 

@@ -35,4 +35,4 @@ Source: [AGENTS.md](../../AGENTS.md) sections 6.2 and 6.3, [brand](../07-design/
 
 `pnpm --filter <package> typecheck`, `lint`, `test`, and `build`; for the website, `pnpm --filter @oxinov/company-web build` then `test`.
 
-Skills: [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md), [oxinov-mobile](../../.claude/skills/oxinov-mobile/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-seo](../../.claude/skills/oxinov-seo/SKILL.md).
+Skills: [oxinov-frontend-architecture](../../.claude/skills/oxinov-frontend-architecture/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md), [oxinov-mobile](../../.claude/skills/oxinov-mobile/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-seo](../../.claude/skills/oxinov-seo/SKILL.md).

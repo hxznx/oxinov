@@ -38,4 +38,4 @@ pnpm --filter @oxinov/company-web test
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-seo](../../.claude/skills/oxinov-seo/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-frontend-architecture](../../.claude/skills/oxinov-frontend-architecture/SKILL.md), [oxinov-seo](../../.claude/skills/oxinov-seo/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
