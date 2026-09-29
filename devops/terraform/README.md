@@ -47,4 +47,4 @@ Use separate state per environment, keep secrets out of state inputs where possi
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-terraform](../../.claude/skills/oxinov-terraform/SKILL.md), [oxinov-aws](../../.claude/skills/oxinov-aws/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-terraform](../../.claude/skills/oxinov-terraform/SKILL.md), [oxinov-aws](../../.claude/skills/oxinov-aws/SKILL.md), [oxinov-scaling](../../.claude/skills/oxinov-scaling/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

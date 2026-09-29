@@ -55,25 +55,63 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-requirements](../../.claude/skills/oxinov-requirements/SKILL.md) | Add or change a requirement in an FRD or the NFR |
 | [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md) | Run user research, an experiment, or a technical investigation |
 | [oxinov-seo](../../.claude/skills/oxinov-seo/SKILL.md) | Add or change a public page on `oxinov.com` |
+| [oxinov-new-product](../../.claude/skills/oxinov-new-product/SKILL.md) | Take a new product, module, or offering from idea through the release gate to its first release |
+| [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md) | Connect a product to the one Oxinov account, entitlements, the app launcher, and its sign-in client |
+| [oxinov-multi-tenancy](../../.claude/skills/oxinov-multi-tenancy/SKILL.md) | Build anything that belongs to a school, company, or workspace |
+| [oxinov-mobile](../../.claude/skills/oxinov-mobile/SKILL.md) | Plan or build an Android or iOS app |
+| [oxinov-shared-package](../../.claude/skills/oxinov-shared-package/SKILL.md) | Extract code into `packages/` or change a shared library |
+| [oxinov-events-and-jobs](../../.claude/skills/oxinov-events-and-jobs/SKILL.md) | Need background work, schedules, retries, or data from another product |
+| [oxinov-payments](../../.claude/skills/oxinov-payments/SKILL.md) | Touch money: checkout, prices, providers, refunds, or plans |
+| [oxinov-observability](../../.claude/skills/oxinov-observability/SKILL.md) | Add logs, metrics, health checks, alerts, or security events |
+| [oxinov-scaling](../../.claude/skills/oxinov-scaling/SKILL.md) | Something is slow or full, or a new product or heavy feature needs capacity |
+| [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md) | Build or review any page, component, email, or mobile screen |
+| [oxinov-ai-feature](../../.claude/skills/oxinov-ai-feature/SKILL.md) | Add a model call, copilot, chatbot, or other AI capability to a product |
+| [oxinov-architecture-decision](../../.claude/skills/oxinov-architecture-decision/SKILL.md) | Change the stack or architecture, or reverse an earlier decision |
+| [oxinov-project-delivery](../../.claude/skills/oxinov-project-delivery/SKILL.md) | Plan and deliver a project or milestone, or report progress |
+| [oxinov-code-review](../../.claude/skills/oxinov-code-review/SKILL.md) | Review a change, a pull request, or a helper's work |
+
+## From idea to a scaled product
+
+Use the skills in this order when the company grows. Each step names what the owner must approve.
+
+| Stage | What happens | Skills | Owner approves |
+| --- | --- | --- | --- |
+| 1. Idea | Classify it: product, module, platform capability, service offering, hardware, or research | oxinov-new-product, oxinov-research | - |
+| 2. Evidence | User research and experiments | oxinov-research | Research owner and scope |
+| 3. Definition | Product record, proposed FRD with its own ID block | oxinov-new-product, oxinov-requirements, oxinov-documentation | - |
+| 4. Release gate | Owner, evidence, journeys, budget, data and regulatory review, architecture boundary | oxinov-new-product, oxinov-architecture-decision | The gate |
+| 5. Platform connection | Sign-in client, token audience, catalogue row, entitlements, accent token | oxinov-platform-integration, oxinov-security | Realm change on push |
+| 6. Product plane | Database with tenancy, API, web app, later mobile app | oxinov-new-service, oxinov-database, oxinov-multi-tenancy, oxinov-backend, oxinov-frontend, oxinov-mobile | Each new service's memory and cost |
+| 7. Money | Checkout, plans, entitlements after payment | oxinov-payments | Providers, prices, switching payments on |
+| 8. Delivery | Images, chart, pipeline, infrastructure | oxinov-docker, oxinov-kubernetes, oxinov-cicd, oxinov-terraform | Terraform apply; push |
+| 9. Operation | Health, logs, alarms, incidents, backups | oxinov-observability, oxinov-server, oxinov-aws | Restores and deletions |
+| 10. Growth | Events between products, workers, bigger node, RDS, EKS, isolation tiers | oxinov-events-and-jobs, oxinov-scaling, oxinov-architecture-decision | Every scale-out step and its cost |
+
+Every stage uses oxinov-project-delivery to plan and oxinov-code-review before work is accepted.
 
 ## Which skills each part of the company uses
 
 | Part | Folders | Skills |
 | --- | --- | --- |
-| Company website (`oxinov.com`) | `frontend/company-web` | oxinov-frontend, oxinov-seo, oxinov-branding, oxinov-testing |
-| Account portal (`app.oxinov.com`) | `frontend/platform-web` | oxinov-frontend, oxinov-branding, oxinov-security |
-| Platform API | `backend/platform-api`, `database/platform` | oxinov-backend, oxinov-mvc, oxinov-api-design, oxinov-database, oxinov-security, oxinov-testing |
-| Identity (`id.oxinov.com`) | `devops/keycloak` | oxinov-security, oxinov-kubernetes, oxinov-server |
-| [Oxinov Edu](../02-products/edu/README.md) web | `frontend/products/edu-web` | oxinov-frontend, oxinov-branding, oxinov-validation, oxinov-testing |
-| Oxinov Edu API | `backend/products/edu-api`, `database/products/edu` | oxinov-backend, oxinov-mvc, oxinov-api-design, oxinov-validation, oxinov-database, oxinov-security, oxinov-testing |
-| Future products (HR, Market, Services Market, Studio, JP, Tech) | None until the release gate | oxinov-requirements, oxinov-research; then oxinov-new-service |
-| Shared packages | `packages/server-kit`, `packages/web-auth`, `packages/design-system` | oxinov-backend, oxinov-frontend, oxinov-branding, oxinov-testing |
+| Company website (`oxinov.com`) | `frontend/company-web` | oxinov-frontend, oxinov-seo, oxinov-branding, oxinov-accessibility, oxinov-testing |
+| Account portal (`app.oxinov.com`) | `frontend/platform-web` | oxinov-frontend, oxinov-platform-integration, oxinov-branding, oxinov-accessibility, oxinov-security |
+| Platform API | `backend/platform-api`, `database/platform` | oxinov-backend, oxinov-platform-integration, oxinov-mvc, oxinov-api-design, oxinov-database, oxinov-payments, oxinov-security, oxinov-testing |
+| Identity (`id.oxinov.com`) | `devops/keycloak` | oxinov-platform-integration, oxinov-security, oxinov-kubernetes, oxinov-server |
+| [Oxinov Edu](../02-products/edu/README.md) web | `frontend/products/edu-web` | oxinov-frontend, oxinov-branding, oxinov-accessibility, oxinov-validation, oxinov-testing |
+| Oxinov Edu API | `backend/products/edu-api`, `database/products/edu` | oxinov-backend, oxinov-mvc, oxinov-multi-tenancy, oxinov-api-design, oxinov-validation, oxinov-database, oxinov-payments, oxinov-security, oxinov-observability, oxinov-testing |
+| Oxinov Edu mobile app (planned) | `frontend/mobile/` | oxinov-mobile, oxinov-accessibility |
+| Oxinov Edu worker and chat (placeholders) | `backend/products/edu-worker`, `edu-chat` | oxinov-events-and-jobs, oxinov-new-service |
+| Future products (HR, Market, Services Market, Studio, JP, Tech) | None until the release gate | oxinov-new-product, oxinov-requirements, oxinov-research; after approval oxinov-platform-integration and oxinov-new-service |
+| AI features (planned) | None yet | oxinov-ai-feature, oxinov-security |
+| Shared packages | `packages/*` | oxinov-shared-package, oxinov-backend, oxinov-frontend, oxinov-branding, oxinov-testing |
 | Delivery | `.github/workflows`, `devops/scripts`, `devops/docker`, `devops/kubernetes` | oxinov-cicd, oxinov-docker, oxinov-kubernetes, oxinov-version-control |
-| Infrastructure | `devops/terraform`, `devops/ansible` | oxinov-terraform, oxinov-aws, oxinov-ansible |
-| Production operations | The k3s node, `oxctl` | oxinov-server, oxinov-aws, oxinov-kubernetes |
-| Security operations | `security/` | oxinov-security |
-| Documentation and planning | `docs/`, `prompts/` | oxinov-documentation, oxinov-requirements |
+| Infrastructure | `devops/terraform`, `devops/ansible` | oxinov-terraform, oxinov-aws, oxinov-ansible, oxinov-scaling |
+| Production operations | The k3s node, `oxctl`, `monitoring/` | oxinov-server, oxinov-observability, oxinov-scaling, oxinov-aws, oxinov-kubernetes |
+| Security operations | `security/` | oxinov-security, oxinov-observability |
+| Architecture decisions | `docs/04-architecture/adr/` | oxinov-architecture-decision |
+| Documentation and planning | `docs/`, `prompts/` | oxinov-documentation, oxinov-requirements, oxinov-project-delivery |
 | Research | `docs/12-research` | oxinov-research |
+| Every change | - | oxinov-version-control, oxinov-code-review |
 
 ## Keeping this folder true
 

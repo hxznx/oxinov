@@ -20,4 +20,4 @@ Source: [AGENTS.md](../../AGENTS.md) section 6.5, [AI strategy](../01-company/ai
 - Send restricted or personal data to a model without an approved data-use decision.
 - Start a learner-facing tutor before the gateway, the evaluation harness, the approved content pipeline, and tenant-isolation tests work.
 
-Skills: [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md).
+Skills: [oxinov-ai-feature](../../.claude/skills/oxinov-ai-feature/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md).

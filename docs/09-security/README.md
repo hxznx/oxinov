@@ -15,4 +15,4 @@ How Oxinov protects accounts, tenants, data, and the platform, and how it detect
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-ai-feature](../../.claude/skills/oxinov-ai-feature/SKILL.md), [oxinov-observability](../../.claude/skills/oxinov-observability/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

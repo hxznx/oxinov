@@ -267,4 +267,4 @@ This is an Oxinov operating model, not a claim of certification or formal compli
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md), [oxinov-new-product](../../.claude/skills/oxinov-new-product/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

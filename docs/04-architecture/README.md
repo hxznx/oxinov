@@ -22,4 +22,4 @@ Start with [current state](current-state.md): it wins for *what runs today*, and
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-mvc](../../.claude/skills/oxinov-mvc/SKILL.md), [oxinov-new-service](../../.claude/skills/oxinov-new-service/SKILL.md), [oxinov-aws](../../.claude/skills/oxinov-aws/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-architecture-decision](../../.claude/skills/oxinov-architecture-decision/SKILL.md), [oxinov-mvc](../../.claude/skills/oxinov-mvc/SKILL.md), [oxinov-scaling](../../.claude/skills/oxinov-scaling/SKILL.md), [oxinov-events-and-jobs](../../.claude/skills/oxinov-events-and-jobs/SKILL.md), [oxinov-new-service](../../.claude/skills/oxinov-new-service/SKILL.md), [oxinov-aws](../../.claude/skills/oxinov-aws/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

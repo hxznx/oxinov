@@ -37,3 +37,7 @@ Each decision has its own file, named `adr-NNN-short-title.md`. Add new decision
 ## Pending
 
 Choose company-platform product owners, AWS account and operations owners, identity operations model, final production sizing, Nepal and international payment providers, SIEM hosting/retention/on-call ownership, AI pilot owners/model aliases/approved data/budgets, tenant billing plans, and mobile purchase approach by market. See [RISKS.md](../../11-planning/risks.md).
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-architecture-decision](../../../.claude/skills/oxinov-architecture-decision/SKILL.md). All rules and skills: [AI knowledge](../../14-ai-knowledge/README.md).

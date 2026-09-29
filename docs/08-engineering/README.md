@@ -21,4 +21,4 @@ How code is written, tested, organized, and found. The [service catalog](service
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md), [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md), [oxinov-documentation](../../.claude/skills/oxinov-documentation/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-backend](../../.claude/skills/oxinov-backend/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md), [oxinov-shared-package](../../.claude/skills/oxinov-shared-package/SKILL.md), [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md), [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md), [oxinov-code-review](../../.claude/skills/oxinov-code-review/SKILL.md), [oxinov-documentation](../../.claude/skills/oxinov-documentation/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

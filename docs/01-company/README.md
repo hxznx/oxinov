@@ -12,3 +12,7 @@ Why Oxinov Pvt. Ltd. exists and the commitments every product inherits. Read the
 | [AI strategy](ai-strategy.md) | Explanation | Company AI priorities, service choice, language limits, operating model, scorecard, and launch gate | Proposed |
 
 Related: [company roadmap](../11-planning/company-roadmap.md), [R&D operating system](../12-research/README.md), and [architecture decisions](../04-architecture/adr/README.md).
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-new-product](../../.claude/skills/oxinov-new-product/SKILL.md), [oxinov-ai-feature](../../.claude/skills/oxinov-ai-feature/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

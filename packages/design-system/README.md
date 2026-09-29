@@ -34,4 +34,4 @@ The contrast test is the automated check required by FR-SITE-2102; a token chang
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-shared-package](../../.claude/skills/oxinov-shared-package/SKILL.md), [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

@@ -136,4 +136,4 @@ Section numbers help readers only. Always cite requirement IDs.
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-requirements](../../.claude/skills/oxinov-requirements/SKILL.md), [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-requirements](../../.claude/skills/oxinov-requirements/SKILL.md), [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md), [oxinov-new-product](../../.claude/skills/oxinov-new-product/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

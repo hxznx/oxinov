@@ -36,4 +36,4 @@ Source: [AGENTS.md](../../AGENTS.md) sections 3, 6, and 9, [security baseline](.
 - Oxinov never holds a customer balance; escrow is a ledger state (ADR-013).
 - Do not copy official exam questions or imply official certification without rights.
 
-Skills: [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md).
+Skills: [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-multi-tenancy](../../.claude/skills/oxinov-multi-tenancy/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-payments](../../.claude/skills/oxinov-payments/SKILL.md).

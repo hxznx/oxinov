@@ -22,4 +22,4 @@ The rules for working in this repository are in [AGENTS.md](../../AGENTS.md). Wh
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-documentation](../../.claude/skills/oxinov-documentation/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-project-delivery](../../.claude/skills/oxinov-project-delivery/SKILL.md), [oxinov-version-control](../../.claude/skills/oxinov-version-control/SKILL.md), [oxinov-validation](../../.claude/skills/oxinov-validation/SKILL.md), [oxinov-documentation](../../.claude/skills/oxinov-documentation/SKILL.md), [oxinov-code-review](../../.claude/skills/oxinov-code-review/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

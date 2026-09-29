@@ -49,3 +49,7 @@ These rows record locations and charters. They do not claim that every release c
 - **Use the platform.** Use the shared identity, organizations, entitlements, KYC (know your customer), payments ledger, notifications, messaging, file storage, and audit services of the platform control plane. Products do not ship their own login, one-time password, password reset, wallet, or KYC tables.
 - **Learning belongs to Edu.** Training, courses, exams, and certifications belong to Oxinov Edu. Other products link to Edu certificates through a versioned API.
 - **Own your operations.** Each product owns its database, migrations, row-level security policies, workers, dashboards, alerts, runbooks, and release lifecycle.
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-new-product](../../.claude/skills/oxinov-new-product/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-requirements](../../.claude/skills/oxinov-requirements/SKILL.md), [oxinov-research](../../.claude/skills/oxinov-research/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

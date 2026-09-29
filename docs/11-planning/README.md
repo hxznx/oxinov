@@ -11,3 +11,7 @@ What Oxinov plans to do, in what order, what could go wrong, and what has change
 | [Tasks](tasks.md) | Open work items |
 | [Risks and decisions](risks.md) | Risks, owners, and decisions still needed |
 | [Changelog](changelog.md) | Every notable change, newest first, with rollback notes |
+
+## Assistant skills
+
+Coding assistants working here follow [oxinov-project-delivery](../../.claude/skills/oxinov-project-delivery/SKILL.md), [oxinov-requirements](../../.claude/skills/oxinov-requirements/SKILL.md), [oxinov-architecture-decision](../../.claude/skills/oxinov-architecture-decision/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).

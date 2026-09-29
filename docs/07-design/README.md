@@ -14,4 +14,4 @@ Related: [user-centred product standard](../12-research/user-centered-product-st
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md), [oxinov-accessibility](../../.claude/skills/oxinov-accessibility/SKILL.md), [oxinov-frontend](../../.claude/skills/oxinov-frontend/SKILL.md). All rules and skills: [AI knowledge](../14-ai-knowledge/README.md).
