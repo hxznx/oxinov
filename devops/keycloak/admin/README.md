@@ -20,6 +20,7 @@ Use the `oxinov` realm's **Users** area to find, enable, disable, or sign out cu
 - Use a unique administrator password and a different random automation secret of at least 24 characters.
 - Never put MFA seeds, recovery codes, access tokens, or real customer data in this folder.
 - Production credentials remain in AWS Systems Manager Parameter Store. Access the production console only through `devops/scripts/oxctl keycloak-admin`; it is not public.
+- The local Keycloak and the production tunnel both use `localhost:8080`. Stop the local container (`docker stop oxinov-lms-keycloak-1`) before opening the production console, or your sign-in goes to the local copy with its own password.
 - Realm automation uses `KEYCLOAK_AUTOMATION_SECRET`. A person uses `KEYCLOAK_ADMIN_USER`, `KEYCLOAK_ADMIN_PASSWORD`, and MFA.
 
 Disabling accounts, ending sessions, or changing roles affects users immediately. Production changes require the owner's approval and must be recorded through the normal operational process.

@@ -119,9 +119,18 @@ case $cmd in
   shell) need session-manager-plugin; aws ssm start-session --target "$(instance)" ;;
   keycloak-admin)
     need session-manager-plugin
+    # The console must answer on localhost:8080 (KC_HOSTNAME_ADMIN), so a local Keycloak on that port would
+    # silently take the requests instead of production.
+    if (: </dev/tcp/127.0.0.1/8080) 2>/dev/null; then
+      echo "Port 8080 on this computer is already in use (often the local Keycloak: docker stop oxinov-lms-keycloak-1)." >&2
+      exit 1
+    fi
+    # Nothing listens on the node's own port 8080: tunnel to the Keycloak Service inside the cluster.
+    kc_ip=$(remote "$K get service keycloak -o jsonpath='{.spec.clusterIP}'" 120 | grep -Eo '^[0-9]+(\.[0-9]+){3}$' | tail -n 1 || true)
+    [ -n "$kc_ip" ] || { echo "Could not find the keycloak Service in the cluster." >&2; exit 1; }
     echo "Open http://localhost:8080/admin (user oxinov-admin; password: KEYCLOAK_ADMIN_PASSWORD in Parameter Store; then a code from your authenticator app, set up at the first sign-in)."
     aws ssm start-session --target "$(instance)" --document-name AWS-StartPortForwardingSessionToRemoteHost \
-      --parameters '{"host":["127.0.0.1"],"portNumber":["8080"],"localPortNumber":["8080"]}'
+      --parameters "{\"host\":[\"$kc_ip\"],\"portNumber\":[\"8080\"],\"localPortNumber\":[\"8080\"]}"
     ;;
   backup) remote 'systemctl start oxinov-backup.service && journalctl -u oxinov-backup.service -n 3 --no-pager' 1200 ;;
   backups)

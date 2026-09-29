@@ -26,7 +26,7 @@ Needs the AWS CLI signed in by the owner (`aws sso login`), the Session Manager 
 | Services | `oxctl services` | No |
 | Cost and infrastructure | `oxctl cost`, `oxctl plan` | No |
 | Shell on the node | `oxctl shell` | Possibly; only for approved runbook steps |
-| Keycloak admin console | `oxctl keycloak-admin` (tunnel to `localhost:8080`) | Possibly |
+| Keycloak admin console | `oxctl keycloak-admin` (tunnel to the `keycloak` Service; stop any local Keycloak on port 8080 first) | Possibly |
 | Deploy | `oxctl deploy [--all] [--realm]` | Yes; only when asked |
 | Roll back | `oxctl rollback` | Yes |
 | Backups | `oxctl backup`, `oxctl backups` | `backup` writes a new dump |

@@ -48,7 +48,7 @@ bash devops/scripts/oxctl status
 | `oxctl deploy [--all] [--realm]` / `watch` / `runs` | Deploy `main` now (normally automatic) / follow it / history |
 | `oxctl release` / `history` / `rollback` | Running image tags / Helm revisions / return to the previous revision |
 | `oxctl backup` / `backups` | Dump the databases to S3 now / list dumps |
-| `oxctl keycloak-admin` | Tunnel the Keycloak console to `http://localhost:8080/admin` for 30 minutes |
+| `oxctl keycloak-admin` | Tunnel the Keycloak console to `http://localhost:8080/admin` for 30 minutes (through the `keycloak` Service; port 8080 on your computer must be free, so stop a local Keycloak first) |
 | `oxctl shell` | Root shell on the node (Session Manager; there is no SSH) |
 | `oxctl plan` / `cost` | Terraform plan (never applies) / month-to-date spend and the budget |
 
