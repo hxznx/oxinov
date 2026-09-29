@@ -5,7 +5,7 @@ description: Build and review authentication and sessions in Oxinov - OIDC sign-
 
 # Authentication and sessions
 
-Standard: [secure development standard](../../../docs/09-security/secure-development-standard.md). Sources: [identity and access](../../../docs/04-architecture/identity-and-access.md), [API authentication](../../../docs/06-api/api-auth.md). Decisions: ADR-007, ADR-011, ADR-016. Code: `packages/server-kit/src/auth.ts`, `config.ts`; `packages/web-auth/src/` (`oidc.ts`, `pkce.ts`, `session.ts`, `return-to.ts`).
+Standard: [secure development standard](../../../docs/09-security/secure-development-standard.md). Sources: [identity and access](../../../docs/04-architecture/identity-and-access.md), [API authentication](../../../docs/06-api/api-auth.md). Decisions: ADR-007, ADR-011, ADR-016. Keycloak itself (realm script, flows, clients, deployment, administration) is covered by the oxinov-keycloak skill. Code: `packages/server-kit/src/auth.ts`, `config.ts`; `packages/web-auth/src/` (`oidc.ts`, `pkce.ts`, `session.ts`, `return-to.ts`).
 
 ## How it works
 

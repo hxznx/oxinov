@@ -7,6 +7,8 @@ description: Connect an Oxinov product to the shared platform - one Oxinov accou
 
 Sources: [identity and access](../../../docs/04-architecture/identity-and-access.md), [Platform FRD](../../../docs/03-requirements/frd/platform-frd.md), [API authentication](../../../docs/06-api/api-auth.md), [platform policies](../../../docs/01-company/platform-policies.md). Decisions: ADR-008, ADR-011, ADR-016, ADR-019.
 
+Keycloak realm, clients, and flows: the oxinov-keycloak skill.
+
 ## What the platform gives every product
 
 | Capability | Where it lives | What the product does |

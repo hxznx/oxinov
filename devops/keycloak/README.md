@@ -6,7 +6,7 @@ Keycloak implements the one Oxinov account (ADR-011) with the sign-in design in 
 
 | File | Purpose |
 | --- | --- |
-| `Dockerfile` | Keycloak 26.7.3 pinned by digest, plus `email-otp-authenticator` v1.5.0 fetched by exact release URL and SHA-256 |
+| `Dockerfile` | Keycloak 26.7.4 pinned by digest, plus `email-otp-authenticator` v1.5.0 fetched by exact release URL and SHA-256 |
 | `configure-realm.sh` | Idempotent local setup of the `oxinov` realm: flows, token lifetimes, SMTP, and the account portal client |
 | `init-db.sh` | Local Docker init: creates the `keycloak` database and role on a fresh PostgreSQL volume |
 | `admin/` | Separate local administrator environment and operator instructions; real credentials stay untracked |
@@ -17,7 +17,7 @@ The email-code extension (`for-keycloak/email-otp-authenticator`, Unlicense) was
 
 - SHA-256 `deb04851…d3d42a` matches the digest GitHub publishes for the release asset; the Docker build refuses any other file.
 - Its Sigstore bundle verifies (`cosign verify-blob`) against a certificate issued to the project's own GitHub Actions workflow.
-- Keycloak stays on 26.7.3, the version the extension is built for. Upgrade Keycloak and the extension together, and repeat both checks.
+- The extension release is built for Keycloak 26.7.3; the image runs 26.7.4 in the same minor version. Upgrade Keycloak and the extension together, and repeat both checks.
 - A code review of the extension is required before production (ADR-016).
 
 ## Run locally
@@ -53,8 +53,11 @@ Verified end to end on 2026-09-24: email-only sign-in page, code delivered to Ma
 
 - Google identity provider: needs an OAuth client from Google Cloud (owner action), then `Trust Email` on and the `oxinov-first-broker` flow.
 - Refusing Google accounts with unverified emails at Keycloak (today the platform API refuses them at the welcome step with `EMAIL_NOT_VERIFIED`).
-- Oxinov cyberpunk login theme, Apple sign-in, the separate `oxinov-staff` realm, and production hostname, TLS, and proxy settings.
+- Oxinov cyberpunk login theme, Apple sign-in, and the separate `oxinov-staff` realm.
+- Login and admin event recording, and narrowing the `oxinov-automation` service account below the `master` `admin` role.
+
+Production hostname, TLS, and proxy settings are set in the chart: `KC_HOSTNAME=https://id.oxinov.com`, `KC_HOSTNAME_ADMIN`, and `KC_PROXY_HEADERS=xforwarded`, with TLS terminated by Traefik; `/admin` and `/realms/master` are closed on the public host.
 
 ## Assistant skills
 
-Coding assistants working here follow [oxinov-authentication-sessions](../../.claude/skills/oxinov-authentication-sessions/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-kubernetes](../../.claude/skills/oxinov-kubernetes/SKILL.md), [oxinov-server](../../.claude/skills/oxinov-server/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).
+Coding assistants working here follow [oxinov-keycloak](../../.claude/skills/oxinov-keycloak/SKILL.md), [oxinov-authentication-sessions](../../.claude/skills/oxinov-authentication-sessions/SKILL.md), [oxinov-platform-integration](../../.claude/skills/oxinov-platform-integration/SKILL.md), [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md), [oxinov-kubernetes](../../.claude/skills/oxinov-kubernetes/SKILL.md), [oxinov-server](../../.claude/skills/oxinov-server/SKILL.md). All rules and skills: [AI knowledge](../../docs/14-ai-knowledge/README.md).

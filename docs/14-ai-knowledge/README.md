@@ -45,6 +45,7 @@ Claude Code loads the skills automatically from `.claude/skills/`. Other assista
 | [oxinov-branding](../../.claude/skills/oxinov-branding/SKILL.md) | Name a product, write public copy, or use the logo, colors, and tokens |
 | [oxinov-testing](../../.claude/skills/oxinov-testing/SKILL.md) | Write or run unit, integration, policy, or site tests |
 | [oxinov-security](../../.claude/skills/oxinov-security/SKILL.md) | Start any security work: principles, threat check, and which security skill to use |
+| [oxinov-keycloak](../../.claude/skills/oxinov-keycloak/SKILL.md) | Change sign-in, the realm script, Keycloak clients, token lifetimes, or identity infrastructure |
 | [oxinov-authentication-sessions](../../.claude/skills/oxinov-authentication-sessions/SKILL.md) | Touch JWT verification, OIDC sign-in, sessions, cookies, CSRF, or redirects |
 | [oxinov-access-control](../../.claude/skills/oxinov-access-control/SKILL.md) | Decide who may see or change something: guards, roles, RLS, IDOR, mass assignment, race conditions |
 | [oxinov-secure-input-output](../../.claude/skills/oxinov-secure-input-output/SKILL.md) | Accept input, render user content, build queries, fetch URLs, store files, or return errors |
@@ -105,7 +106,7 @@ Every stage uses oxinov-project-delivery to plan and oxinov-code-review before w
 | Company website (`oxinov.com`) | `frontend/company-web` | oxinov-frontend-architecture, oxinov-frontend, oxinov-seo, oxinov-branding, oxinov-accessibility, oxinov-testing |
 | Account portal (`app.oxinov.com`) | `frontend/platform-web` | oxinov-frontend-architecture, oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-platform-integration, oxinov-branding, oxinov-accessibility, oxinov-security |
 | Platform API | `backend/platform-api`, `database/platform` | oxinov-backend-architecture, oxinov-database-architecture, oxinov-backend, oxinov-access-control, oxinov-secure-input-output, oxinov-platform-integration, oxinov-mvc, oxinov-api-design, oxinov-database, oxinov-payments, oxinov-security, oxinov-testing |
-| Identity (`id.oxinov.com`) | `devops/keycloak` | oxinov-authentication-sessions, oxinov-platform-integration, oxinov-security, oxinov-kubernetes, oxinov-server |
+| Identity (`id.oxinov.com`) | `devops/keycloak` | oxinov-keycloak, oxinov-authentication-sessions, oxinov-platform-integration, oxinov-security, oxinov-kubernetes, oxinov-server |
 | [Oxinov Edu](../02-products/edu/README.md) web | `frontend/products/edu-web` | oxinov-frontend-architecture, oxinov-frontend, oxinov-authentication-sessions, oxinov-secure-input-output, oxinov-branding, oxinov-accessibility, oxinov-validation, oxinov-testing |
 | Oxinov Edu API | `backend/products/edu-api`, `database/products/edu` | oxinov-backend-architecture, oxinov-database-architecture, oxinov-backend, oxinov-access-control, oxinov-secure-input-output, oxinov-mvc, oxinov-multi-tenancy, oxinov-api-design, oxinov-validation, oxinov-database, oxinov-payments, oxinov-security, oxinov-observability, oxinov-testing |
 | Oxinov Edu mobile app (planned) | `frontend/mobile/` | oxinov-mobile, oxinov-accessibility |
