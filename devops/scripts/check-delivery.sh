@@ -39,6 +39,9 @@ echo "${#scripts[@]} scripts clean"
 step "release planner"
 bash devops/scripts/release-plan.test.sh | tail -1
 
+step "CI scope"
+bash devops/scripts/ci-scope.test.sh | tail -1
+
 step "helm lint"
 for values in values.yaml values-production.yaml; do
   run "$HELM" lint "$CHART" -f "$CHART/$values" --set global.tag=check | tail -1

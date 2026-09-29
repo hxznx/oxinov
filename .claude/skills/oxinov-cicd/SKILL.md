@@ -13,7 +13,7 @@ Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [AGENTS.md
 
 | Stage | File | Does |
 | --- | --- | --- |
-| CI | `.github/workflows/ci.yml` | Jobs `scaffold` (docs, catalogs, boundaries), `api`, `platform-api`, `platform-web`, `edu-web`, `company-web`, `terraform`, `delivery`, `edu-api-image` |
+| CI | `.github/workflows/ci.yml` | Job `scope` (`devops/scripts/ci-scope.sh`: documentation-only changes since the last green CI on `main` skip the heavy jobs), then `scaffold` (docs, catalogs, boundaries), `api`, `platform-api`, `platform-web`, `edu-web`, `company-web`, `terraform`, `delivery`, `edu-api-image` |
 | Security | `.github/workflows/security.yml` | Trivy repository scan, weekly and on push |
 | Website | `.github/workflows/deploy-company-web.yml` | Build, test, S3 sync, CloudFront invalidation |
 | Production | `.github/workflows/deploy-production.yml` | Runs after green CI on `main`: release plan, image builds and scans, chart push, release |
@@ -51,6 +51,10 @@ Rules: [DevOps rules](../../../docs/14-ai-knowledge/devops-rules.md), [AGENTS.md
 
    It checks executable bits, ShellCheck, release-planner tests, `helm lint`, `kubeconform`, and Terraform format. Chart, node-script, or realm changes also need `bash devops/kubernetes/scripts/rehearse-local.sh`.
 
+## Actions minutes are limited
+
+The owner runs on GitHub's free Actions allowance. Keep pushes few and meaningful (batch documentation commits), never add jobs that run on every push without need, and keep the `scope` gate working when you add a job: heavy jobs get `needs: scope` and `if: needs.scope.outputs.code == 'true'`. If jobs fail with "The job was not started because recent account payments have failed or your spending limit needs to be increased", nothing ran: tell the owner; it is a billing state, not a code failure.
+
 ## Watching a run
 
-`gh run list --branch main --limit 5`, `gh run view <id> --log-failed`, and `oxctl watch` for the release. Never weaken a gate (tests, Trivy, drift check) to make a run pass.
+`gh run list --branch main --limit 5` (check the result of **every** workflow for the newest commit, not just the first line), `gh run view <id> --log-failed`, and `oxctl watch` for the release. Never weaken a gate (tests, Trivy, drift check) to make a run pass.

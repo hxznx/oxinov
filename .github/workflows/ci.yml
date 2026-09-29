@@ -12,6 +12,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scope:
+    # Saves Actions minutes without weakening the gate: when only documentation changed since the last
+    # green CI on main, the heavy jobs below are skipped; any code change runs everything
+    # (devops/scripts/ci-scope.sh). The scaffold job always runs.
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      code: ${{ steps.scope.outputs.code }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Decide the CI scope
+        id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if [ "$GITHUB_REF" = refs/heads/main ] && [ "$GITHUB_EVENT_NAME" = push ]; then
+            url="repos/$REPO/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=1"
+            base=$(gh api "$url" --jq '.workflow_runs[0].head_sha // empty' || true)
+          else
+            git fetch -q origin main || true
+            base=$(git merge-base origin/main HEAD || true)
+          fi
+          bash devops/scripts/ci-scope.sh "$base" "$HEAD_SHA" | tee -a "$GITHUB_OUTPUT"
+
   scaffold:
     runs-on: ubuntu-latest
     steps:
@@ -57,6 +87,8 @@ jobs:
           check-config /etc/alertmanager/alertmanager.yml
 
   api:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -115,6 +147,8 @@ jobs:
       - run: pnpm --filter @oxinov/edu-api build
 
   platform-api:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     # Platform control plane (api.oxinov.com): accounts, policies, entitlements with PostgreSQL RLS.
     runs-on: ubuntu-latest
     services:
@@ -161,6 +195,8 @@ jobs:
       - run: pnpm --filter @oxinov/platform-api build
 
   platform-web:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     # Account portal (app.oxinov.com) and the shared @oxinov/web-auth sign-in package it uses:
     # sealed-session, PKCE, redirect-safety and configuration unit tests, type checks, build.
     runs-on: ubuntu-latest
@@ -192,6 +228,8 @@ jobs:
         run: pnpm --filter @oxinov/platform-web build
 
   edu-web:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     # Oxinov Edu web app (edu.oxinov.com): helper unit tests, type check, build.
     runs-on: ubuntu-latest
     steps:
@@ -212,6 +250,8 @@ jobs:
       - run: pnpm --filter @oxinov/edu-web build
 
   company-web:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     # oxinov.com static export: design tokens with contrast tests, site build, and page checks (FR-SITE-2101/2102/2105).
     runs-on: ubuntu-latest
     steps:
@@ -233,6 +273,8 @@ jobs:
       - run: pnpm --filter @oxinov/company-web test
 
   terraform:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     # Infrastructure code: formatting, validation without cloud access, and the CloudFront router tests.
     runs-on: ubuntu-latest
     steps:
@@ -253,6 +295,8 @@ jobs:
       - run: node --test devops/terraform/environments/production/edge/site-router.test.mjs
 
   delivery:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     # Delivery tooling (ADR-018): the SMTP-to-SES relay, then every check in devops/scripts/check-delivery.sh
     # (shellcheck, release planner tests, Helm lint, Kubernetes schema, Terraform format).
     runs-on: ubuntu-latest
@@ -272,7 +316,8 @@ jobs:
       - run: bash devops/scripts/check-delivery.sh
 
   edu-api-image:
-    needs: api
+    needs: [scope, api]
+    if: needs.scope.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

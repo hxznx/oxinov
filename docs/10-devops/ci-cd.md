@@ -10,13 +10,16 @@ emergencies. Keep `main` always releasable.
 
 | Job | Checks |
 |---|---|
+| `scope` | Decides whether the heavy jobs run (`devops/scripts/ci-scope.sh`); see below |
 | `scaffold` | Documentation map, requirement IDs, workspace boundaries, Compose and monitoring files |
 | `api` | Edu API type check, lint, unit tests, migrations on PostgreSQL 18, Prisma drift, row-level-security tests, integration tests with object storage, build |
 | `platform-api` | Same for the platform API |
 | `platform-web`, `edu-web`, `company-web` | Type checks, unit tests, builds (and the shared `web-auth` tests) |
 | `terraform` | `terraform fmt`, `validate` for every stack, CloudFront router tests |
-| `delivery` | Mail relay tests, then `devops/scripts/check-delivery.sh`: shellcheck, release-planner tests, Helm lint, Kubernetes schema (`kubeconform`), Terraform format |
+| `delivery` | Mail relay tests, then `devops/scripts/check-delivery.sh`: shellcheck, release-planner and CI-scope tests, Helm lint, Kubernetes schema (`kubeconform`), Terraform format |
 | `edu-api-image` | Production image build and Trivy image scan |
+
+**Saving Actions minutes.** GitHub Actions minutes for this private repository are limited (the owner runs on the free allowance). The `scope` job compares the commit with the **last commit whose CI passed on `main`** (for other branches, the merge base with `main`). When every file changed since then is documentation (Markdown anywhere, `docs/`, `prompts/`, `.claude/skills/`), only `scope` and `scaffold` run and the other jobs are skipped; any other change, or any doubt (no base, unknown base, empty diff), runs every job. Comparing with the last green commit keeps the gate: a code commit whose CI failed or was cancelled stays in the diff of the next documentation push, so it is fully tested before the deploy, which releases everything since the running release. Newer pushes to the same branch cancel older CI runs.
 
 `.github/workflows/security.yml` scans the repository (vulnerabilities, secrets, misconfiguration) with
 Trivy on every push and weekly. Dependabot (`.github/dependabot.yml`) opens grouped weekly updates for npm,
