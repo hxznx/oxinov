@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import net from 'node:net';
 import { after, before, describe, it } from 'node:test';
-import { createRateLimiter, createRelay } from './relay.mjs';
+import { SMTPServer } from 'smtp-server';
+import { createRateLimiter, createRelay, createSmtpSender, isPermanent } from './relay.mjs';
 
 /** Minimal SMTP client: sends each command after the previous reply and returns every reply code. */
 async function converse(port, commands) {
@@ -155,5 +156,53 @@ describe('mail limits (FR-ID-2202: codes are rate-limited)', () => {
     assert.equal(sent.length, 1);
     assert.ok(events.some((event) => event.event === 'mail.limited' && event.reason === 'recipient'));
     assert.doesNotMatch(JSON.stringify(events), /example\.com/);
+  });
+});
+
+describe('SMTP provider upstream (Brevo)', () => {
+  it('forwards the exact message to the provider, with the envelope from Keycloak', async () => {
+    const received = [];
+    const provider = new SMTPServer({
+      authOptional: true,
+      disabledCommands: ['STARTTLS', 'AUTH'],
+      logger: false,
+      onData(stream, session, callback) {
+        const chunks = [];
+        stream.on('data', (chunk) => chunks.push(chunk));
+        stream.on('end', () => {
+          received.push({ from: session.envelope.mailFrom.address, to: session.envelope.rcptTo.map((r) => r.address), raw: Buffer.concat(chunks).toString() });
+          callback();
+        });
+      },
+    });
+    provider.listen(0, '127.0.0.1');
+    await once(provider.server, 'listening');
+    const send = createSmtpSender({ host: '127.0.0.1', port: provider.server.address().port });
+    const relay = createRelay({ allowedFrom: 'no-reply@oxinov.com', send, limiter: createRateLimiter() });
+    relay.listen(0, '127.0.0.1');
+    await once(relay.server, 'listening');
+    const replies = await converse(relay.server.address().port, [
+      'EHLO keycloak',
+      'MAIL FROM:<no-reply@oxinov.com>',
+      'RCPT TO:<learner@gmail.example>',
+      'DATA',
+      'Subject: Your Oxinov sign-in code\r\n\r\n654321\r\n.',
+      'QUIT',
+    ]);
+    relay.close();
+    provider.close();
+    assert.deepEqual(replies, [220, 250, 250, 250, 354, 250, 221]);
+    assert.equal(received.length, 1);
+    assert.equal(received[0].from, 'no-reply@oxinov.com');
+    assert.deepEqual(received[0].to, ['learner@gmail.example']);
+    assert.match(received[0].raw, /Subject: Your Oxinov sign-in code/);
+    assert.match(received[0].raw, /654321/);
+  });
+
+  it('treats a provider 5xx reply as permanent and 4xx as temporary', () => {
+    assert.equal(isPermanent({ responseCode: 550 }), true);
+    assert.equal(isPermanent({ responseCode: 421 }), false);
+    assert.equal(isPermanent({ name: 'MessageRejected' }), true);
+    assert.equal(isPermanent(new Error('connection reset')), false);
   });
 });

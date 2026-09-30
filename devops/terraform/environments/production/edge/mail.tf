@@ -1,5 +1,5 @@
-# Staff email for oxinov.com on Zoho Mail (zoho.com data centre). Automatic product email (sign-in codes,
-# receipts) will use Amazon SES from no-reply@oxinov.com and is added with the platform launch.
+# Staff email for oxinov.com on Zoho Mail (zoho.com data centre). Automatic product email (sign-in codes) goes
+# from no-reply@oxinov.com through Brevo while Amazon SES has no production access, otherwise through SES.
 
 # Apex TXT values: Zoho domain ownership proof, SPF (only Zoho may send as @oxinov.com; soft-fail others),
 # and search engine ownership proofs. Route 53 holds one TXT record set per name, so every apex TXT value
@@ -15,7 +15,19 @@ resource "aws_route53_record" "apex_txt" {
       "v=spf1 include:zoho.com ~all",
     ],
     var.search_verification_txt,
+    var.brevo_verification_txt == "" ? [] : [var.brevo_verification_txt],
   )
+}
+
+# Brevo DKIM (sign-in email while SES is in the sandbox): CNAMEs to Brevo's keys, so Brevo signs as oxinov.com
+# and DMARC passes by DKIM alignment. The apex SPF stays Zoho-only; Brevo uses its own bounce domain.
+resource "aws_route53_record" "brevo_dkim" {
+  for_each = var.brevo_dkim_cnames
+  zone_id  = aws_route53_zone.main.zone_id
+  name     = "${each.key}.${var.domain}"
+  type     = "CNAME"
+  ttl      = 300
+  records  = [each.value]
 }
 
 resource "aws_route53_record" "mx" {

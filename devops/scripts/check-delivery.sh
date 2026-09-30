@@ -54,7 +54,9 @@ for values in values.yaml values-production.yaml; do
 done
 
 step "terraform format"
-run "$TERRAFORM" fmt -recursive -check devops/terraform && echo "formatted"
+# Separate lines: under `set -e` a failure on the left of `&&` does not stop the script.
+run "$TERRAFORM" fmt -recursive -check devops/terraform
+echo "formatted"
 
 echo
 echo "all delivery checks passed"

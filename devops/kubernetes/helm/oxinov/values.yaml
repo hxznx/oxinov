@@ -85,6 +85,11 @@ media:
   region: ap-south-1
 mail:
   from: no-reply@oxinov.com
+  # Outgoing provider for sign-in email. Empty host: Amazon SES with the instance role. deploy.sh sets Brevo's
+  # relay (smtp-relay.brevo.com) once MAIL_SMTP_USER and MAIL_SMTP_PASSWORD are in Parameter Store.
+  smtp:
+    host: ""
+    port: 587
 
 # Scheduling priority on the shared node (ADR-022). When memory runs short, the scheduler preempts and the
 # kubelet evicts lower tiers first, so sign-in and live products survive a spike in a new product.

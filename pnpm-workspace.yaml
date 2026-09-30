@@ -26,6 +26,8 @@ catalog:
   # Nest's optional peers: one version for every package, or pnpm installs a second @nestjs/core.
   class-transformer: 0.5.1
   class-validator: 0.15.1
+  # Mail relay's SMTP upstream (Brevo) for sign-in email while SES is in the sandbox.
+  nodemailer: 10.0.12
   prisma: 7.10.0
   react-markdown: 10.1.0
   remark-gfm: 4.0.1

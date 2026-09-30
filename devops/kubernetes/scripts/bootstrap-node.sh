@@ -166,7 +166,8 @@ sync_app_secret() {
   done
   # Payment provider keys (ADR-023) are entered by the owner in Parameter Store and never generated; a
   # missing key is left out of the Secret, which keeps that provider switched off.
-  for name in KHALTI_SECRET_KEY ESEWA_PRODUCT_CODE ESEWA_SECRET_KEY; do
+  # The sign-in email provider's SMTP login and key (Brevo) are entered by the owner the same way.
+  for name in KHALTI_SECRET_KEY ESEWA_PRODUCT_CODE ESEWA_SECRET_KEY MAIL_SMTP_USER MAIL_SMTP_PASSWORD; do
     value=$(param "$name")
     if [ -n "$value" ]; then args+=("--from-literal=$name=$value"); fi
   done

@@ -1,7 +1,8 @@
-// SMTP-to-Amazon-SES relay for the starter server (ADR-017). Keycloak speaks SMTP; this forwards each
-// message to the SES API using the EC2 instance role, so no SMTP credentials or access keys exist.
-// It listens only on the private Docker network and refuses any sender other than the configured one.
+// Mail relay for the starter server (ADR-017). Keycloak speaks SMTP to it; it forwards each message to an SMTP
+// provider (Brevo) when one is configured, or to the Amazon SES API with the EC2 instance role. It listens only
+// on the private network, refuses any sender other than the configured one, and limits volume per recipient.
 import { createHash } from 'node:crypto';
+import nodemailer from 'nodemailer';
 import { SMTPServer } from 'smtp-server';
 
 /**
@@ -46,7 +47,36 @@ export function createRateLimiter({ perRecipient = 5, windowSeconds = 900, globa
 // sandbox); the relay answers them with a permanent SMTP failure instead of "try again later".
 const PERMANENT_ERRORS = new Set(['MessageRejected', 'MailFromDomainNotVerifiedException']);
 
-/** SES's reason for a failure, safe to log: email addresses removed, length capped. */
+/**
+ * Sends the message exactly as Keycloak wrote it (raw MIME) to an SMTP provider such as Brevo
+ * (smtp-relay.brevo.com:587). With a login, the connection must upgrade to TLS (STARTTLS), or use TLS from the
+ * start on port 465; without one (local Mailpit), it may stay plain.
+ * @param {{ host: string; port?: number; user?: string; password?: string }} options
+ */
+export function createSmtpSender({ host, port = 587, user, password }) {
+  const transport = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    requireTLS: Boolean(user) && port !== 465,
+    auth: user ? { user, pass: password } : undefined,
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 20_000,
+  });
+  return async ({ from, to, raw }) => {
+    await transport.sendMail({ envelope: { from, to }, raw });
+  };
+}
+
+/** Whether retrying cannot help: SES's permanent errors, or an SMTP provider's 5xx reply. */
+export function isPermanent(error) {
+  if (PERMANENT_ERRORS.has(error?.name)) return true;
+  const code = Number(error?.responseCode);
+  return code >= 500 && code < 600;
+}
+
+/** The provider's reason for a failure, safe to log: email addresses removed, length capped. */
 export function failureReason(error) {
   const message = typeof error?.message === 'string' ? error.message : '';
   return message.replace(/[^\s@<>"'(),;:]+@[^\s@<>"'(),;:]+/g, '[address]').slice(0, 300);
@@ -112,11 +142,11 @@ export function createRelay({
             callback();
           },
           (error) => {
-            const permanent = PERMANENT_ERRORS.has(error?.name);
+            const permanent = isPermanent(error);
             log({
               event: 'mail.failed',
               error: error?.name ?? 'Error',
-              status: error?.$metadata?.httpStatusCode,
+              status: error?.$metadata?.httpStatusCode ?? error?.responseCode,
               permanent,
               reason: failureReason(error),
             });

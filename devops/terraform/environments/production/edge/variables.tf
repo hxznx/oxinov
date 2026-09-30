@@ -38,3 +38,31 @@ variable "search_verification_txt" {
     error_message = "Each value must look like google-site-verification=<token> as shown by Google Search Console."
   }
 }
+
+variable "brevo_verification_txt" {
+  description = <<-EOT
+    Brevo domain-ownership value for oxinov.com (Brevo: Senders, Domains, Authenticate), e.g. "brevo-code:...".
+    Brevo sends sign-in email while Amazon SES has no production access (backend/workers/mail-relay).
+    Empty: no record. The value is public in DNS.
+  EOT
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.brevo_verification_txt == "" || can(regex("^brevo-code:[A-Za-z0-9]{16,64}$", var.brevo_verification_txt))
+    error_message = "Use the exact \"brevo-code:...\" value Brevo shows."
+  }
+}
+
+variable "brevo_dkim_cnames" {
+  description = <<-EOT
+    Brevo's DKIM records for oxinov.com as record name => target, exactly as Brevo shows them, e.g.
+    { "brevo1._domainkey" = "b1.oxinov-com.dkim.brevo.com", "brevo2._domainkey" = "b2.oxinov-com.dkim.brevo.com" }.
+    DKIM lets Gmail accept mail Brevo sends as no-reply@oxinov.com under the DMARC policy. Empty: no records.
+  EOT
+  type        = map(string)
+  default     = {}
+  validation {
+    condition     = alltrue([for name, target in var.brevo_dkim_cnames : can(regex("^[a-z0-9-]+[.]_domainkey$", name)) && can(regex("brevo[.]com[.]?$", target))])
+    error_message = "Each entry must be <selector>._domainkey => a target under brevo.com."
+  }
+}

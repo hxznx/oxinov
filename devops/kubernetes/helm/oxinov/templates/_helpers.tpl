@@ -110,10 +110,8 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 - { name: KC_HOSTNAME_ADMIN, value: {{ $root.Values.identity.adminHostname | quote }} }
 - { name: KC_HTTP_ENABLED, value: "true" }
 - { name: KC_PROXY_HEADERS, value: xforwarded }
-# Sign-in, registration, and code counters on the management port (keycloak_user_events_total), for the
-# sign-in alerts in monitoring/prometheus/rules (FR-ID-2208 security events). Only event type and client.
-- { name: KC_EVENT_METRICS_USER_ENABLED, value: "true" }
-- { name: KC_EVENT_METRICS_USER_TAGS, value: "realm,clientId" }
+# User event metrics (sign-in alerts) are build-time options in devops/keycloak/Dockerfile: setting them here
+# stops `start --optimized` from starting (the 2026-09-30 deploy failure).
 - { name: KC_BOOTSTRAP_ADMIN_USERNAME, value: {{ $root.Values.identity.adminUser | quote }} }
 - { name: JAVA_OPTS_KC_HEAP, value: {{ .svc.heap | quote }} }
 {{ include "oxinov.secretEnv" (dict "root" $root "name" "KC_DB_PASSWORD" "key" "KEYCLOAK_DB_PASSWORD") }}
@@ -121,6 +119,20 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 {{- else if eq .name "mail-relay" }}
 - { name: MAIL_FROM, value: {{ $root.Values.mail.from | quote }} }
 - { name: AWS_REGION, value: {{ $root.Values.media.region | quote }} }
+{{- /* SMTP provider (Brevo) instead of SES while SES delivers only to verified addresses. The login and key are
+   optional Secret entries from Parameter Store (MAIL_SMTP_USER, MAIL_SMTP_PASSWORD). */}}
+{{- if $root.Values.mail.smtp.host }}
+- { name: MAIL_SMTP_HOST, value: {{ $root.Values.mail.smtp.host | quote }} }
+- { name: MAIL_SMTP_PORT, value: {{ $root.Values.mail.smtp.port | toString | quote }} }
+{{- range list "MAIL_SMTP_USER" "MAIL_SMTP_PASSWORD" }}
+- name: {{ . }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $root.Values.global.existingSecret }}
+      key: {{ . }}
+      optional: true
+{{- end }}
+{{- end }}
 {{- end }}
 {{- /* Plain settings from the service's values entry (services scaffolded by `oxctl new-service`). */}}
 {{- range $key, $value := .svc.env }}

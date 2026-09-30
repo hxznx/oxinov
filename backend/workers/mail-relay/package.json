@@ -2,7 +2,7 @@
   "name": "@oxinov/mail-relay",
   "version": "0.1.0",
   "private": true,
-  "description": "Private SMTP-to-Amazon-SES relay for the starter server; sends with the instance role, so no SMTP keys exist",
+  "description": "Private SMTP relay for the starter server: forwards sign-in email to an SMTP provider (Brevo) or to Amazon SES with the instance role",
   "license": "UNLICENSED",
   "type": "module",
   "engines": {
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "catalog:",
+    "nodemailer": "catalog:",
     "smtp-server": "catalog:"
   }
 }

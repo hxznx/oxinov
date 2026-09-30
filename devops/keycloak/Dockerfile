@@ -5,9 +5,13 @@
 ARG KEYCLOAK_VERSION=26.7.4
 
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c AS builder
+# Build-time options: `start --optimized` refuses to start if these differ at runtime, so set them only here.
+# The user event metrics (keycloak_user_events_total, tagged by realm and client only) feed the sign-in alerts.
 ENV KC_DB=postgres \
     KC_HEALTH_ENABLED=true \
-    KC_METRICS_ENABLED=true
+    KC_METRICS_ENABLED=true \
+    KC_EVENT_METRICS_USER_ENABLED=true \
+    KC_EVENT_METRICS_USER_TAGS=realm,clientId
 ADD --chown=keycloak:keycloak \
     --checksum=sha256:deb048514e780b698fb8c649903c2ceea9669523779279b9fe22e7220dd3d42a \
     https://github.com/for-keycloak/email-otp-authenticator/releases/download/v1.5.0/email-otp-authenticator-v1.5.0-kc-26.7.3.jar \

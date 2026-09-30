@@ -132,6 +132,19 @@ once (SES console → Account dashboard → Request production access): mail typ
 
 The first request was **denied** (case 179052648600401). Reply to that case in the AWS Support Center rather than opening a new one, and add the controls AWS looks for: the `transactional` configuration set suppresses addresses that bounce or complain, sends bounce, complaint, reject, and rendering-failure events to the company mailbox, and raises CloudWatch alarms at a 5% bounce rate and a 0.1% complaint rate (`email-events.tf`); every message is requested by the recipient on the sign-in page; Keycloak locks an account after 5 failed attempts; the privacy policy is at `https://oxinov.com/legal/privacy`; include a sample message ("Your Oxinov sign-in code is 123456. It expires in 10 minutes. If you did not request it, ignore this email."). Until access is granted, only `@oxinov.com` addresses (the verified domain) receive codes.
 
+### Sending through Brevo instead (Gmail and every other address, today)
+
+Because SES refuses production access, the relay can send through **Brevo** (free: 300 emails a day). It keeps its sender check and the limit of 5 emails per address per 15 minutes. The switch is automatic once the credentials exist, and SES stays the fallback.
+
+1. **Owner:** create a free account at brevo.com with a company address. Complete the company profile; Brevo may review new accounts before sending is enabled.
+2. **Owner:** in Brevo, open **Senders, Domains & Dedicated IPs**, then **Domains**, and add `oxinov.com`. Choose to authenticate it yourself. Copy the `brevo-code:…` value and the DKIM record names and targets; they are public DNS values.
+3. **Engineering:** put them into `devops/terraform/environments/production/edge` (`brevo_verification_txt`, `brevo_dkim_cnames`) and apply after the owner approves the plan. Then choose **Authenticate** in Brevo, and add `no-reply@oxinov.com` as a sender.
+4. **Owner:** in Brevo, open **SMTP & API**, then **SMTP**. Note the SMTP login and generate an SMTP key. Store both yourself as SecureStrings under `/oxinov/production/starter/`: `MAIL_SMTP_USER` (the login) and `MAIL_SMTP_PASSWORD` (the key). Nobody else needs to see them.
+5. **Deploy** with `oxctl deploy` or the next push. `deploy.sh` sees both parameters, points the relay at `smtp-relay.brevo.com:587` over TLS, and the relay logs `upstream: smtp` at start.
+6. **Check:** sign in with a Gmail address. The code arrives from `no-reply@oxinov.com`. `oxctl logs mail-relay` shows `mail.sent`; a refused message shows `mail.failed` with the provider's reason.
+
+To go back to SES, delete the two parameters and deploy.
+
 ## Capacity and cost
 
 The whole stack uses about 2.9 GiB (measured in a local k3s rehearsal), leaving roughly 0.9 GiB plus swap.

@@ -1,5 +1,12 @@
 # Project changelog
 
+- **2026-09-30, Gmail users get no sign-in code: Brevo sending, and a failed deploy fixed:**
+  - **Why no code:** customers with Gmail and other outside addresses received no code because AWS refused SES production access. SES in its sandbox delivers only to verified addresses, so the codes were dropped.
+  - **Brevo sending:** at the owner's choice, the mail relay can now send through Brevo's SMTP relay (free, 300 a day) with the same sender check and per-address limit (`createSmtpSender`, `nodemailer` 10.0.12, 2 new tests). It switches automatically once the owner stores `MAIL_SMTP_USER` and `MAIL_SMTP_PASSWORD` in Parameter Store, and SES stays the fallback. Brevo's domain records are ready as Terraform variables in the edge stack. The owner steps are in the [production runbook](../../devops/kubernetes/README.md#sending-through-brevo-instead-gmail-and-every-other-address-today).
+  - **Deploy failure:** the first deploy of the sign-in work failed and Helm rolled it back automatically. `KC_EVENT_METRICS_USER_ENABLED` is a build-time Keycloak option, and setting it in the chart made `start --optimized` exit. It now lives in the Keycloak `Dockerfile`. The fixed image was started in production mode locally and passed the 6-check sign-in test.
+  - **Earlier blocker:** a new HIGH CVE in Keycloak's jackson-databind (CVE-2026-68497) had blocked the image scan. The owner accepted it until 2026-10-30 (`.trivyignore`).
+  - **Delivery check fix:** `check-delivery.sh` no longer hides a Terraform format failure (`cmd && echo` under `set -e`).
+
 - **2026-09-30, Sign-in hardening: resend limit, add-on review, least privilege, account page, test, alerts:** At the owner's request, the remaining sign-in work that needs no owner action.
   - **Resend limit:** the email-code add-on has none, so every "Send a new code" sent an email. The in-cluster mail relay now allows at most 5 emails per address per 15 minutes and 60 a minute overall (`MAIL_LIMIT_*`, 3 new tests). Keycloak then shows "We could not send the email just now".
   - **Add-on review** (ADR-016): `email-otp-authenticator` v1.5.0 source reviewed. Codes use `SecureRandom`, are compared in constant time, stay server-side, work once, expire, and count toward lockout. Findings are in the Keycloak README.

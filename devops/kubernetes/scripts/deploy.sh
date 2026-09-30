@@ -103,6 +103,10 @@ apply() {
     local key
     if [ -n "$var" ] && key=$(helm_key "$var" 2>/dev/null); then args+=(--set-string "$key=$value"); fi
   done < release.next.env
+  # Sign-in email goes through Brevo once the owner has stored its SMTP login and key; otherwise through SES.
+  if [ -n "$(param MAIL_SMTP_USER)" ] && [ -n "$(param MAIL_SMTP_PASSWORD)" ]; then
+    args+=(--set-string mail.smtp.host="$(param MAIL_SMTP_HOST | grep . || echo smtp-relay.brevo.com)")
+  fi
   # "Continue with Google" appears only once the owner's Google OAuth client is stored (FR-ID-2201).
   if [ -n "$(param GOOGLE_CLIENT_ID)" ] && [ -n "$(param GOOGLE_CLIENT_SECRET)" ]; then
     args+=(--set identity.googleSignIn=true)

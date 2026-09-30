@@ -210,10 +210,7 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:-}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-}
       KC_HEALTH_ENABLED: "true"
-      # Sign-in event counters for the local Prometheus (same as production; see monitoring/prometheus).
-      KC_METRICS_ENABLED: "true"
-      KC_EVENT_METRICS_USER_ENABLED: "true"
-      KC_EVENT_METRICS_USER_TAGS: "realm,clientId"
+      # Sign-in event counters come from the image build (devops/keycloak/Dockerfile), as in production.
     ports:
       - "127.0.0.1:${KEYCLOAK_PORT:-8080}:8080"
     # The Oxinov theme is mounted so edits show on the next page load (start-dev turns theme caching off).
