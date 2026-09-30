@@ -128,7 +128,7 @@ services:
       context: devops/keycloak
       trivyignore: devops/keycloak/.trivyignore
       node: false
-    inputs: [devops/keycloak/Dockerfile]
+    inputs: [devops/keycloak/Dockerfile, devops/keycloak/themes/]
     helm_tag: services.keycloak.tag
     workload: keycloak
     port: 8080

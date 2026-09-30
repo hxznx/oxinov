@@ -10,6 +10,7 @@ Keycloak implements the one Oxinov account (ADR-011) with the sign-in design in 
 | `configure-realm.sh` | Idempotent local setup of the `oxinov` realm: flows, token lifetimes, SMTP, and the account portal client |
 | `init-db.sh` | Local Docker init: creates the `keycloak` database and role on a fresh PostgreSQL volume |
 | `admin/` | Separate local administrator environment and operator instructions; real credentials stay untracked |
+| `themes/oxinov/` | Oxinov sign-in pages and emails for the `oxinov` realm (see [Sign-in pages](#sign-in-pages-and-emails)) |
 
 ## Supply chain
 
@@ -47,16 +48,34 @@ bash devops/keycloak/admin/start-local.sh
 | Audit events (both realms) | Security-relevant sign-in events (sign-in, registration, sign-out, email verification, identity provider, errors) kept 365 days; admin changes recorded without request bodies; routine token refreshes not recorded | Data retention (audit logs at least one year) |
 | Redirects | Each web client accepts exactly `<app URL>/auth/callback` after sign-in and `<app URL>/` after sign-out | Threat model (open redirect, code theft) |
 | Admin realm name | `master` shows "Ox Inov Pvt. Ltd. Administration" | Brand system |
+| Pages and emails | `loginTheme` and `emailTheme` `oxinov`, English only; the `master` realm keeps Keycloak's own pages | Brand system, ADR-020 |
+| Email confirmation links | Work once, for 30 minutes (`actionTokenGeneratedByUserLifespan.verify-email=1800`; Keycloak's default is 5) | FR-ID-2202 |
 | `oxinov-platform-web` client | Confidential, authorization code with PKCE S256, access tokens for audience `oxinov-platform-api` only | FR-ID-2207 |
 | `oxinov-edu-web` client | Same settings for Oxinov Edu (`EDU_WEB_URL`, default `http://localhost:3002`), access tokens for audience `oxinov-lms-api` only; shares the realm session, so a signed-in person is not asked again | FR-ID-2207 |
 
 Verified end to end on 2026-09-24: email-only sign-in page, code delivered to Mailpit, token with audience `oxinov-platform-api` and a 600-second lifetime, single sign-on on a second authorization, and the platform API accepting the token for `/v1/me`, the welcome step, and entitlements.
 
+## Sign-in pages and emails
+
+`themes/oxinov/` replaces Keycloak's look for customers. The Dockerfile copies it into the image, and local Compose mounts it, so an edit shows on the next page load.
+
+- **Login theme** (`login/`): built on Keycloak's unstyled `base` theme, so no PatternFly or third-party styles load. Pages:
+  - `template.ftl`: the shared layout, with logo, card, "Trouble signing in?", and footer.
+  - `login-username.ftl`: the email step.
+  - `login-email-otp.ftl`: the six-digit code. It replaces the extension's template and keeps its field and button names.
+  - `login-verify-email.ftl`, `error.ftl`, and `logout-confirm.ftl`.
+
+  Account creation (`register.ftl`) and every other page use Keycloak's own markup with Oxinov classes from `theme.properties`, styled by `resources/css/oxinov.css`.
+- **Emails** (`email/`): the sign-in code and the email confirmation. They use inline styles in the Daylight colors, because email apps ignore stylesheets.
+- **Wording:** in `messages/messages_en.properties`, in plain English. Customers have no password (FR-ID-2204), so there is no "forgot password". "Trouble signing in?" links to `oxinov.com/help/sign-in/`, and any fact that page states must match `configure-realm.sh`.
+- **Brand files:** `resources/css/tokens.css` and the two symbol SVGs are exact copies from `packages/design-system`, and `scripts/validate_project.py` fails when they drift. After a design-system change, copy them again.
+- **Changing the theme:** a theme change rebuilds the Keycloak image (`services.yaml` inputs). It changes what every customer sees at sign-in, so rehearse it locally with `admin/start-local.sh`. If the theme were missing, Keycloak would fall back to its default look rather than fail.
+
 ## Not yet configured
 
 - Google identity provider: needs an OAuth client from Google Cloud (owner action), then `Trust Email` on and the `oxinov-first-broker` flow.
 - Refusing Google accounts with unverified emails at Keycloak (today the platform API refuses them at the welcome step with `EMAIL_NOT_VERIFIED`).
-- Oxinov cyberpunk login theme, Apple sign-in, and the separate `oxinov-staff` realm.
+- Apple sign-in and the separate `oxinov-staff` realm.
 - Narrowing the `oxinov-automation` service account below the `master` `admin` role.
 
 Production hostname, TLS, and proxy settings are set in the chart: `KC_HOSTNAME=https://id.oxinov.com`, `KC_HOSTNAME_ADMIN`, and `KC_PROXY_HEADERS=xforwarded`, with TLS terminated by Traefik; `/admin` and `/realms/master` are closed on the public host.

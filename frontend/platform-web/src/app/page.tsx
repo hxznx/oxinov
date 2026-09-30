@@ -139,6 +139,12 @@ function SignedOut({ message }: { message?: string }) {
             </a>
           </div>
           <p className="mt-6 text-sm text-muted">No password needed. We send a six-digit code to your email.</p>
+          <p className="mt-4 text-sm">
+            New to Oxinov? <a href="/auth/login?screen=signup">Create an account</a>
+          </p>
+          <p className="mt-2 text-sm">
+            <a href="https://oxinov.com/help/sign-in/">Trouble signing in?</a>
+          </p>
         </div>
       </main>
     </>

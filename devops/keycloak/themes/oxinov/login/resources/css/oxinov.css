@@ -1,0 +1,418 @@
+/*
+ * Oxinov sign-in pages (id.oxinov.com). Colors, spacing, cuts, and focus come from tokens.css only
+ * (docs/07-design/design-system.md). The light or dark theme follows the device (tokens.css).
+ * No web fonts are loaded: the token font stacks fall back to system fonts, so no third party is contacted.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html.ox-html {
+  background: var(--ox-color-bg);
+  color: var(--ox-color-text);
+  -webkit-text-size-adjust: 100%;
+}
+
+body.ox-body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--ox-font-body);
+  font-size: var(--ox-text-2);
+  line-height: var(--ox-leading-body);
+  background-color: var(--ox-color-bg);
+  background-image: var(--ox-grid-background);
+  background-size: var(--ox-grid-size);
+}
+
+a {
+  color: var(--ox-color-brand);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--ox-color-highlight);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ox-focus-ring);
+}
+
+.ox-skip {
+  position: absolute;
+  left: -9999px;
+  top: var(--ox-space-2);
+  z-index: 10;
+  padding: var(--ox-space-2) var(--ox-space-4);
+  background: var(--ox-color-brand);
+  color: var(--ox-color-on-neon);
+}
+
+.ox-skip:focus {
+  left: var(--ox-space-2);
+}
+
+.ox-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Page frame */
+
+.ox-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: var(--ox-space-6) var(--ox-space-4) var(--ox-space-5);
+}
+
+.ox-brand {
+  margin-bottom: var(--ox-space-5);
+}
+
+.ox-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-space-3);
+  color: var(--ox-color-text);
+  text-decoration: none;
+}
+
+.ox-brand-name {
+  font-family: var(--ox-font-display);
+  font-size: var(--ox-text-5);
+  letter-spacing: 0.18em;
+}
+
+.ox-logo {
+  display: block;
+}
+
+.ox-logo-light {
+  display: none;
+}
+
+@media (prefers-color-scheme: light) {
+  .ox-logo-dark {
+    display: none;
+  }
+  .ox-logo-light {
+    display: block;
+  }
+}
+
+.ox-card {
+  width: 100%;
+  max-width: 28rem;
+  padding: var(--ox-space-6) var(--ox-space-5);
+  background: var(--ox-color-surface);
+  border: 1px solid var(--ox-color-border);
+  clip-path: var(--ox-cut-md);
+}
+
+@media (min-width: 30rem) {
+  .ox-card {
+    padding: var(--ox-space-7) var(--ox-space-6);
+  }
+}
+
+.ox-card-header h1 {
+  margin: 0;
+  font-family: var(--ox-font-heading);
+  font-size: var(--ox-text-6);
+  font-weight: 600;
+  line-height: var(--ox-leading-heading);
+}
+
+.ox-lead {
+  margin: var(--ox-space-3) 0 var(--ox-space-5);
+  color: var(--ox-color-text-muted);
+}
+
+.ox-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ox-space-1) var(--ox-space-2);
+  margin: var(--ox-space-3) 0 0;
+  padding: var(--ox-space-2) var(--ox-space-3);
+  font-size: var(--ox-text-1);
+  color: var(--ox-color-text-muted);
+  background: var(--ox-color-surface-raised);
+  border-left: 2px solid var(--ox-color-brand);
+}
+
+.ox-identity strong {
+  color: var(--ox-color-text);
+  word-break: break-all;
+}
+
+.ox-required-note {
+  margin: var(--ox-space-2) 0 0;
+  font-size: var(--ox-text-1);
+  color: var(--ox-color-text-muted);
+}
+
+.required {
+  color: var(--ox-color-highlight);
+}
+
+/* Messages */
+
+.ox-alert {
+  margin: var(--ox-space-4) 0;
+  padding: var(--ox-space-3) var(--ox-space-4);
+  border: 1px solid var(--ox-color-border);
+  border-left-width: 3px;
+  background: var(--ox-color-surface-raised);
+}
+
+.ox-alert-error {
+  border-left-color: var(--ox-color-danger, var(--ox-color-highlight));
+}
+
+.ox-alert-warning {
+  border-left-color: var(--ox-color-warning);
+}
+
+.ox-alert-success {
+  border-left-color: var(--ox-color-success);
+}
+
+.ox-alert-info {
+  border-left-color: var(--ox-color-brand);
+}
+
+/* Forms */
+
+.ox-form {
+  margin: 0;
+}
+
+.ox-field {
+  margin-bottom: var(--ox-space-4);
+}
+
+.ox-label-row,
+.ox-input-row {
+  display: block;
+}
+
+.ox-label {
+  display: inline-block;
+  margin-bottom: var(--ox-space-2);
+  font-weight: 600;
+}
+
+.ox-input {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--ox-space-2) var(--ox-space-3);
+  font: inherit;
+  color: var(--ox-color-text);
+  background: var(--ox-color-bg);
+  border: 1px solid var(--ox-color-border);
+  border-radius: 0;
+}
+
+.ox-input:hover {
+  border-color: var(--ox-color-brand-mid, var(--ox-color-brand));
+}
+
+.ox-input:focus-visible {
+  border-color: var(--ox-color-brand);
+}
+
+.ox-input[aria-invalid='true'] {
+  border-color: var(--ox-color-danger, var(--ox-color-highlight));
+}
+
+.ox-code-input {
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-text-5);
+  letter-spacing: 0.4em;
+  text-align: center;
+}
+
+.ox-help {
+  margin: var(--ox-space-2) 0 0;
+  font-size: var(--ox-text-1);
+  color: var(--ox-color-text-muted);
+}
+
+.ox-error {
+  display: block;
+  margin: var(--ox-space-2) 0 0;
+  font-size: var(--ox-text-1);
+  color: var(--ox-color-danger, var(--ox-color-highlight));
+  font-weight: 600;
+}
+
+.ox-check {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-space-2);
+  margin-bottom: var(--ox-space-4);
+}
+
+.ox-check-input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--ox-color-brand);
+}
+
+.ox-options {
+  margin-bottom: var(--ox-space-4);
+}
+
+.ox-actions {
+  display: grid;
+  gap: var(--ox-space-3);
+  margin-top: var(--ox-space-2);
+}
+
+/* Buttons */
+
+.ox-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: var(--ox-space-2) var(--ox-space-5);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  clip-path: var(--ox-cut-sm);
+  transition: box-shadow var(--ox-duration-glow) var(--ox-easing), background-color var(--ox-duration-fast) var(--ox-easing);
+}
+
+.ox-btn-block {
+  width: 100%;
+}
+
+.ox-btn-primary {
+  color: var(--ox-color-on-neon);
+  background: var(--ox-color-brand);
+}
+
+.ox-btn-primary:hover {
+  color: var(--ox-color-on-neon);
+  box-shadow: var(--ox-glow-brand);
+}
+
+.ox-btn-secondary {
+  color: var(--ox-color-text);
+  background: var(--ox-color-surface-raised);
+  outline: 1px solid var(--ox-color-border);
+  outline-offset: -1px;
+}
+
+.ox-btn-secondary:hover {
+  color: var(--ox-color-text);
+  outline-color: var(--ox-color-brand);
+}
+
+.ox-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.ox-link-button {
+  margin-top: var(--ox-space-4);
+  padding: 0;
+  font: inherit;
+  color: var(--ox-color-brand);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Below the form */
+
+.ox-after {
+  margin-top: var(--ox-space-5);
+  padding-top: var(--ox-space-4);
+  border-top: 1px solid var(--ox-color-border);
+  text-align: center;
+}
+
+.ox-after p {
+  margin: 0;
+}
+
+.ox-tips {
+  margin: 0 0 var(--ox-space-4);
+  padding-left: var(--ox-space-5);
+  color: var(--ox-color-text-muted);
+  font-size: var(--ox-text-1);
+}
+
+.ox-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-space-3);
+  margin: var(--ox-space-5) 0 var(--ox-space-4);
+  color: var(--ox-color-text-muted);
+  font-size: var(--ox-text-1);
+}
+
+.ox-divider::before,
+.ox-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--ox-color-border);
+}
+
+.ox-social-list {
+  display: grid;
+  gap: var(--ox-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-help-line {
+  margin: var(--ox-space-5) 0 0;
+  font-size: var(--ox-text-1);
+}
+
+.ox-footer {
+  margin-top: auto;
+  padding-top: var(--ox-space-6);
+  text-align: center;
+  font-size: var(--ox-text-0);
+  color: var(--ox-color-text-muted);
+}
+
+.ox-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ox-space-2) var(--ox-space-4);
+}
+
+.ox-footer a {
+  color: var(--ox-color-text-muted);
+}
+
+.ox-footer p {
+  margin: var(--ox-space-2) 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-btn {
+    transition: none;
+  }
+}

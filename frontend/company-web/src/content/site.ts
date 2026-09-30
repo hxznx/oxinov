@@ -431,3 +431,61 @@ export const legalDocs: LegalDoc[] = [
   { slug: 'acceptable-use', title: 'Acceptable Use and Community Policy', summary: 'Conduct that is not allowed on Oxinov products, and how we enforce it.' },
   { slug: 'cookies', title: 'Cookie Policy', summary: 'The cookies this website uses. Non-essential cookies stay off unless you opt in.' },
 ];
+
+/**
+ * Sign-in help at oxinov.com/help/sign-in/, linked from every sign-in page ("Trouble signing in?").
+ * Customer accounts have no passwords (FR-ID-2204), so this page replaces "forgot password". Facts must match
+ * devops/keycloak/configure-realm.sh: six-digit codes valid 10 minutes, email links valid 30 minutes, and a
+ * temporary pause after 5 failed attempts (Keycloak waits up to 15 minutes).
+ */
+export const signInHelp = {
+  intro:
+    'Oxinov accounts do not use passwords. You sign in with your email address and a six-digit code that we email to you. If something goes wrong, the answers below usually fix it.',
+  questions: [
+    {
+      question: 'I forgot my password. How do I reset it?',
+      answer:
+        'You do not need one. Oxinov accounts have no password to forget. Enter your email address on the sign-in page and we email you a six-digit code. Use that code to sign in.',
+    },
+    {
+      question: 'The sign-in code did not arrive.',
+      answer:
+        'Wait a minute, then check your spam, junk, and promotions folders. Make sure the email address shown on the code screen is correct; if it is not, choose "Use a different email". Then choose "Send a new code". Adding no-reply@oxinov.com to your contacts helps future codes reach your inbox.',
+    },
+    {
+      question: 'My code does not work.',
+      answer:
+        'Each code works once and expires after 10 minutes. If you asked for more than one code, use the one in the most recent email. If the code has expired, we send you a new one automatically.',
+    },
+    {
+      question: 'It says there have been too many attempts.',
+      answer:
+        'After 5 wrong attempts we pause sign-in for your account for a short time to protect it. Wait up to 15 minutes, then try again with a new code.',
+    },
+    {
+      question: 'We could not find an account with my email.',
+      answer:
+        'Check the spelling of your email address. If you have not used Oxinov before, choose "Create an account". One account works for every Oxinov product.',
+    },
+    {
+      question: 'The confirmation link for my new account expired or did not arrive.',
+      answer:
+        'Confirmation links work once, for 30 minutes. Sign in with the same email address and choose "Send the link again" to get a new one. Check your spam and promotions folders too.',
+    },
+    {
+      question: 'I got a code or link I did not ask for.',
+      answer:
+        'Ignore it. Nobody can sign in to your account without the code, and Oxinov will never ask you to share it. If you did share a code with someone, email security@oxinov.com straight away.',
+    },
+    {
+      question: 'I can no longer use the email address on my account.',
+      answer:
+        'Email support@oxinov.com from any address with your name and the email address on your account. We confirm that the account is yours before we change anything, so this can take a little time.',
+    },
+    {
+      question: 'Should I keep myself signed in?',
+      answer:
+        'Choose "Keep me signed in on this device" only on your own phone or computer. On a shared or public device, leave it off and sign out when you finish.',
+    },
+  ] as Question[],
+};

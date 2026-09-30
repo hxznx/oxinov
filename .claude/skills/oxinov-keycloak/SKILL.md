@@ -49,9 +49,11 @@ Person ─▶ edu.oxinov.com / app.oxinov.com (web app server = backend-for-fron
 | `oxinov-first-broker` (Google) | Review missing profile fields; create the user if unique, otherwise link to an existing account **only after an emailed confirmation**, never by matching the email string | FR-ID-2206 |
 | `oxinov-staff-browser` (`master`) | Password **and** an authenticator-app code (TOTP, 6 digits, 30 seconds), set up on first sign-in | FR-ID-2209 |
 
+Pages and emails: `loginTheme` and `emailTheme` are `oxinov` (`devops/keycloak/themes/oxinov`, built on `base`, English only), with a branded layout, email step, six-digit code page, email confirmation, errors, sign-out, and emails. Keep the extension's form contract (`email-otp`, `login`, `resend-email`) when editing `login-email-otp.ftl`. Never add password wording. "Trouble signing in?" goes to `oxinov.com/help/sign-in/`, whose facts must match this script. The brand files in the theme are validated copies of `packages/design-system`. Email confirmation links last 30 minutes.
+
 Realm settings: `verifyEmail=true`, duplicate emails refused, password reset and the update-password required action off (there are no customer passwords), remember-me on, brute-force protection with lockout after 5 failures (in both realms), access tokens 600 seconds, SSO idle 30 days and maximum 90 days, `revokeRefreshToken=true` with no reuse.
 
-Not yet configured: the Google identity provider (needs the owner's Google OAuth client), refusing unverified Google emails at Keycloak (the platform API refuses them today with `EMAIL_NOT_VERIFIED`), Apple sign-in (iOS), the branded login theme, and the separate staff realm.
+Not yet configured: the Google identity provider (needs the owner's Google OAuth client), refusing unverified Google emails at Keycloak (the platform API refuses them today with `EMAIL_NOT_VERIFIED`), Apple sign-in (iOS), and the separate staff realm.
 
 Email codes are sent through SMTP to the in-cluster `mail-relay`, which sends through Amazon SES. SES is still in the sandbox until AWS approves production access, so codes reach only verified addresses.
 

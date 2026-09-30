@@ -254,6 +254,24 @@ def check_security(errors: list[str]) -> None:
         errors.append("Security workflow must run the pinned Trivy repository scan")
 
 
+def check_keycloak_theme(errors: list[str]) -> None:
+    """The Keycloak image is built from devops/keycloak only, so its theme keeps copies of the brand files."""
+    design = ROOT / "packages" / "design-system"
+    theme = ROOT / "devops" / "keycloak" / "themes" / "oxinov" / "login" / "resources"
+    copies = {
+        design / "dist" / "tokens.css": theme / "css" / "tokens.css",
+        design / "assets" / "brand" / "oxinov-symbol.svg": theme / "img" / "oxinov-symbol.svg",
+        design / "assets" / "brand" / "oxinov-symbol-light.svg": theme / "img" / "oxinov-symbol-light.svg",
+    }
+    for source, copy in copies.items():
+        if not source.is_file():
+            continue  # dist/ exists only after `pnpm --filter @oxinov/design-system build`
+        if not copy.is_file() or copy.read_bytes() != source.read_bytes():
+            errors.append(
+                f"{copy.relative_to(ROOT)} must be an exact copy of {source.relative_to(ROOT)} (copy it again)"
+            )
+
+
 def check_deploy(errors: list[str]) -> None:
     applications = {
         "frontend/mobile": ROOT / "frontend" / "mobile" / "package.json",
@@ -282,6 +300,7 @@ def main() -> int:
     services = subprocess.run([sys.executable, str(ROOT / "scripts/service_catalog.py"), "--check"], cwd=ROOT)
     if services.returncode:
         errors.append("Service catalog is inconsistent or its derived files are stale")
+    check_keycloak_theme(errors)
     if args.security:
         check_security(errors)
     if args.deploy:

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'out');
 
 const routes = [
-  '/', '/about/', '/products/', '/divisions/', '/pricing/', '/careers/', '/contact/', '/security/', '/legal/',
+  '/', '/about/', '/products/', '/divisions/', '/pricing/', '/careers/', '/contact/', '/security/', '/help/sign-in/', '/legal/',
   '/legal/terms/', '/legal/privacy/', '/legal/acceptable-use/', '/legal/cookies/',
   '/education/', '/ai/', '/engineering/', '/services/', '/robotics/', '/studio/', '/agritech/', '/space/',
   '/research/', '/production/',
@@ -101,6 +101,16 @@ describe('static export', () => {
       assert.match(html(route).replaceAll('<!-- -->', ''), /<a[^>]+href="https:\/\/edu\.oxinov\.com\/"[^>]*>\s*Open Oxinov Edu\s*<\/a>/, `${route} has no Open Oxinov Edu link`);
     }
     assert.doesNotMatch(html('/'), /Sign in · soon/);
+  });
+
+  it('helps people who cannot sign in, without inventing a password (FR-ID-2204)', () => {
+    const help = text(html('/help/sign-in/'));
+    assert.match(help, /do not use passwords/);
+    assert.match(help, /code did not arrive/);
+    assert.match(help, /expires after 10 minutes/);
+    assert.match(help, /support@oxinov\.com/);
+    assert.doesNotMatch(help, /reset (your|my) password|choose a password|new password/i);
+    assert.match(html('/'), /href="\/help\/sign-in\/"/, 'footer links to sign-in help');
   });
 
   it('labels regulated divisions and never offers them', () => {

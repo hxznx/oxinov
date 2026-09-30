@@ -15,7 +15,7 @@ export function SiteFooter() {
             {company.registrationNumber ? ` Company registration no. ${company.registrationNumber}.` : ''}
           </p>
         </div>
-        <nav aria-label="Legal">
+        <nav aria-label="Legal and help">
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {legalDocs.map((doc) => (
               <li key={doc.slug}>
@@ -24,6 +24,9 @@ export function SiteFooter() {
             ))}
             <li>
               <Link href="/security/">Security</Link>
+            </li>
+            <li>
+              <Link href="/help/sign-in/">Sign-in help</Link>
             </li>
           </ul>
         </nav>

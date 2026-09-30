@@ -98,7 +98,15 @@ kc update "realms/$REALM" \
   -s "smtpServer.host=$SMTP_HOST" \
   -s "smtpServer.port=$SMTP_PORT" \
   -s "smtpServer.from=$SMTP_FROM" \
-  -s smtpServer.fromDisplayName=Oxinov
+  -s smtpServer.fromDisplayName=Oxinov \
+  -s loginTheme=oxinov \
+  -s emailTheme=oxinov \
+  -s internationalizationEnabled=false \
+  -s 'attributes."actionTokenGeneratedByUserLifespan.verify-email"=1800'
+# The Oxinov theme (devops/keycloak/themes/oxinov) brands sign-in, account creation, the email code, email
+# confirmation, errors, and sign-out, in English only (ADR-020). The staff `master` realm keeps Keycloak's own.
+# Email confirmation links last 30 minutes (Keycloak's 5-minute default often expires before the email arrives);
+# each link still works once. The theme's oxVerifyTipExpiry message states this lifetime.
 
 # --- Audit: security-relevant sign-in events and admin changes, kept one year (data retention: audit logs at
 # least one year). Routine token refreshes are not recorded. Events hold user IDs and IP addresses, never codes.

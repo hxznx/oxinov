@@ -212,6 +212,9 @@ services:
       KC_HEALTH_ENABLED: "true"
     ports:
       - "127.0.0.1:${KEYCLOAK_PORT:-8080}:8080"
+    # The Oxinov theme is mounted so edits show on the next page load (start-dev turns theme caching off).
+    volumes:
+      - ./devops/keycloak/themes/oxinov:/opt/keycloak/themes/oxinov:ro
     depends_on:
       postgres:
         condition: service_healthy

@@ -17,7 +17,7 @@ catalog_inputs() {
     platform-web) echo '^(frontend/platform-web/|packages/web-auth/|packages/design-system/)' ;;
     migrate) echo '^(database/products/edu/migrations/|database/products/edu/prisma/|database/platform/migrations/|database/platform/prisma/|backend/workers/migrate/)' ;;
     mail-relay) echo '^(backend/workers/mail-relay/)' ;;
-    keycloak) echo '^(devops/keycloak/Dockerfile$)' ;;
+    keycloak) echo '^(devops/keycloak/Dockerfile$|devops/keycloak/themes/)' ;;
     backup) echo '^(devops/docker/Dockerfile$)' ;;
     *) echo "unknown service $1" >&2; return 1 ;;
   esac

@@ -23,6 +23,7 @@ export const sitemapEntries: SitemapEntry[] = [
   page('/careers/', 0.6),
   page('/contact/', 0.6),
   page('/security/', 0.5),
+  page('/help/sign-in/', 0.4),
   page('/legal/', 0.3),
   ...legalDocs.map((doc) => page(`/legal/${doc.slug}/`, 0.3, 'yearly')),
   ...divisions.map((division) => page(`/${division.slug}/`, 0.6)),

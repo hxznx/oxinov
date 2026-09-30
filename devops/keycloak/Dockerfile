@@ -16,6 +16,9 @@ RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
+# Oxinov sign-in pages and emails for the `oxinov` realm (themes/oxinov; selected by configure-realm.sh).
+# Themes need no `kc.sh build`; Keycloak falls back to its default theme if this folder is ever missing.
+COPY --chown=keycloak:keycloak themes/oxinov /opt/keycloak/themes/oxinov
 # The upstream image already runs as the unprivileged keycloak user (UID 1000); state it explicitly.
 USER 1000
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
