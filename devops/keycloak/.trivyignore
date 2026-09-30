@@ -17,3 +17,9 @@ CVE-2026-84939 exp:2026-10-26
 # Keycloak patch. Mitigated by the private admin console and realm brute-force protection.
 CVE-2026-8763 exp:2026-10-26
 CVE-2026-13506 exp:2026-10-26
+
+# jackson-databind 2.21.5 (fixed in 2.21.6): CPU denial of service through unbounded numeric parsing. Bundled by
+# Keycloak 26.7.4 (also inside keycloak-admin-cli); no Keycloak release carries 2.21.6 yet. Denial of service
+# only, no data or account access. Reachable JSON endpoints: the account API (signed-in customers only) and the
+# admin API (private, not on the internet). Accepted by the owner on 2026-09-30 until the next Keycloak patch.
+CVE-2026-68497 exp:2026-10-30
