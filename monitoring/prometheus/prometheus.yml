@@ -26,6 +26,13 @@ scrape_configs:
     static_configs:
       - targets: [redis-exporter:9121]
 
+  # Keycloak's management port (KC_METRICS_ENABLED, KC_EVENT_METRICS_USER_ENABLED): sign-in event counters for
+  # the oxinov-identity alerts. Runs with the Compose `identity` profile; without it this target shows as down.
+  - job_name: keycloak
+    metrics_path: /metrics
+    static_configs:
+      - targets: [keycloak:9000]
+
 # Add backend:4000, worker:9464, chat:4001, and frontend:3000 only after
 # those applications expose /metrics. Until then, failed app targets would
 # create misleading local alerts.

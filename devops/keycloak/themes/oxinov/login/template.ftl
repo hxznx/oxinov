@@ -14,7 +14,7 @@
             <meta name="${meta?split('==')[0]}" content="${meta?split('==')[1]}"/>
         </#list>
     </#if>
-    <title><#if pageId == "register">${msg("registerTitle")}<#else>${title!}</#if></title>
+    <title><#if pageId == "register">${msg("registerTitle")}<#elseif pageId == "update-email">${msg("updateEmailTitle")}<#else>${title!}</#if></title>
     <link rel="icon" type="image/svg+xml" href="${url.resourcesPath}/img/oxinov-symbol.svg" />
     <#if properties.styles?has_content>
         <#list properties.styles?split(' ') as style>

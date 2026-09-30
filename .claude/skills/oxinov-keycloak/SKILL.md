@@ -53,7 +53,14 @@ Pages and emails: `loginTheme` and `emailTheme` are `oxinov` (`devops/keycloak/t
 
 Realm settings: `verifyEmail=true`, duplicate emails refused, password reset and the update-password required action off (there are no customer passwords), remember-me on, brute-force protection with lockout after 5 failures (in both realms), access tokens 600 seconds, SSO idle 30 days and maximum 90 days, `revokeRefreshToken=true` with no reuse.
 
-Not yet configured: the Google identity provider (needs the owner's Google OAuth client), refusing unverified Google emails at Keycloak (the platform API refuses them today with `EMAIL_NOT_VERIFIED`), Apple sign-in (iOS), and the separate staff realm.
+Also in place:
+- the mail relay caps sign-in email at 5 per address per 15 minutes;
+- the Oxinov account page, where people see signed-in devices and change their email with a confirmation link;
+- the authenticator-app, security-key, and recovery-code setups are off for customers;
+- `keycloak_user_events_total` metrics and the `oxinov-identity` alerts;
+- the browserless test `node devops/keycloak/signin-smoke.mjs`. Run it after any sign-in change.
+
+Not yet configured: the Google identity provider (the script adds it once the owner's Google OAuth client is in `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`), refusing unverified Google emails at Keycloak (the platform API refuses them today with `EMAIL_NOT_VERIFIED`), Apple sign-in (iOS), and the separate staff realm.
 
 Email codes are sent through SMTP to the in-cluster `mail-relay`, which sends through Amazon SES. SES is still in the sandbox until AWS approves production access, so codes reach only verified addresses.
 
@@ -93,7 +100,9 @@ Local: `devops/keycloak/admin/` holds the separate local administrator environme
 ## 6. Administration and least privilege
 
 - Staff administer from `master` with password plus TOTP; no shared accounts; one person, one account; keep the number of `master` administrators minimal.
-- `oxinov-automation` currently holds the `master` `admin` role so the script can manage both realms. That is broader than necessary: when you next change it, narrow it to the realm-management roles the script uses, test with the rehearsal, and record the change.
+- `oxinov-automation` holds only `oxinov-realm` roles: view and manage realm, clients, events, and identity providers. It has no `admin` role and no rights in `master`.
+  - The script's staff-realm section runs only for a session that administers `master`, and ends by removing `admin` from the account. To change the staff realm, grant that role in the console and redeploy with configure realm ([runbook](../../../devops/kubernetes/README.md#sign-in-administration-keycloak)).
+  - Never give it `admin` permanently. A new customer-realm operation that fails with 403 needs its role added to `AUTOMATION_ROLES`, and that role is granted on the next staff-realm run.
 - Impersonation, dynamic client registration, and user self-service beyond sign-in stay off unless a requirement needs them.
 - Never expose an admin token or the admin API to a browser or product.
 

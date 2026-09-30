@@ -1,7 +1,46 @@
 // SMTP-to-Amazon-SES relay for the starter server (ADR-017). Keycloak speaks SMTP; this forwards each
 // message to the SES API using the EC2 instance role, so no SMTP credentials or access keys exist.
 // It listens only on the private Docker network and refuses any sender other than the configured one.
+import { createHash } from 'node:crypto';
 import { SMTPServer } from 'smtp-server';
+
+/**
+ * Limits how much mail goes out, so "Send a new code" or repeated sign-in attempts cannot flood a person's
+ * inbox or run up the SES bill (FR-ID-2202: codes are rate-limited; the email-code extension has no resend
+ * limit of its own). Per recipient: `perRecipient` messages per `windowSeconds`. Overall: `globalPerMinute`.
+ * State is in memory (one replica); recipients are keyed by a SHA-256 hash, never stored in clear.
+ * @param {{ perRecipient?: number; windowSeconds?: number; globalPerMinute?: number; now?: () => number }} [options]
+ */
+export function createRateLimiter({ perRecipient = 5, windowSeconds = 900, globalPerMinute = 60, now = Date.now } = {}) {
+  const windowMs = windowSeconds * 1000;
+  /** @type {Map<string, number[]>} recipient hash -> send times within the window */
+  const recent = new Map();
+  /** @type {number[]} send times within the last minute, all recipients */
+  let global = [];
+  const key = (address) => createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
+  return {
+    /** Records a send to `address` and returns null, or returns why it is refused ('recipient' or 'global'). */
+    take(address) {
+      const time = now();
+      global = global.filter((at) => at > time - 60_000);
+      if (global.length >= globalPerMinute) return 'global';
+      const id = key(address);
+      const times = (recent.get(id) ?? []).filter((at) => at > time - windowMs);
+      if (times.length >= perRecipient) {
+        recent.set(id, times);
+        return 'recipient';
+      }
+      times.push(time);
+      recent.set(id, times);
+      global.push(time);
+      // Forget recipients with nothing in the window, so memory stays small.
+      if (recent.size > 10_000) {
+        for (const [entry, list] of recent) if (!list.some((at) => at > time - windowMs)) recent.delete(entry);
+      }
+      return null;
+    },
+  };
+}
 
 // SES errors that retrying cannot fix (for example an unverified recipient while the account is in the SES
 // sandbox); the relay answers them with a permanent SMTP failure instead of "try again later".
@@ -20,8 +59,16 @@ export function failureReason(error) {
  * @param {number} [options.maxBytes] largest accepted message
  * @param {number} [options.maxRecipients] recipients per message (sign-in mail has one)
  * @param {(event: object) => void} [options.log]
+ * @param {{ take(address: string): string | null }} [options.limiter] from createRateLimiter
  */
-export function createRelay({ send, allowedFrom, maxBytes = 512 * 1024, maxRecipients = 5, log = () => {} }) {
+export function createRelay({
+  send,
+  allowedFrom,
+  maxBytes = 512 * 1024,
+  maxRecipients = 5,
+  log = () => {},
+  limiter = createRateLimiter(),
+}) {
   const sender = allowedFrom.toLowerCase();
   return new SMTPServer({
     name: 'mail-relay',
@@ -37,9 +84,15 @@ export function createRelay({ send, allowedFrom, maxBytes = 512 * 1024, maxRecip
       }
       callback();
     },
-    onRcptTo(_address, session, callback) {
+    onRcptTo(address, session, callback) {
       if (session.envelope.rcptTo.length >= maxRecipients) {
         return callback(Object.assign(new Error('Too many recipients'), { responseCode: 452 }));
+      }
+      // A temporary refusal: Keycloak shows "try again later" and nothing reaches SES.
+      const limited = limiter.take(address.address);
+      if (limited) {
+        log({ event: 'mail.limited', reason: limited });
+        return callback(Object.assign(new Error('Too many messages, try again later'), { responseCode: 450 }));
       }
       callback();
     },

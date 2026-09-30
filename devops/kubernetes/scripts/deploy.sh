@@ -72,6 +72,7 @@ configure_realm() {
   KCADM_EXEC="kubectl -n $NAMESPACE exec -i deploy/keycloak --" SKIP_DOTENV=1 \
     KEYCLOAK_ADMIN_USER=oxinov-admin KEYCLOAK_ADMIN_PASSWORD="$(param KEYCLOAK_ADMIN_PASSWORD)" \
     KEYCLOAK_AUTOMATION_SECRET="$(param KEYCLOAK_AUTOMATION_SECRET)" \
+    GOOGLE_CLIENT_ID="$(param GOOGLE_CLIENT_ID)" GOOGLE_CLIENT_SECRET="$(param GOOGLE_CLIENT_SECRET)" \
     PLATFORM_WEB_URL=https://app.oxinov.com EDU_WEB_URL=https://edu.oxinov.com \
     SMTP_HOST=mail-relay SMTP_PORT=2525 SMTP_FROM=no-reply@oxinov.com \
     CLIENT_SECRETS_OUT="$secrets" bash devops/keycloak/configure-realm.sh
@@ -102,6 +103,10 @@ apply() {
     local key
     if [ -n "$var" ] && key=$(helm_key "$var" 2>/dev/null); then args+=(--set-string "$key=$value"); fi
   done < release.next.env
+  # "Continue with Google" appears only once the owner's Google OAuth client is stored (FR-ID-2201).
+  if [ -n "$(param GOOGLE_CLIENT_ID)" ] && [ -n "$(param GOOGLE_CLIENT_SECRET)" ]; then
+    args+=(--set identity.googleSignIn=true)
+  fi
 
   log "installing release $(sed -n 's/^DEPLOYED_SHA=//p' release.next.env)"
   helm upgrade --install "$RELEASE" chart/oxinov -n "$NAMESPACE" \

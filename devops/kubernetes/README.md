@@ -66,6 +66,20 @@ Kubernetes Secret `oxinov/oxinov-app` by `bootstrap-node.sh`; k3s encrypts Secre
 session secret, overwrite the parameter and run `oxctl deploy` (everyone signs in again). Database
 password rotation needs `ALTER ROLE` first.
 
+### Sign-in administration (Keycloak)
+
+- **Automation rights:** the realm script signs in as `oxinov-automation`, which may configure only the customer realm (`oxinov-realm` roles: realm, clients, events, identity providers). It cannot change staff accounts, staff sign-in, or other realms. The first deploy after 2026-09-30 applies the pending staff-realm settings, then removes the account's former `admin` role.
+- **Changing the staff realm later:**
+  1. In the admin console (`oxctl keycloak-admin`), give `service-account-oxinov-automation` the `admin` realm role.
+  2. Run **Deploy production** with **configure realm** ticked.
+  3. The script applies the staff settings and removes the role again.
+- **Adding Continue with Google** (FR-ID-2201):
+  1. In Google Cloud, create an OAuth client of type "Web application" with the redirect URI `https://id.oxinov.com/realms/oxinov/broker/google/endpoint`.
+  2. Store its values as SecureStrings `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` under the prefix above.
+  3. Deploy with **configure realm** ticked. The realm gets the Google connection, and the portal shows "Continue with Google".
+- **Lost administrator password:** use Keycloak's recovery command `kc.sh bootstrap-admin` (a temporary admin), then delete the temporary admin. Never give the automation account `admin` permanently.
+- **Sign-in alerts:** Keycloak publishes sign-in event counts on its management port (`keycloak_user_events_total`). The `oxinov-identity` alert rules in `monitoring/` work locally, but production has no Prometheus yet (tech radar A1), so check sign-in problems with Keycloak **Events** and `oxctl logs mail-relay`. Response steps: [sign-in abuse runbook](../../security/soc/runbooks/SIGN-IN-ABUSE.md).
+
 
 ### Turning on payments (Khalti and eSewa, ADR-023)
 

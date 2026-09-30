@@ -39,6 +39,9 @@ identity:
   # Keycloak's welcome page at the bare sign-in address (https://id.<domain>/) redirects to the private
   # admin console; send people to the account portal on this subdomain instead (Traefik only; "" turns it off).
   homeRedirect: app
+  # Shows "Continue with Google" in the account portal (FR-ID-2201). deploy.sh turns it on when the Google
+  # OAuth client is in Parameter Store (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET); configure-realm.sh adds it.
+  googleSignIn: false
 
 # PostgreSQL in the cluster while small (k3s local-path volume on the encrypted EBS disk, covered by daily
 # snapshots). Set enabled: false and point `host` at Amazon RDS when the roadmap says so.

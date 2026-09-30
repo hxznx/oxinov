@@ -32,4 +32,7 @@ cd "$ROOT"
 docker compose --env-file .env --env-file "$ADMIN_ENV" --profile identity up -d --wait
 SKIP_DOTENV=1 bash devops/keycloak/configure-realm.sh
 
+# Proves the configured realm works end to end: branded pages, the emailed code, wrong and right codes.
+node devops/keycloak/signin-smoke.mjs
+
 echo "Keycloak is ready. Open http://localhost:${KEYCLOAK_PORT:-8080}/admin to manage users."

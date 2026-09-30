@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { AccountHeader } from '@/components/AccountHeader';
 import { auth } from '@/lib/auth.ts';
 import { PlatformApiError, platformApi, type Account, type Entitlement, type Product } from '@/lib/platform-api.ts';
+import { accountSecurityUrl } from '@/lib/account-security.ts';
 import { productUrl } from '@/lib/product-url.ts';
 
 const SIGN_IN_MESSAGES: Record<string, string> = {
@@ -39,6 +40,8 @@ export default async function AccountHome({ searchParams }: Props) {
   ]);
   const entitled = new Set(entitlements.map((entitlement) => entitlement.productKey));
   const myProducts = products.filter((product) => entitled.has(product.key));
+  const devicesUrl = accountSecurityUrl('devices');
+  const emailUrl = accountSecurityUrl('email');
 
   return (
     <>
@@ -105,7 +108,26 @@ export default async function AccountHome({ searchParams }: Props) {
             <dt className="hud-label pt-1">Country</dt>
             <dd>{account.country}</dd>
           </dl>
+          {emailUrl ? (
+            <p className="mt-4 text-sm">
+              <a href={emailUrl}>Change your email address</a>
+            </p>
+          ) : null}
         </section>
+
+        {devicesUrl ? (
+          <section aria-labelledby="security-heading" className="card">
+            <h2 id="security-heading" className="text-2xl">
+              Sign-in and security
+            </h2>
+            <p className="mt-2 text-muted">
+              Oxinov does not use passwords: each sign-in uses a code sent to {account.email}.
+            </p>
+            <p className="mt-3">
+              <a href={devicesUrl}>See signed-in devices and sign out of them</a>
+            </p>
+          </section>
+        ) : null}
       </main>
     </>
   );

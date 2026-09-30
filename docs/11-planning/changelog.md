@@ -1,5 +1,20 @@
 # Project changelog
 
+- **2026-09-30, Sign-in hardening: resend limit, add-on review, least privilege, account page, test, alerts:** At the owner's request, the remaining sign-in work that needs no owner action.
+  - **Resend limit:** the email-code add-on has none, so every "Send a new code" sent an email. The in-cluster mail relay now allows at most 5 emails per address per 15 minutes and 60 a minute overall (`MAIL_LIMIT_*`, 3 new tests). Keycloak then shows "We could not send the email just now".
+  - **Add-on review** (ADR-016): `email-otp-authenticator` v1.5.0 source reviewed. Codes use `SecureRandom`, are compared in constant time, stay server-side, work once, expire, and count toward lockout. Findings are in the Keycloak README.
+  - **Least privilege:** `oxinov-automation` keeps only customer-realm roles (8 `oxinov-realm` roles) instead of `admin`. The staff-realm part of the script runs only when an administrator grants `admin` temporarily, and the script removes it again. Rehearsed locally in three runs: narrowing, a narrowed-only run, and the grant-and-remove procedure. Production narrows itself on the next deploy.
+  - **Account page:** Keycloak's account page is now branded and linked from the portal's new "Sign-in and security" section. It shows signed-in devices with sign-out (FR-ID-2208), and people can change their email with a confirmation link (tested; direct edits are ignored). It no longer offers authenticator apps, security keys, or recovery codes, which customer sign-in never uses. Email-change links last 30 minutes.
+  - **Sign-in test:** `devops/keycloak/signin-smoke.mjs` runs the real flow without a browser (6 checks, including the token's audience and lifetime) and runs at the end of `start-local.sh`.
+  - **Alerts:** Keycloak publishes sign-in event counts (`KC_EVENT_METRICS_USER_ENABLED`, no personal data). There are 5 new `oxinov-identity` Prometheus alerts: wrong-code spike, unknown-email spike, lockouts, failing email, and mostly failing. A new [sign-in abuse runbook](../../security/soc/runbooks/SIGN-IN-ABUSE.md) covers the response. Production has no Prometheus yet, so these alerts fire only locally until monitoring ships.
+  - **Google:** the realm script and deploy now add "Continue with Google" automatically once the owner stores `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Parameter Store (rehearsed with a dummy client, then removed).
+
+  Not done:
+  - Apple sign-in, which waits for the iOS app.
+  - The separate staff realm (FR-ID-2209).
+  - The Edu token-audience rename (ADR-027 part B, a coordinated production cutover).
+  - A second Keycloak replica (memory and cost on the single node).
+
 - **2026-09-30, Branded sign-in, account creation, and sign-in help:** At the owner's request, customers keep signing in without passwords (FR-ID-2204): an email address, then a six-digit emailed code. The sign-in pages now carry the Oxinov brand instead of Keycloak's default look. The new theme `devops/keycloak/themes/oxinov` covers:
   - the email step, the code page (a numeric one-time-code field, "Send a new code", "Use a different email"), account creation, email confirmation, errors, and sign-out;
   - the sign-in code email and the confirmation email;

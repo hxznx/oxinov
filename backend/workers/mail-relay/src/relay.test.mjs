@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import net from 'node:net';
 import { after, before, describe, it } from 'node:test';
-import { createRelay } from './relay.mjs';
+import { createRateLimiter, createRelay } from './relay.mjs';
 
 /** Minimal SMTP client: sends each command after the previous reply and returns every reply code. */
 async function converse(port, commands) {
@@ -110,5 +110,50 @@ describe('mail relay', () => {
     const logged = JSON.stringify(events);
     assert.doesNotMatch(logged, /example\.com|123456/);
     assert.ok(events.some((event) => event.event === 'mail.sent' && event.recipients === 1));
+  });
+});
+
+describe('mail limits (FR-ID-2202: codes are rate-limited)', () => {
+  it('allows a few messages per address, then refuses until the window passes', () => {
+    let time = 0;
+    const limiter = createRateLimiter({ perRecipient: 3, windowSeconds: 900, globalPerMinute: 100, now: () => time });
+    for (let i = 0; i < 3; i += 1) assert.equal(limiter.take('Learner@Example.com'), null);
+    assert.equal(limiter.take('learner@example.com'), 'recipient', 'case and spaces do not create a new allowance');
+    assert.equal(limiter.take('other@example.com'), null, 'other people are not affected');
+    time += 901_000;
+    assert.equal(limiter.take('learner@example.com'), null, 'allowed again after the window');
+  });
+
+  it('caps all mail per minute', () => {
+    let time = 0;
+    const limiter = createRateLimiter({ perRecipient: 100, windowSeconds: 900, globalPerMinute: 2, now: () => time });
+    assert.equal(limiter.take('a@example.com'), null);
+    assert.equal(limiter.take('b@example.com'), null);
+    assert.equal(limiter.take('c@example.com'), 'global');
+    time += 61_000;
+    assert.equal(limiter.take('c@example.com'), null);
+  });
+
+  it('answers a temporary refusal over SMTP and logs no address', async () => {
+    const events = [];
+    const sent = [];
+    const relay = createRelay({
+      allowedFrom: 'no-reply@oxinov.com',
+      limiter: createRateLimiter({ perRecipient: 1, windowSeconds: 900, globalPerMinute: 100 }),
+      log: (event) => events.push(event),
+      send: async (message) => {
+        sent.push(message);
+      },
+    });
+    relay.listen(0, '127.0.0.1');
+    await once(relay.server, 'listening');
+    const { port } = relay.server.address();
+    const mail = ['EHLO keycloak', 'MAIL FROM:<no-reply@oxinov.com>', 'RCPT TO:<learner@example.com>'];
+    assert.equal((await converse(port, [...mail, 'DATA', 'Subject: code\r\n\r\n111111\r\n.', 'QUIT']))[3], 250);
+    assert.equal((await converse(port, [...mail, 'QUIT']))[3], 450);
+    relay.close();
+    assert.equal(sent.length, 1);
+    assert.ok(events.some((event) => event.event === 'mail.limited' && event.reason === 'recipient'));
+    assert.doesNotMatch(JSON.stringify(events), /example\.com/);
   });
 });

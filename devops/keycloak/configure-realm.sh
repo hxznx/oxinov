@@ -28,8 +28,10 @@ kcadm() { ${KCADM_EXEC:-docker compose exec -T keycloak} /opt/keycloak/bin/kcadm
 # Automation signs in as the `oxinov-automation` service account (client credentials) once it exists, so
 # people who administer Keycloak can be required to use a one-time code (staff MFA, FR-ID-2209). The first
 # run, and any run without KEYCLOAK_AUTOMATION_SECRET, falls back to the administrator's password.
+# KEYCLOAK_LOGIN=admin forces the administrator: needed to change the staff `master` realm, which the
+# automation account may not administer (least privilege, see the end of this script).
 kc_login() {
-  if [ -n "${KEYCLOAK_AUTOMATION_SECRET:-}" ] && kcadm config credentials --server http://localhost:8080 \
+  if [ "${KEYCLOAK_LOGIN:-}" != admin ] && [ -n "${KEYCLOAK_AUTOMATION_SECRET:-}" ] && kcadm config credentials --server http://localhost:8080 \
     --realm master --client oxinov-automation --secret "$KEYCLOAK_AUTOMATION_SECRET" >/dev/null 2>&1; then
     return 0
   fi
@@ -101,12 +103,18 @@ kc update "realms/$REALM" \
   -s smtpServer.fromDisplayName=Oxinov \
   -s loginTheme=oxinov \
   -s emailTheme=oxinov \
+  -s accountTheme=oxinov \
   -s internationalizationEnabled=false \
-  -s 'attributes."actionTokenGeneratedByUserLifespan.verify-email"=1800'
+  -s editUsernameAllowed=true \
+  -s 'attributes."actionTokenGeneratedByUserLifespan.verify-email"=1800' \
+  -s 'attributes."actionTokenGeneratedByUserLifespan.update-email"=1800'
 # The Oxinov theme (devops/keycloak/themes/oxinov) brands sign-in, account creation, the email code, email
 # confirmation, errors, and sign-out, in English only (ADR-020). The staff `master` realm keeps Keycloak's own.
-# Email confirmation links last 30 minutes (Keycloak's 5-minute default often expires before the email arrives);
-# each link still works once. The theme's oxVerifyTipExpiry message states this lifetime.
+# Email confirmation and email-change links last 30 minutes (Keycloak's 5-minute default often expires before the
+# email arrives); each link still works once. The theme's oxVerifyTipExpiry message states this lifetime.
+# Keycloak's account page (accountTheme) stays for signed-in devices and "sign out everywhere" (FR-ID-2208) and
+# for changing the email. editUsernameAllowed lets the username follow a confirmed email change (the username is
+# the email here); the account API ignores direct username or email edits, which was tested on 2026-09-30.
 
 # --- Audit: security-relevant sign-in events and admin changes, kept one year (data retention: audit logs at
 # least one year). Routine token refreshes are not recorded. Events hold user IDs and IP addresses, never codes.
@@ -165,6 +173,14 @@ kc update "realms/$REALM" -s registrationFlow=oxinov-registration
 # Nobody is ever asked to set a password. Disabling the action also skips it for accounts that already
 # carry it (created through the old registration form), without editing those accounts.
 kc update authentication/required-actions/UPDATE_PASSWORD -r "$REALM" -s enabled=false -s defaultAction=false
+# Customer sign-in never asks for an authenticator app, security key, or recovery codes, so the account page
+# must not offer to set them up (they would do nothing and confuse people). Staff MFA lives in `master`.
+for action in CONFIGURE_TOTP webauthn-register webauthn-register-passwordless CONFIGURE_RECOVERY_AUTHN_CODES; do
+  kc update "authentication/required-actions/$action" -r "$REALM" -s enabled=false -s defaultAction=false
+done
+# People change their own email on the account page; the new address takes effect only after its
+# confirmation link is opened (verifyEmail). The platform and Edu APIs pick up the change from the next token.
+kc update authentication/required-actions/UPDATE_EMAIL -r "$REALM" -s enabled=true -s defaultAction=false
 
 # --- First broker login: create when unique, otherwise link only after an emailed confirmation.
 if ! flow_exists oxinov-first-broker; then
@@ -187,6 +203,22 @@ require oxinov-first-broker-link "$(exec_id oxinov-first-broker-link idp-create-
 require oxinov-first-broker-link "$(exec_id oxinov-first-broker-link oxinov-first-broker-existing)" ALTERNATIVE
 require oxinov-first-broker-existing "$(exec_id oxinov-first-broker-existing idp-email-verification)" REQUIRED
 kc update "realms/$REALM" -s firstBrokerLoginFlow=oxinov-first-broker
+
+# --- Continue with Google (FR-ID-2201): added once the owner has created a Google OAuth client
+# (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET; Parameter Store in production). Its redirect URI in Google Cloud is
+# <issuer>/broker/google/endpoint. Google's verified email links to an existing account only through the
+# emailed confirmation in oxinov-first-broker (FR-ID-2206); the platform API still refuses unverified emails.
+if [ -n "${GOOGLE_CLIENT_ID:-}" ] && [ -n "${GOOGLE_CLIENT_SECRET:-}" ]; then
+  google=(-s alias=google -s providerId=google -s enabled=true -s trustEmail=true -s storeToken=false
+    -s firstBrokerLoginFlowAlias=oxinov-first-broker -s 'displayName=Google'
+    -s "config.clientId=$GOOGLE_CLIENT_ID" -s "config.clientSecret=$GOOGLE_CLIENT_SECRET"
+    -s 'config.defaultScope=openid email profile' -s config.syncMode=IMPORT -s config.hideOnLoginPage=false)
+  if kc get identity-provider/instances/google -r "$REALM" >/dev/null 2>&1; then
+    kc update identity-provider/instances/google -r "$REALM" "${google[@]}"
+  else
+    kc create identity-provider/instances -r "$REALM" "${google[@]}" >/dev/null
+  fi
+fi
 
 # --- Product web clients (FR-ID-2207): each is confidential, uses the authorization code flow with PKCE,
 # and receives access tokens for its own API audience only, so one product's token is refused by another.
@@ -230,19 +262,38 @@ fi
 # --- Staff sign-in (master realm, FR-ID-2209): people who administer Keycloak sign in with a password and
 # a code from an authenticator app; the first console sign-in asks them to set the app up. Automation uses
 # the `oxinov-automation` service account, so a person's second factor never blocks a deploy.
+#
+# Least privilege: the automation account administers only the customer realm (the `oxinov-realm` roles
+# below). It cannot change staff accounts, staff sign-in, or other realms, so a leaked automation secret
+# cannot take over Keycloak. This section therefore runs only for a session that administers `master`: the
+# administrator (KEYCLOAK_LOGIN=admin, only for an administrator without an authenticator code, as a script
+# cannot enter one), or an automation account that holds the `admin` role, which this section then removes as
+# its last step. To change the staff realm in production: in the admin console give the service account
+# `service-account-oxinov-automation` the `admin` realm role, then redeploy with CONFIGURE_REALM=1 (or run the
+# script); it applies this section and removes the role again. Rehearsed locally on 2026-09-30.
 USER_REALM=$REALM
 REALM=master
+AUTOMATION_ROLES=(view-realm manage-realm view-clients manage-clients view-events manage-events view-identity-providers manage-identity-providers)
+if ! kc get users -r "$REALM" -q username=service-account-oxinov-automation --fields id --format csv --noquotes >/dev/null 2>&1; then
+  echo "Staff realm unchanged: this session does not administer 'master' (run with KEYCLOAK_LOGIN=admin to change it)." >&2
+  REALM=$USER_REALM
+  echo "Realm '$REALM' configured for $EDU_URL and $PORTAL_URL (email via $SMTP_HOST:$SMTP_PORT)"
+  exit 0
+fi
 if [ -n "${KEYCLOAK_AUTOMATION_SECRET:-}" ]; then
   id=$(kc get clients -r "$REALM" -q clientId=oxinov-automation --fields id --format csv --noquotes)
   if [ -z "$id" ]; then
     kc create clients -r "$REALM" -s clientId=oxinov-automation -s protocol=openid-connect \
       -s publicClient=false -s serviceAccountsEnabled=true -s standardFlowEnabled=false \
       -s directAccessGrantsEnabled=false -s implicitFlowEnabled=false \
-      -s 'description=Realm configuration by devops/keycloak/configure-realm.sh' >/dev/null
+      -s 'description=Configures the oxinov realm (devops/keycloak/configure-realm.sh); no master rights' >/dev/null
     id=$(kc get clients -r "$REALM" -q clientId=oxinov-automation --fields id --format csv --noquotes)
   fi
-  kc update "clients/$id" -r "$REALM" -s "secret=$KEYCLOAK_AUTOMATION_SECRET"
-  kc add-roles -r "$REALM" --uusername service-account-oxinov-automation --rolename admin
+  kc update "clients/$id" -r "$REALM" -s "secret=$KEYCLOAK_AUTOMATION_SECRET" \
+    -s 'description=Configures the oxinov realm (devops/keycloak/configure-realm.sh); no master rights'
+  role_args=()
+  for role in "${AUTOMATION_ROLES[@]}"; do role_args+=(--rolename "$role"); done
+  kc add-roles -r "$REALM" --uusername service-account-oxinov-automation --cclientid "${USER_REALM}-realm" "${role_args[@]}"
 fi
 if ! flow_exists oxinov-staff-browser; then
   kc create authentication/flows -r "$REALM" -s alias=oxinov-staff-browser -s providerId=basic-flow \
@@ -260,6 +311,11 @@ kc update "realms/$REALM" -s browserFlow=oxinov-staff-browser -s bruteForceProte
   -s otpPolicyType=totp -s otpPolicyAlgorithm=HmacSHA1 -s otpPolicyDigits=6 -s otpPolicyPeriod=30 \
   -s "displayName=Ox Inov Pvt. Ltd. Administration"
 audit_events "$REALM"
+# Last: take away the full `admin` role the automation account held before (it keeps the customer-realm roles
+# above). If this session is that account, its current token keeps working until the script ends.
+if [ -n "${KEYCLOAK_AUTOMATION_SECRET:-}" ]; then
+  kc remove-roles -r "$REALM" --uusername service-account-oxinov-automation --rolename admin 2>/dev/null || true
+fi
 REALM=$USER_REALM
 
 echo "Realm '$REALM' configured for $EDU_URL and $PORTAL_URL (email via $SMTP_HOST:$SMTP_PORT)"

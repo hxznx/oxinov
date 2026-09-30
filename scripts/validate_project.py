@@ -258,12 +258,14 @@ def check_keycloak_theme(errors: list[str]) -> None:
     """The Keycloak image is built from devops/keycloak only, so its theme keeps copies of the brand files."""
     design = ROOT / "packages" / "design-system"
     theme = ROOT / "devops" / "keycloak" / "themes" / "oxinov" / "login" / "resources"
-    copies = {
-        design / "dist" / "tokens.css": theme / "css" / "tokens.css",
-        design / "assets" / "brand" / "oxinov-symbol.svg": theme / "img" / "oxinov-symbol.svg",
-        design / "assets" / "brand" / "oxinov-symbol-light.svg": theme / "img" / "oxinov-symbol-light.svg",
-    }
-    for source, copy in copies.items():
+    account = ROOT / "devops" / "keycloak" / "themes" / "oxinov" / "account" / "resources"
+    copies = [
+        (design / "dist" / "tokens.css", theme / "css" / "tokens.css"),
+        (design / "assets" / "brand" / "oxinov-symbol.svg", theme / "img" / "oxinov-symbol.svg"),
+        (design / "assets" / "brand" / "oxinov-symbol-light.svg", theme / "img" / "oxinov-symbol-light.svg"),
+        (design / "assets" / "brand" / "oxinov-symbol.svg", account / "img" / "oxinov-symbol.svg"),
+    ]
+    for source, copy in copies:
         if not source.is_file():
             continue  # dist/ exists only after `pnpm --filter @oxinov/design-system build`
         if not copy.is_file() or copy.read_bytes() != source.read_bytes():

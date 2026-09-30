@@ -19,7 +19,17 @@ The email-code extension (`for-keycloak/email-otp-authenticator`, Unlicense) was
 - SHA-256 `deb04851…d3d42a` matches the digest GitHub publishes for the release asset; the Docker build refuses any other file.
 - Its Sigstore bundle verifies (`cosign verify-blob`) against a certificate issued to the project's own GitHub Actions workflow.
 - The extension release is built for Keycloak 26.7.3; the image runs 26.7.4 in the same minor version. Upgrade Keycloak and the extension together, and repeat both checks.
-- A code review of the extension is required before production (ADR-016).
+- **Code review (ADR-016), 2026-09-30:** the source at tag `v1.5.0` (commit `bdf32589`) was reviewed, mainly `EmailOTPFormAuthenticator.java`, the flow the realm uses.
+  - **Sound:**
+    - Codes come from `SecureRandom` and are compared in constant time (`MessageDigest.isEqual`).
+    - A code is kept only in the server-side authentication session, removed once used, and expires after `code-lifetime`. A correct but expired code gets a fresh one.
+    - A wrong code is a `failureChallenge` with `INVALID_CREDENTIALS`, so Keycloak's brute-force lockout counts it.
+    - A locked or disabled account is refused before any check.
+    - The code is never logged. Email addresses are masked where shown.
+  - **Unused:** device trust (a signed cookie) and IP trust (a salted hash) are both off (`device-trust-enabled=false`, `ip-trust-enabled=false`), so their code paths do not run. The extension still creates its two trust tables in the Keycloak database.
+  - **Gap found and closed:** "Send a new code" and every new sign-in attempt send an email with no limit. The in-cluster `mail-relay` now caps mail at 5 messages per address per 15 minutes and 60 a minute overall (`backend/workers/mail-relay`, `MAIL_LIMIT_*`). Keycloak then shows "We could not send the email just now…", and nothing reaches SES.
+  - **Minor, accepted:** the unknown-email message tells people an account does not exist. Keycloak's own registration also reveals this ("already uses this email"), and the product needs it for "create an account".
+  - **Re-review** the extension when it is upgraded.
 
 ## Run locally
 
@@ -49,9 +59,17 @@ bash devops/keycloak/admin/start-local.sh
 | Redirects | Each web client accepts exactly `<app URL>/auth/callback` after sign-in and `<app URL>/` after sign-out | Threat model (open redirect, code theft) |
 | Admin realm name | `master` shows "Ox Inov Pvt. Ltd. Administration" | Brand system |
 | Pages and emails | `loginTheme` and `emailTheme` `oxinov`, English only; the `master` realm keeps Keycloak's own pages | Brand system, ADR-020 |
-| Email confirmation links | Work once, for 30 minutes (`actionTokenGeneratedByUserLifespan.verify-email=1800`; Keycloak's default is 5) | FR-ID-2202 |
+| Email confirmation links | Work once, for 30 minutes (`actionTokenGeneratedByUserLifespan.verify-email` and `.update-email` 1800; Keycloak's default is 5) | FR-ID-2202 |
+| Account page | `accountTheme` `oxinov` (Oxinov logo and colors on Keycloak's page). Kept for signed-in devices and "sign out" (FR-ID-2208) and for changing the email; the portal links to both | FR-ID-2208 |
+| Customer sign-in methods | Authenticator app, security keys, and recovery codes are off (`CONFIGURE_TOTP`, `webauthn-register*`, `CONFIGURE_RECOVERY_AUTHN_CODES`), so the account page offers nothing that sign-in does not use | FR-ID-2204 |
+| Changing email | `UPDATE_EMAIL` on and `editUsernameAllowed=true`: the new address gets a confirmation link and applies only once opened. Direct edits through the account API are ignored (tested 2026-09-30). The platform and Edu APIs pick up the new email from the next token | FR-ID-2206 |
+| Automation account | `oxinov-automation` holds only `oxinov-realm` roles (view and manage realm, clients, events, and identity providers), with no `admin` role and no rights in `master` | Least privilege |
+| Sign-in metrics | `KC_EVENT_METRICS_USER_ENABLED` publishes `keycloak_user_events_total` (event, error, client, realm; no personal data) for the `oxinov-identity` alerts | FR-ID-2208 |
+| Continue with Google | Added by the script when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set (Parameter Store in production), with `trustEmail` and the `oxinov-first-broker` linking flow | FR-ID-2201 |
 | `oxinov-platform-web` client | Confidential, authorization code with PKCE S256, access tokens for audience `oxinov-platform-api` only | FR-ID-2207 |
 | `oxinov-edu-web` client | Same settings for Oxinov Edu (`EDU_WEB_URL`, default `http://localhost:3002`), access tokens for audience `oxinov-lms-api` only; shares the realm session, so a signed-in person is not asked again | FR-ID-2207 |
+
+**Sign-in smoke test:** `node devops/keycloak/signin-smoke.mjs` drives the real flow without a browser. It checks the branded page, an unknown email, the emailed code (read from Mailpit), a wrong code, and the right code, then the redirect back to the portal. With `CLIENT_SECRET`, it also checks the token's audience, lifetime, and verified email. It runs at the end of `admin/start-local.sh`, and it refuses to run against anything but localhost.
 
 Verified end to end on 2026-09-24: email-only sign-in page, code delivered to Mailpit, token with audience `oxinov-platform-api` and a 600-second lifetime, single sign-on on a second authorization, and the platform API accepting the token for `/v1/me`, the welcome step, and entitlements.
 
@@ -73,10 +91,9 @@ Verified end to end on 2026-09-24: email-only sign-in page, code delivered to Ma
 
 ## Not yet configured
 
-- Google identity provider: needs an OAuth client from Google Cloud (owner action), then `Trust Email` on and the `oxinov-first-broker` flow.
+- Google identity provider: the script is ready. It needs the owner's OAuth client from Google Cloud (see the [production runbook](../kubernetes/README.md#sign-in-administration-keycloak)).
 - Refusing Google accounts with unverified emails at Keycloak (today the platform API refuses them at the welcome step with `EMAIL_NOT_VERIFIED`).
 - Apple sign-in and the separate `oxinov-staff` realm.
-- Narrowing the `oxinov-automation` service account below the `master` `admin` role.
 
 Production hostname, TLS, and proxy settings are set in the chart: `KC_HOSTNAME=https://id.oxinov.com`, `KC_HOSTNAME_ADMIN`, and `KC_PROXY_HEADERS=xforwarded`, with TLS terminated by Traefik; `/admin` and `/realms/master` are closed on the public host.
 

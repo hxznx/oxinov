@@ -100,6 +100,7 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 - { name: OIDC_ISSUER, value: {{ $issuer | quote }} }
 - { name: OIDC_CLIENT_ID, value: oxinov-platform-web }
 - { name: PLATFORM_API_URL, value: "http://platform-api:4200" }
+- { name: GOOGLE_SIGNIN_ENABLED, value: {{ $root.Values.identity.googleSignIn | toString | quote }} }
 {{ include "oxinov.secretEnv" (dict "root" $root "name" "OIDC_CLIENT_SECRET" "key" "PLATFORM_OIDC_CLIENT_SECRET") }}
 {{ include "oxinov.secretEnv" (dict "root" $root "name" "SESSION_SECRET" "key" "PLATFORM_SESSION_SECRET") }}
 {{- else if eq .name "keycloak" }}
@@ -109,6 +110,10 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 - { name: KC_HOSTNAME_ADMIN, value: {{ $root.Values.identity.adminHostname | quote }} }
 - { name: KC_HTTP_ENABLED, value: "true" }
 - { name: KC_PROXY_HEADERS, value: xforwarded }
+# Sign-in, registration, and code counters on the management port (keycloak_user_events_total), for the
+# sign-in alerts in monitoring/prometheus/rules (FR-ID-2208 security events). Only event type and client.
+- { name: KC_EVENT_METRICS_USER_ENABLED, value: "true" }
+- { name: KC_EVENT_METRICS_USER_TAGS, value: "realm,clientId" }
 - { name: KC_BOOTSTRAP_ADMIN_USERNAME, value: {{ $root.Values.identity.adminUser | quote }} }
 - { name: JAVA_OPTS_KC_HEAP, value: {{ .svc.heap | quote }} }
 {{ include "oxinov.secretEnv" (dict "root" $root "name" "KC_DB_PASSWORD" "key" "KEYCLOAK_DB_PASSWORD") }}

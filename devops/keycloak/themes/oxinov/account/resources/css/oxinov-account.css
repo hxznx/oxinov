@@ -1,0 +1,33 @@
+/*
+ * Oxinov brand colors for Keycloak's account page (PatternFly 5). Values are the design-system tokens
+ * (packages/design-system): Daylight brand #0077A3 and dark brand #00F0FF with #07070D text on it.
+ * PatternFly adds .pf-v5-theme-dark to <html> when the device prefers dark.
+ */
+:root {
+  --pf-v5-global--primary-color--100: #0077a3;
+  --pf-v5-global--primary-color--200: #005c7e;
+  --pf-v5-global--link--Color: #0077a3;
+  --pf-v5-global--link--Color--hover: #005c7e;
+  --pf-v5-c-button--m-primary--BackgroundColor: #0077a3;
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: #005c7e;
+  --pf-v5-c-button--m-primary--Color: #ffffff;
+  --pf-v5-c-masthead--BackgroundColor: #0a0a12;
+}
+
+:root.pf-v5-theme-dark {
+  --pf-v5-global--primary-color--100: #00f0ff;
+  --pf-v5-global--primary-color--200: #7ff7ff;
+  --pf-v5-global--link--Color: #00f0ff;
+  --pf-v5-global--link--Color--hover: #7ff7ff;
+  --pf-v5-c-button--m-primary--BackgroundColor: #00f0ff;
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: #7ff7ff;
+  --pf-v5-c-button--m-primary--Color: #07070d;
+  --pf-v5-c-masthead--BackgroundColor: #07070d;
+}
+
+/* The Oxinov symbol at a readable size in the header. */
+.pf-v5-c-masthead .pf-v5-c-brand,
+.pf-v5-c-masthead__brand img {
+  height: 36px;
+  width: auto;
+}

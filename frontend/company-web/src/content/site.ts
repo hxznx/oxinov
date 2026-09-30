@@ -436,7 +436,8 @@ export const legalDocs: LegalDoc[] = [
  * Sign-in help at oxinov.com/help/sign-in/, linked from every sign-in page ("Trouble signing in?").
  * Customer accounts have no passwords (FR-ID-2204), so this page replaces "forgot password". Facts must match
  * devops/keycloak/configure-realm.sh: six-digit codes valid 10 minutes, email links valid 30 minutes, and a
- * temporary pause after 5 failed attempts (Keycloak waits up to 15 minutes).
+ * temporary pause after 5 failed attempts (Keycloak waits up to 15 minutes), and backend/workers/mail-relay: at most
+ * 5 emails to one address in 15 minutes.
  */
 export const signInHelp = {
   intro:
@@ -450,7 +451,7 @@ export const signInHelp = {
     {
       question: 'The sign-in code did not arrive.',
       answer:
-        'Wait a minute, then check your spam, junk, and promotions folders. Make sure the email address shown on the code screen is correct; if it is not, choose "Use a different email". Then choose "Send a new code". Adding no-reply@oxinov.com to your contacts helps future codes reach your inbox.',
+        'Wait a minute, then check your spam, junk, and promotions folders. Make sure the email address shown on the code screen is correct; if it is not, choose "Use a different email". Then choose "Send a new code". Adding no-reply@oxinov.com to your contacts helps future codes reach your inbox. To protect your inbox, we send at most 5 emails to one address in 15 minutes; if you reach that limit, wait a few minutes.',
     },
     {
       question: 'My code does not work.',
