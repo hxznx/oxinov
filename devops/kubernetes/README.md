@@ -74,7 +74,7 @@ password rotation needs `ALTER ROLE` first.
   2. Run **Deploy production** with **configure realm** ticked.
   3. The script applies the staff settings and removes the role again.
 - **Adding Continue with Google** (FR-ID-2201):
-  1. In Google Cloud, create an OAuth client of type "Web application" with the redirect URI `https://id.oxinov.com/realms/oxinov/broker/google/endpoint`.
+  1. Signed in to Google Cloud as `admin@oxinov.com`, create an OAuth client of type "Web application" with the redirect URI `https://id.oxinov.com/realms/oxinov/broker/google/endpoint`.
   2. Store its values as SecureStrings `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` under the prefix above.
   3. Deploy with **configure realm** ticked. The realm gets the Google connection, and the portal shows "Continue with Google".
 - **Lost administrator password:** use Keycloak's recovery command `kc.sh bootstrap-admin` (a temporary admin), then delete the temporary admin. Never give the automation account `admin` permanently.
@@ -136,7 +136,7 @@ The first request was **denied** (case 179052648600401). Reply to that case in t
 
 Because SES refuses production access, the relay can send through **Brevo** (free: 300 emails a day). It keeps its sender check and the limit of 5 emails per address per 15 minutes. The switch is automatic once the credentials exist, and SES stays the fallback.
 
-1. **Owner:** create a free account at brevo.com with a company address. Complete the company profile; Brevo may review new accounts before sending is enabled.
+1. **Owner:** create a free account at brevo.com with `admin@oxinov.com`, the company admin mailbox for every service (AGENTS.md 9.1). Complete the company profile; Brevo may review new accounts before sending is enabled.
 2. **Owner:** in Brevo, open **Senders, Domains & Dedicated IPs**, then **Domains**, and add `oxinov.com`. Choose to authenticate it yourself. Copy the `brevo-code:…` value and the DKIM record names and targets; they are public DNS values.
 3. **Engineering:** put them into `devops/terraform/environments/production/edge` (`brevo_verification_txt`, `brevo_dkim_cnames`) and apply after the owner approves the plan. Then choose **Authenticate** in Brevo, and add `no-reply@oxinov.com` as a sender.
 4. **Owner:** in Brevo, open **SMTP & API**, then **SMTP**. Note the SMTP login and generate an SMTP key. Store both yourself as SecureStrings under `/oxinov/production/starter/`: `MAIL_SMTP_USER` (the login) and `MAIL_SMTP_PASSWORD` (the key). Nobody else needs to see them.

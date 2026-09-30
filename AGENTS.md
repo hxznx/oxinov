@@ -256,6 +256,12 @@ Every workload in the shared chart (`devops/kubernetes/helm/oxinov`) meets this 
   - The instance runs Amazon Linux 2023 with automatic security updates, IMDSv2 (hop limit 2), an encrypted disk, CloudWatch recovery actions, and daily snapshots.
   - Never change the node by hand without writing the change back into the scripts or Terraform.
 - **Capacity:** check memory and disk before adding workloads (`oxctl status`). The scale-out triggers (EKS, RDS, CloudFront signed URLs, staging) live in the [DevOps roadmap](docs/10-devops/devops-roadmap.md); do not pre-build them.
+- **Company admin mailbox (owner rule, 2026-10-01):** all administrative work uses `admin@oxinov.com`. That covers:
+  - sign-ups, owners, and recovery addresses for third-party services (Brevo, Google Cloud, Zoho, domain and DNS, and future vendors);
+  - billing and budget alerts, and security, operations, and email-event alarms;
+  - AWS Support contacts.
+
+  Never register a company service or route an alert to a personal address or to `support@`, which is for customers. `no-reply@oxinov.com` is only the sender of automatic email. `support@`, `security@`, `legal@`, and `billing@` are the public contact addresses.
 
 ### 9.2 Day-to-day commands (`devops/scripts/oxctl`)
 
