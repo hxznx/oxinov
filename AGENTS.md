@@ -261,6 +261,8 @@ Every workload in the shared chart (`devops/kubernetes/helm/oxinov`) meets this 
   - billing and budget alerts, and security, operations, and email-event alarms;
   - AWS Support contacts.
 
+  Exception: the AWS account's root sign-in email stays on the owner's personal address. `oxinov.com` DNS lives in that AWS account, so a recovery address on the domain could become unreachable in a lockout.
+
   Never register a company service or route an alert to a personal address or to `support@`, which is for customers. `no-reply@oxinov.com` is only the sender of automatic email. `support@`, `security@`, `legal@`, and `billing@` are the public contact addresses.
 
 ### 9.2 Day-to-day commands (`devops/scripts/oxctl`)
