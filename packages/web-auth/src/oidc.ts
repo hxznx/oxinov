@@ -19,7 +19,14 @@ export interface TokenSet {
 }
 
 export interface OidcClient {
-  authorizationUrl(input: { state: string; nonce: string; challenge: string; idpHint?: string }): Promise<string>;
+  /** `prompt: 'create'` opens the registration page instead of sign-in (OpenID Connect prompt=create). */
+  authorizationUrl(input: {
+    state: string;
+    nonce: string;
+    challenge: string;
+    idpHint?: string;
+    prompt?: 'create';
+  }): Promise<string>;
   exchangeCode(code: string, verifier: string): Promise<TokenSet>;
   refreshTokens(refreshToken: string): Promise<TokenSet>;
   /** Verifies the ID token (issuer, audience, signature, expiry, nonce) and returns its subject. */
@@ -70,6 +77,7 @@ export function createOidcClient(config: () => WebAuthConfig): OidcClient {
         code_challenge: input.challenge,
         code_challenge_method: 'S256',
         ...(input.idpHint ? { kc_idp_hint: input.idpHint } : {}),
+        ...(input.prompt ? { prompt: input.prompt } : {}),
       }).toString();
       return url.toString();
     },

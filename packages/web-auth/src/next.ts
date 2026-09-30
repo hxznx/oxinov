@@ -62,7 +62,10 @@ export function createWebAuth(options: { cookiePrefix: string }): WebAuth {
     return session;
   }
 
-  /** Starts sign-in at id.oxinov.com (FR-ID-2201, FR-ID-2202). `?idp=google` skips straight to Google. */
+  /**
+   * Starts sign-in at id.oxinov.com (FR-ID-2201, FR-ID-2202). `?idp=google` skips straight to Google;
+   * `?screen=signup` opens account creation, so the public website can offer "Create account" (FR-ID-2202, FR-SITE-2101).
+   */
   const login: Handler = async (request) => {
     const cfg = config();
     const transaction = {
@@ -77,6 +80,7 @@ export function createWebAuth(options: { cookiePrefix: string }): WebAuth {
       nonce: transaction.nonce,
       challenge: codeChallenge(transaction.verifier),
       ...(idp === 'google' ? { idpHint: 'google' } : {}),
+      ...(request.nextUrl.searchParams.get('screen') === 'signup' ? { prompt: 'create' as const } : {}),
     });
     const response = NextResponse.redirect(location);
     response.cookies.set(

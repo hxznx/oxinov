@@ -27,6 +27,16 @@ pnpm --filter @oxinov/company-web test
 
 `build` copies the approved logo files from the design system into `public/brand/` and writes the static site to `out/`. `test` checks the exported pages: every route exists, one `h1`, unique titles and descriptions, `lang`, skip link, image alt text, no broken internal links, honest product status, regulated-division labels, no placeholders or retired names, no analytics or third-party scripts, and search and sharing (canonical URLs, descriptions, structured data, sitemap, `noindex` 404 page, font budget).
 
+## Sign in and create account
+
+Every page has **Sign in** and **Create account**. They link to the account portal's `/auth/login` and `/auth/login?screen=signup`. The portal is the confidential Keycloak client: it starts sign-in or registration (`prompt=create`) at `id.oxinov.com` and receives the result. This static site never sees a code, token, or session (FR-ID-2202, FR-ID-2207).
+
+- **Builds** always link to `https://app.oxinov.com`.
+- **Local development:** to try the whole flow against the local Keycloak, copy `.env.example` to `.env.development.local`. `next dev` then links to the local portal (`http://localhost:3001`).
+  - Run the portal and the platform API as described in [developer setup](../../docs/10-devops/dev-setup.md), with the local Keycloak started by `devops/keycloak/admin/start-local.sh`.
+  - Set `AUTH_ISSUER`, `AUTH_JWKS_URL`, and `AUTH_AUDIENCE` in `backend/platform-api/.env`, so the API accepts Keycloak tokens.
+- New accounts confirm their email with a link. After that, each sign-in uses a six-digit code. Mailpit (`http://localhost:8025`) shows both locally.
+
 ## Owner inputs still needed before launch
 
 | Item | Where it goes |

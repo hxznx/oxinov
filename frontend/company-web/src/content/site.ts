@@ -5,8 +5,20 @@
 
 export type Status = 'in-development' | 'coming-soon' | 'future' | 'long-horizon';
 
-/** The one Oxinov account (sign-in, profile, product launcher). id.oxinov.com/ also redirects here. */
-export const accountUrl = 'https://app.oxinov.com/';
+/**
+ * The one Oxinov account (sign-in, profile, product launcher). id.oxinov.com/ also redirects here.
+ * This static site never handles tokens: its buttons open the account portal, the confidential Keycloak
+ * client, which starts sign-in at id.oxinov.com (FR-ID-2202, FR-ID-2207). `next dev` reads
+ * NEXT_PUBLIC_ACCOUNT_URL from .env.development.local to use a local portal; builds always use production.
+ */
+const accountBase = (
+  process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_ACCOUNT_URL?.startsWith('http')
+    ? process.env.NEXT_PUBLIC_ACCOUNT_URL
+    : 'https://app.oxinov.com'
+).replace(/\/+$/, '');
+export const accountUrl = `${accountBase}/`;
+export const signInUrl = `${accountBase}/auth/login`;
+export const signUpUrl = `${accountBase}/auth/login?screen=signup`;
 
 export const company = {
   name: 'Oxinov',
@@ -40,6 +52,21 @@ export const home = {
   secondaryCta: 'See our divisions',
   /** Button on the home page that opens the product people can use today. */
   productCta: 'Open Oxinov Edu',
+  signUpCta: 'Create your Oxinov account',
+  signInCta: 'Sign in',
+  /** The one-account section (FR-ID-2202, FR-ID-2204, FR-ID-2207). Facts only: codes, no passwords. */
+  account: {
+    title: 'One Oxinov account for every product',
+    intro:
+      'Create your account once. Use it for Oxinov Edu today, and for each Oxinov product as it launches. There is no password to remember.',
+    steps: [
+      { title: 'Create your account', body: 'Enter your email address and name. We email you a link to confirm your address.' },
+      { title: 'Sign in with a code', body: 'Each time you sign in, we email you a new code. It works once and expires after 10 minutes.' },
+      { title: 'Open any product', body: 'Your account page lists the Oxinov products you can use. Sign in once and move between them.' },
+    ],
+    closingTitle: 'Ready to start?',
+    closingBody: 'Creating an Oxinov account is free. Sign in if you already have one.',
+  },
 };
 
 export const about = {

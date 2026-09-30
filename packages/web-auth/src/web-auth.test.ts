@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { loadWebAuthConfig } from './config.ts';
+import { createOidcClient } from './oidc.ts';
 import { codeChallenge, randomToken } from './pkce.ts';
 import { safeReturnTo } from './return-to.ts';
 import { sealSession, sealTransaction, unsealSession, unsealTransaction } from './session.ts';
@@ -57,6 +58,43 @@ describe('sealed cookies', () => {
     const transaction = await sealTransaction({ state: 's', verifier: 'v', nonce: 'n', returnTo: '/' }, secret);
     assert.equal(await unsealSession(transaction, secret), null);
     assert.equal((await unsealTransaction(transaction, secret))?.state, 's');
+  });
+});
+
+describe('authorization request', () => {
+  const client = createOidcClient(() =>
+    loadWebAuthConfig('ox', {
+      APP_URL: 'https://app.oxinov.com',
+      OIDC_ISSUER: 'https://id.oxinov.com/realms/oxinov',
+      OIDC_CLIENT_ID: 'oxinov-platform-web',
+      OIDC_CLIENT_SECRET: 'client-secret',
+      SESSION_SECRET: secret,
+    }),
+  );
+  const input = { state: 's', nonce: 'n', challenge: 'c' };
+
+  async function withDiscovery<T>(run: () => Promise<T>): Promise<T> {
+    const original = globalThis.fetch;
+    globalThis.fetch = (async () =>
+      new Response(JSON.stringify({ authorization_endpoint: 'https://id.oxinov.com/realms/oxinov/protocol/openid-connect/auth' }))) as typeof fetch;
+    try {
+      return await run();
+    } finally {
+      globalThis.fetch = original;
+    }
+  }
+
+  it('asks for the code flow with PKCE and the exact callback, without prompt by default', async () => {
+    const url = new URL(await withDiscovery(() => client.authorizationUrl(input)));
+    assert.equal(url.searchParams.get('response_type'), 'code');
+    assert.equal(url.searchParams.get('code_challenge_method'), 'S256');
+    assert.equal(url.searchParams.get('redirect_uri'), 'https://app.oxinov.com/auth/callback');
+    assert.equal(url.searchParams.has('prompt'), false);
+  });
+
+  it('opens account creation with prompt=create', async () => {
+    const url = new URL(await withDiscovery(() => client.authorizationUrl({ ...input, prompt: 'create' })));
+    assert.equal(url.searchParams.get('prompt'), 'create');
   });
 });
 

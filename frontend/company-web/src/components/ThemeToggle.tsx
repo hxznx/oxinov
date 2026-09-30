@@ -27,7 +27,7 @@ export function ThemeToggle() {
   }
 
   return (
-    <button type="button" onClick={toggle} className="btn btn-secondary text-sm" aria-pressed={theme === 'light'}>
+    <button type="button" onClick={toggle} className="btn btn-secondary whitespace-nowrap px-3 text-sm sm:px-5" aria-pressed={theme === 'light'}>
       {theme === 'dark' ? 'Daylight theme' : 'Dark theme'}
     </button>
   );

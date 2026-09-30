@@ -44,6 +44,39 @@
         "start"
       ],
       "port": 3002
+    },
+    {
+      "name": "company-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@oxinov/company-web",
+        "dev"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "platform-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@oxinov/platform-web",
+        "dev"
+      ],
+      "port": 3001
+    },
+    {
+      "name": "platform-api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@oxinov/platform-api",
+        "exec",
+        "node",
+        "--env-file=.env",
+        "dist/main.js"
+      ],
+      "port": 4200
     }
   ]
 }

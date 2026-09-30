@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { accountUrl } from '@/content/site';
+import { signInUrl, signUpUrl } from '@/content/site';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -33,11 +33,14 @@ export function SiteHeader() {
             ))}
           </ul>
         </nav>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex flex-wrap items-center gap-2 sm:gap-3">
           <ThemeToggle />
-          {/* One Oxinov account for every product (FR-ID-2201): sign-in, profile, and the product launcher. */}
-          <a href={accountUrl} className="btn btn-secondary text-sm">
+          {/* One Oxinov account for every product (FR-ID-2202, FR-ID-2207): the portal starts sign-in at id.oxinov.com. */}
+          <a href={signInUrl} className="btn btn-secondary whitespace-nowrap px-3 text-sm sm:px-5">
             Sign in
+          </a>
+          <a href={signUpUrl} className="btn btn-primary whitespace-nowrap px-3 text-sm sm:px-5">
+            Create account
           </a>
         </div>
       </div>

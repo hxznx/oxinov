@@ -86,9 +86,13 @@ describe('static export', () => {
     }
   });
 
-  it('connects the website to the products: sign-in on every page, Edu from the home and product pages', () => {
+  it('connects the website to the products: sign-in and account creation on every page, Edu from the home and product pages', () => {
+    // The static site only links to the account portal, which starts sign-in at id.oxinov.com (FR-ID-2202, FR-ID-2207).
     for (const route of routes) {
-      assert.match(html(route), /<a[^>]+href="https:\/\/app\.oxinov\.com\/"[^>]*>\s*Sign in\s*<\/a>/, `${route} has no Sign in link`);
+      const page = html(route).replaceAll('<!-- -->', '');
+      assert.match(page, /<a[^>]+href="https:\/\/app\.oxinov\.com\/auth\/login"[^>]*>\s*Sign in\s*<\/a>/, `${route} has no Sign in link`);
+      assert.match(page, /<a[^>]+href="https:\/\/app\.oxinov\.com\/auth\/login\?screen=signup"[^>]*>\s*Create account\s*<\/a>/, `${route} has no Create account link`);
+      assert.doesNotMatch(page, /localhost/, `${route} links to a local server`);
     }
     for (const route of ['/', '/products/edu/']) {
       // React separates adjacent text with <!-- --> markers.
