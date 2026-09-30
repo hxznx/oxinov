@@ -20,9 +20,9 @@ allowBuilds:
   prisma: true
 
 catalog:
-  '@aws-sdk/client-s3': 3.1139.0
-  '@aws-sdk/client-sesv2': 3.1139.0
-  '@aws-sdk/s3-request-presigner': 3.1139.0
+  '@aws-sdk/client-s3': 3.1141.0
+  '@aws-sdk/client-sesv2': 3.1141.0
+  '@aws-sdk/s3-request-presigner': 3.1141.0
   # Nest's optional peers: one version for every package, or pnpm installs a second @nestjs/core.
   class-transformer: 0.5.1
   class-validator: 0.15.1
