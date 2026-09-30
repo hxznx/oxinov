@@ -11,7 +11,7 @@ export function SiteFooter() {
         <div>
           <p className="font-display tracking-widest text-ink">OXINOV</p>
           <p className="mt-2 text-muted">
-            © {year} {company.legalName}. Registered in {company.locality}.
+            © {year} {company.legalName} Registered in {company.locality}.
             {company.registrationNumber ? ` Company registration no. ${company.registrationNumber}.` : ''}
           </p>
         </div>

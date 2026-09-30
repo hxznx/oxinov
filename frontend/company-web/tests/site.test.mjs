@@ -83,6 +83,8 @@ describe('static export', () => {
       const body = text(readFileSync(file, 'utf8'));
       assert.doesNotMatch(body, /\[(EMAIL|PHONE|STREET ADDRESS|OFFICE HOURS|YEAR|REGISTRATION NUMBER|CAREERS EMAIL)\]/, relative(out, file));
       assert.doesNotMatch(body, /OxinovLMS|KrishiConnect|BT-Bazz|Kaji/, relative(out, file));
+      // The legal name ends with a full stop; never add a second one after it.
+      assert.doesNotMatch(body, /Ltd\.\s*\./, relative(out, file));
     }
   });
 
