@@ -10,7 +10,7 @@ Source: [AGENTS.md](../../AGENTS.md) section 5, [database design](../05-data/dat
 
 | Plane | Folder | Database | Request role |
 | --- | --- | --- | --- |
-| Edu | `database/products/edu` | `oxinov_lms` (renamed `oxinov_edu` only through the [ADR-027 cutover](../10-devops/runbooks/edu-rename-cutover.md)) | `oxinov_app` |
+| Edu | `database/products/edu` | `oxinov_edu` (renamed from `oxinov_lms` by the [ADR-027 cutover](../10-devops/runbooks/edu-rename-cutover.md)) | `oxinov_app` |
 | Platform | `database/platform` | `oxinov_platform` | `oxinov_platform_app` |
 
 ## Must

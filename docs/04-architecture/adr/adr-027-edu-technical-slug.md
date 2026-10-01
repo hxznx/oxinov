@@ -10,7 +10,7 @@
    | --- | --- | --- | --- |
    | Image repository and `services.yaml` service key | `oxinov/lms-api`, `lms-api` | `oxinov/edu-api`, `edu-api` | Terraform names ECR repositories from the service keys; the new repository needs `terraform apply`, and the old one must survive until rollback no longer needs its images |
    | OIDC access-token audience | `oxinov-lms-api` | `oxinov-edu-api` | Existing tokens carry the old audience; the API accepts both during the switch (`AUTH_AUDIENCE` takes a comma-separated list) so nobody is signed out |
-   | PostgreSQL database | `oxinov_lms` | `oxinov_edu` | `ALTER DATABASE … RENAME` needs every connection closed: a short Edu maintenance window |
+   | PostgreSQL database | `oxinov_lms` | `oxinov_edu` | Done on 2026-10-01 in a short Edu maintenance window (`ALTER DATABASE … RENAME` needs every connection closed) |
 
    The steps, checks, and rollback are in the [Edu rename cutover runbook](../../10-devops/runbooks/edu-rename-cutover.md). Until each step runs, its old name stays in the chart, realm, local environment, and Terraform, and only there.
 4. **History is not rewritten.** Merged migrations are immutable (migration `20260924100300_product_catalogue` still inserts `lms`), and accepted ADRs and changelog entries describe the names used at the time.

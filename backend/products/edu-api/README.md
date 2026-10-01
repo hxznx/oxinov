@@ -40,7 +40,7 @@ cp backend/products/edu-api/.env.example backend/products/edu-api/.env  # match 
 pnpm install --frozen-lockfile
 pnpm edu:migrate                          # owner role, applies database/products/edu/migrations
 # once per database: let the request role log in (password must match DATABASE_URL)
-#   docker compose exec postgres psql -U oxinov -d oxinov_lms \
+#   docker compose exec postgres psql -U oxinov -d oxinov_edu \
 #     -c "ALTER ROLE oxinov_app LOGIN PASSWORD 'change-me-local-app'"
 pnpm edu:seed                             # two demo tenants with JLPT N5 content
 pnpm edu:dev                              # http://localhost:4000

@@ -1,6 +1,6 @@
 # Edu rename cutover: the last three `lms` identifiers
 
-**Status:** prepared, not executed. Every step changes production and needs the owner's explicit "yes" for that step (AGENTS.md section 3). Decision: [ADR-027](../../04-architecture/adr/adr-027-edu-technical-slug.md).
+**Status:** part C (database) done on 2026-10-01; parts A and B prepared, not executed. Every step changes production and needs the owner's explicit "yes" for that step (AGENTS.md section 3). Decision: [ADR-027](../../04-architecture/adr/adr-027-edu-technical-slug.md).
 
 The repository already uses `edu` everywhere else. Three names stay `lms` because production state depends on them. Do the three parts in this order, each as its own change, and never combine two in one push.
 

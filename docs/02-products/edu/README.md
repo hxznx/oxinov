@@ -11,7 +11,7 @@ The structure follows the [company library standard](../../08-engineering/compan
 | Field | Value |
 | --- | --- |
 | Display name | Oxinov Edu (short: Edu) |
-| Technical slug | `edu` everywhere (ADR-027). Three production identifiers keep `lms` until the [cutover](../../10-devops/runbooks/edu-rename-cutover.md): the database `oxinov_lms`, the token audience `oxinov-lms-api`, and the service key and image `lms-api` / `oxinov/lms-api` |
+| Technical slug | `edu` everywhere (ADR-027). Two production identifiers keep `lms` until the [cutover](../../10-devops/runbooks/edu-rename-cutover.md): the token audience `oxinov-lms-api`, and the service key and image `lms-api` / `oxinov/lms-api`; the database is `oxinov_edu` since 2026-10-01 |
 | Kind | Software: multi-tenant learning platform (web now, mobile planned) |
 | Company pillar | Education ([platform blueprint](../../01-company/platform-blueprint.md)) |
 | Product owner | Unassigned |
@@ -43,7 +43,7 @@ The structure follows the [company library standard](../../08-engineering/compan
 | --- | --- | --- |
 | Web client | [frontend/products/edu-web](../../../frontend/products/edu-web/README.md) | Live |
 | API | [backend/products/edu-api](../../../backend/products/edu-api/README.md) | Live |
-| Database | [database/products/edu](../../../database/products/edu/README.md) | Live (production database `oxinov_lms`) |
+| Database | [database/products/edu](../../../database/products/edu/README.md) | Live (production database `oxinov_edu`) |
 | Worker | [backend/products/edu-worker](../../../backend/products/edu-worker/README.md) | Planned |
 | Realtime chat | [backend/products/edu-chat](../../../backend/products/edu-chat/README.md) | Planned |
 | Mobile client | [frontend/mobile](../../../frontend/mobile/README.md) (`frontend/mobile/edu/` when approved) | Planned |

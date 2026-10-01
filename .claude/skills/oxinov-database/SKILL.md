@@ -11,7 +11,7 @@ Design first with the **oxinov-database-architecture** skill for a new table, re
 
 | Plane | Database | Schema | Migrations | Policy tests | Scripts package |
 | --- | --- | --- | --- | --- | --- |
-| Edu | `oxinov_lms` (renamed `oxinov_edu` only by the [ADR-027 cutover](../../../docs/10-devops/runbooks/edu-rename-cutover.md)) | `database/products/edu/prisma/schema.prisma` | `database/products/edu/migrations/<timestamp>_<name>/migration.sql` | `database/products/edu/policies/tenant_isolation_test.sql` | `@oxinov/edu-api` |
+| Edu | `oxinov_edu` (named `oxinov_lms` until the [ADR-027 cutover](../../../docs/10-devops/runbooks/edu-rename-cutover.md) of 2026-10-01) | `database/products/edu/prisma/schema.prisma` | `database/products/edu/migrations/<timestamp>_<name>/migration.sql` | `database/products/edu/policies/tenant_isolation_test.sql` | `@oxinov/edu-api` |
 | Platform | `oxinov_platform` | `database/platform/prisma/schema.prisma` | `database/platform/migrations/...` | `database/platform/policies/` | `@oxinov/platform-api` |
 
 ## Conventions to copy (details in oxinov-database-architecture)
@@ -51,7 +51,7 @@ The `migrate diff` command is CI's drift check and must report no difference. In
 ## Never
 
 - `prisma migrate reset`, `db push`, or any destructive command against a shared or production database.
-- Rename the Edu database `oxinov_lms` outside the ADR-027 cutover runbook.
+- Rename a production database without a runbook like the ADR-027 cutover (backup, maintenance window, rollback).
 - A tenant or personal-data table without row-level security.
 - Check-then-insert instead of a unique constraint, or floats for money.
 - Delete or restore production data without the owner's explicit approval.

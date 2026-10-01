@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:18-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-oxinov_lms}
+      POSTGRES_DB: ${POSTGRES_DB:-oxinov_edu}
       POSTGRES_USER: ${POSTGRES_USER:-oxinov}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set POSTGRES_PASSWORD}
       # Password for the least-privilege API role, created on first volume initialisation.
@@ -68,7 +68,7 @@ services:
       DEPLOY_ENVIRONMENT: local
       PORT: 4000
       # The API connects as oxinov_app, which cannot bypass row-level security.
-      DATABASE_URL: postgresql://oxinov_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_lms}
+      DATABASE_URL: postgresql://oxinov_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_edu}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       AUTH_ISSUER: ${AUTH_ISSUER:-}
       AUTH_JWKS_URL: ${AUTH_JWKS_URL:-}
@@ -97,7 +97,7 @@ services:
     build: { context: ., dockerfile: devops/docker/Dockerfile, target: worker }
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://${POSTGRES_USER:-oxinov}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_lms}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-oxinov}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_edu}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     depends_on:
       postgres: { condition: service_healthy }
@@ -110,7 +110,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 4001
-      DATABASE_URL: postgresql://${POSTGRES_USER:-oxinov}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_lms}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-oxinov}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-oxinov_edu}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     ports:
       - "127.0.0.1:${CHAT_PORT:-4001}:4001"
@@ -123,7 +123,7 @@ services:
     profiles: [monitoring]
     image: prometheuscommunity/postgres-exporter:v0.20.1
     environment:
-      DATA_SOURCE_URI: postgres:5432/${POSTGRES_DB:-oxinov_lms}?sslmode=disable
+      DATA_SOURCE_URI: postgres:5432/${POSTGRES_DB:-oxinov_edu}?sslmode=disable
       DATA_SOURCE_USER: ${POSTGRES_USER:-oxinov}
       DATA_SOURCE_PASS: ${POSTGRES_PASSWORD}
     depends_on:

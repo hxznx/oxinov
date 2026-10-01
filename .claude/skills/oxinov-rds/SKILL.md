@@ -18,7 +18,7 @@ Related skills: oxinov-database-architecture (schema, integrity, queries, migrat
 | Item | Now |
 | --- | --- |
 | Engine | PostgreSQL 18.6 (`postgres:18.6-alpine`, pinned by digest) as a StatefulSet in k3s, on the node's encrypted EBS disk |
-| Databases | `oxinov_lms` (Edu; renamed `oxinov_edu` at the ADR-027 cutover), `oxinov_platform`, `keycloak`, on one instance |
+| Databases | `oxinov_edu` (Edu), `oxinov_platform`, `keycloak`, on one instance |
 | Roles | Owner `oxinov` (migrations), `oxinov_app`, `oxinov_platform_app` (request roles that cannot bypass row-level security), `keycloak` |
 | Extensions | None (`gen_random_uuid()` is built in) |
 | Backups | Nightly `pg_dumpall` to S3 (30 days) and daily disk snapshots (7 days); no point-in-time recovery; objectives RPO 24 hours and RTO 4 hours (proposed, NFR-05) |

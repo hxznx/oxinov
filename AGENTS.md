@@ -27,7 +27,7 @@ Internet ──443/80──▶ EC2 t3a.medium (ap-south-1, 4 GiB + 2 GiB swap, I
                           ├─ edu-web ──────▶ edu-api ──────┐
                           ├─ platform-web ─▶ platform-api ─┼─▶ PostgreSQL 18.6 StatefulSet
                           ├─ keycloak (id.) ─▶ mail-relay ─┼─▶ Amazon SES (instance role)
-                          ├─ migrate (Helm hook Job)       │   databases: oxinov_lms, oxinov_platform
+                          ├─ migrate (Helm hook Job)       │   databases: oxinov_edu, oxinov_platform
                           └─ backup (nightly CronJob) ─────┴─▶ S3 (dumps 30 days), media bucket
 oxinov.com ──▶ CloudFront ──▶ private S3 (static Next.js export)
 ```
@@ -119,7 +119,7 @@ Allowed without asking: reading anything, running local builds, tests, and rehea
 ## 5. Data rules (PostgreSQL is the system of record, ADR-001, ADR-006)
 
 - **Ownership:** each product owns its database, roles, and migrations:
-  - Edu: `database/products/edu`, database `oxinov_lms` (renamed `oxinov_edu` only through the ADR-027 [cutover runbook](docs/10-devops/runbooks/edu-rename-cutover.md))
+  - Edu: `database/products/edu`, database `oxinov_edu` (renamed from `oxinov_lms` by the ADR-027 [cutover](docs/10-devops/runbooks/edu-rename-cutover.md))
   - Platform: `database/platform`, database `oxinov_platform`
 
   Cross-product data moves through APIs or events, never through shared tables.

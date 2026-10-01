@@ -67,12 +67,12 @@ cp backend/products/edu-api/.env.example backend/products/edu-api/.env
 docker compose up -d postgres
 ```
 
-On a new Docker volume, PostgreSQL creates the Edu request role `oxinov_app` (password `APP_DB_PASSWORD`), the platform request role, and the Keycloak database. The Edu database is still named `oxinov_lms`; it is renamed only in the [ADR-027](../04-architecture/adr/adr-027-edu-technical-slug.md) cutover.
+On a new Docker volume, PostgreSQL creates the Edu request role `oxinov_app` (password `APP_DB_PASSWORD`), the platform request role, and the Keycloak database. The Edu database is `oxinov_edu` ([ADR-027](../04-architecture/adr/adr-027-edu-technical-slug.md)). A local volume created before 2026-10-01 still has `oxinov_lms`: rename it once with `docker compose exec postgres psql -U oxinov -d postgres -c "ALTER DATABASE oxinov_lms RENAME TO oxinov_edu"` while the Edu API is stopped, and set `POSTGRES_DB=oxinov_edu` in `.env`.
 
 If your volume existed before, let the request role log in once, using your own `APP_DB_PASSWORD` value:
 
 ```bash
-docker compose exec postgres psql -U oxinov -d oxinov_lms \
+docker compose exec postgres psql -U oxinov -d oxinov_edu \
   -c "ALTER ROLE oxinov_app LOGIN PASSWORD 'change-me-local-app'"
 ```
 

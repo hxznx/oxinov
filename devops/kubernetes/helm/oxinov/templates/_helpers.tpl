@@ -63,7 +63,7 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 - { name: AWS_REGION, value: {{ $root.Values.media.region | quote }} }
 {{ include "oxinov.secretEnv" (dict "root" $root "name" "APP_DB_PASSWORD") }}
 - name: DATABASE_URL
-  value: {{ include "oxinov.dbUrl" (dict "root" $root "user" "oxinov_app" "passwordVar" "APP_DB_PASSWORD" "database" "oxinov_lms") | quote }}
+  value: {{ include "oxinov.dbUrl" (dict "root" $root "user" "oxinov_app" "passwordVar" "APP_DB_PASSWORD" "database" "oxinov_edu") | quote }}
 {{- /* Paid courses (ADR-023): provider keys are optional Secret entries; a missing key keeps that provider off. */}}
 - { name: PAYMENTS_MODE, value: {{ $root.Values.payments.mode | quote }} }
 - { name: PAYMENTS_SELLER_TENANT_IDS, value: {{ $root.Values.payments.sellerTenantIds | quote }} }

@@ -72,7 +72,7 @@ spec:
           ports:
             - { name: postgres, containerPort: 5432 }
           env:
-            - { name: POSTGRES_DB, value: oxinov_lms }
+            - { name: POSTGRES_DB, value: oxinov_edu }
             - { name: POSTGRES_USER, value: oxinov }
             - { name: PGDATA, value: /var/lib/postgresql/data/pgdata }
             {{- range $key := list "POSTGRES_PASSWORD" "APP_DB_PASSWORD" "PLATFORM_APP_DB_PASSWORD" "KEYCLOAK_DB_PASSWORD" }}
@@ -80,11 +80,11 @@ spec:
             {{- end }}
           readinessProbe:
             exec:
-              command: ["pg_isready", "-U", "oxinov", "-d", "oxinov_lms"]
+              command: ["pg_isready", "-U", "oxinov", "-d", "oxinov_edu"]
             periodSeconds: 10
           livenessProbe:
             exec:
-              command: ["pg_isready", "-U", "oxinov", "-d", "oxinov_lms"]
+              command: ["pg_isready", "-U", "oxinov", "-d", "oxinov_edu"]
             periodSeconds: 30
             failureThreshold: 5
           resources:
@@ -257,7 +257,7 @@ spec:
           env:
             {{- include "oxinov.secretEnv" (dict "root" . "name" "POSTGRES_PASSWORD") | nindent 12 }}
             - name: EDU_MIGRATION_DATABASE_URL
-              value: {{ printf "postgresql://oxinov:$(POSTGRES_PASSWORD)@%s:5432/oxinov_lms" .Values.postgres.host | quote }}
+              value: {{ printf "postgresql://oxinov:$(POSTGRES_PASSWORD)@%s:5432/oxinov_edu" .Values.postgres.host | quote }}
             - name: PLATFORM_MIGRATION_DATABASE_URL
               value: {{ printf "postgresql://oxinov:$(POSTGRES_PASSWORD)@%s:5432/oxinov_platform" .Values.postgres.host | quote }}
           resources:
