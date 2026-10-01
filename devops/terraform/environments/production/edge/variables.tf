@@ -69,3 +69,21 @@ variable "brevo_dkim_cnames" {
     error_message = "Each entry must be <selector>._domainkey => a target under brevo.com."
   }
 }
+
+variable "brevo_branding_cnames" {
+  description = <<-EOT
+    Brevo's branding records for oxinov.com as record name => target, exactly as Brevo shows them. Brevo
+    completes domain authentication only with them; they serve its link-tracking and image subdomains.
+    Empty: no records.
+  EOT
+  type        = map(string)
+  default = {
+    "no-reply"     = "no-reply-oxinov-com.brand.brevosend.com"
+    "r.no-reply"   = "no-reply-oxinov-com.r.brand.brevosend.com"
+    "img.no-reply" = "no-reply-oxinov-com.img.brand.brevosend.com"
+  }
+  validation {
+    condition     = alltrue([for name, target in var.brevo_branding_cnames : can(regex("^[a-z0-9-]+([.][a-z0-9-]+)*$", name)) && can(regex("brevosend[.]com[.]?$", target))])
+    error_message = "Each entry must be a subdomain name => a target under brevosend.com."
+  }
+}

@@ -30,6 +30,16 @@ resource "aws_route53_record" "brevo_dkim" {
   records  = [each.value]
 }
 
+# Brevo branding: its link-tracking and image subdomains, required to complete Brevo domain authentication.
+resource "aws_route53_record" "brevo_branding" {
+  for_each = var.brevo_branding_cnames
+  zone_id  = aws_route53_zone.main.zone_id
+  name     = "${each.key}.${var.domain}"
+  type     = "CNAME"
+  ttl      = 300
+  records  = [each.value]
+}
+
 resource "aws_route53_record" "mx" {
   zone_id = aws_route53_zone.main.zone_id
   name    = var.domain
