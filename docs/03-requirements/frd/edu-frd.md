@@ -107,6 +107,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a learner with a time-limited plan, a lifetime plan, a free class, and a payment in review, when they open the account centre, then each appears with its correct status and end date and an action that matches it.
 - Acceptance: Given a learner starts account deletion, when they have not typed the confirmation word, then nothing is deleted; and another learner's subscriptions, payments, or activity are never shown.
 
+**FR-AUTH-105 — Goal setup after sign-up.** After the welcome step, Edu asks three skippable questions (goal, starting level, time per week) and shows a suggested path that starts with free items. The answers are stored on the learner's Edu profile, can be changed in the account centre, and feed the store's "Recommended for me" order and OXI (FR-AI-1705).
+*Priority:* Should. *Status:* Proposed. *Access:* T1 learner, own profile. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a new learner answers the three questions, when they finish, then a path with at least one free item is shown and the store sorts by those answers.
+- Acceptance: Given a learner chooses Skip, when they continue, then they reach the store with the default order and no answers stored.
+
 ### 3.2 Course authoring and publishing
 
 **FR-COURSE-201 — Structure.** An instructor can create a course with title, summary, description, program, category, applicable language and level or SSW field or IT pathway, learning outcomes, cover image, price, sections, and lessons. A course needs at least one section and one lesson per section before review. Reordering persists in the course page and player.
@@ -206,6 +211,26 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a friend signs up through a learner's link, when the account is created, then the inviter's joined count increases by one and only once.
 - Acceptance: Given a link with an unknown or tampered code, when it is opened, then the store opens normally and nothing is attributed.
 
+**FR-CATALOG-312 — Mission paths and bundles.** An administrator can group offerings into an ordered path for a goal (for example "Work in Japan"). The path page shows each step's state for the learner (complete, in progress, free, locked) and their overall progress. A path may be sold as a bundle plan whose price and length the owner sets; buying it grants an entitlement for every paid offering in the path for that length.
+*Priority:* Should. *Status:* Proposed; bundle prices are an owner decision. *Access:* T0 visitor sees the path; T1 learner sees own progress; tenant administrator manages. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a learner completed step 1 and is halfway through step 2, when they open the path, then step 1 shows complete, step 2 in progress with its percentage, and later paid steps locked with their plans.
+- Acceptance: Given a bundle payment is approved, when access is checked, then every paid offering in the path is open until the bundle's end, and offerings outside the path stay locked.
+
+**FR-CATALOG-313 — Idea and research licensing.** Idea and think-tank offerings show an abstract, a table of contents, free sample pages, a version and last-updated date, the author, and plain "you may / you may not" license terms. Access plans grant a personal-use license; a commercial license is requested through a message and priced by agreement. Before first opening, the learner accepts the license; the acceptance records the license version and time. Every view carries the buyer's watermark (FR-PLAYER-405).
+*Priority:* Must. *Status:* Proposed. *Access:* T0 visitor sees the page and samples; entitled learner opens the full content. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a learner with an active plan opens an idea for the first time, when they accept the license, then the acceptance with license version and time is stored and the full content opens.
+- Acceptance: Given a learner has not accepted the current license version, when they request the full content, then it does not open and the license is shown.
+
+**FR-CATALOG-314 — Phone-friendly bank payment.** On a phone, checkout offers "Save QR to gallery" so the learner can use "scan from gallery" in their bank app, a copy button for the amount, the reference, and the account number, a help link to Oxinov's support chat or WhatsApp, and the expected review time. Free items of the offering stay open while the payment is in review.
+*Priority:* Must. *Status:* Proposed. *Access:* T1 learner. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
+- Acceptance: Given a learner checks out on a phone, when they choose "Save QR to gallery", then the QR image is saved with the amount and reference shown beside it.
+- Acceptance: Given a payment is in review, when the learner opens a subscriber item, then it stays locked and the page says the payment is in review.
+
+**FR-CATALOG-315 — Trust on offering pages.** Every paid offering page shows what is included, the monthly cost of each plan, a certificate preview when the offering issues one, frequently asked questions with the owner's refund or change policy, and the instructor or author. Learner reviews appear only when real reviews exist (FR-CATALOG-304); the page never shows invented ratings, counts, or testimonials.
+*Priority:* Must. *Status:* Proposed. *Access:* T0 visitor and above. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a published paid offering, when a visitor opens it, then the included list, each plan's monthly cost, the FAQ with the policy, and the instructor are shown.
+- Acceptance: Given an offering has no visible reviews, when its page loads, then no rating, count, or review area is shown.
+
 ### 3.4 Learning experience
 
 **FR-PLAYER-401 — Player.** Entitled learners can play video with pause, seek, volume, captions, 0.5×–2× speed, theater mode, picture-in-picture where supported, and keyboard controls. Support desktop and mobile layouts. Issue a short-lived playback token only after an entitlement check.
@@ -237,6 +262,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 *Priority:* Could. *Status:* Proposed. *Access:* T1 learner, own progress. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
 - Acceptance: Given a learner completes a lesson for the first time, when progress is saved, then their points and level update once.
 - Acceptance: Given the same lesson is completed again or completion is retried, when progress is saved, then no extra points are added.
+
+**FR-PLAYER-407 — Data saver.** Learners can turn on a data saver that plays videos at the lowest offered quality (for example 360p) and loads document pages one at a time. The choice is remembered per device.
+*Priority:* Should. *Status:* Proposed. *Access:* T1 learner. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given data saver is on, when a video lesson starts, then it starts at the lowest offered quality.
+- Acceptance: Given data saver is off, when a video starts, then quality follows the player's automatic choice.
 
 ### 3.5 Quizzes and assignments
 
@@ -315,6 +345,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 *Priority:* Should. *Status:* Proposed. *Access:* Tenant administrator of the seller workspace. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
 - Acceptance: Given two payments are waiting and one is approved today, when the dashboard loads, then it shows 2 waiting and includes the approved amount in this month's revenue.
 - Acceptance: Given an instructor or learner, when they open the dashboard, then the request is refused.
+
+**FR-ANALYTICS-806 — Sales funnel.** Seller-workspace administrators see, per offering and for all offerings, the last 30 days of: store visits, offering page views, free items started, checkouts started, payments submitted, and payments approved, with the largest drop highlighted. Counts come from events without personal data.
+*Priority:* Should. *Status:* Proposed. *Access:* Tenant administrator of the seller workspace. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given 10 checkouts started and 4 payments submitted for an offering, when the funnel loads for it, then those two steps show 10 and 4.
+- Acceptance: Given an instructor or learner, when they request the funnel, then the request is refused.
 
 ### 3.9 Language, SSW, and IT programs
 
@@ -414,6 +449,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given an administrator grants one month with a reason, when the learner opens the offering, then subscriber items open until the grant ends and the audit log records actor, learner, offering, length, and reason.
 - Acceptance: Given a grant without a reason, or by someone who is not an administrator of the seller workspace, when it is submitted, then it is refused.
 
+**FR-MGMT-1405 — Payment match checks.** The payment review screen shows automatic checks for each bank QR payment: whether the amount the learner entered matches the plan price, whether the reference was given, and whether the bank transaction ID was already used on another payment (which blocks approval). Checks help the reviewer but never approve a payment on their own.
+*Priority:* Should. *Status:* Proposed. *Access:* Tenant administrator of the seller workspace. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
+- Acceptance: Given a transaction ID already used on another payment, when the reviewer opens the payment, then the check shows the other payment and Approve is disabled.
+- Acceptance: Given all checks pass, when no reviewer acts, then the payment stays in review.
+
 ### 3.13 Native mobile apps
 
 **FR-MOBILE-1501 — Android and iOS parity.** Provide native Android and iOS apps using the same accounts, tenant memberships, permissions, catalog, enrollments, course content, video and audio progress, chapter practice, mock exams, results, assignments, chat, and certificates as the web app. Users can choose among their workspaces and see each workspace's branding. Instructor course, grading, student, and announcement workflows and tenant-administrator review, student, customization, and payment-management workflows must be available in the apps. Changes made on one platform appear on the others after synchronization.
@@ -499,7 +539,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 
 - Every legacy requirement now carries Priority, Status, Access, Source, and at least one allowed and one denied acceptance statement. Status reflects only what the implementation table above and [current state](../../04-architecture/current-state.md) already record as verified (**Implemented**, or **Proposed** noting partial delivery); everything else defaults to **Proposed**. Priority defaults to **Must** for requirements already implemented or partly implemented, and **Should** for requirements not yet built, so that none of this normalization asserts a release commitment the owner has not made.
 - These defaults are a documentation baseline, not an approval: the owner still sets release sequencing, and may reprioritize, defer, or withdraw any **Proposed** requirement before it is built.
-- ADR-028 (2026-10-01) makes Edu Oxinov's own knowledge store: access plans, bank QR payments with review, externally hosted YouTube and Google Drive material, free and subscriber visibility, live class links, view-only display, purchase notifications, and an installable web app (FR-COURSE-206 to 208, FR-CATALOG-305 to 309, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, FR-MOBILE-1504). The owner then added the learner account centre, free offerings, sharing, levels, activity, notices, the admin dashboard, free access grants, and the OXI advisor (FR-AUTH-104, FR-CATALOG-310 and 311, FR-PLAYER-406, FR-ANALYTICS-804 and 805, FR-COMM-704, FR-MGMT-1404, FR-AI-1705). The card gateway (FR-CATALOG-308) waits for the owner's merchant account.
+- ADR-028 (2026-10-01) makes Edu Oxinov's own knowledge store: access plans, bank QR payments with review, externally hosted YouTube and Google Drive material, free and subscriber visibility, live class links, view-only display, purchase notifications, and an installable web app (FR-COURSE-206 to 208, FR-CATALOG-305 to 309, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, FR-MOBILE-1504). The owner then added the learner account centre, free offerings, sharing, levels, activity, notices, the admin dashboard, free access grants, and the OXI advisor (FR-AUTH-104, FR-CATALOG-310 and 311, FR-PLAYER-406, FR-ANALYTICS-804 and 805, FR-COMM-704, FR-MGMT-1404, FR-AI-1705). An expert UX review added goal setup, mission paths and bundles, idea licensing, phone-friendly bank payment, trust content on offering pages, data saver, the sales funnel, and payment match checks (FR-AUTH-105, FR-CATALOG-312 to 315, FR-PLAYER-407, FR-ANALYTICS-806, FR-MGMT-1405); bundle prices and the refund or change policy are owner decisions. The card gateway (FR-CATALOG-308) waits for the owner's merchant account.
 - Native mobile release scope, offline media, Organization Manager, AI features, subscriptions, tenant self-service, and provider choices remain product decisions even where this document describes their required behavior.
 - The implementation table and [current state](../../04-architecture/current-state.md) describe verified behavior today; requirement text in this document that is broader than the running product remains unimplemented until separately approved and verified.
 

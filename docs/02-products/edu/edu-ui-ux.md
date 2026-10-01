@@ -47,4 +47,23 @@ Prices always show the currency, the full amount, and what the plan includes bef
 
 Management screens for learners and administrators follow the Windows 11 Settings pattern in Oxinov colors: left menu with a profile card and search, a "Section › Item" heading, and expandable rows holding dropdowns, switches, and **Edit** buttons. On a phone the menu becomes a list of rows and actions sit in a bottom bar.
 
+## Expert review of the store (2026-10-01)
+
+A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.
+
+| Finding | Why it matters | Fix |
+| --- | --- | --- |
+| A phone cannot scan a QR code shown on its own screen | Most learners browse and pay on the same phone, so checkout would stall | Save QR to gallery, copy buttons, WhatsApp help, review time (FR-CATALOG-314) |
+| New learners face a full store with no direction | Choice overload delays the first lesson | Three-question goal setup and a suggested path that starts free (FR-AUTH-105) |
+| Courses are sold one by one | Learners want an outcome, not a course; one-by-one sales leave money on the table | Mission paths with progress and an optional bundle (FR-CATALOG-312) |
+| Ideas and research were sold like courses | Buyers of intellectual property need to know what they may do with it | Abstract, contents, samples, version, "you may / you may not", commercial license (FR-CATALOG-313) |
+| Offering pages lacked buying information | People pay when they can see what they get and what happens if it is wrong | Included list, monthly cost per plan, certificate preview, FAQ with the refund or change policy (FR-CATALOG-315) |
+| Slow and costly mobile data in Nepal | Video stalls lose learners | Data saver (FR-PLAYER-407) |
+| The owner cannot see where buyers drop off | Without it, design changes are guesses | Sales funnel per offering (FR-ANALYTICS-806) |
+| Manual review is slow and error-prone | Reused receipts and wrong amounts slip through | Automatic match checks that block reused transaction IDs (FR-MGMT-1405) |
+| Phone navigation differed between screens | Learners get lost | One bottom bar everywhere: Store, Learn, Live, Chat, Account |
+| Returning learners started from the store top | Momentum is lost | "Continue where you left off" at the top of the store |
+
+Never fill trust areas with invented numbers: reviews, ratings, learner counts, and results appear only from real data, and bundle prices and the refund policy wait for the owner.
+
 Support the named writing systems and right-to-left Arabic content. See [design system](../../07-design/design-system.md) and [accessibility](../../07-design/accessibility.md).
