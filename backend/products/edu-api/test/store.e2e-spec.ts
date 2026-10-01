@@ -97,6 +97,13 @@ suite('Oxinov store: plans, bank QR payments, review, coupons', () => {
     // Only active plans are on sale, shortest first.
     expect(info.body.data.plans.map((p: { period: string; label: string }) => p.label)).toEqual(['1 month', '1 year', 'Lifetime']);
     expect((await start(aiko, 'MONTH_6')).body.error.code).toBe('NOT_FOR_SALE');
+
+    // A course sold through plans is never enrolled for free, even if its old one-time price is 0.
+    await ownerQuery(`UPDATE courses SET price_minor = 0 WHERE id = $1`, [SEED.paidCourse]);
+    expect((await api(aiko, 'post', `/courses/${SEED.paidCourse}/enrollments`)).body.error.code).toBe('PAYMENT_REQUIRED');
+    // The catalogue shows the cheapest plan as a "from" price.
+    const listed = await api(aiko, 'get', `/courses/${SEED.paidCourse}`);
+    expect(listed.body.data).toMatchObject({ hasPlans: true, price: { amountMinor: 500_000, currency: 'NPR' } });
   });
 
   it('grants a year of access only after an administrator approves the submitted payment, exactly once', async () => {
@@ -185,6 +192,7 @@ suite('Oxinov store: plans, bank QR payments, review, coupons', () => {
     expect(mailer.sent).toHaveLength(before + 1);
     expect(mailer.sent.at(-1)).toMatchObject({ to: 'bikash@learner.example', subject: expect.stringMatching(/^We could not approve your payment/) });
     expect(mailer.sent.at(-1)!.text).toContain('Reason from our team: The screenshot shows NPR 2,000');
+    expect(mailer.sent.at(-1)!.text).toContain(`/w/sakura/pay/bank/${id}`);
 
     const mine = await api(bikash, 'get', `/courses/${SEED.paidCourse}/plans`);
     expect(mine.body.data.openPayment).toMatchObject({ id, status: 'REJECTED' });

@@ -45,6 +45,8 @@ export class EnrollmentsService {
           throw Errors.courseNotAvailable();
         }
         if (course.priceMinor > 0) throw Errors.paymentRequired();
+        // A course with access plans on sale is paid even if its old one-time price is 0 (ADR-028).
+        if ((await tx.coursePlan.count({ where: { tenantId: scope.tenantId, courseId, active: true } })) > 0) throw Errors.paymentRequired();
 
         const enrollment = await tx.enrollment.create({
           data: { tenantId: scope.tenantId, userId: user.userId, courseId },

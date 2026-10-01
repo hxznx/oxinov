@@ -553,7 +553,7 @@ export class StoreService {
           reference: result.payment.providerPaymentId,
           reason: trimmed,
           courseUrl,
-          fixUrl: `${courseUrl}/pay/bank/${result.payment.id}`,
+          fixUrl: `${this.config.payments.webUrl}/w/${encodeURIComponent(result.slug)}/pay/bank/${result.payment.id}`,
           support: this.config.mail.supportAddress,
         }),
         'payment.rejected',

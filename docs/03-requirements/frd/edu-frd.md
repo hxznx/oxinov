@@ -192,7 +192,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a review is hidden by an administrator with a recorded reason, when the rating summary is computed, then the hidden review is excluded and the moderation reason is not shown to other users.
 
 **FR-CATALOG-305 — Access plans.** Each paid offering has up to four active plans: one month, six months, one year, and lifetime, each with an NPR price in minor units. New offerings start with the owner's defaults (NPR 5,000, 10,000, 15,000, and 20,000), and a tenant administrator can change or deactivate a plan per offering. A paid plan grants access until its end time; lifetime access has no end. Buying a plan while access is active extends from the current end time. The plan, duration, price, and currency are copied onto the payment at checkout, so a later price change never alters an open or completed payment.
-*Priority:* Must. *Status:* Proposed. *Access:* T1 learner buys; tenant administrator manages plans. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+*Priority:* Must. *Status:* Implemented (API with integration tests; web pages built, end-to-end browser check pending). *Access:* T1 learner buys; tenant administrator manages plans. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
 - Acceptance: Given a learner whose access ends on 10 March buys a one-month plan on 1 March, when the payment is approved, then access ends on 10 April.
 - Acceptance: Given an administrator changes a plan price after a learner opened checkout, when that payment is approved, then it is recorded at the price shown at checkout, and a deactivated plan cannot start a new checkout.
 
@@ -202,7 +202,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given an offering is draft, archived, or belongs to a workspace that is not a seller, when a visitor requests the store or its page, then it does not appear and no price or curriculum is exposed.
 
 **FR-CATALOG-307 — Bank QR payment with review.** At checkout the learner chooses a plan and "Bank QR". The page shows the seller's bank QR image, account name, the exact amount, and a unique payment reference, then asks for the bank transaction ID and a screenshot (JPEG, PNG, or PDF up to 5 MB). Submission creates one `PENDING_REVIEW` payment and grants nothing. A tenant administrator approves or rejects it with a reason; approval grants the entitlement exactly once in the same transaction and notifies the learner (FR-COMM-703). A bank transaction ID can belong to one payment only per seller. A learner can have one open review per offering; resubmitting replaces the evidence without creating a second payment.
-*Priority:* Must. *Status:* Proposed. *Access:* T1 learner submits own payment; tenant administrator of the seller workspace reviews. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-PAY-2701, FR-PAY-2702.
+*Priority:* Must. *Status:* Implemented (API with integration tests; web pages built, end-to-end browser check pending). *Access:* T1 learner submits own payment; tenant administrator of the seller workspace reviews. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-PAY-2701, FR-PAY-2702.
 - Acceptance: Given a learner submits a transaction ID and screenshot, when an administrator approves the payment, then exactly one entitlement with the plan's end time is created and a repeated approval changes nothing.
 - Acceptance: Given a transaction ID already used by another payment, or a payment that is rejected or still in review, when the ID is reused or access is checked, then the reuse is refused and no access is granted.
 
@@ -237,7 +237,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a learner has not accepted the current license version, when they request the full content, then it does not open and the license is shown.
 
 **FR-CATALOG-314 — Phone-friendly bank payment.** On a phone, checkout offers "Save QR to gallery" so the learner can use "scan from gallery" in their bank app, a copy button for the amount, the reference, and the account number, a help link to Oxinov's support chat or WhatsApp, and the expected review time. Free items of the offering stay open while the payment is in review.
-*Priority:* Must. *Status:* Proposed. *Access:* T1 learner. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
+*Priority:* Must. *Status:* Proposed; partly implemented: copy buttons, open-and-save QR, help contact, and review time on the payment page. *Access:* T1 learner. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
 - Acceptance: Given a learner checks out on a phone, when they choose "Save QR to gallery", then the QR image is saved with the amount and reference shown beside it.
 - Acceptance: Given a payment is in review, when the learner opens a subscriber item, then it stays locked and the page says the payment is in review.
 
@@ -252,7 +252,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given an offering is a draft or archived, when someone opens its share kit or tracked link, then no post is generated and the link opens the store home.
 
 **FR-CATALOG-317 — Coupons.** The owner can create coupon codes with a percentage or fixed NPR discount, the offerings and plans they apply to, start and end dates, and a use limit. Learners enter a code at checkout on web or phone; the amount, QR reference, and receipt show the discounted price before payment. The server checks the coupon again at approval, records it on the payment, and counts a use only for approved payments. Expired, used-up, or non-matching codes are refused with a reason.
-*Priority:* Should. *Status:* Proposed. *Access:* Owner creates; T1 learner applies. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-302.
+*Priority:* Should. *Status:* Implemented (API with integration tests; web pages built, end-to-end browser check pending). *Access:* Owner creates; T1 learner applies. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-302.
 - Acceptance: Given a 25% coupon for all offerings, when a learner applies it to the 1-year plan, then checkout asks for NPR 11,250 and the approved payment records the coupon and that amount.
 - Acceptance: Given a coupon reached its use limit before approval, when the payment is reviewed, then the reviewer sees the coupon is no longer valid and the payment cannot be approved at the discounted amount.
 
@@ -470,7 +470,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a manual financial action is attempted without the required authorized role, when it is submitted, then it is refused.
 
 **FR-MGMT-1403 — Payment review queue.** Tenant administrators of the seller workspace see bank QR payments awaiting review, oldest first, with learner, offering, plan, amount, reference, transaction ID, submission time, and the screenshot (viewed inline, never public). They approve or reject with a reason; every decision records actor, time, previous state, new state, and reason.
-*Priority:* Must. *Status:* Proposed. *Access:* Tenant administrator of the seller workspace only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
+*Priority:* Must. *Status:* Implemented (API with integration tests; web pages built, end-to-end browser check pending). *Access:* Tenant administrator of the seller workspace only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
 - Acceptance: Given three payments await review, when an administrator opens the queue, then the oldest appears first with its evidence, and approving one records the decision in the audit trail.
 - Acceptance: Given an instructor, a learner, or an administrator of another workspace, when they open the queue or a screenshot, then the request is refused and reveals nothing.
 
@@ -495,7 +495,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a support agent opens a learner's detail, when the page loads, then private notes are not shown and access-changing actions are not offered.
 
 **FR-MGMT-1408 — Store settings.** The owner manages, in one Settings area: payment details (bank QR image upload, account name and number, bank, payment reference prefix, the review time promised to learners, and a payment help contact), automatic payment methods (on only when keys exist), default plan prices, coupons, the refund or change policy, the versioned content license, the email sender and support address, and the store's look. Checkout, offering pages, emails, and receipts read these settings; checkout is unavailable until a QR image and account details are set. Every change is audited; only the owner changes payment details and prices.
-*Priority:* Must. *Status:* Proposed. *Access:* Owner; other roles read only what their screens need. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
+*Priority:* Must. *Status:* Implemented (API with integration tests; web pages built, end-to-end browser check pending). *Access:* Owner; other roles read only what their screens need. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
 - Acceptance: Given no bank QR image is set, when a learner chooses a paid plan, then checkout explains that payment is not available yet instead of showing an empty QR.
 - Acceptance: Given a content editor, when they try to change the account number, then the request is refused and audited.
 

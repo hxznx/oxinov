@@ -16,10 +16,13 @@ import type {
 
 const versionSummarySelect = { id: true, title: true, summary: true, version: true } as const;
 
+const activePlansSelect = { where: { active: true }, select: { priceMinor: true, currency: true } } as const;
+
 type CourseWithVersions = Prisma.CourseGetPayload<{
   include: {
     publishedVersion: { select: typeof versionSummarySelect };
     versions: { select: typeof versionSummarySelect };
+    plans: typeof activePlansSelect;
   };
 }>;
 
@@ -63,6 +66,7 @@ export class CatalogService {
         include: {
           publishedVersion: { select: versionSummarySelect },
           versions: { select: versionSummarySelect, orderBy: { version: 'desc' }, take: 1 },
+          plans: activePlansSelect,
         },
         orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
         take: limit + 1,
@@ -252,6 +256,7 @@ export class CatalogService {
         title: input.title,
         summary: input.summary,
         price: { amountMinor: course.priceMinor, currency: course.currency },
+        hasPlans: false,
         programId: course.programId,
       };
     });
@@ -273,6 +278,7 @@ export class CatalogService {
       include: {
         publishedVersion: { select: versionSummarySelect },
         versions: { select: versionSummarySelect, orderBy: { version: 'desc' }, take: 1 },
+        plans: activePlansSelect,
       },
     });
     if (!course) throw Errors.notFound('Course');
@@ -294,6 +300,7 @@ export class CatalogService {
   }
 
   private toSummary(course: CourseWithVersions, author: boolean): CourseSummaryDto {
+    const cheapest = [...course.plans].sort((a, b) => a.priceMinor - b.priceMinor)[0];
     const version = author
       ? (course.versions[0] ?? course.publishedVersion)
       : course.publishedVersion;
@@ -303,7 +310,9 @@ export class CatalogService {
       status: course.status,
       title: version?.title ?? '',
       summary: version?.summary ?? '',
-      price: { amountMinor: course.priceMinor, currency: course.currency },
+      // With access plans on sale (ADR-028) the price is the cheapest plan, shown as "from".
+      price: cheapest ? { amountMinor: cheapest.priceMinor, currency: cheapest.currency } : { amountMinor: course.priceMinor, currency: course.currency },
+      hasPlans: cheapest !== undefined,
       programId: course.programId,
     };
   }

@@ -72,6 +72,11 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
             // {courseState(summary)}
             {draft ? ` · version ${draft.version}` : ''}
           </p>
+          {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
+            <Link href={`/w/${slug}/teach/${courseId}/plans`} className="btn btn-secondary mt-3">
+              Plans and prices
+            </Link>
+          ) : null}
         </div>
 
         {error ? (

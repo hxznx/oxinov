@@ -2,6 +2,8 @@
  * Server-side client for the Oxinov Edu API (backend/products/edu-api). The browser never calls it directly and never
  * sees tokens; every call carries the signed-in person's Edu access token. Types mirror the API DTOs.
  */
+import type { BankCheckout, BankPayment, CheckoutInfo, Coupon, Plan, PlanPeriod, ReviewItem, StoreSettings, UploadTicket as StoreUploadTicket } from './store.ts';
+
 export type TenantRole = 'LEARNER' | 'INSTRUCTOR' | 'ADMIN' | 'OWNER';
 
 export interface Workspace {
@@ -27,6 +29,8 @@ export interface CourseSummary {
   title: string;
   summary: string;
   price: Price;
+  /** Sold through access plans (ADR-028): `price` is the cheapest plan, shown as "from". */
+  hasPlans?: boolean;
   programId: string | null;
 }
 
@@ -638,6 +642,41 @@ export const eduApi = {
       `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft/resources/uploads/${encodeURIComponent(fileId)}/complete`,
       { method: 'POST' },
     ),
+  // Oxinov store (ADR-028): plans, bank QR payments, review, settings, coupons.
+  checkoutInfo: (token: string, tenantId: string, courseId: string) =>
+    request<CheckoutInfo>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/plans`),
+  startBankQr: (token: string, tenantId: string, courseId: string, body: { period: PlanPeriod; couponCode?: string }) =>
+    request<BankCheckout>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/checkout/bank-qr`, { method: 'POST', body }),
+  bankPayment: (token: string, tenantId: string, paymentId: string) =>
+    request<BankCheckout>(token, `${tenantPath(tenantId)}/me/bank-payments/${encodeURIComponent(paymentId)}`),
+  evidenceUpload: (token: string, tenantId: string, paymentId: string, body: { contentType: string; sizeBytes: number }) =>
+    request<StoreUploadTicket>(token, `${tenantPath(tenantId)}/me/bank-payments/${encodeURIComponent(paymentId)}/evidence-upload`, { method: 'POST', body }),
+  submitBankPayment: (token: string, tenantId: string, paymentId: string, bankTransactionId: string) =>
+    request<BankPayment>(token, `${tenantPath(tenantId)}/me/bank-payments/${encodeURIComponent(paymentId)}/submit`, { method: 'POST', body: { bankTransactionId } }),
+  reviewQueue: (token: string, tenantId: string, status: 'PENDING_REVIEW' | 'SUCCEEDED' | 'REJECTED') =>
+    request<ReviewItem[]>(token, `${tenantPath(tenantId)}/store/payments?status=${status}`),
+  reviewDetail: (token: string, tenantId: string, paymentId: string) =>
+    request<ReviewItem>(token, `${tenantPath(tenantId)}/store/payments/${encodeURIComponent(paymentId)}`),
+  approvePayment: (token: string, tenantId: string, paymentId: string) =>
+    request<ReviewItem>(token, `${tenantPath(tenantId)}/store/payments/${encodeURIComponent(paymentId)}/approve`, { method: 'POST' }),
+  rejectPayment: (token: string, tenantId: string, paymentId: string, reason: string) =>
+    request<ReviewItem>(token, `${tenantPath(tenantId)}/store/payments/${encodeURIComponent(paymentId)}/reject`, { method: 'POST', body: { reason } }),
+  managePlans: (token: string, tenantId: string, courseId: string) =>
+    request<{ plans: Plan[]; defaults: Record<PlanPeriod, number> }>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/plans/manage`),
+  setPlans: (token: string, tenantId: string, courseId: string, plans: { period: PlanPeriod; priceMinor: number; active: boolean }[]) =>
+    request<Plan[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/plans`, { method: 'PUT', body: { plans } }),
+  storeSettings: (token: string, tenantId: string) => request<StoreSettings>(token, `${tenantPath(tenantId)}/store/settings`),
+  updateStoreSettings: (token: string, tenantId: string, body: Record<string, unknown>) =>
+    request<StoreSettings>(token, `${tenantPath(tenantId)}/store/settings`, { method: 'PATCH', body }),
+  qrUpload: (token: string, tenantId: string, body: { contentType: string; sizeBytes: number }) =>
+    request<StoreUploadTicket>(token, `${tenantPath(tenantId)}/store/settings/qr-upload`, { method: 'POST', body }),
+  qrComplete: (token: string, tenantId: string, body: { uploadId: string; contentType: string }) =>
+    request<StoreSettings>(token, `${tenantPath(tenantId)}/store/settings/qr-complete`, { method: 'POST', body }),
+  coupons: (token: string, tenantId: string) => request<Coupon[]>(token, `${tenantPath(tenantId)}/store/coupons`),
+  createCoupon: (token: string, tenantId: string, body: Record<string, unknown>) =>
+    request<Coupon>(token, `${tenantPath(tenantId)}/store/coupons`, { method: 'POST', body }),
+  setCouponActive: (token: string, tenantId: string, couponId: string, active: boolean) =>
+    request<Coupon>(token, `${tenantPath(tenantId)}/store/coupons/${encodeURIComponent(couponId)}`, { method: 'PATCH', body: { active } }),
   submitAttempt: (token: string, tenantId: string, attemptId: string) =>
     request<Attempt>(token, `${tenantPath(tenantId)}/exam-attempts/${encodeURIComponent(attemptId)}/submit`, { method: 'POST' }),
 };

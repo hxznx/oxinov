@@ -6,6 +6,11 @@ Next.js 16 app for learners, instructors, and school administrators ([Oxinov Edu
 
 | Page | Requirement |
 |---|---|
+| Course page plans: 1 month, 6 months, 1 year, lifetime, with monthly cost, end date, coupon, renewal (`courses/[courseId]`, `PlansPanel`) | FR-CATALOG-305, FR-CATALOG-315 |
+| Bank QR payment: QR, copy buttons, receipt upload, transaction ID, in review, approved, needs a fix (`pay/bank/[paymentId]`) | FR-CATALOG-307, FR-CATALOG-314 |
+| Payment review queue and decision with receipt and checks (`store/payments`, `store/payments/[paymentId]`) | FR-MGMT-1403, FR-MGMT-1405 |
+| Store settings: bank QR upload, payment details, review time, help, refund policy, default prices, coupons (`store/settings`) | FR-MGMT-1408, FR-CATALOG-317 |
+| Plans and prices per course (`teach/[courseId]/plans`) | FR-CATALOG-305 |
 | `/` sign-in, the person's learning spaces with their role, and creating a space | FR-ID-2207, FR-TENANT |
 | `/w/{space}` course catalogue with search and "Continue learning" | FR-CATALOG-301, FR-ANALYTICS-801 |
 | `/w/{space}/courses/{id}` outcomes, curriculum with locked and preview lessons, price, free enrollment | FR-CATALOG-302, FR-CATALOG-303 |

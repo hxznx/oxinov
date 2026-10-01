@@ -101,7 +101,8 @@ export class CourseSummaryDto {
   @ApiProperty() status: string;
   @ApiProperty() title: string;
   @ApiProperty() summary: string;
-  @ApiProperty({ type: PriceDto }) price: PriceDto;
+  @ApiProperty({ type: PriceDto, description: 'One-time price, or the cheapest access plan when hasPlans is true.' }) price: PriceDto;
+  @ApiProperty({ description: 'Sold through access plans (ADR-028); show the price as "from".' }) hasPlans: boolean;
   @ApiProperty({ nullable: true, type: String }) programId: string | null;
 }
 

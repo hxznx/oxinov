@@ -37,9 +37,17 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
               </Link>
             ) : null}
             {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
-              <Link href={`${here}/people`} className="btn btn-secondary">
-                People and join codes
-              </Link>
+              <>
+                <Link href={`${here}/store/payments`} className="btn btn-secondary">
+                  Payments
+                </Link>
+                <Link href={`${here}/store/settings`} className="btn btn-secondary">
+                  Store settings
+                </Link>
+                <Link href={`${here}/people`} className="btn btn-secondary">
+                  People and join codes
+                </Link>
+              </>
             ) : null}
           </div>
         </div>
@@ -90,7 +98,7 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
                   <Link href={`${here}/courses/${course.id}`} className="card card-link flex h-full flex-col">
                     <span className="text-xl">{course.title}</span>
                     <span className="mt-2 flex-1 text-muted">{course.summary}</span>
-                    <span className="hud-label mt-3 block">// {formatPrice(course.price)}</span>
+                    <span className="hud-label mt-3 block">// {course.hasPlans ? `from ${formatPrice(course.price)}` : formatPrice(course.price)}</span>
                   </Link>
                 </li>
               ))}

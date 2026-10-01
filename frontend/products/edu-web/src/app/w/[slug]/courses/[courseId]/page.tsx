@@ -7,6 +7,7 @@ import { formatDate, formatDuration, formatPrice } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { BuyPanel } from './BuyPanel';
 import { EnrollButton } from './EnrollButton';
+import { PlansPanel } from './PlansPanel';
 import { StartExamButton } from './StartExamButton';
 
 type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ locked?: string; paid?: string }> };
@@ -47,6 +48,9 @@ export default async function CoursePage({ params, searchParams }: Props) {
     !entitled && course.price.amountMinor > 0
       ? await eduApi.checkoutOptions(token, workspace.id, courseId).catch(() => null)
       : null;
+  // Access plans and bank QR (ADR-028); a failure here hides the plans only.
+  const plans = await eduApi.checkoutInfo(token, workspace.id, courseId).catch(() => null);
+  const sellsPlans = plans !== null && (plans.plans.length > 0 || plans.openPayment !== null);
   const lessons = course.curriculum.flatMap((section) => section.lessons);
   const firstLesson = lessons.find((lesson) => entitled || lesson.isPreview);
 
@@ -247,6 +251,12 @@ export default async function CoursePage({ params, searchParams }: Props) {
                     )}
                   </div>
                 ) : null}
+                {plans?.accessEndsAt ? (
+                  <details className="card grid gap-3">
+                    <summary className="cursor-pointer">Access until {formatDate(plans.accessEndsAt, workspace.timeZone)} · Renew</summary>
+                    <PlansPanel slug={slug} tenantId={workspace.id} courseId={course.id} info={plans} timeZone={workspace.timeZone} />
+                  </details>
+                ) : null}
                 <Link href={`${here}/stream`} className="btn btn-secondary justify-center">
                   Class stream
                 </Link>
@@ -261,7 +271,9 @@ export default async function CoursePage({ params, searchParams }: Props) {
               </>
             ) : (
               <>
-                {course.price.amountMinor === 0 ? (
+                {sellsPlans && plans ? (
+                  <PlansPanel slug={slug} tenantId={workspace.id} courseId={course.id} info={plans} timeZone={workspace.timeZone} />
+                ) : course.price.amountMinor === 0 ? (
                   <EnrollButton tenantId={workspace.id} courseId={course.id} returnTo={here} free />
                 ) : checkout ? (
                   <BuyPanel tenantId={workspace.id} courseId={course.id} returnTo={here} options={checkout} />
