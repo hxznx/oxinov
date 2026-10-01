@@ -5,7 +5,7 @@ PostgreSQL schema for the Oxinov platform control plane, used only by `backend/p
 | Path | Purpose |
 | --- | --- |
 | `prisma/schema.prisma` | Accounts, policy versions, append-only acceptances, product catalogue, entitlements, audit history |
-| `migrations/` | Numbered migrations: schema, owner isolation (RLS, `oxinov_platform_app` role, constraints), product catalogue |
+| `migrations/` | Numbered migrations: schema, owner isolation (RLS, `oxinov_platform_app` role, constraints), product catalogue, sign-up policy versions |
 | `seeds/dev_seed.sql` | Local and test data only; never load into staging or production |
 | `policies/owner_isolation_test.sql` | Database-level isolation tests run as the application role |
 | `policies/local-app-role.sh` | Local Docker init: creates `oxinov_platform` and the request role login |

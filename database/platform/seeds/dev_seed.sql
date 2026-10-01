@@ -1,11 +1,7 @@
 -- Local development and test data for the platform database. Never load into staging or production.
 -- Deterministic IDs are referenced by policies/owner_isolation_test.sql and backend/platform-api tests.
 
--- Policy versions accepted on the welcome screen (placeholder text until legal review).
-INSERT INTO policies (id, version, title, url, material, required_for_signup, effective_at) VALUES
-    ('terms', 1, 'Oxinov Terms of Service', 'https://oxinov.com/legal/terms/', true, true, '2026-09-01T00:00:00Z'),
-    ('privacy', 1, 'Oxinov Privacy Policy', 'https://oxinov.com/legal/privacy/', true, true, '2026-09-01T00:00:00Z'),
-    ('acceptable-use', 1, 'Acceptable Use and Community Policy', 'https://oxinov.com/legal/acceptable-use/', true, false, '2026-09-01T00:00:00Z');
+-- The sign-up policy versions come from migration 20261001090000_signup_policies.
 
 -- Oxinov Edu is launched locally so member access can be exercised; the other products stay unlaunched.
 UPDATE products SET launched = true, release_gate_recorded_at = '2026-09-20T00:00:00Z' WHERE key = 'edu';
