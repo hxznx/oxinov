@@ -1,5 +1,13 @@
 # Project changelog
 
+- **2026-10-01, Oxinov Edu becomes Oxinov's own knowledge store (requirements):** The owner decided Edu sells Oxinov's own courses, training, ideas, think-tank research, and skills ([ADR-028](../04-architecture/adr/adr-028-edu-knowledge-store.md)).
+  - **Plans and payment:** every offering has 1-month, 6-month, 1-year, and lifetime access (defaults NPR 5,000, 10,000, 15,000, and 20,000); bank QR payments are approved by an administrator; card payments for learners abroad follow once a gateway account exists.
+  - **Material:** unlisted YouTube videos and Google Drive files are revealed only to learners with access (YouTube private videos cannot be embedded); free and subscriber visibility per item; live class links; view-only viewing with a watermark.
+  - **Notices and mobile:** "Welcome to Oxinov" email (FR-NOTIF-2903), thank-you, rejection, and renewal notices (FR-COMM-703), and an installable web app before the native app.
+  - **Requirements:** Edu FRD v2.3 adds FR-COURSE-206 to 208, FR-CATALOG-305 to 309, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, and FR-MOBILE-1504; the Edu UI/UX rules describe the store screens.
+
+- **2026-10-01, New accounts could not finish the welcome step:** the Terms and Privacy policy versions existed only in the local seed, so production showed no policies and the API refused every welcome ("Check your details and try again"). Migration `20261001090000_signup_policies` publishes them in every environment. Gmail sign-up now works end to end through Brevo, with oxinov.com authenticated for Brevo (DKIM, DMARC reports, branded links).
+
 - **2026-09-30, Gmail users get no sign-in code: Brevo sending, and a failed deploy fixed:**
   - **Why no code:** customers with Gmail and other outside addresses received no code because AWS refused SES production access. SES in its sandbox delivers only to verified addresses, so the codes were dropped.
   - **Brevo sending:** at the owner's choice, the mail relay can now send through Brevo's SMTP relay (free, 300 a day) with the same sender check and per-address limit (`createSmtpSender`, `nodemailer` 10.0.12, 2 new tests). It switches automatically once the owner stores `MAIL_SMTP_USER` and `MAIL_SMTP_PASSWORD` in Parameter Store, and SES stays the fallback. Brevo's domain records are ready as Terraform variables in the edge stack. The owner steps are in the [production runbook](../../devops/kubernetes/README.md#sending-through-brevo-instead-gmail-and-every-other-address-today).

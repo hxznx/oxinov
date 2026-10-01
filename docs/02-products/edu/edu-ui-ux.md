@@ -2,7 +2,7 @@
 
 Every Oxinov product uses the shared Oxinov shell (header, app launcher, account menu, footer, sign-in, upgrade and verification prompts) from the [design system](../../07-design/design-system.md), so people move between products with one account and one familiar layout. The rules below add LMS-specific behavior.
 
-**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-29
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-10-01
 
 ## Product evidence rule
 
@@ -24,5 +24,22 @@ The cyberpunk visual system is subordinate to usability. Reduce effects and use 
 Make the active LMS workspace and role visible on every administrative screen. Keep navigation consistent across web and mobile: Discover, My Learning, Exams, Chat, and role-specific Manage. Show published course information, final price, prerequisites, and access terms before purchase.
 
 Long authoring tasks use drafts and autosave. Destructive or financial actions show the affected tenant and records before confirmation. AI proposals show editable diffs before saving. Loading, empty, error, offline, and retry states are required for each primary flow.
+
+## Oxinov store (ADR-028)
+
+The store is a fusion of futuristic, gaming, and cyberpunk interfaces: HUD frames with clipped corners, corner brackets, and thin rule lines; neon cyan and magenta accents on near-black; monospace labels such as `// LANGUAGES` and `SYS.READY`; game-style level badges, progress bars, and "unlocked" states. The store home hero uses **Full** intensity; other discovery pages (categories, offering pages, "My learning") use **Standard**. Checkout, payment review, reading PDFs, watching lessons, and exams use **Calm** intensity, as the design system requires.
+
+| Screen | Purpose and primary action |
+| --- | --- |
+| Store home | Hero with the Oxinov promise, category rails (Languages, Technology, Ideas and research), featured offerings with "from NPR 5,000"; primary action **Explore** |
+| Offering page | Kind badge, introduction video, syllabus, free items playable, locked items with a lock icon, live sessions, instructor; plan cards (1 month, 6 months, 1 year, Lifetime) showing price and the exact end date; primary action **Choose plan** |
+| Checkout | Calm: plan summary, bank QR with account name, amount, and reference, then transaction ID and screenshot; primary action **Submit for review**; card payment appears when available |
+| Payment status | "In review", "Approved", or "Rejected" with the reason and the next step; the support address is always visible |
+| My learning | Each offering with progress, level badge, access end date or "Lifetime", and **Continue**; renewal call to action before expiry |
+| Player and viewer | Calm: video or document fills the frame, watermark with the learner's email, no download control, chapter list beside or below |
+| Admin: payments | Calm: oldest review first, evidence inline, **Approve** and **Reject with reason** |
+| Admin: offering | Kind, category, plans and prices, free or subscriber per item, YouTube or Drive address per lesson, live sessions |
+
+Prices always show the currency, the full amount, and what the plan includes before commitment. Locked items show the title so learners know what they will get, never the content.
 
 Support the named writing systems and right-to-left Arabic content. See [design system](../../07-design/design-system.md) and [accessibility](../../07-design/accessibility.md).

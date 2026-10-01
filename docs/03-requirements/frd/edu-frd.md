@@ -1,7 +1,7 @@
 # Functional Requirements Document: Oxinov Edu
 
-**Version:** 2.2  
-**Date:** 2026-09-28  
+**Version:** 2.3  
+**Date:** 2026-10-01  
 **Status:** Active product requirements with mixed implementation state; every requirement carries Priority, Status, Access, Source, and acceptance statements; owner review remains open for unapproved scope, priority, and release sequencing  
 **Scope:** Oxinov Edu (`edu.oxinov.com`), the first Oxinov product plane  
 **Technical slug:** `edu` (ADR-027)  
@@ -129,6 +129,21 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a recording is processed and approved, when a learner opens the attached lesson, then only that processed, approved recording is playable.
 - Acceptance: Given an upload is interrupted, when the instructor resumes or retries it, then no duplicate lesson or recording is created, and an unprocessed or unapproved recording remains unplayable.
 
+**FR-COURSE-206 — Externally hosted lessons and materials.** An approved instructor can attach to a lesson an unlisted YouTube video (by URL or video ID) or a Google Drive file (PDF, slides, document, spreadsheet, or image), besides Oxinov-hosted media, files, and links. The server accepts only `youtube.com`, `youtu.be`, `drive.google.com`, and `docs.google.com` addresses, stores only the parsed video or file ID, and refuses other hosts and playlist addresses. Material kinds shown to learners are video, PDF book, notes, slides, image, quiz, link, and social link.
+*Priority:* Must. *Status:* Proposed. *Access:* Approved instructor, own offering. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given an instructor pastes an unlisted YouTube or Google Drive address, when the lesson is saved, then only the parsed ID and kind are stored and the lesson plays or previews inside Oxinov.
+- Acceptance: Given an address on another host or a malformed ID, when the instructor saves it, then it is refused with a field-specific reason and nothing is stored.
+
+**FR-COURSE-207 — Free and subscriber visibility.** Every lesson, material, and live session is marked `FREE` or `SUBSCRIBERS`. The offering's introduction and syllabus are always free. Signed-in learners without access see free items in full and subscriber items as locked titles with the plans that unlock them. The API never returns a subscriber item's video ID, file ID, URL, meeting link, or body to a caller without an active entitlement, including in page source, previews, sitemaps, and search results.
+*Priority:* Must. *Status:* Proposed. *Access:* T0 visitor sees the public offering page; T1 learner sees free items; entitled learner sees all. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-COURSE-204.
+- Acceptance: Given an item is marked `FREE`, when a signed-in learner without a plan opens it, then it plays or opens in full.
+- Acceptance: Given an item is marked `SUBSCRIBERS`, when a learner without an active entitlement requests it by any route, then no video ID, file ID, URL, link, or body is returned and the plans that unlock it are shown.
+
+**FR-COURSE-208 — Live class links.** An approved instructor can schedule live sessions for an offering with a title, start time, duration, and a Google Meet, Microsoft Teams, or Zoom link, each `FREE` or `SUBSCRIBERS`. Learners see upcoming sessions in their time zone with a join button that is active from 15 minutes before the start until the end. Only `meet.google.com`, `teams.microsoft.com`, `teams.live.com`, and `zoom.us` (with its subdomains) links are accepted. Oxinov does not host or record calls.
+*Priority:* Should. *Status:* Proposed. *Access:* Approved instructor, own offering; learners per FR-COURSE-207. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a subscriber session starts in 10 minutes, when an entitled learner opens the offering, then the session shows in their time zone with an active join button.
+- Acceptance: Given a learner without access, or a link on another host, when the session is requested or saved, then the meeting link is not returned or the save is refused.
+
 ### 3.3 Catalog, enrollment, and payment
 
 **FR-CATALOG-301 — Discovery.** Search published programs and courses by title, description, instructor, language, exam, and skill field. Filter by program, language, JLPT level or other applicable level, SSW field, IT topic, price, rating, and duration. Paginate and sort results. Exclude archived and unapproved courses and show a useful empty state.
@@ -151,6 +166,31 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given an enrolled learner has not yet reviewed a course, when they submit a rating and review, then it is saved once and only that learner can later edit it.
 - Acceptance: Given a review is hidden by an administrator with a recorded reason, when the rating summary is computed, then the hidden review is excluded and the moderation reason is not shown to other users.
 
+**FR-CATALOG-305 — Access plans.** Each paid offering has up to four active plans: one month, six months, one year, and lifetime, each with an NPR price in minor units. New offerings start with the owner's defaults (NPR 5,000, 10,000, 15,000, and 20,000), and a tenant administrator can change or deactivate a plan per offering. A paid plan grants access until its end time; lifetime access has no end. Buying a plan while access is active extends from the current end time. The plan, duration, price, and currency are copied onto the payment at checkout, so a later price change never alters an open or completed payment.
+*Priority:* Must. *Status:* Proposed. *Access:* T1 learner buys; tenant administrator manages plans. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a learner whose access ends on 10 March buys a one-month plan on 1 March, when the payment is approved, then access ends on 10 April.
+- Acceptance: Given an administrator changes a plan price after a learner opened checkout, when that payment is approved, then it is recorded at the price shown at checkout, and a deactivated plan cannot start a new checkout.
+
+**FR-CATALOG-306 — Oxinov store.** `edu.oxinov.com` opens on the store of the seller workspace (ADR-023): featured offerings, categories (Languages, Technology, Ideas and research), offering kinds (course, training, idea, think tank, skill), search, "Continue learning", and "My learning". An offering page shows the kind, category, introduction, syllabus, free items, locked items, instructor, upcoming live sessions, and the plans with their prices and end dates before checkout. School workspaces and join codes are not shown in learner navigation.
+*Priority:* Must. *Status:* Proposed. *Access:* T0 visitor and above. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-301, FR-CATALOG-302.
+- Acceptance: Given a visitor opens `edu.oxinov.com`, when the page loads, then published offerings of the seller workspace appear grouped by category with their lowest plan price.
+- Acceptance: Given an offering is draft, archived, or belongs to a workspace that is not a seller, when a visitor requests the store or its page, then it does not appear and no price or curriculum is exposed.
+
+**FR-CATALOG-307 — Bank QR payment with review.** At checkout the learner chooses a plan and "Bank QR". The page shows the seller's bank QR image, account name, the exact amount, and a unique payment reference, then asks for the bank transaction ID and a screenshot (JPEG, PNG, or PDF up to 5 MB). Submission creates one `PENDING_REVIEW` payment and grants nothing. A tenant administrator approves or rejects it with a reason; approval grants the entitlement exactly once in the same transaction and notifies the learner (FR-COMM-703). A bank transaction ID can belong to one payment only per seller. A learner can have one open review per offering; resubmitting replaces the evidence without creating a second payment.
+*Priority:* Must. *Status:* Proposed. *Access:* T1 learner submits own payment; tenant administrator of the seller workspace reviews. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-PAY-2701, FR-PAY-2702.
+- Acceptance: Given a learner submits a transaction ID and screenshot, when an administrator approves the payment, then exactly one entitlement with the plan's end time is created and a repeated approval changes nothing.
+- Acceptance: Given a transaction ID already used by another payment, or a payment that is rejected or still in review, when the ID is reused or access is checked, then the reuse is refused and no access is granted.
+
+**FR-CATALOG-308 — International card payment.** Learners outside Nepal can pay a plan by card through a card-acquiring gateway's hosted page in the gateway's settlement currency. Oxinov never receives, stores, or logs card numbers or security codes. Access is granted only after the server verifies the gateway result for the exact amount and currency (FR-PAY-2701). The adapter is built once the owner has a gateway merchant account.
+*Priority:* Should. *Status:* Proposed. *Access:* T1 learner. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-PAY-2701.
+- Acceptance: Given the gateway confirms a captured payment for the expected amount and currency, when the server verifies it, then the plan's entitlement is granted exactly once.
+- Acceptance: Given a redirect without verification, a declined card, or an amount or currency mismatch, when the learner returns, then no access is granted and a mismatch raises a security event.
+
+**FR-CATALOG-309 — Access expiry and renewal.** When a time-limited plan ends, subscriber items lock again while free items, progress, notes, results, and certificates remain. The learner sees the end date on "My learning" and the offering page and can renew from either. Expiry is evaluated on every protected request, not by a background job.
+*Priority:* Must. *Status:* Proposed. *Access:* T1 learner, own access. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a plan ended yesterday, when the learner opens a subscriber lesson, then it is locked with the renewal plans and their earlier progress is still shown.
+- Acceptance: Given access is still active, when the learner opens "My learning", then the offering shows its end date or "Lifetime".
+
 ### 3.4 Learning experience
 
 **FR-PLAYER-401 — Player.** Entitled learners can play video with pause, seek, volume, captions, 0.5×–2× speed, theater mode, picture-in-picture where supported, and keyboard controls. Support desktop and mobile layouts. Issue a short-lived playback token only after an entitlement check.
@@ -172,6 +212,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 *Priority:* Must. *Status:* Implemented. *Access:* T1 entitled learner records; approved instructor reviews own course. *Source:* Edu product scope.
 - Acceptance: Given a learner previews and re-records before submitting, when they submit, then only the final take is stored privately for instructor feedback.
 - Acceptance: Given a learner lacks microphone permission or course entitlement, when they attempt the exercise, then no recording flow starts and no submission is created.
+
+**FR-PLAYER-405 — View-only material.** Videos, PDFs, slides, documents, and images open inside Oxinov's player or viewer with no download, print, or open-in-new-tab control. YouTube uses the privacy-enhanced embed, Google Drive its preview frame, and Oxinov files short-lived signed URLs served inline. A watermark with the learner's email and the current date overlays the viewer. The protection is a deterrent: the product does not claim to prevent screen recording.
+*Priority:* Must. *Status:* Proposed. *Access:* Entitled learner, or any signed-in learner for `FREE` items. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-PLAYER-401.
+- Acceptance: Given an entitled learner opens a PDF or video, when the viewer loads, then no download or print control is shown and the watermark shows their email.
+- Acceptance: Given a signed URL past its lifetime, when it is used, then the file is not served.
 
 ### 3.5 Quizzes and assignments
 
@@ -213,6 +258,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 *Priority:* Must. *Status:* Implemented. *Access:* Approved instructor, own course; enrolled learners receive. *Source:* Edu product scope.
 - Acceptance: Given an instructor posts an announcement, when delivery runs, then it appears in the course and is emailed, and a delivery retry does not create a duplicate send.
 - Acceptance: Given a learner has not opted into push notifications or is not enrolled, when the announcement is sent, then that learner does not receive it on the non-opted-in channel.
+
+**FR-COMM-703 — Purchase and access notifications.** Edu sends, by email and as an in-app notice: "Thank you for subscribing to <offering> (<plan>)" with the end date, what to do next, and the support address when a payment is approved or verified; the reason and next step when a payment is rejected; and a renewal reminder seven days and one day before a time-limited plan ends. Each notice is sent once per event, and transaction notices cannot be turned off (FR-NOTIF-2902).
+*Priority:* Must. *Status:* Proposed. *Access:* The paying learner only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-NOTIF-2901, FR-NOTIF-2902.
+- Acceptance: Given a payment is approved, when the approval commits, then the learner receives one thank-you email and one in-app notice naming the offering, plan, and end date, and a retried approval sends nothing more.
+- Acceptance: Given a payment is rejected, when the rejection commits, then the learner is told the reason and no thank-you notice is sent.
 
 ### 3.8 Dashboards and reporting
 
@@ -319,6 +369,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given authorized staff initiate a refund, when the provider event is verified, then the resulting entitlement change is shown and the action records actor, amount, currency, provider ID, and reason.
 - Acceptance: Given a manual financial action is attempted without the required authorized role, when it is submitted, then it is refused.
 
+**FR-MGMT-1403 — Payment review queue.** Tenant administrators of the seller workspace see bank QR payments awaiting review, oldest first, with learner, offering, plan, amount, reference, transaction ID, submission time, and the screenshot (viewed inline, never public). They approve or reject with a reason; every decision records actor, time, previous state, new state, and reason.
+*Priority:* Must. *Status:* Proposed. *Access:* Tenant administrator of the seller workspace only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
+- Acceptance: Given three payments await review, when an administrator opens the queue, then the oldest appears first with its evidence, and approving one records the decision in the audit trail.
+- Acceptance: Given an instructor, a learner, or an administrator of another workspace, when they open the queue or a screenshot, then the request is refused and reveals nothing.
+
 ### 3.13 Native mobile apps
 
 **FR-MOBILE-1501 — Android and iOS parity.** Provide native Android and iOS apps using the same accounts, tenant memberships, permissions, catalog, enrollments, course content, video and audio progress, chapter practice, mock exams, results, assignments, chat, and certificates as the web app. Users can choose among their workspaces and see each workspace's branding. Instructor course, grading, student, and announcement workflows and tenant-administrator review, student, customization, and payment-management workflows must be available in the apps. Changes made on one platform appear on the others after synchronization.
@@ -335,6 +390,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 *Priority:* Should. *Status:* Proposed. *Access:* T1 learner. *Source:* [Google Play payments policy](https://support.google.com/googleplay/android-developer/answer/9858738?hl=en).
 - Acceptance: Given a store receipt or payment-provider event is verified server-side, when verification succeeds, then the same course entitlement used by the web app is granted exactly once.
 - Acceptance: Given a receipt or event fails verification or is duplicated, when the purchase flow completes, then no entitlement is granted or duplicated.
+
+**FR-MOBILE-1504 — Installable web app first.** `edu.oxinov.com` can be installed on a phone's home screen (web app manifest, icons, theme color, and an offline page explaining that learning needs a connection). Every learner journey, including checkout and viewing, works at 360 px width with touch targets of at least 44 px. Purchases happen on the web; the native app shows access bought on the web and follows FR-MOBILE-1503 for store rules.
+*Priority:* Must. *Status:* Proposed. *Access:* Same as the web app. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); ADR-003.
+- Acceptance: Given a learner opens the store on an Android phone, when they choose "Add to home screen", then Oxinov Edu opens full screen from its icon.
+- Acceptance: Given the phone is offline, when the installed app opens, then the offline page explains the problem instead of a browser error.
 
 ### 3.14 Customer Edu workspaces (multi-tenancy)
 
@@ -394,6 +454,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 
 - Every legacy requirement now carries Priority, Status, Access, Source, and at least one allowed and one denied acceptance statement. Status reflects only what the implementation table above and [current state](../../04-architecture/current-state.md) already record as verified (**Implemented**, or **Proposed** noting partial delivery); everything else defaults to **Proposed**. Priority defaults to **Must** for requirements already implemented or partly implemented, and **Should** for requirements not yet built, so that none of this normalization asserts a release commitment the owner has not made.
 - These defaults are a documentation baseline, not an approval: the owner still sets release sequencing, and may reprioritize, defer, or withdraw any **Proposed** requirement before it is built.
+- ADR-028 (2026-10-01) makes Edu Oxinov's own knowledge store: access plans, bank QR payments with review, externally hosted YouTube and Google Drive material, free and subscriber visibility, live class links, view-only display, purchase notifications, and an installable web app (FR-COURSE-206 to 208, FR-CATALOG-305 to 309, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, FR-MOBILE-1504). The card gateway (FR-CATALOG-308) waits for the owner's merchant account.
 - Native mobile release scope, offline media, Organization Manager, AI features, subscriptions, tenant self-service, and provider choices remain product decisions even where this document describes their required behavior.
 - The implementation table and [current state](../../04-architecture/current-state.md) describe verified behavior today; requirement text in this document that is broader than the running product remains unimplemented until separately approved and verified.
 

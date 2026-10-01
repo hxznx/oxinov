@@ -294,6 +294,11 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given marketing email disabled, no marketing email is sent.
 - Acceptance: Given a security or transaction event, when the user has disabled marketing, then the required notice is still delivered through its configured essential channel.
 
+**FR-NOTIF-2903 — Welcome email.** When a person completes the first-sign-in welcome (FR-ID-2205), the platform must send one "Welcome to Oxinov" email to their verified address with their display name, what they can do next (open Oxinov Edu, manage the account), and the support address. A retried or repeated welcome sends nothing more, and a failed send never blocks the account.
+*Priority:* Must. *Status:* Proposed. *Access:* The new member only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-ID-2205.
+- Acceptance: Given a new member presses **Agree and continue**, when the welcome commits, then exactly one welcome email is queued for their verified address.
+- Acceptance: Given the mail service is unavailable, when the welcome commits, then the account still opens and the failure is logged without the email body.
+
 ### 3.10 Messaging (MSG)
 
 **FR-MSG-3001 — Conversations.** The platform must provide conversation and message primitives that products use for buyer–seller, seeker–provider, and employer–candidate messaging, scoped to a product and a related record.
