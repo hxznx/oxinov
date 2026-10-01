@@ -176,9 +176,23 @@ spec:
               args:
                 - |
                   set -eu
+                  # A new pod's first connections are refused until the node's network policy admits it
+                  # (k3s needs a second or two), so wait for PostgreSQL before dumping.
+                  tries=0
+                  until pg_isready -h "$PGHOST" -t 2 >/dev/null 2>&1; do
+                    tries=$((tries + 1))
+                    if [ "$tries" -ge 30 ]; then echo "backup failed: PostgreSQL not reachable" >&2; exit 1; fi
+                    sleep 2
+                  done
+                  # Dump to a file, not a pipe: the shell has no pipefail, and a failed dump piped into gzip
+                  # used to upload an empty 20-byte file and report success.
+                  pg_dumpall --clean --if-exists > /tmp/oxinov.sql
+                  bytes=$(wc -c < /tmp/oxinov.sql)
+                  if [ "$bytes" -lt 10000 ]; then echo "backup failed: dump is only $bytes bytes" >&2; exit 1; fi
+                  gzip -9 /tmp/oxinov.sql
                   key="database/$(date -u +%Y/%m/%d)/oxinov-$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
-                  pg_dumpall --clean --if-exists | gzip -9 | aws s3 cp - "s3://$BUCKET/$key" --only-show-errors
-                  echo "backup written to s3://$BUCKET/$key"
+                  aws s3 cp /tmp/oxinov.sql.gz "s3://$BUCKET/$key" --only-show-errors
+                  echo "backup written to s3://$BUCKET/$key ($bytes bytes before compression)"
               resources:
                 {{- toYaml .Values.backup.resources | nindent 16 }}
               securityContext:

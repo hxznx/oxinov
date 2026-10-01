@@ -57,7 +57,7 @@ There is no staging environment. Delivery changes are rehearsed on a throwaway l
 | Data | Encrypted EBS, S3 (block public access), Kubernetes Secrets encrypted at rest, customer-managed KMS key for email events; tenant isolation in the API plus PostgreSQL row-level security, tested with two tenants |
 | Supply chain | Pinned versions with checksums or digests, immutable image tags, Trivy gates, Dependabot |
 | Account monitoring | CloudTrail (all regions, log-file validation, KMS-encrypted, 365 days in `oxinov-cloudtrail-614130400110`) and GuardDuty in Mumbai (foundational plus S3 data events and on-demand malware scans), both since 2026-09-26 (`starter/security.tf`); medium-or-higher findings and any CloudTrail tampering are emailed to the operations mailbox |
-| Recovery | Nightly `pg_dumpall` to S3 (30 days), daily encrypted disk snapshots (7 days), CloudWatch recover and reboot actions, automatic security updates |
+| Recovery | Nightly `pg_dumpall` to S3 (30 days; dumps before 2026-10-01 are empty because of a since-fixed CronJob bug), daily encrypted disk snapshots (7 days), CloudWatch recover and reboot actions, automatic security updates |
 | Not yet in place | AWS Config, WAF, SIEM, CodeQL and dependency review (need GitHub Advanced Security); see the [security roadmap](../09-security/security-baseline.md#roadmap) for costs and triggers |
 
 ## Observability

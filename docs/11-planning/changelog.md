@@ -1,5 +1,8 @@
 # Project changelog
 
+- **2026-10-01, Nightly database backups were empty:**
+  - **Backups:** every nightly dump since the cluster started was a 20-byte empty file. A new backup pod's first connection is refused for a second or two until k3s's network policy admits it, `pg_dumpall` failed, and because the dump was piped into `gzip` without `pipefail`, the job uploaded an empty file and reported success. The CronJob now waits for PostgreSQL, dumps to a file, refuses dumps under 10 KB, and fails visibly otherwise. A verified 558 KB dump of all databases was taken with the fixed script. `oxctl backup` now runs the CronJob as a one-off job (the old systemd unit no longer exists).
+
 - **2026-10-01, Oxinov Edu becomes Oxinov's own knowledge store (requirements):** The owner decided Edu sells Oxinov's own courses, training, ideas, think-tank research, and skills ([ADR-028](../04-architecture/adr/adr-028-edu-knowledge-store.md)).
   - **Plans and payment:** every offering has 1-month, 6-month, 1-year, and lifetime access (defaults NPR 5,000, 10,000, 15,000, and 20,000); bank QR payments are approved by an administrator; card payments for learners abroad follow once a gateway account exists.
   - **Material:** unlisted YouTube videos and Google Drive files are revealed only to learners with access (YouTube private videos cannot be embedded); free and subscriber visibility per item; live class links; view-only viewing with a watermark.

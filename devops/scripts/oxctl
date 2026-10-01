@@ -132,7 +132,7 @@ case $cmd in
     aws ssm start-session --target "$(instance)" --document-name AWS-StartPortForwardingSessionToRemoteHost \
       --parameters "{\"host\":[\"$kc_ip\"],\"portNumber\":[\"8080\"],\"localPortNumber\":[\"8080\"]}"
     ;;
-  backup) remote 'systemctl start oxinov-backup.service && journalctl -u oxinov-backup.service -n 3 --no-pager' 1200 ;;
+  backup) remote "j=backup-manual-\$(date -u +%Y%m%d%H%M%S); $K create job --from=cronjob/postgres-backup \$j >/dev/null && $K wait --for=condition=complete job/\$j --timeout=1200s >/dev/null; $K logs job/\$j --tail=3" 1300 ;;
   backups)
     aws s3 ls s3://oxinov-starter-backups-614130400110/database/ --recursive --human-readable \
       | sort | tail -n "${1:-10}"
