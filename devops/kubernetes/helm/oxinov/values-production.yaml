@@ -8,3 +8,7 @@ services:
   platform-web: { replicas: 1 }
   keycloak: { replicas: 1 }
   mail-relay: { replicas: 1 }
+
+# Oxinov's own selling workspace (ADR-028): "OxinovJP", edu.oxinov.com/w/nepal. Only this workspace sells plans.
+payments:
+  sellerTenantIds: "9ee0b4fd-0ccd-482d-a325-c154c6e5628b"

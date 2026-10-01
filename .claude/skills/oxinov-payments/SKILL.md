@@ -10,7 +10,7 @@ Sources: [Platform FRD](../../../docs/03-requirements/frd/platform-frd.md) (PLAN
 ## Today
 
 - Edu sells one-time paid courses through **Khalti and eSewa** (`backend/products/edu-api/src/payments/`).
-- The checkout is **built but off in production**: `payments.mode: sandbox` in the chart and no seller workspace in `payments.sellerTenantIds`. Turning it on needs the owner's merchant keys in Parameter Store and the owner's decision.
+- The checkout is **built but off in production**: `payments.mode: sandbox` in the chart and no merchant keys. `payments.sellerTenantIds` in `values-production.yaml` names Oxinov's own workspace ("OxinovJP", `/w/nepal`), the only one that sells; bank QR plans (ADR-028) work there now. Turning card/wallet checkout on needs the owner's merchant keys in Parameter Store and the owner's decision.
 - Subscriptions, coupons, refunds, and a platform billing service are not built. Plan prices in the subscription model are proposals.
 
 ## Edu access plans and bank QR (ADR-028, being built)
