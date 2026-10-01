@@ -79,6 +79,9 @@ model Tenant {
   answerVotes       AnswerVote[]
   lessonCompletions LessonCompletion[]
   certificates      Certificate[]
+  coursePlans       CoursePlan[]
+  coupons           Coupon[]
+  storeSettings     StoreSettings?
 
   @@map("tenants")
 }
@@ -116,6 +119,9 @@ model UserProfile {
   lessonCompletions   LessonCompletion[]
   certificates        Certificate[]          @relation("CertificateHolder")
   certificatesRevoked Certificate[]          @relation("CertificateRevokedBy")
+  paymentsReviewed    Payment[]              @relation("PaymentReviewer")
+  couponsCreated      Coupon[]
+  settingsUpdated     StoreSettings[]
 
   @@map("user_profiles")
 }
@@ -265,6 +271,8 @@ model Course {
   lessonQuestions   LessonQuestion[]
   lessonCompletions LessonCompletion[]
   certificates      Certificate[]
+  plans             CoursePlan[]
+  coupons           Coupon[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, slug])
@@ -829,6 +837,7 @@ enum PaymentProvider {
   APP_STORE
   KHALTI
   ESEWA
+  BANK_QR
 
   @@map("payment_provider")
 }
@@ -838,6 +847,10 @@ enum PaymentStatus {
   SUCCEEDED
   FAILED
   REFUNDED
+  /// Bank QR: the learner submitted proof; an administrator decides (FR-CATALOG-307).
+  PENDING_REVIEW
+  /// Bank QR: an administrator refused it with a reason; the learner can resubmit.
+  REJECTED
 
   @@map("payment_status")
 }
@@ -858,18 +871,122 @@ model Payment {
   /// When the server verified the payment with the provider; required for SUCCEEDED.
   verifiedAt            DateTime?       @map("verified_at") @db.Timestamptz(3)
   failureReason         String?         @map("failure_reason") @db.VarChar(500)
+  /// Plan bought, copied at checkout so later price changes never alter this payment (FR-CATALOG-305).
+  planId                String?         @map("plan_id") @db.Uuid
+  planPeriod            PlanPeriod?     @map("plan_period")
+  listPriceMinor        Int?            @map("list_price_minor")
+  discountMinor         Int             @default(0) @map("discount_minor")
+  couponId              String?         @map("coupon_id") @db.Uuid
+  /// Bank QR: the learner's bank transaction ID, unique per seller (FR-CATALOG-307).
+  bankTransactionId     String?         @map("bank_transaction_id") @db.VarChar(80)
+  evidenceObjectKey     String?         @map("evidence_object_key") @db.VarChar(300)
+  evidenceContentType   String?         @map("evidence_content_type") @db.VarChar(120)
+  submittedAt           DateTime?       @map("submitted_at") @db.Timestamptz(3)
+  reviewedByUserId      String?         @map("reviewed_by_user_id") @db.Uuid
+  reviewedAt            DateTime?       @map("reviewed_at") @db.Timestamptz(3)
+  reviewReason          String?         @map("review_reason") @db.VarChar(500)
   createdAt             DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   user        UserProfile  @relation(fields: [userId], references: [id], onDelete: Restrict)
   course      Course       @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  plan        CoursePlan?  @relation(fields: [tenantId, planId], references: [tenantId, id], onDelete: Restrict)
+  coupon      Coupon?      @relation(fields: [tenantId, couponId], references: [tenantId, id], onDelete: Restrict)
+  reviewedBy  UserProfile? @relation("PaymentReviewer", fields: [reviewedByUserId], references: [id], onDelete: Restrict)
   entitlement Entitlement?
 
   @@unique([tenantId, id])
   @@unique([provider, providerPaymentId])
+  @@unique([tenantId, bankTransactionId])
   @@index([tenantId, userId, courseId, createdAt(sort: Desc)], map: "payments_tenant_user_course_idx")
+  @@index([tenantId, status, submittedAt])
   @@map("payments")
+}
+
+enum PlanPeriod {
+  MONTH_1
+  MONTH_6
+  YEAR_1
+  LIFETIME
+
+  @@map("plan_period")
+}
+
+/// One access plan of a course: how long access lasts and its price (FR-CATALOG-305, ADR-028).
+model CoursePlan {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String     @map("tenant_id") @db.Uuid
+  courseId   String     @map("course_id") @db.Uuid
+  period     PlanPeriod
+  priceMinor Int        @map("price_minor")
+  currency   String     @default("NPR") @db.Char(3)
+  active     Boolean    @default(true)
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course   Course    @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  payments Payment[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, courseId, period])
+  @@map("course_plans")
+}
+
+/// A discount code (FR-CATALOG-317). Percentage or fixed amount, optionally limited to one course,
+/// one plan length, a date window, and a number of approved uses.
+model Coupon {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String      @map("tenant_id") @db.Uuid
+  code            String      @db.VarChar(40)
+  percentOff      Int?        @map("percent_off")
+  amountOffMinor  Int?        @map("amount_off_minor")
+  courseId        String?     @map("course_id") @db.Uuid
+  period          PlanPeriod?
+  startsAt        DateTime?   @map("starts_at") @db.Timestamptz(3)
+  endsAt          DateTime?   @map("ends_at") @db.Timestamptz(3)
+  maxUses         Int?        @map("max_uses")
+  usedCount       Int         @default(0) @map("used_count")
+  active          Boolean     @default(true)
+  createdByUserId String      @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant    Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course    Course?     @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  createdBy UserProfile @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  payments  Payment[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, code])
+  @@map("coupons")
+}
+
+/// The seller's store settings (FR-MGMT-1408): bank QR and payment details shown at checkout,
+/// review time, payment help, default plan prices, and the refund or change policy.
+model StoreSettings {
+  tenantId             String   @id @map("tenant_id") @db.Uuid
+  bankQrObjectKey      String?  @map("bank_qr_object_key") @db.VarChar(300)
+  bankQrContentType    String?  @map("bank_qr_content_type") @db.VarChar(120)
+  accountName          String?  @map("account_name") @db.VarChar(120)
+  accountNumber        String?  @map("account_number") @db.VarChar(60)
+  bankName             String?  @map("bank_name") @db.VarChar(120)
+  referencePrefix      String   @default("OXE-") @map("reference_prefix") @db.VarChar(8)
+  reviewTimeText       String   @default("Usually within a few hours") @map("review_time_text") @db.VarChar(120)
+  helpContact          String?  @map("help_contact") @db.VarChar(120)
+  refundPolicy         String   @default("") @map("refund_policy")
+  defaultMonth1Minor   Int      @default(500000) @map("default_month1_minor")
+  defaultMonth6Minor   Int      @default(1000000) @map("default_month6_minor")
+  defaultYear1Minor    Int      @default(1500000) @map("default_year1_minor")
+  defaultLifetimeMinor Int      @default(2000000) @map("default_lifetime_minor")
+  updatedByUserId      String?  @map("updated_by_user_id") @db.Uuid
+  updatedAt            DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  updatedBy UserProfile? @relation(fields: [updatedByUserId], references: [id], onDelete: Restrict)
+
+  @@map("store_settings")
 }
 
 /// Verified webhook events. Unique per provider event ID so each is processed once.

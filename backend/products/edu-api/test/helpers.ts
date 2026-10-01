@@ -8,6 +8,7 @@ import { Client } from 'pg';
 import request from 'supertest';
 import { createApp } from '../src/app.factory';
 import { JsonLogger, type SecurityEvent } from '@oxinov/server-kit';
+import type { Mailer } from '../src/notifications/mailer';
 import { loadConfig } from '../src/config/app-config';
 import type { PaymentProviders } from '../src/payments/providers';
 
@@ -92,7 +93,7 @@ export interface TestContext {
   idpToken: (subject: string, claims?: Record<string, unknown>) => Promise<string>;
 }
 
-export async function createTestContext(options: { paymentProviders?: PaymentProviders } = {}): Promise<TestContext> {
+export async function createTestContext(options: { paymentProviders?: PaymentProviders; mailer?: Mailer } = {}): Promise<TestContext> {
   const config = loadConfig();
   const logs: string[] = [];
   const logger = new JsonLogger(
@@ -111,6 +112,7 @@ export async function createTestContext(options: { paymentProviders?: PaymentPro
     jwks,
     securityEventSink: (event) => securityEvents.push(event),
     paymentProviders: options.paymentProviders,
+    mailer: options.mailer,
   });
   await app.init();
 

@@ -51,12 +51,15 @@ import { QuizzesService } from './quizzes/quizzes.service';
 import { MediaService } from './media/media.service';
 import { CertificatesController, CertificateVerificationController } from './certificates/certificates.controller';
 import { CertificatesService } from './certificates/certificates.service';
+import { MAILER, SmtpMailer, type Mailer } from './notifications/mailer';
 import { PaymentsController } from './payments/payments.controller';
 import { PaymentsService } from './payments/payments.service';
 import { PAYMENT_PROVIDERS, providersFromConfig, type PaymentProviders } from './payments/providers';
 import { ObjectStorage } from './media/object-storage';
 import { InviteRedemptionController, TenantInvitesController } from './tenants/invites.controller';
 import { InvitesService } from './tenants/invites.service';
+import { StoreController } from './store/store.controller';
+import { StoreService } from './store/store.service';
 import { TenantsController } from './tenants/tenants.controller';
 import { TenantsService } from './tenants/tenants.service';
 
@@ -68,6 +71,8 @@ export interface AppModuleOptions {
   securityEventSink?: SecurityEventSink;
   /** Tests replace Khalti and eSewa with fakes; by default the providers come from the configuration. */
   paymentProviders?: PaymentProviders;
+  /** Tests capture email instead of sending it through the mail relay. */
+  mailer?: Mailer;
 }
 
 /**
@@ -108,6 +113,8 @@ export class AppModule implements NestModule {
       ExamsService,
       { provide: PAYMENT_PROVIDERS, useValue: options.paymentProviders ?? providersFromConfig(options.config.payments) },
       PaymentsService,
+      options.mailer ? { provide: MAILER, useValue: options.mailer } : { provide: MAILER, useClass: SmtpMailer },
+      StoreService,
       CertificatesService,
     ];
     return {
@@ -128,6 +135,7 @@ export class AppModule implements NestModule {
         EnrollmentsController,
         ExamsController,
         PaymentsController,
+        StoreController,
         CertificatesController,
         CertificateVerificationController,
       ],

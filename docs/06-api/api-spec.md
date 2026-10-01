@@ -1,6 +1,6 @@
 # API contract
 
-**Updated:** 2026-09-26. The NestJS APIs publish versioned OpenAPI; `pnpm --filter @oxinov/edu-api openapi` writes the Edu contract to `packages/contracts/openapi.json`. Web and mobile clients use the same documented API, and business rules never live only in a frontend. Every tenant route requires an authenticated membership and a resolved tenant context ([auth](api-auth.md)).
+**Updated:** 2026-10-01. The NestJS APIs publish versioned OpenAPI; `pnpm --filter @oxinov/edu-api openapi` writes the Edu contract to `packages/contracts/openapi.json`. Web and mobile clients use the same documented API, and business rules never live only in a frontend. Every tenant route requires an authenticated membership and a resolved tenant context ([auth](api-auth.md)).
 
 **Status:** Current · **Owner:** Engineering lead · **Last reviewed:** 2026-09-29
 
@@ -20,6 +20,7 @@ Today the APIs have no public host: browsers call the web apps, which call the A
 | Assignments | Manage, publish, close; learner submissions with drafts and revisions; grading with feedback |
 | Notes | Lesson notes (create, list, update, delete) and a course notes page |
 | Class stream | Announcements, lesson questions and answers, votes, best answer, moderation |
+| Store (ADR-028) | Learner: `GET courses/{courseId}/plans` (plans on sale, bank details, access, open payment), `POST courses/{courseId}/checkout/bank-qr`, `GET me/bank-payments/{id}`, `POST me/bank-payments/{id}/evidence-upload`, `POST me/bank-payments/{id}/submit`. Administrator: `GET store/payments`, `GET store/payments/{id}`, `POST store/payments/{id}/approve`, `POST store/payments/{id}/reject`; owner: `GET/PUT courses/{courseId}/plans(/manage)`, `GET/PATCH store/settings`, `POST store/settings/qr-upload`, `POST store/settings/qr-complete`, `GET/POST store/coupons`, `PATCH store/coupons/{id}` |
 | Operations | `GET /health/live`, `GET /health/ready`, `GET /metrics` (private) |
 
 The exact request and response schemas are in the generated OpenAPI file; do not duplicate them here.

@@ -25,8 +25,30 @@ export interface PaymentsConfig {
   readonly esewa?: { readonly productCode: string; readonly secretKey: string; readonly formUrl: string; readonly statusUrl: string };
 }
 
-/** The Edu API (internal name `api`) uses the shared service configuration (ADR-007) plus media storage and payments. */
-export type AppConfig = ServiceConfig & { readonly media: MediaConfig; readonly payments: PaymentsConfig };
+/** Transactional email through the in-cluster mail relay (FR-COMM-703). Mail is off without a host. */
+export interface MailConfig {
+  readonly smtpHost?: string;
+  readonly smtpPort: number;
+  /** Envelope and header sender; the relay accepts only this address. */
+  readonly from: string;
+  /** Support address printed in every learner email. */
+  readonly supportAddress: string;
+}
+
+/** The Edu API (internal name `api`) uses the shared service configuration (ADR-007) plus media storage, payments, and mail. */
+export type AppConfig = ServiceConfig & { readonly media: MediaConfig; readonly payments: PaymentsConfig; readonly mail: MailConfig };
+
+const EMAIL = /^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i;
+
+export function loadMailConfig(env: NodeJS.ProcessEnv): MailConfig {
+  const smtpHost = env.MAIL_SMTP_HOST?.trim() || undefined;
+  const smtpPort = Number(env.MAIL_SMTP_PORT?.trim() || '2525');
+  if (!Number.isInteger(smtpPort) || smtpPort < 1 || smtpPort > 65535) throw new Error('Invalid configuration: MAIL_SMTP_PORT must be a port number');
+  const from = env.MAIL_FROM?.trim() || 'no-reply@oxinov.com';
+  const supportAddress = env.MAIL_SUPPORT_ADDRESS?.trim() || 'support@oxinov.com';
+  if (!EMAIL.test(from) || !EMAIL.test(supportAddress)) throw new Error('Invalid configuration: MAIL_FROM and MAIL_SUPPORT_ADDRESS must be email addresses');
+  return { ...(smtpHost ? { smtpHost } : {}), smtpPort, from, supportAddress };
+}
 
 const PROVIDER_URLS = {
   sandbox: {
@@ -90,6 +112,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   return {
     ...base,
     payments: loadPaymentsConfig(env, base.environment),
+    mail: loadMailConfig(env),
     media: {
       bucket,
       endpoint: endpoint?.replace(/\/$/, ''),
