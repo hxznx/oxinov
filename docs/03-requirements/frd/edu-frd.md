@@ -102,6 +102,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a member saves valid profile fields, when the profile reloads, then only their Edu product profile changes and platform identity data remains platform-owned.
 - Acceptance: Given a role is removed or a membership suspended, when an existing session makes its next protected request, then the removed permission is refused.
 
+**FR-AUTH-104 — Learner account centre.** A signed-in learner has one account centre, on web and phone, with: their subscriptions (every offering they can open with its kind, plan, price paid, status, and end date or "Lifetime", plus renew or open), payment history with receipts, activity, notifications, messages, certificates, invite friends, profile and notification settings, and privacy controls. Privacy controls are: sign out of this device, sign out of all devices (FR-ID-2208), download my data (FR-PRIV-3201), and delete my account (FR-PRIV-3202), which explains what is removed and what payment records are kept and requires typing a confirmation word.
+*Priority:* Must. *Status:* Proposed. *Access:* T1 learner, own account only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-ID-2208, FR-PRIV-3201, FR-PRIV-3202.
+- Acceptance: Given a learner with a time-limited plan, a lifetime plan, a free class, and a payment in review, when they open the account centre, then each appears with its correct status and end date and an action that matches it.
+- Acceptance: Given a learner starts account deletion, when they have not typed the confirmation word, then nothing is deleted; and another learner's subscriptions, payments, or activity are never shown.
+
 ### 3.2 Course authoring and publishing
 
 **FR-COURSE-201 — Structure.** An instructor can create a course with title, summary, description, program, category, applicable language and level or SSW field or IT pathway, learning outcomes, cover image, price, sections, and lessons. A course needs at least one section and one lesson per section before review. Reordering persists in the course page and player.
@@ -191,6 +196,16 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a plan ended yesterday, when the learner opens a subscriber lesson, then it is locked with the renewal plans and their earlier progress is still shown.
 - Acceptance: Given access is still active, when the learner opens "My learning", then the offering shows its end date or "Lifetime".
 
+**FR-CATALOG-310 — Free classes, ideas, and skills.** An administrator can publish any offering kind as free (no plan). Free offerings appear in a "Free to learn" section of the store and in recommendations, open immediately after sign-in without checkout, and still issue certificates when completed. Making a paid offering free later does not refund or change existing paid access.
+*Priority:* Must. *Status:* Proposed; free course enrollment exists (FR-CATALOG-303). *Access:* T0 visitor browses; T1 learner opens. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a free skill is published, when a signed-in learner opens it, then every item opens without a plan and the store lists it under "Free to learn".
+- Acceptance: Given a visitor is not signed in, when they open a free item, then they are asked to sign in first and returned to the item afterwards.
+
+**FR-CATALOG-311 — Share and recommend.** A learner can share Oxinov or a specific offering through a personal invite link, a QR code, and share buttons for WhatsApp, Facebook, Messenger, Viber, and email, and can copy the link. Sign-ups through the link are attributed to the inviter, who sees how many friends joined. The link carries only an opaque code, never the inviter's email or name. Rewards for inviting are off unless the owner defines them.
+*Priority:* Should. *Status:* Proposed. *Access:* T1 learner, own link. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a friend signs up through a learner's link, when the account is created, then the inviter's joined count increases by one and only once.
+- Acceptance: Given a link with an unknown or tampered code, when it is opened, then the store opens normally and nothing is attributed.
+
 ### 3.4 Learning experience
 
 **FR-PLAYER-401 — Player.** Entitled learners can play video with pause, seek, volume, captions, 0.5×–2× speed, theater mode, picture-in-picture where supported, and keyboard controls. Support desktop and mobile layouts. Issue a short-lived playback token only after an entitlement check.
@@ -217,6 +232,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 *Priority:* Must. *Status:* Proposed. *Access:* Entitled learner, or any signed-in learner for `FREE` items. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-PLAYER-401.
 - Acceptance: Given an entitled learner opens a PDF or video, when the viewer loads, then no download or print control is shown and the watermark shows their email.
 - Acceptance: Given a signed URL past its lifetime, when it is used, then the file is not served.
+
+**FR-PLAYER-406 — Levels and progress rewards.** Learners earn experience points for completed lessons, passed quizzes, and attended live classes, and see a level and progress bar in the account centre and "My learning". Points have no money value, cannot be bought, and never unlock paid content. Repeating an item does not earn points twice.
+*Priority:* Could. *Status:* Proposed. *Access:* T1 learner, own progress. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given a learner completes a lesson for the first time, when progress is saved, then their points and level update once.
+- Acceptance: Given the same lesson is completed again or completion is retried, when progress is saved, then no extra points are added.
 
 ### 3.5 Quizzes and assignments
 
@@ -264,6 +284,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a payment is approved, when the approval commits, then the learner receives one thank-you email and one in-app notice naming the offering, plan, and end date, and a retried approval sends nothing more.
 - Acceptance: Given a payment is rejected, when the rejection commits, then the learner is told the reason and no thank-you notice is sent.
 
+**FR-COMM-704 — Notification centre and admin notices.** Learners have a notification centre with unread markers, filters (From Oxinov, Payments, Live classes, Courses), and "mark all as read"; a bell shows the unread count. Administrators can send a notice with a title and plain-English message to all learners, the learners of one offering, learners with free access, or learners whose plans end within 7 days, now or at a scheduled time, in-app and optionally by email. Notices are read-only, sent once per learner, and respect notification preferences except for transaction and security notices (FR-NOTIF-2902).
+*Priority:* Must. *Status:* Proposed. *Access:* T1 learner reads own notifications; tenant administrator sends. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-NOTIF-2901, FR-NOTIF-2902.
+- Acceptance: Given an administrator sends a notice to one offering's learners, when delivery runs, then each of those learners gets exactly one in-app notice and, if email was chosen and allowed, one email, and no one else receives it.
+- Acceptance: Given a learner or instructor, when they try to send a notice to all learners, then the request is refused.
+
 ### 3.8 Dashboards and reporting
 
 **FR-ANALYTICS-801 — Learner.** Show enrolled courses, completion percentage, next required item, deadlines, watched time, and certificates. Exclude optional items from the progress denominator and label the deadline time zone.
@@ -280,6 +305,16 @@ One account may be a learner or instructor in one tenant and an administrator in
 *Priority:* Should. *Status:* Proposed. *Access:* Tenant administrator, own tenant; platform operator sees aggregates only. *Source:* FR-TENANT-1605.
 - Acceptance: Given a tenant administrator requests its monthly report, when it is generated, then it includes only that tenant's MAU, GMV, refunds, net revenue, storage or bandwidth usage, and payout status.
 - Acceptance: Given a platform operator lacks separately authorized, audited support access, when they request tenant-level personal or financial detail, then the request is refused.
+
+**FR-ANALYTICS-804 — Learner activity history.** A learner can see their own activity, newest first: lessons completed, quiz and exam results, live classes joined, payments submitted, approved, or rejected, certificates issued, and sign-ins on new devices with browser and country. Security-relevant entries link to "sign out of all devices".
+*Priority:* Should. *Status:* Proposed. *Access:* T1 learner, own activity. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-ID-2208.
+- Acceptance: Given a learner signs in on a new device, when they open Activity, then the sign-in is listed with browser and country.
+- Acceptance: Given any other user, when they request a learner's activity, then the request is refused.
+
+**FR-ANALYTICS-805 — Admin dashboard.** The seller workspace's administrators see revenue this month (approved and verified payments), payments waiting for review, active plans, new learners in the last 7 days, plans ending in the next 7 days, and certificates issued, plus a "Needs you" list (payments waiting, unanswered messages, lessons missing captions or text, live classes without a link). Figures come only from recorded data.
+*Priority:* Should. *Status:* Proposed. *Access:* Tenant administrator of the seller workspace. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+- Acceptance: Given two payments are waiting and one is approved today, when the dashboard loads, then it shows 2 waiting and includes the approved amount in this month's revenue.
+- Acceptance: Given an instructor or learner, when they open the dashboard, then the request is refused.
 
 ### 3.9 Language, SSW, and IT programs
 
@@ -374,6 +409,11 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given three payments await review, when an administrator opens the queue, then the oldest appears first with its evidence, and approving one records the decision in the audit trail.
 - Acceptance: Given an instructor, a learner, or an administrator of another workspace, when they open the queue or a screenshot, then the request is refused and reveals nothing.
 
+**FR-MGMT-1404 — Free access grants.** A tenant administrator of the seller workspace can give a learner access to an offering for 7 days, 1, 6, or 12 months, or lifetime, for example as a scholarship or prize, with a required reason. The grant is an `ADMIN_GRANT` entitlement, never a payment, is audited, and can be revoked with a reason.
+*Priority:* Should. *Status:* Proposed. *Access:* Tenant administrator of the seller workspace. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-MGMT-1401.
+- Acceptance: Given an administrator grants one month with a reason, when the learner opens the offering, then subscriber items open until the grant ends and the audit log records actor, learner, offering, length, and reason.
+- Acceptance: Given a grant without a reason, or by someone who is not an administrator of the seller workspace, when it is submitted, then it is refused.
+
 ### 3.13 Native mobile apps
 
 **FR-MOBILE-1501 — Android and iOS parity.** Provide native Android and iOS apps using the same accounts, tenant memberships, permissions, catalog, enrollments, course content, video and audio progress, chapter practice, mock exams, results, assignments, chat, and certificates as the web app. Users can choose among their workspaces and see each workspace's branding. Instructor course, grading, student, and announcement workflows and tenant-administrator review, student, customization, and payment-management workflows must be available in the apps. Changes made on one platform appear on the others after synchronization.
@@ -450,11 +490,16 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a tenant reaches its usage limit, when a further AI request is made, then it is refused and the administrator can see the consumption that caused the limit.
 - Acceptance: Given a core authoring or administration workflow has no non-AI manual path, when the workflow is reviewed, then it does not ship until a manual path exists.
 
+**FR-AI-1705 — OXI course advisor.** Learners can ask OXI, from Messages and course pages, what to learn for a goal. OXI recommends only published offerings and free items of the store, explains why in one line, links to each offering, and offers "Talk to a human", which hands the conversation to support. Until the AI gateway exists (AI roadmap), OXI is rule-based (goal, language, level, and budget matched to offerings) with no model call. The model-backed version is labeled as AI that can make mistakes, never receives payment data, and stops at the owner's monthly budget.
+*Priority:* Should. *Status:* Proposed. *Access:* T1 learner; tenant administrator configures. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-AI-1704; ADR-014.
+- Acceptance: Given a learner says they want to work in Japan, when OXI answers, then every recommendation is a published offering or free item with a working link.
+- Acceptance: Given the learner chooses "Talk to a human" or the AI budget is used up, when they send the next message, then it goes to the support inbox and OXI does not answer.
+
 ## 4. Open decisions
 
 - Every legacy requirement now carries Priority, Status, Access, Source, and at least one allowed and one denied acceptance statement. Status reflects only what the implementation table above and [current state](../../04-architecture/current-state.md) already record as verified (**Implemented**, or **Proposed** noting partial delivery); everything else defaults to **Proposed**. Priority defaults to **Must** for requirements already implemented or partly implemented, and **Should** for requirements not yet built, so that none of this normalization asserts a release commitment the owner has not made.
 - These defaults are a documentation baseline, not an approval: the owner still sets release sequencing, and may reprioritize, defer, or withdraw any **Proposed** requirement before it is built.
-- ADR-028 (2026-10-01) makes Edu Oxinov's own knowledge store: access plans, bank QR payments with review, externally hosted YouTube and Google Drive material, free and subscriber visibility, live class links, view-only display, purchase notifications, and an installable web app (FR-COURSE-206 to 208, FR-CATALOG-305 to 309, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, FR-MOBILE-1504). The card gateway (FR-CATALOG-308) waits for the owner's merchant account.
+- ADR-028 (2026-10-01) makes Edu Oxinov's own knowledge store: access plans, bank QR payments with review, externally hosted YouTube and Google Drive material, free and subscriber visibility, live class links, view-only display, purchase notifications, and an installable web app (FR-COURSE-206 to 208, FR-CATALOG-305 to 309, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, FR-MOBILE-1504). The owner then added the learner account centre, free offerings, sharing, levels, activity, notices, the admin dashboard, free access grants, and the OXI advisor (FR-AUTH-104, FR-CATALOG-310 and 311, FR-PLAYER-406, FR-ANALYTICS-804 and 805, FR-COMM-704, FR-MGMT-1404, FR-AI-1705). The card gateway (FR-CATALOG-308) waits for the owner's merchant account.
 - Native mobile release scope, offline media, Organization Manager, AI features, subscriptions, tenant self-service, and provider choices remain product decisions even where this document describes their required behavior.
 - The implementation table and [current state](../../04-architecture/current-state.md) describe verified behavior today; requirement text in this document that is broader than the running product remains unimplemented until separately approved and verified.
 

@@ -18,6 +18,10 @@ Rules: [AI feature rules](../../../docs/14-ai-knowledge/ai-rules.md). Sources: [
 3. **Staff pilots first:** draft-only helpers (for example the Edu authoring copilot) where a person approves every output.
 4. **Learner-facing features** only after the gateway, evaluations, the approved content pipeline, and isolation tests work.
 
+## OXI, the Edu course advisor (FR-AI-1705, ADR-028)
+
+OXI is learner-facing, so its model-backed version waits for step 4 above. Until then OXI ships as a **rule-based advisor**: it matches the learner's chosen goal, language, and level to published offerings and free items, with no model call, and "Talk to a human" hands the chat to support. When the gateway exists, the model version may only rank and explain published offerings it retrieved (never invent courses, prices, or results), is labeled as AI that can make mistakes, never sees payment data, and stops at the owner's monthly budget.
+
 ## Rules for any AI feature
 
 - Every call goes through the gateway using a model alias, never a provider model name in product code.

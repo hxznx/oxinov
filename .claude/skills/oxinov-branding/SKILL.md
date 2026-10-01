@@ -22,6 +22,13 @@ Sources: [brand system](../../../docs/07-design/brand.md), [design system](../..
 - The logo is approved: use the files from the design-system brand assets. Never redraw, recolor, stretch, or add effects to it.
 - Reduced motion turns off animation; every text token passes WCAG AA contrast (`pnpm --filter @oxinov/design-system test` checks it).
 
+## Edu store look (ADR-028; design canvas "Oxinov Edu Store Design", awaiting owner approval)
+
+- **Fusion:** futuristic, gaming, cyberpunk, and cybersecurity. Terminal ticker (`> CONNECTION SECURE · …`), glitch headline, HUD corner brackets, grid and scanlines on discovery pages; level badges, XP bars, "unlocked" and "▒▒ ENCRYPTED" states; monospace system labels such as `// MISSION CONTROL`. Checkout, payment review, reading, and exams stay **Calm**.
+- **Management screens look like Windows 11 Settings in Oxinov colors:** a left sidebar with a profile card, a "Find a setting" search, icon menu items with a glowing current-item bar and count badges; a "Section › Item" heading; expandable setting rows with an icon, title, one-line description, status, and chevron; dropdowns, on/off switches, and **Edit** buttons inside rows. Used by Oxinov Studio (admin) and the learner account centre, on desktop and phone.
+- **Proposed fonts** (adopt in `tokens.ts` and [brand](../../../docs/07-design/brand.md) only after the owner approves the design): Chakra Petch for headings and buttons and Share Tech Mono for system labels, beside Orbitron (display) and Inter (body).
+- Copy stays plain and honest even when styled: "▶ START MISSION" leads to the store, never to a fake action; locked content never shows invented counts or stats.
+
 ## Voice
 
 - Plain English that browser translators handle well (ADR-020): short sentences, common words.

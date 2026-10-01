@@ -1,6 +1,6 @@
 # ADR-028: Oxinov Edu becomes Oxinov's own knowledge store
 
-**Date:** 2026-10-01. **Status:** Accepted (owner decisions of 2026-10-01). Extends [ADR-023](adr-023-khalti-esewa.md) (Oxinov sells its own courses first) and implements FR-CATALOG-305 to FR-CATALOG-309, FR-COURSE-206 to FR-COURSE-208, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, and FR-MOBILE-1504.
+**Date:** 2026-10-01. **Status:** Accepted (owner decisions of 2026-10-01). Extends [ADR-023](adr-023-khalti-esewa.md) (Oxinov sells its own courses first) and implements FR-CATALOG-305 to FR-CATALOG-309, FR-COURSE-206 to FR-COURSE-208, FR-PLAYER-405, FR-COMM-703, FR-MGMT-1403, FR-MOBILE-1504, FR-AUTH-104, FR-CATALOG-310, FR-CATALOG-311, FR-PLAYER-406, FR-ANALYTICS-804, FR-ANALYTICS-805, FR-COMM-704, FR-MGMT-1404, and FR-AI-1705.
 
 The owner's decisions, in their words where quoted:
 
@@ -23,6 +23,8 @@ The owner's decisions, in their words where quoted:
 9. **Notifications through the platform.** After the first-sign-in welcome, the platform sends "Welcome to Oxinov" by email. After a payment is approved or verified, Edu sends "Thank you for subscribing to {offering} ({plan})" with the access end date and the support address, plus an in-app notice; a rejection sends the reason. Seven days and one day before a time-limited plan ends, Edu sends a renewal reminder. Emails go through the existing `mail-relay`.
 10. **Mobile first as an installable web app.** `edu.oxinov.com` becomes an installable web app (manifest, icons, offline fallback page) that works at phone width, so learners can add it to their home screen now. The native Expo app (ADR-003) follows using the same API. Purchases happen on the web: Google Play requires its own billing for digital content bought inside an app, so the app links to web checkout only where store rules allow and otherwise shows existing access (FR-MOBILE-1503).
 11. **Fusion cyberpunk interface.** The store uses the shared design system at **Full** intensity for the store hero and **Standard** for other discovery pages (HUD frames, neon accents, grid, game-style progress and level badges), and **Calm** intensity for checkout, payment review, reading, and exams, as the [design system](../../07-design/design-system.md) already requires.
+
+12. **Account, community, and admin tools (owner, same day).** Learners get an account centre in the Windows-Settings style (subscriptions with plan and end date, payments, activity, notifications, messages, certificates, invite friends, sign out, sign out everywhere, data export, account deletion), free classes, ideas, and skills, share and recommend links, levels and points with no money value, admin notices, chat with support and instructors, and **OXI**, a course advisor that is rule-based until the AI gateway exists (ADR-014). Administrators get Oxinov Studio in the same style: a dashboard with a "Needs you" list, offerings with expandable rows, dropdowns, and switches, notices, free access grants, the payment queue, an inbox, OXI settings, referrals, and roles.
 
 ## Consequences
 
