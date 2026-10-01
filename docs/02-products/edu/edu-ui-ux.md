@@ -42,6 +42,10 @@ The store is a fusion of futuristic, gaming, and cyberpunk interfaces: HUD frame
 | Account centre | Windows-Settings layout: profile card with level, menu (subscriptions, activity, notifications, messages and OXI, certificates, invite friends, profile, privacy); sign out, sign out everywhere, download data, delete account with typed confirmation |
 | Messages | Conversations with OXI (rule-based course advisor until the AI gateway exists), Oxinov support, instructors, and read-only notices; suggestion chips and "Talk to a human" |
 | Admin: Studio dashboard | Same layout: grouped menu (Overview, Content, Sales, People, System), figures from recorded data only, "Needs you" list, send a notice, give free access, OXI settings, learners table |
+| Admin: course builder | Outline (drag to reorder), lesson editor, settings; paste many links; duplicate as template; publish checklist; "Design with AI" |
+| Admin: AI course designer | Prompt, options (kind, category, level, language, length), extras; draft labeled "AI draft"; accept, redo, or edit per chapter; opens in the builder, never publishes |
+| Admin: quizzes, media, team, learners | Quiz editor with answer key and AI drafts marked unchecked; media library with link health; team roles table and audit log; learner list with segments, bulk actions, and detail |
+| Admin: share kit | Post image in four sizes, caption (AI drafts checked by a person), tracked link per network, optional campaign coupon |
 
 Prices always show the currency, the full amount, and what the plan includes before commitment. Locked items show the title so learners know what they will get, never the content.
 
