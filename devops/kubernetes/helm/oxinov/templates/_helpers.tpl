@@ -68,6 +68,13 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 - { name: PAYMENTS_MODE, value: {{ $root.Values.payments.mode | quote }} }
 - { name: PAYMENTS_SELLER_TENANT_IDS, value: {{ $root.Values.payments.sellerTenantIds | quote }} }
 - { name: EDU_WEB_URL, value: {{ printf "https://edu.%s" $root.Values.global.domain | quote }} }
+{{- /* Payment emails (thank-you, rejection; FR-COMM-703) through the in-cluster relay, like platform-api. */}}
+{{- $eduRelay := index $root.Values.services "mail-relay" | default dict }}
+{{- if and $root.Values.mail.eduApi $eduRelay.port }}
+- { name: MAIL_SMTP_HOST, value: mail-relay }
+- { name: MAIL_SMTP_PORT, value: {{ $eduRelay.port | toString | quote }} }
+{{- end }}
+- { name: MAIL_FROM, value: {{ $root.Values.mail.from | quote }} }
 {{- range list "KHALTI_SECRET_KEY" "ESEWA_PRODUCT_CODE" "ESEWA_SECRET_KEY" }}
 - name: {{ . }}
   valueFrom:
@@ -87,6 +94,16 @@ postgresql://{{ .user }}:$({{ .passwordVar }})@{{ .root.Values.postgres.host }}:
 {{ include "oxinov.secretEnv" (dict "root" $root "name" "PLATFORM_APP_DB_PASSWORD") }}
 - name: DATABASE_URL
   value: {{ include "oxinov.dbUrl" (dict "root" $root "user" "oxinov_platform_app" "passwordVar" "PLATFORM_APP_DB_PASSWORD" "database" "oxinov_platform") | quote }}
+{{- /* Welcome email (FR-NOTIF-2903) through the in-cluster relay: plain SMTP on the private network, no login.
+   The relay accepts only MAIL_FROM as sender. Without the relay, MAIL_SMTP_HOST stays empty and email is off. */}}
+{{- $relay := index $root.Values.services "mail-relay" | default dict }}
+{{- if and $root.Values.mail.platformApi $relay.port }}
+- { name: MAIL_SMTP_HOST, value: mail-relay }
+- { name: MAIL_SMTP_PORT, value: {{ $relay.port | toString | quote }} }
+{{- else }}
+- { name: MAIL_SMTP_HOST, value: "" }
+{{- end }}
+- { name: MAIL_FROM, value: {{ $root.Values.mail.from | quote }} }
 {{- else if eq .name "edu-web" }}
 - { name: APP_URL, value: {{ printf "https://edu.%s" $root.Values.global.domain | quote }} }
 - { name: ACCOUNT_URL, value: {{ printf "https://app.%s" $root.Values.global.domain | quote }} }

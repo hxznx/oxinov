@@ -21,6 +21,7 @@ Built and verified in production or CI. Requirements not listed are not built ye
 | FR-ID-2201 Continue with Google | Partly | Flow scripted in `configure-realm.sh`; needs the owner's Google OAuth client |
 | FR-ID-2204 No customer passwords | Partly | Sign-in has no password form; password-free registration is in progress |
 | FR-ID-2205 First-sign-in welcome | Implemented | `app.oxinov.com/welcome` with policy acceptance |
+| FR-NOTIF-2903 Welcome email | Implemented | `platform-api` sends "Welcome to Oxinov" through `mail-relay` once the welcome commits; verified with unit and PostgreSQL integration tests (2026-10-01), live after the next deploy |
 | FR-ID-2207 Single sign-on across products | Implemented | One Keycloak session for `app.` and `edu.` |
 | FR-ID-2209 Staff identities | Partly | Admin console not public; administrators need an authenticator-app code (TOTP); automation has its own service account. Separate staff realm and operator roles open |
 | FR-POLICY-2401 Versioned policies | Partly | Policy pages live; text awaits legal review |
@@ -295,7 +296,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a security or transaction event, when the user has disabled marketing, then the required notice is still delivered through its configured essential channel.
 
 **FR-NOTIF-2903 — Welcome email.** When a person completes the first-sign-in welcome (FR-ID-2205), the platform must send one "Welcome to Oxinov" email to their verified address with their display name, what they can do next (open Oxinov Edu, manage the account), and the support address. A retried or repeated welcome sends nothing more, and a failed send never blocks the account.
-*Priority:* Must. *Status:* Proposed. *Access:* The new member only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-ID-2205.
+*Priority:* Must. *Status:* Implemented. *Access:* The new member only. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-ID-2205.
 - Acceptance: Given a new member presses **Agree and continue**, when the welcome commits, then exactly one welcome email is queued for their verified address.
 - Acceptance: Given the mail service is unavailable, when the welcome commits, then the account still opens and the failure is logged without the email body.
 

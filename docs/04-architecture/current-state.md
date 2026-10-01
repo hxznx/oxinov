@@ -30,7 +30,7 @@ Other documents describe the target design. Where they differ from this page, th
 | Database | PostgreSQL 18.6 as a StatefulSet on the encrypted disk; separate `oxinov_edu` (Edu) and `oxinov_platform` databases and roles; row-level security with a non-bypass request role (ADR-006) | Amazon RDS for PostgreSQL (Multi-AZ when an availability commitment exists) |
 | Files | Private, versioned S3 bucket; uploads and playback through short-lived presigned URLs; video served as uploaded (no adaptive streaming yet, ADR-021) | CloudFront signed URLs; HLS transcoding when learners need it (ADR-021) |
 | Cache and queues | None. Nothing needs them yet (ADR-021) | Redis-compatible cache or SQS when a measured need appears; events through SNS/SQS (ADR-019) |
-| Email | Amazon SES through `mail-relay` (instance role, no keys); configuration set with bounce and complaint suppression, events to an encrypted SNS topic, reputation alarms | Same |
+| Email | Amazon SES (or Brevo) through `mail-relay` (instance role, no keys); senders are Keycloak (sign-in codes) and `platform-api` (one welcome email, FR-NOTIF-2903); configuration set with bounce and complaint suppression, events to an encrypted SNS topic, reputation alarms | Same |
 | Secrets | Generated on the server into SSM Parameter Store SecureStrings, rendered into an encrypted Kubernetes Secret | Same, or Secrets Manager where rotation is needed (ADR-021) |
 
 ## Delivery

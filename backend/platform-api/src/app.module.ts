@@ -28,6 +28,8 @@ import { CatalogController } from './catalog/catalog.controller';
 import { DatabaseContext } from './database/database-context.service';
 import { PrismaService } from './database/prisma.service';
 import { HealthController } from './health/health.controller';
+import { MAILER, type Mailer } from './mail/mailer';
+import { WelcomeEmailService } from './mail/welcome-email.service';
 
 export interface AppModuleOptions {
   config: ServiceConfig;
@@ -35,6 +37,8 @@ export interface AppModuleOptions {
   /** Tests inject a local key set instead of fetching the identity provider's JWKS. */
   jwks?: JWTVerifyGetKey;
   securityEventSink?: SecurityEventSink;
+  /** Outgoing email (FR-NOTIF-2903): SMTP to the mail relay, disabled, or a test fake. */
+  mailer: Mailer;
 }
 
 /** Platform control plane, first slice: accounts, policies, product catalogue, entitlements. */
@@ -46,6 +50,7 @@ export class AppModule implements NestModule {
       { provide: LOGGER, useValue: options.logger },
       { provide: JWKS_RESOLVER, useValue: options.jwks ?? null },
       { provide: SECURITY_EVENT_SINK, useValue: options.securityEventSink ?? stdoutSecuritySink },
+      { provide: MAILER, useValue: options.mailer },
       { provide: APP_GUARD, useClass: AuthGuard },
       { provide: APP_FILTER, useClass: HttpExceptionFilter },
       PrismaService,
@@ -55,6 +60,7 @@ export class AppModule implements NestModule {
       TokenVerifier,
       IdentityService,
       { provide: IDENTITY_RESOLVER, useExisting: IdentityService },
+      WelcomeEmailService,
       AccountsService,
       ActiveAccountGuard,
     ];

@@ -118,7 +118,9 @@ the Terraform stack, or let the next deploy bootstrap a fresh node and restore t
 ## Email
 
 Keycloak sends sign-in codes to the `mail-relay` pod, which forwards them to Amazon SES with the node's
-instance role (no SMTP keys). While SES is in its sandbox, mail reaches only verified addresses (SES
+instance role (no SMTP keys). `platform-api` sends its welcome email (FR-NOTIF-2903) to the same relay on
+port 2525; `mail.platformApi: false` turns that off, and `oxctl logs platform-api` shows `mail.welcome.sent`
+or `mail.welcome.failed`. While SES is in its sandbox, mail reaches only verified addresses (SES
 console → Identities → Create identity → Email address). The account owner requests production access
 once (SES console → Account dashboard → Request production access): mail type **Transactional**, website
 `https://oxinov.com`, and a use case such as:

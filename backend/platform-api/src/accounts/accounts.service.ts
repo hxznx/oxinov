@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SecurityEventsService } from '@oxinov/server-kit';
 import { DatabaseContext, type Tx } from '../database/database-context.service';
 import { Errors } from '../errors';
+import { WelcomeEmailService } from '../mail/welcome-email.service';
 import type { AccountUser, PolicyRef } from './account.types';
 import type { AcceptPoliciesDto, WelcomeDto } from './accounts.dto';
 import { outstandingPolicies, policyKey, type CurrentPolicy } from './policies';
@@ -31,6 +32,7 @@ export class AccountsService {
   constructor(
     private readonly db: DatabaseContext,
     private readonly securityEvents: SecurityEventsService,
+    private readonly welcomeEmail: WelcomeEmailService,
   ) {}
 
   me(user: AccountUser): Promise<AccountView> {
@@ -39,24 +41,26 @@ export class AccountsService {
 
   /**
    * FR-ID-2205: records the profile answers and acceptance of every current sign-up policy, then
-   * activates the account and grants member access to launched products (FR-PLAN-2602). Repeating
-   * the call on an active account changes nothing.
+   * activates the account and grants member access to launched products (FR-PLAN-2602), then sends the
+   * welcome email once (FR-NOTIF-2903). Repeating the call on an active account changes and sends nothing.
    */
   async welcome(user: AccountUser, input: WelcomeDto): Promise<AccountView> {
     if (user.status === 'SUSPENDED') throw Errors.accountSuspended();
     if (!user.emailVerified) throw Errors.emailNotVerified();
 
-    const view = await this.db.run({ userId: user.userId }, async (tx) => {
+    const { view, welcomed } = await this.db.run({ userId: user.userId }, async (tx) => {
       const account = await tx.userAccount.findUniqueOrThrow({ where: { id: user.userId } });
-      if (account.status === 'ACTIVE') return this.view(tx, user.userId);
+      if (account.status !== 'PENDING_WELCOME') return { view: await this.view(tx, user.userId), welcomed: false };
 
       const outstanding = await outstandingPolicies(tx, user.userId);
       this.assertCovers(outstanding, input.accepted);
       await this.recordAcceptances(tx, user.userId, outstanding, input);
 
+      // Only the request that moves the row out of PENDING_WELCOME counts as the welcome. A concurrent retry
+      // waits on the row lock, then matches nothing, so it grants nothing and sends no second email.
       const now = new Date();
-      await tx.userAccount.update({
-        where: { id: user.userId },
+      const moved = await tx.userAccount.updateMany({
+        where: { id: user.userId, status: 'PENDING_WELCOME' },
         data: {
           displayName: input.displayName ?? account.displayName,
           country: input.country,
@@ -65,12 +69,19 @@ export class AccountsService {
           status: 'ACTIVE',
         },
       });
+      if (moved.count !== 1) return { view: await this.view(tx, user.userId), welcomed: false };
+
       await this.grantMemberAccess(tx, user.userId);
       await tx.auditEvent.create({
         data: { actorUserId: user.userId, action: 'account.welcomed', targetType: 'user_account', targetId: user.userId },
       });
-      return this.view(tx, user.userId);
+      return { view: await this.view(tx, user.userId), welcomed: true };
     });
+
+    // FR-NOTIF-2903: one welcome email, only after the transaction committed; a failed send never fails the welcome.
+    if (welcomed) {
+      await this.welcomeEmail.send({ userId: view.id, email: view.emailVerified ? view.email : null, displayName: view.displayName });
+    }
     return view;
   }
 

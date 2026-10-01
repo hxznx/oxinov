@@ -1,7 +1,8 @@
 /**
  * Oxinov account lifecycle against real PostgreSQL with row-level security:
  * FR-ID-2205 (welcome), FR-ID-2206 (accounts by subject), FR-ID-2207 (audience), FR-POLICY-2402/2404
- * (acceptance records and re-acceptance), FR-PLAN-2602/2603 (member access), FR-PORTAL-3102 (catalogue).
+ * (acceptance records and re-acceptance), FR-PLAN-2602/2603 (member access), FR-PORTAL-3102 (catalogue),
+ * FR-NOTIF-2903 (one welcome email, through a fake mailer).
  */
 import { CURRENT_POLICIES, SEED, assertValidSecurityEvent, createTestContext, ownerQuery, resetDatabase, type TestContext } from './helpers';
 
@@ -31,6 +32,8 @@ describe('platform accounts', () => {
 
   beforeEach(() => {
     ctx.securityEvents.length = 0;
+    ctx.mailer.sent.length = 0;
+    ctx.mailer.failWith = undefined;
   });
 
   describe('authentication and catalogue', () => {
@@ -88,6 +91,7 @@ describe('platform accounts', () => {
         .send({ ...welcome, accepted: [{ policyId: 'terms', version: 1 }] });
       expect(missing.status).toBe(403);
       expect(missing.body.error.details.policies).toEqual(['privacy@1']);
+      expect(ctx.mailer.sent).toEqual([]);
     });
 
     it('refuses people whose email is not verified', async () => {
@@ -97,6 +101,7 @@ describe('platform accounts', () => {
         .send(welcome);
       expect(response.status).toBe(403);
       expect(response.body.error.code).toBe('EMAIL_NOT_VERIFIED');
+      expect(ctx.mailer.sent).toEqual([]);
     });
 
     it('activates the account, records acceptances, and grants member access to launched products only', async () => {
@@ -104,6 +109,8 @@ describe('platform accounts', () => {
       const response = await ctx.http.post('/v1/me/welcome').set(headers).send(welcome);
       expect(response.status).toBe(200);
       expect(response.body.data).toMatchObject({ status: 'ACTIVE', country: 'NP', displayName: 'Mina', welcomeRequired: false, outstandingPolicies: [] });
+      // FR-NOTIF-2903: exactly one welcome email, to the verified address.
+      expect(ctx.mailer.sent.map(({ to, subject }) => ({ to, subject }))).toEqual([{ to: 'mina@example.com', subject: 'Welcome to Oxinov' }]);
 
       const accepted = ctx.securityEvents.filter((event) => event.event.action === 'auth.policy.accepted');
       expect(accepted).toHaveLength(2);
@@ -124,6 +131,53 @@ describe('platform accounts', () => {
       expect(entitlements.body.data.map((e: { entitlementKey: string }) => e.entitlementKey)).toEqual(['edu.member']);
     });
 
+    it('sends one welcome email with the escaped name, and none on a repeat (FR-NOTIF-2903)', async () => {
+      const headers = await bearer('google|sita', { email: 'Sita@Example.com' });
+      expect((await ctx.http.get('/v1/me').set(headers)).status).toBe(200);
+      const response = await ctx.http.post('/v1/me/welcome').set(headers).send({ ...welcome, displayName: 'Sita <b>Rai</b>' });
+      expect(response.status).toBe(200);
+      expect(ctx.mailer.sent).toHaveLength(1);
+      const [email] = ctx.mailer.sent;
+      expect(email).toMatchObject({ to: 'sita@example.com', subject: 'Welcome to Oxinov' });
+      expect(email?.text).toContain('Hello Sita <b>Rai</b>,');
+      expect(email?.html).toContain('Hello Sita &lt;b&gt;Rai&lt;/b&gt;,');
+      expect(email?.text).toContain('https://edu.oxinov.com');
+      expect(email?.text).toContain('https://app.oxinov.com');
+      expect(email?.text).toContain('support@oxinov.com');
+
+      const again = await ctx.http.post('/v1/me/welcome').set(headers).send(welcome);
+      expect(again.status).toBe(200);
+      expect(ctx.mailer.sent).toHaveLength(1);
+    });
+
+    it('sends one email when the same welcome arrives twice at once (FR-NOTIF-2903)', async () => {
+      const headers = await bearer('google|ram', { email: 'ram@example.com' });
+      expect((await ctx.http.get('/v1/me').set(headers)).status).toBe(200);
+      const responses = await Promise.all([
+        ctx.http.post('/v1/me/welcome').set(headers).send(welcome),
+        ctx.http.post('/v1/me/welcome').set(headers).send(welcome),
+      ]);
+      expect(responses.map((r) => r.status)).toEqual([200, 200]);
+      expect(responses.map((r) => (r.body as { data: { status: string } }).data.status)).toEqual(['ACTIVE', 'ACTIVE']);
+      expect(ctx.mailer.sent.map((m) => m.to)).toEqual(['ram@example.com']);
+      const [audit] = await ownerQuery<{ n: string }>(
+        `SELECT count(*)::text AS n FROM audit_events a JOIN user_accounts u ON u.id = a.actor_user_id
+          WHERE u.auth_subject = $1 AND a.action = 'account.welcomed'`,
+        ['google|ram'],
+      );
+      expect(audit?.n).toBe('1');
+    });
+
+    it('completes the welcome even when the email cannot be sent (FR-NOTIF-2903)', async () => {
+      const headers = await bearer('google|gita', { email: 'gita@example.com' });
+      ctx.mailer.failWith = Object.assign(new Error('Relay unavailable'), { responseCode: 451 });
+      const response = await ctx.http.post('/v1/me/welcome').set(headers).send(welcome);
+      expect(response.status).toBe(200);
+      expect(response.body.data).toMatchObject({ status: 'ACTIVE', welcomeRequired: false });
+      expect(ctx.mailer.sent).toEqual([]);
+      expect((await ctx.http.get('/v1/me/entitlements').set(headers)).status).toBe(200);
+    });
+
     it('treats a repeated welcome as a no-op', async () => {
       const response = await ctx.http.post('/v1/me/welcome').set(await bearer('google|mina')).send({ ...welcome, country: 'IN' });
       expect(response.status).toBe(200);
@@ -133,6 +187,7 @@ describe('platform accounts', () => {
         ['google|mina'],
       );
       expect(count?.n).toBe('2');
+      expect(ctx.mailer.sent).toEqual([]);
     });
   });
 

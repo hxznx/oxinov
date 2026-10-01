@@ -90,6 +90,11 @@ mail:
   smtp:
     host: ""
     port: 587
+  # platform-api sends its own email (the welcome email, FR-NOTIF-2903) to the in-cluster mail relay on the
+  # relay's service port. false leaves MAIL_SMTP_HOST empty: email is off and the API logs that instead.
+  platformApi: true
+  # edu-api sends payment emails (thank-you and rejection, FR-COMM-703) to the relay the same way.
+  eduApi: true
 
 # Scheduling priority on the shared node (ADR-022). When memory runs short, the scheduler preempts and the
 # kubelet evicts lower tiers first, so sign-in and live products survive a spike in a new product.

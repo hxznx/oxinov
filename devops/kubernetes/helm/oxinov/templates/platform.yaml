@@ -480,10 +480,14 @@ spec:
       app.kubernetes.io/name: mail-relay
   policyTypes: [Ingress]
   ingress:
+    # Keycloak (sign-in codes), platform-api (welcome email, FR-NOTIF-2903), and edu-api (payment emails,
+    # FR-COMM-703) on the relay's SMTP port only.
     - from:
         - podSelector:
-            matchLabels:
-              app.kubernetes.io/name: keycloak
+            matchExpressions:
+              - { key: app.kubernetes.io/name, operator: In, values: [keycloak, platform-api, edu-api] }
+      ports:
+        - { port: {{ (index .Values.services "mail-relay" | default dict).port | default 2525 }} }
 {{- if .Values.postgres.enabled }}
 ---
 apiVersion: networking.k8s.io/v1

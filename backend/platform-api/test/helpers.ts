@@ -9,6 +9,7 @@ import { Client } from 'pg';
 import request from 'supertest';
 import { createApp } from '../src/app.factory';
 import { loadConfig } from '../src/config';
+import type { Mailer, MailMessage } from '../src/mail/mailer';
 
 const ROOT = path.resolve(__dirname, '../../..');
 
@@ -62,10 +63,24 @@ export async function resetDatabase(): Promise<void> {
   }
 }
 
+/** Records outgoing email instead of sending it (FR-NOTIF-2903). Set `failWith` to simulate a relay failure. */
+export class FakeMailer implements Mailer {
+  readonly enabled = true;
+  readonly sent: MailMessage[] = [];
+  failWith: Error | undefined;
+
+  send(message: MailMessage): Promise<void> {
+    if (this.failWith) return Promise.reject(this.failWith);
+    this.sent.push(message);
+    return Promise.resolve();
+  }
+}
+
 export interface TestContext {
   app: INestApplication;
   http: ReturnType<typeof request>;
   securityEvents: SecurityEvent[];
+  mailer: FakeMailer;
   /** Identity-provider style token (RS256) for this API's audience unless overridden. */
   token: (subject: string, claims?: Record<string, unknown>) => Promise<string>;
 }
@@ -74,18 +89,20 @@ export async function createTestContext(): Promise<TestContext> {
   const config = loadConfig();
   const logger = new JsonLogger({ service: 'platform', environment: config.environment, version: config.serviceVersion }, () => undefined);
   const securityEvents: SecurityEvent[] = [];
+  const mailer = new FakeMailer();
 
   const { publicKey, privateKey } = await generateKeyPair('RS256');
   const jwk = { ...(await exportJWK(publicKey)), kid: 'test-key', alg: 'RS256' };
   const jwks: JWTVerifyGetKey = createLocalJWKSet({ keys: [jwk] });
 
-  const app = await createApp({ config, logger, jwks, securityEventSink: (event) => securityEvents.push(event) });
+  const app = await createApp({ config, logger, jwks, mailer, securityEventSink: (event) => securityEvents.push(event) });
   await app.init();
 
   return {
     app,
     http: request(app.getHttpServer()),
     securityEvents,
+    mailer,
     token: (subject, claims = {}) =>
       new SignJWT({ aud: config.auth.audiences[0], email_verified: true, ...claims })
         .setProtectedHeader({ alg: 'RS256', kid: 'test-key' })
