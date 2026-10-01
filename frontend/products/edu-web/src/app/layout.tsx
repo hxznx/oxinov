@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono, Noto_Sans_Devanagari, Orbitron, Rajdhani } from 'next/font/google';
+import { Chakra_Petch, Inter, JetBrains_Mono, Noto_Sans_Devanagari, Orbitron, Rajdhani, Share_Tech_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { SiteFooter } from '@/components/SiteFooter';
 import { themeInitScript } from '@/components/ThemeToggle';
@@ -11,6 +11,9 @@ const rajdhani = Rajdhani({ subsets: ['latin', 'devanagari'], weight: ['500', '6
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const devanagari = Noto_Sans_Devanagari({ subsets: ['devanagari'], variable: '--font-devanagari', display: 'swap' });
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains', display: 'swap' });
+// Oxinov Studio and the store (ADR-028): Chakra Petch headings and Share Tech Mono HUD labels.
+const chakra = Chakra_Petch({ subsets: ['latin'], weight: ['500', '600', '700'], variable: '--font-chakra', display: 'swap' });
+const techMono = Share_Tech_Mono({ subsets: ['latin'], weight: '400', variable: '--font-techmono', display: 'swap' });
 
 export const metadata: Metadata = {
   title: { default: 'Oxinov Edu', template: '%s · Oxinov Edu' },
@@ -20,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const fonts = [orbitron, rajdhani, inter, devanagari, jetbrains].map((font) => font.variable).join(' ');
+  const fonts = [orbitron, rajdhani, inter, devanagari, jetbrains, chakra, techMono].map((font) => font.variable).join(' ');
   return (
     <html lang="en" data-theme="dark" className={fonts} suppressHydrationWarning>
       <head>

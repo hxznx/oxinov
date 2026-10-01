@@ -50,10 +50,10 @@ export async function createInvite(_: CreateInviteState, form: FormData): Promis
   if (maxUses !== undefined && (!Number.isInteger(maxUses) || maxUses < 1 || maxUses > 1000)) {
     return { error: 'The limit must be a whole number from 1 to 1000, or empty for no limit.' };
   }
-  const access = await token(`/w/${slug}/people`);
+  const access = await token(`/w/${slug}/studio/people`);
   try {
     const invite = await eduApi.createInvite(access, tenantId, { role, expiresInDays: days, ...(maxUses ? { maxUses } : {}) });
-    revalidatePath(`/w/${slug}/people`);
+    revalidatePath(`/w/${slug}/studio/people`);
     return { created: { code: invite.code, role: invite.role } };
   } catch (error) {
     return { error: error instanceof EduApiError ? error.message : 'Oxinov Edu is unavailable. Try again shortly.' };
@@ -65,7 +65,7 @@ export async function revokeInvite(form: FormData): Promise<void> {
   const tenantId = String(form.get('tenantId') ?? '');
   const inviteId = String(form.get('inviteId') ?? '');
   if (!SLUG.test(slug) || !UUID.test(tenantId) || !UUID.test(inviteId)) return;
-  const access = await token(`/w/${slug}/people`);
+  const access = await token(`/w/${slug}/studio/people`);
   await eduApi.revokeInvite(access, tenantId, inviteId).catch(() => undefined);
-  revalidatePath(`/w/${slug}/people`);
+  revalidatePath(`/w/${slug}/studio/people`);
 }

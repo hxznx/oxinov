@@ -52,7 +52,9 @@ The store is a fusion of futuristic, gaming, and cyberpunk interfaces: HUD frame
 
 Prices always show the currency, the full amount, and what the plan includes before commitment. Locked items show the title so learners know what they will get, never the content.
 
-Management screens for learners and administrators follow the Windows 11 Settings pattern in Oxinov colors: left menu with a profile card and search, a "Section › Item" heading, and expandable rows holding dropdowns, switches, and **Edit** buttons. On a phone the menu becomes a list of rows and actions sit in a bottom bar.
+Management screens for learners and administrators follow the Windows 11 Settings pattern in Oxinov colors: left menu with a profile card and search, a "Section › Item" heading, and expandable rows holding dropdowns, switches, and **Edit** buttons.
+
+**Built so far (2026-10-02):** Oxinov Studio lives at `/w/{slug}/studio` for the owner and administrators: a left menu grouped Overview, Content, Business, and System with the workspace card and a lit bar on the current section; the dashboard (live tiles and the "Needs you" list); Offerings and prices (sale state per offering and its plans); Payments (review queue and the review page); Learners and join codes; and Settings with collapsible groups (payment details with the QR, default prices, policies, coupons) that show their status on the right. The workspace page shows one **Oxinov Studio** button instead of separate admin buttons, and the earlier `/store/...`, `/people`, and `/teach/{id}/plans` addresses redirect to Studio. Studio uses Chakra Petch titles and Share Tech Mono labels, self-hosted with the other fonts. Menu items appear only when their feature works; the funnel, notices, free access, OXI, builder tools, media, team, and share kit join the menu as they are built. Below 1024 px the menu becomes a scrolling strip above the page. On a phone the menu becomes a list of rows and actions sit in a bottom bar.
 
 ## Expert review of the store (2026-10-01)
 

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { EduHeader } from '@/components/EduHeader';
 import { eduApi } from '@/lib/edu-api.ts';
 import { formatDate } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
@@ -18,24 +17,21 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export default async function ReviewPaymentPage({ params }: Props) {
   const { slug, paymentId } = await params;
   if (!UUID.test(paymentId)) notFound();
-  const here = `/w/${slug}/store/payments/${paymentId}`;
+  const here = `/w/${slug}/studio/payments/${paymentId}`;
   const { token, workspace } = await workspaceContext(slug, here);
-  if (workspace.role !== 'ADMIN' && workspace.role !== 'OWNER') notFound();
   const item = await load(here, () => eduApi.reviewDetail(token, workspace.id, paymentId));
   const pdf = item.evidenceUrl !== null && item.evidenceUrl.includes('.pdf');
 
   return (
-    <>
-      <EduHeader signedIn workspace={workspace} />
-      <main id="main" className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-[1fr_24rem]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="grid content-start gap-4">
-          <p className="hud-label">
-            <Link href={`/w/${slug}/store/payments`}>// Payments</Link>
-          </p>
-          <h1 className="text-3xl">
+          <span className="studio-kicker">
+            <Link href={`/w/${slug}/studio/payments`}>// Payments</Link>
+          </span>
+          <h1 className="studio-title">
             {item.reference} · {formatNpr(item.amountMinor)}
           </h1>
-          <dl className="card grid gap-2 sm:grid-cols-2">
+          <dl className="studio-panel p-5 grid gap-2 sm:grid-cols-2">
             <div>
               <dt className="field-label">Learner</dt>
               <dd>
@@ -73,8 +69,8 @@ export default async function ReviewPaymentPage({ params }: Props) {
               </dd>
             </div>
           </dl>
-          <section aria-labelledby="receipt-heading" className="card grid gap-3">
-            <h2 id="receipt-heading" className="text-2xl">
+          <section aria-labelledby="receipt-heading" className="studio-panel p-5 grid gap-3">
+            <h2 id="receipt-heading" className="studio-h2">
               Receipt
             </h2>
             {item.evidenceUrl === null ? (
@@ -90,8 +86,8 @@ export default async function ReviewPaymentPage({ params }: Props) {
           </section>
         </div>
         <aside className="grid content-start gap-4">
-          <section aria-labelledby="checks-heading" className="card grid gap-2">
-            <h2 id="checks-heading" className="hud-label">
+          <section aria-labelledby="checks-heading" className="studio-panel p-5 grid gap-2">
+            <h2 id="checks-heading" className="studio-status tone-muted">
               // Automatic checks · still confirm in your bank app
             </h2>
             <ul className="grid gap-1 text-sm">
@@ -105,7 +101,6 @@ export default async function ReviewPaymentPage({ params }: Props) {
           </section>
           {item.status === 'PENDING_REVIEW' ? <ReviewForms slug={slug} tenantId={workspace.id} paymentId={item.id} /> : null}
         </aside>
-      </main>
-    </>
+    </div>
   );
 }

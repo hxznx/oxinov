@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
+import { cache } from 'react';
 import { auth } from './auth.ts';
 import { EduApiError, eduApi, type Workspace } from './edu-api.ts';
 
@@ -19,11 +20,19 @@ export async function load<T>(returnTo: string, call: () => Promise<T>, onNotEnt
   }
 }
 
-/** Signed-in person's token plus the workspace named in the address, resolved from their memberships. */
-export async function workspaceContext(slug: string, returnTo: string): Promise<{ token: string; workspace: Workspace }> {
+/**
+ * Signed-in person's token plus the workspace named in the address, resolved from their memberships.
+ * Cached per request, so a layout and its page share one lookup.
+ */
+export const workspaceContext = cache(async (slug: string, returnTo: string): Promise<{ token: string; workspace: Workspace }> => {
   const { accessToken: token } = await auth.requireSession(returnTo);
   const workspaces = await load(returnTo, () => eduApi.workspaces(token));
   const workspace = workspaces.find((item) => item.slug === slug);
   if (!workspace) notFound();
   return { token, workspace };
+});
+
+/** Studio pages: administrators and the owner only; everyone else gets the not-found page. */
+export function isStudioRole(role: Workspace['role']): boolean {
+  return role === 'ADMIN' || role === 'OWNER';
 }

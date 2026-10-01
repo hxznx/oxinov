@@ -14,12 +14,12 @@ export function ReviewForms({ slug, tenantId, paymentId }: { slug: string; tenan
     </>
   );
   return (
-    <section aria-label="Decision" className="card grid gap-4">
+    <section aria-label="Decision" className="studio-panel grid gap-4 p-5">
       <form action={action} className="grid gap-2">
         {hidden}
         <input type="hidden" name="decision" value="approve" />
-        <button type="submit" className="btn btn-primary justify-center" disabled={pending}>
-          {pending ? 'Saving…' : 'Approve · unlock the course'}
+        <button type="submit" className="btn btn-approve justify-center font-studio" disabled={pending}>
+          {pending ? 'Saving…' : 'Approve · unlock'}
         </button>
       </form>
       <form action={action} className="grid gap-2">
@@ -29,7 +29,7 @@ export function ReviewForms({ slug, tenantId, paymentId }: { slug: string; tenan
           <span className="field-label">Reason (shown to the learner)</span>
           <textarea name="reason" className="field" rows={3} maxLength={500} placeholder="For example: the amount on the screenshot is NPR 1,500; the 1-year plan is NPR 15,000." />
         </label>
-        <button type="submit" className="btn btn-secondary justify-center" disabled={pending}>
+        <button type="submit" className="btn btn-reject justify-center font-studio" disabled={pending}>
           Reject with reason
         </button>
       </form>

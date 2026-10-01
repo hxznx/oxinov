@@ -7,6 +7,16 @@ const config: NextConfig = {
   transpilePackages: ['@oxinov/web-auth'],
   poweredByHeader: false,
   reactStrictMode: true,
+  // Store administration moved into Oxinov Studio (ADR-028); earlier links and bookmarks keep working.
+  async redirects() {
+    return [
+      { source: '/w/:slug/store/payments/:paymentId', destination: '/w/:slug/studio/payments/:paymentId', permanent: false },
+      { source: '/w/:slug/store/payments', destination: '/w/:slug/studio/payments', permanent: false },
+      { source: '/w/:slug/store/settings', destination: '/w/:slug/studio/settings', permanent: false },
+      { source: '/w/:slug/teach/:courseId/plans', destination: '/w/:slug/studio/offerings/:courseId/plans', permanent: false },
+      { source: '/w/:slug/people', destination: '/w/:slug/studio/people', permanent: false },
+    ];
+  },
   async headers() {
     return [
       {

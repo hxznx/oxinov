@@ -90,14 +90,14 @@ export async function reviewPayment(_: StoreFormState, form: FormData): Promise<
   const reason = field(form, 'reason');
   if (decision === 'reject' && reason.length < 5) return { error: 'Write a reason of at least 5 characters. The learner sees it.' };
   if (decision !== 'approve' && decision !== 'reject') return { error: STALE };
-  const token = await session(`/w/${slug}/store/payments`);
+  const token = await session(`/w/${slug}/studio/payments`);
   try {
     if (decision === 'approve') await eduApi.approvePayment(token, tenantId, paymentId);
     else await eduApi.rejectPayment(token, tenantId, paymentId, reason);
   } catch (error) {
     return { error: message(error) };
   }
-  revalidatePath(`/w/${slug}/store/payments`);
+  revalidatePath(`/w/${slug}/studio`, 'layout');
   return { ok: decision === 'approve' ? 'Approved. The course is unlocked and the thank-you email is on its way.' : 'Rejected. The learner was told the reason.' };
 }
 
@@ -116,13 +116,13 @@ export async function savePlans(_: StoreFormState, form: FormData): Promise<Stor
     if (price < 1000) return { error: 'Prices start at NPR 10.' };
     plans.push({ period, priceMinor: price, active });
   }
-  const token = await session(`/w/${slug}/teach/${courseId}/plans`);
+  const token = await session(`/w/${slug}/studio/offerings/${courseId}/plans`);
   try {
     await eduApi.setPlans(token, tenantId, courseId, plans);
   } catch (error) {
     return { error: message(error) };
   }
-  revalidatePath(`/w/${slug}/teach/${courseId}/plans`);
+  revalidatePath(`/w/${slug}/studio`, 'layout');
   return { ok: 'Plans saved. New checkouts use these prices; open checkouts keep theirs.' };
 }
 
@@ -142,13 +142,13 @@ export async function saveStoreSettings(_: StoreFormState, form: FormData): Prom
     if (minor === null || minor < 1000) return { error: 'Default prices must be at least NPR 10.' };
     body[name] = minor;
   }
-  const token = await session(`/w/${slug}/store/settings`);
+  const token = await session(`/w/${slug}/studio/settings`);
   try {
     await eduApi.updateStoreSettings(token, tenantId, body);
   } catch (error) {
     return { error: message(error) };
   }
-  revalidatePath(`/w/${slug}/store/settings`);
+  revalidatePath(`/w/${slug}/studio`, 'layout');
   return { ok: 'Settings saved.' };
 }
 
@@ -172,7 +172,7 @@ export async function completeQrUpload(input: { slug: string; tenantId: string; 
   } catch (error) {
     return { ok: false, error: message(error) };
   }
-  revalidatePath(`/w/${input.slug}/store/settings`);
+  revalidatePath(`/w/${input.slug}/studio`, 'layout');
   return { ok: true, value: null };
 }
 
@@ -204,25 +204,25 @@ export async function createCoupon(_: StoreFormState, form: FormData): Promise<S
   }
   const endsAt = field(form, 'endsAt');
   if (endsAt) body.endsAt = new Date(`${endsAt}T23:59:59+05:45`).toISOString();
-  const token = await session(`/w/${slug}/store/settings`);
+  const token = await session(`/w/${slug}/studio/settings`);
   try {
     await eduApi.createCoupon(token, tenantId, body);
   } catch (error) {
     return { error: message(error) };
   }
-  revalidatePath(`/w/${slug}/store/settings`);
+  revalidatePath(`/w/${slug}/studio`, 'layout');
   return { ok: `Coupon ${code} created.` };
 }
 
 export async function toggleCoupon(_: StoreFormState, form: FormData): Promise<StoreFormState> {
   const [slug, tenantId, couponId] = [field(form, 'slug'), field(form, 'tenantId'), field(form, 'couponId')];
   if (!SLUG.test(slug) || !UUID.test(tenantId) || !UUID.test(couponId)) return { error: STALE };
-  const token = await session(`/w/${slug}/store/settings`);
+  const token = await session(`/w/${slug}/studio/settings`);
   try {
     await eduApi.setCouponActive(token, tenantId, couponId, field(form, 'active') === 'true');
   } catch (error) {
     return { error: message(error) };
   }
-  revalidatePath(`/w/${slug}/store/settings`);
+  revalidatePath(`/w/${slug}/studio`, 'layout');
   return {};
 }

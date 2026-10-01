@@ -23,7 +23,7 @@ export function PlansForm({
   const [state, action, pending] = useActionState<StoreFormState, FormData>(savePlans, {});
   const isNew = plans.length === 0;
   return (
-    <form action={action} className="card grid gap-4">
+    <form action={action} className="studio-panel grid gap-4 p-5">
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="tenantId" value={tenantId} />
       <input type="hidden" name="courseId" value={courseId} />
@@ -36,7 +36,7 @@ export function PlansForm({
           return (
             <div key={period} className="grid grid-cols-[1fr_10rem_auto] items-center gap-3 border-b border-[var(--ox-color-border)] pb-3">
               <span className="grid">
-                <span className="font-semibold">{PLAN_LABELS[period]}</span>
+                <span className="font-studio text-lg font-bold">{PLAN_LABELS[period]}</span>
                 <span className="text-sm opacity-80">{period === 'LIFETIME' ? 'Never ends' : 'Counted from approval, or from the end of current access'}</span>
               </span>
               <label className="grid gap-1">

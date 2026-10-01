@@ -11,7 +11,7 @@ export function CouponForm({ slug, tenantId }: { slug: string; tenantId: string 
     <form action={action} className="grid gap-3 border-t border-[var(--ox-color-border)] pt-4">
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="tenantId" value={tenantId} />
-      <h3 className="text-xl">New coupon</h3>
+      <h3 className="studio-h2">New coupon</h3>
       <div className="grid gap-3 sm:grid-cols-3">
         <label className="grid gap-1">
           <span className="field-label">Code</span>
@@ -48,7 +48,7 @@ export function CouponForm({ slug, tenantId }: { slug: string; tenantId: string 
           <input name="maxUses" className="field" inputMode="numeric" placeholder="200" />
         </label>
       </div>
-      <button type="submit" className="btn btn-secondary justify-self-start" disabled={pending}>
+      <button type="submit" className="btn btn-secondary justify-self-start font-studio" disabled={pending}>
         {pending ? 'Creating…' : 'Create coupon'}
       </button>
       {state.error ? (

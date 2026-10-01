@@ -169,3 +169,191 @@
   .prose-ox blockquote { border-left: 3px solid var(--ox-color-border); padding-left: 1rem; color: var(--ox-color-text-muted); }
   .prose-ox td, .prose-ox li { overflow-wrap: anywhere; }
 }
+
+/*
+ * Oxinov Studio (ADR-028, design screens 7, 8 and 24): the administrators' area in the Windows Settings
+ * style. A sidebar of sections with a lit bar on the current one, Chakra Petch titles, Share Tech Mono HUD
+ * labels, and collapsible setting groups. Standard effect level: no scanlines; forms stay Calm.
+ */
+@theme inline {
+  --font-studio: var(--font-chakra), var(--font-heading);
+  --font-hud: var(--font-techmono), var(--font-mono);
+}
+
+@layer components {
+  .studio-shell {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    min-height: calc(100vh - 4rem);
+  }
+  .studio-side {
+    border-right: 1px solid var(--ox-color-border);
+    background: linear-gradient(180deg, var(--ox-color-surface), var(--ox-color-bg));
+    padding: 1.125rem 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .studio-side-title {
+    font-family: var(--font-hud);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--ox-color-text-muted);
+    padding: 0 0.375rem 0.75rem;
+  }
+  .studio-id {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--ox-color-bg);
+    border: 1px solid var(--ox-color-border);
+    clip-path: var(--ox-cut-md);
+  }
+  .studio-id-mark {
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: var(--ox-gradient-signature);
+    color: var(--ox-color-on-neon);
+    font-family: var(--font-display);
+    font-weight: 700;
+    clip-path: var(--ox-cut-sm);
+  }
+  .studio-group {
+    padding: 0.625rem 0.75rem 0.25rem;
+    font-family: var(--font-hud);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    color: var(--ox-color-text-muted);
+  }
+  .studio-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0 0.75rem;
+    color: var(--ox-color-text-muted);
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+  .studio-link:hover,
+  .studio-link[aria-current='page'] { background: var(--ox-color-surface-raised); color: var(--ox-color-text); }
+  .studio-link[aria-current='page']::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.625rem;
+    bottom: 0.625rem;
+    width: 3px;
+    background: var(--ox-color-brand);
+    box-shadow: var(--ox-glow-brand);
+  }
+  .studio-glyph { width: 1.25rem; text-align: center; font-family: var(--font-hud); }
+  .studio-badge {
+    margin-left: auto;
+    min-width: 1.25rem;
+    padding: 0 0.3rem;
+    background: var(--ox-color-brand2);
+    color: var(--ox-color-on-neon);
+    font-family: var(--font-hud);
+    font-size: 0.75rem;
+    text-align: center;
+  }
+  .studio-main { padding: 1.75rem 2rem 3rem; display: grid; align-content: start; gap: 1.25rem; min-width: 0; }
+  .studio-kicker { font-family: var(--font-hud); font-size: 0.75rem; letter-spacing: 0.14em; color: var(--ox-color-brand); text-transform: uppercase; }
+  .studio-title { font-family: var(--font-studio); font-weight: 700; font-size: 2rem; line-height: 1.15; }
+  .studio-title .crumb { color: var(--ox-color-text-muted); font-weight: 600; }
+  .studio-h2 { font-family: var(--font-studio); font-weight: 700; font-size: 1.2rem; }
+  .studio-panel {
+    background: var(--ox-color-surface);
+    border: 1px solid var(--ox-color-border);
+    clip-path: var(--ox-cut-md);
+  }
+  .studio-panel-head { padding: 0.875rem 1.125rem; border-bottom: 1px solid var(--ox-color-border); display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .studio-row {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem 1.125rem;
+    border-bottom: 1px solid var(--ox-color-border);
+    color: var(--ox-color-text);
+    text-decoration: none;
+  }
+  .studio-row:last-child { border-bottom: 0; }
+  a.studio-row:hover { background: var(--ox-color-surface-raised); }
+  .studio-icon {
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid currentColor;
+    font-family: var(--font-hud);
+  }
+  .studio-sub { font-size: 0.8125rem; color: var(--ox-color-text-muted); }
+  .studio-status { font-family: var(--font-hud); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .studio-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem; }
+  .studio-tile {
+    padding: 0.875rem;
+    background: var(--ox-color-surface);
+    border: 1px solid var(--ox-color-border);
+    border-top: 2px solid var(--tile, var(--ox-color-brand));
+    clip-path: var(--ox-cut-md);
+    display: grid;
+    gap: 0.375rem;
+    text-decoration: none;
+    color: var(--ox-color-text);
+  }
+  a.studio-tile:hover { background: var(--ox-color-surface-raised); }
+  .studio-tile-label { font-family: var(--font-hud); font-size: 0.6875rem; letter-spacing: 0.08em; color: var(--ox-color-text-muted); text-transform: uppercase; }
+  .studio-tile-value { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; color: var(--tile, var(--ox-color-brand)); }
+
+  /* A collapsible settings group: icon, title, one-line summary, status, chevron (Windows Settings). */
+  .studio-section { background: var(--ox-color-surface); border: 1px solid var(--ox-color-border); clip-path: var(--ox-cut-md); }
+  .studio-section > summary {
+    list-style: none;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto 1rem;
+    gap: 0.875rem;
+    align-items: center;
+    padding: 1rem 1.25rem;
+  }
+  .studio-section > summary::-webkit-details-marker { display: none; }
+  .studio-section > summary:hover { background: var(--ox-color-surface-raised); }
+  .studio-section > summary::after { content: '\203A'; color: var(--ox-color-text-muted); transition: transform var(--ox-duration-fast) var(--ox-easing); }
+  .studio-section[open] > summary::after { transform: rotate(90deg); }
+  .studio-section-body { border-top: 1px solid var(--ox-color-border); padding: 1rem 1.25rem 1.25rem 4.625rem; display: grid; gap: 1rem; }
+  .studio-table { width: 100%; text-align: left; font-size: 0.875rem; }
+  .studio-table th { font-family: var(--font-hud); font-weight: 400; font-size: 0.6875rem; letter-spacing: 0.08em; color: var(--ox-color-text-muted); text-transform: uppercase; padding: 0.625rem 1rem; }
+  .studio-table td { padding: 0.75rem 1rem; border-top: 1px solid var(--ox-color-border); vertical-align: top; }
+  .studio-table tbody tr:hover { background: var(--ox-color-surface-raised); }
+
+  .btn-approve { background: var(--ox-color-success); color: var(--ox-color-on-neon); }
+  .btn-approve:hover { box-shadow: 0 0 12px var(--ox-color-success); }
+  .btn-reject { color: var(--ox-color-danger); outline: 1px solid var(--ox-color-danger); outline-offset: -1px; background: transparent; }
+
+  .text-hud { font-family: var(--font-hud); }
+  .tone-brand { color: var(--ox-color-brand); }
+  .tone-success { color: var(--ox-color-success); }
+  .tone-warning { color: var(--ox-color-warning); }
+  .tone-danger { color: var(--ox-color-danger); }
+  .tone-mid { color: var(--ox-color-brand-mid); }
+  .tone-pink { color: var(--ox-color-brand2); }
+  .tone-muted { color: var(--ox-color-text-muted); }
+
+  /* Narrow screens: the sidebar becomes a scrolling strip of sections above the page. */
+  @media (max-width: 64rem) {
+    .studio-shell { grid-template-columns: minmax(0, 1fr); }
+    .studio-side { flex-direction: row; overflow-x: auto; scrollbar-width: thin; border-right: 0; border-bottom: 1px solid var(--ox-color-border); padding: 0.5rem; }
+    .studio-side-title, .studio-id, .studio-group { display: none; }
+    .studio-link { flex-shrink: 0; }
+    .studio-main { padding: 1.25rem 1rem 2.5rem; }
+    .studio-section-body { padding-left: 1.25rem; }
+  }
+}

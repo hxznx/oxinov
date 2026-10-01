@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { EduHeader } from '@/components/EduHeader';
 import { eduApi } from '@/lib/edu-api.ts';
 import { formatPrice } from '@/lib/format.ts';
-import { load, workspaceContext } from '@/lib/guard.ts';
+import { isStudioRole, load, workspaceContext } from '@/lib/guard.ts';
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ q?: string }> };
 
@@ -36,18 +36,10 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
                 Teach
               </Link>
             ) : null}
-            {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
-              <>
-                <Link href={`${here}/store/payments`} className="btn btn-secondary">
-                  Payments
-                </Link>
-                <Link href={`${here}/store/settings`} className="btn btn-secondary">
-                  Store settings
-                </Link>
-                <Link href={`${here}/people`} className="btn btn-secondary">
-                  People and join codes
-                </Link>
-              </>
+            {isStudioRole(workspace.role) ? (
+              <Link href={`${here}/studio`} className="btn btn-primary font-studio">
+                Oxinov Studio
+              </Link>
             ) : null}
           </div>
         </div>
