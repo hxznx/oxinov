@@ -46,7 +46,7 @@ variable "brevo_verification_txt" {
     Empty: no record. The value is public in DNS.
   EOT
   type        = string
-  default     = ""
+  default     = "brevo-code:e11cdb6cc1fcc5d4cdbbe8781dc01cde"
   validation {
     condition     = var.brevo_verification_txt == "" || can(regex("^brevo-code:[A-Za-z0-9]{16,64}$", var.brevo_verification_txt))
     error_message = "Use the exact \"brevo-code:...\" value Brevo shows."
@@ -60,7 +60,10 @@ variable "brevo_dkim_cnames" {
     DKIM lets Gmail accept mail Brevo sends as no-reply@oxinov.com under the DMARC policy. Empty: no records.
   EOT
   type        = map(string)
-  default     = {}
+  default = {
+    "brevo1._domainkey" = "b1.oxinov-com.dkim.brevo.com"
+    "brevo2._domainkey" = "b2.oxinov-com.dkim.brevo.com"
+  }
   validation {
     condition     = alltrue([for name, target in var.brevo_dkim_cnames : can(regex("^[a-z0-9-]+[.]_domainkey$", name)) && can(regex("brevo[.]com[.]?$", target))])
     error_message = "Each entry must be <selector>._domainkey => a target under brevo.com."
