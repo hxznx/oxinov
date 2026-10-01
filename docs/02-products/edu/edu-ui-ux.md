@@ -46,6 +46,9 @@ The store is a fusion of futuristic, gaming, and cyberpunk interfaces: HUD frame
 | Admin: AI course designer | Prompt, options (kind, category, level, language, length), extras; draft labeled "AI draft"; accept, redo, or edit per chapter; opens in the builder, never publishes |
 | Admin: quizzes, media, team, learners | Quiz editor with answer key and AI drafts marked unchecked; media library with link health; team roles table and audit log; learner list with segments, bulk actions, and detail |
 | Admin: share kit | Post image in four sizes, caption (AI drafts checked by a person), tracked link per network, optional campaign coupon |
+| Admin: settings | Payment details (bank QR upload, account, reference prefix, review time, help contact), default prices, coupons, policies, email allowance, store look |
+| Payment rejected | Calm: the reviewer's reason, what to do, **Fix and resubmit** on the same payment, message support; free lessons stay open |
+| Emails and receipt | Welcome, thank-you, rejection with a fix link, renewal reminder; printable receipt with company and tax details |
 
 Prices always show the currency, the full amount, and what the plan includes before commitment. Locked items show the title so learners know what they will get, never the content.
 
