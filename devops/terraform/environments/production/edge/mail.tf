@@ -57,10 +57,11 @@ resource "aws_route53_record" "zoho_dkim" {
 }
 
 # DMARC starts in monitoring mode; move to p=quarantine once DKIM is verified and reports look clean.
+# Aggregate reports go to Brevo, which shows them in its dashboard and requires the rua tag to authenticate.
 resource "aws_route53_record" "dmarc" {
   zone_id = aws_route53_zone.main.zone_id
   name    = "_dmarc.${var.domain}"
   type    = "TXT"
   ttl     = 300
-  records = ["v=DMARC1; p=none; fo=1"]
+  records = ["v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com; fo=1"]
 }
