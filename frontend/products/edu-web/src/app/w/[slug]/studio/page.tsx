@@ -94,7 +94,7 @@ export default async function StudioDashboard({ params }: Props) {
         )}
       </section>
 
-      {workspace.role === 'OWNER' || workspace.role === 'ADMIN' ? <NoticeForm slug={slug} tenantId={workspace.id} /> : null}
+      {workspace.role === 'OWNER' || workspace.role === 'ADMIN' ? <NoticeForm slug={slug} tenantId={workspace.id} offerings={offerings.map((offering) => ({ id: offering.courseId, title: offering.title }))} /> : null}
 
       {waiting.length > 0 ? (
         <section aria-labelledby="latest-heading" className="studio-panel overflow-x-auto">

@@ -1,5 +1,6 @@
 import type { LiveSession } from '@/lib/edu-api.ts';
-import { LIVE_PROVIDER_LABELS, formatLiveTime, liveState } from '@/lib/content.ts';
+import { LIVE_PROVIDER_LABELS, liveState } from '@/lib/content.ts';
+import { LocalTime } from './LocalTime';
 
 const STATE_LABEL = { cancelled: 'Cancelled', ended: 'Ended', live: 'Live now', soon: 'Starting soon', upcoming: 'Upcoming' } as const;
 
@@ -22,7 +23,7 @@ export function LiveClassList({ sessions }: { sessions: LiveSession[] }) {
             <li key={session.id} className="grid gap-1 border-b border-dashed border-line pb-3 last:border-b-0 last:pb-0">
               <span className="font-studio text-lg font-bold">{session.title}</span>
               <span className="text-sm text-muted">
-                {formatLiveTime(session.startsAt)} · {session.durationMin} min · {LIVE_PROVIDER_LABELS[session.provider]}
+                <LocalTime iso={session.startsAt} /> · {session.durationMin} min · {LIVE_PROVIDER_LABELS[session.provider]}
               </span>
               <span className="flex flex-wrap items-center gap-3">
                 <span className={`studio-status ${state === 'live' ? 'tone-success' : state === 'cancelled' ? 'tone-danger' : 'tone-muted'}`}>

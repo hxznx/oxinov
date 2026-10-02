@@ -44,12 +44,14 @@ export async function sendNotice(_: FormState, form: FormData): Promise<FormStat
   const title = field(form, 'title');
   const body = field(form, 'body');
   const link = field(form, 'linkPath');
+  const courseId = field(form, 'courseId');
+  if (courseId && !UUID.test(courseId)) return { error: 'This page is out of date. Reload and try again.' };
   if (title.length < 3) return { error: 'Give the notice a title of at least 3 characters.' };
   if (!body) return { error: 'Write the message.' };
   const linkPath = link ? safeLinkPath(link) : undefined;
   if (link && !linkPath) return { error: 'The link must be a page on Oxinov Edu, starting with /, for example /o/japanese-n5.' };
   try {
-    const result = await eduApi.sendNotice(await token(`/w/${slug}/studio`), tenantId, { title, body, ...(linkPath ? { linkPath } : {}) });
+    const result = await eduApi.sendNotice(await token(`/w/${slug}/studio`), tenantId, { title, body, ...(linkPath ? { linkPath } : {}), ...(courseId ? { courseId } : {}) });
     return { error: undefined, sent: result.recipients };
   } catch (error) {
     return { error: error instanceof EduApiError ? error.message : 'Oxinov Edu is unavailable. Try again shortly.' };

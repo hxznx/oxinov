@@ -1,7 +1,7 @@
 // Unit tests for the external lesson and live class helpers. Run: pnpm --filter @oxinov/edu-web test
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { formatLiveTime, isViewerUrl, liveState, nepalTimeToIso } from './content.ts';
+import { formatLiveTime, formatLocalTime, isViewerUrl, liveState, nepalTimeToIso } from './content.ts';
 
 describe('content helpers (ADR-028)', () => {
   it('frames only YouTube privacy embeds and Drive previews', () => {
@@ -28,5 +28,11 @@ describe('content helpers (ADR-028)', () => {
     assert.equal(nepalTimeToIso('2026-13-05T19:00'), null);
     assert.equal(nepalTimeToIso('tomorrow'), null);
     assert.equal(formatLiveTime('2026-10-05T13:15:00.000Z'), 'Mon, Oct 5, 7:00 PM Nepal time');
+  });
+
+  it('shows a live class in the learner’s own time zone', () => {
+    assert.equal(formatLocalTime('2026-10-05T13:15:00.000Z', 'Asia/Kathmandu'), 'Mon, Oct 5, 7:00 PM Nepal time');
+    assert.equal(formatLocalTime('2026-10-05T13:15:00.000Z', 'Asia/Tokyo'), 'Mon, Oct 5, 10:15 PM GMT+9');
+    assert.equal(formatLocalTime('2026-10-05T13:15:00.000Z', 'Not/AZone'), 'Mon, Oct 5, 7:00 PM Nepal time');
   });
 });

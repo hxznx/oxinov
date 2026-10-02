@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Logo } from './Logo';
+import { NotificationBell } from './NotificationBell';
 import { ThemeToggle } from './ThemeToggle';
 
 /** Oxinov Edu shell: product mark, current workspace, store and learning links, theme, account, and sign-in or sign-out. */
@@ -33,6 +34,7 @@ export function EduHeader({ signedIn, workspace, returnTo }: { signedIn: boolean
           <ThemeToggle />
           {signedIn ? (
             <>
+              <NotificationBell />
               <Link href="/account" className="btn btn-secondary text-sm">
                 Account
               </Link>

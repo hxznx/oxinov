@@ -52,3 +52,16 @@ export function nepalTimeToIso(local: string): string | null {
 export function formatLiveTime(iso: string): string {
   return `${new Date(iso).toLocaleString('en', { timeZone: 'Asia/Kathmandu', weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })} Nepal time`;
 }
+
+/**
+ * Start time in a given IANA time zone with the zone named, for example "Mon, Oct 5, 10:15 PM GMT+9" for a
+ * learner in Japan. Nepal keeps the friendly "Nepal time" label; an unknown zone falls back to Nepal time.
+ */
+export function formatLocalTime(iso: string, timeZone: string): string {
+  if (timeZone === 'Asia/Kathmandu' || timeZone === 'Asia/Katmandu') return formatLiveTime(iso);
+  try {
+    return new Date(iso).toLocaleString('en', { timeZone, weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+  } catch {
+    return formatLiveTime(iso);
+  }
+}

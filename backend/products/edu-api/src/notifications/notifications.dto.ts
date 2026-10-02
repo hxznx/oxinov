@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, Length, Matches } from 'class-validator';
+import { IsOptional, IsString, IsUUID, Length, Matches } from 'class-validator';
 
 export const NOTIFICATION_KINDS = ['PAYMENT_APPROVED', 'PAYMENT_REJECTED', 'RENEWAL_DUE', 'ACCESS_ENDED', 'NOTICE'] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
@@ -29,6 +29,11 @@ export class SendNoticeDto {
   @Length(2, 500)
   @Matches(/^\/[^/\\]/, { message: 'linkPath must be a path inside Oxinov Edu, starting with a single /' })
   linkPath?: string;
+
+  @ApiPropertyOptional({ format: 'uuid', description: 'Only the learners enrolled in this offering; every member when omitted.' })
+  @IsOptional()
+  @IsUUID()
+  courseId?: string;
 }
 
 export class NoticeSentDto {

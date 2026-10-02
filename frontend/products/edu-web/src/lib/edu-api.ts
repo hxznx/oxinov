@@ -501,6 +501,8 @@ export interface Me {
   displayName: string | null;
   email: string | null;
   memberSince: string;
+  /** Unread notifications across every workspace (the header bell). */
+  unreadNotifications: number;
 }
 
 export interface Subscription {
@@ -668,7 +670,7 @@ export const eduApi = {
   readNotification: (token: string, tenantId: string, notificationId: string) =>
     request<void>(token, `${tenantPath(tenantId)}/me/notifications/${encodeURIComponent(notificationId)}/read`, { method: 'POST' }),
   readAllNotifications: (token: string, tenantId: string) => request<void>(token, `${tenantPath(tenantId)}/me/notifications/read-all`, { method: 'POST' }),
-  sendNotice: (token: string, tenantId: string, body: { title: string; body: string; linkPath?: string }) =>
+  sendNotice: (token: string, tenantId: string, body: { title: string; body: string; linkPath?: string; courseId?: string }) =>
     request<{ recipients: number }>(token, `${tenantPath(tenantId)}/notices`, { method: 'POST', body }),
   mySubscriptions: (token: string, tenantId: string) => request<Subscription[]>(token, `${tenantPath(tenantId)}/me/subscriptions`),
   myBankPayments: (token: string, tenantId: string) => request<BankPayment[]>(token, `${tenantPath(tenantId)}/me/bank-payments`),

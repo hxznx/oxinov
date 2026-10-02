@@ -8,7 +8,7 @@ import { EduApiError, eduApi, type StoreOfferingDetail } from '@/lib/edu-api.ts'
 import { formatDate, formatDuration, formatPrice } from '@/lib/format.ts';
 import { PLAN_PERIODS, type PlanPeriod } from '@/lib/store.ts';
 import { CATEGORY_LABELS, CATEGORY_TONES, KIND_LABELS, isIntellectualProperty } from '@/lib/storefront.ts';
-import { formatLiveTime } from '@/lib/content.ts';
+import { LocalTime } from '@/components/LocalTime';
 import { EnterButton, PlanPicker } from './PlanPicker';
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ plan?: string; problem?: string }> };
@@ -253,7 +253,7 @@ export default async function OfferingPage({ params, searchParams }: Props) {
                     <li key={`${session.startsAt}-${session.title}`} className="grid gap-0.5 border-b border-dashed border-line pb-2 last:border-b-0 last:pb-0">
                       <span className="font-studio text-lg font-bold">{session.title}</span>
                       <span className="text-sm text-muted">
-                        {formatLiveTime(session.startsAt)} · {session.durationMin} min
+                        <LocalTime iso={session.startsAt} /> · {session.durationMin} min
                       </span>
                       <span className={`studio-status ${session.visibility === 'FREE' ? 'tone-success' : 'store-lock'}`}>
                         {session.visibility === 'FREE' ? 'Free · sign in to join' : 'Subscribers'}

@@ -128,4 +128,19 @@ describe('notifications and renewal reminders', () => {
     expect((await list(owner)).body.data.items).toEqual([]);
     expect(mailer.sent.length).toBe(before);
   });
+
+  it('sends a notice only to the learners of one offering when asked, and counts unread across workspaces', async () => {
+    // Only Aiko enrols in the free course; Bikash and the instructor are not its learners.
+    expect((await ctx.http.post(`${base}/courses/${SEED.freeCourse}/enrollments`).set(await auth(aiko))).status).toBe(201);
+    const notice = { title: 'New lesson added', body: 'Lesson 4 is ready.', courseId: SEED.freeCourse };
+    const sent = await ctx.http.post(`${base}/notices`).set(await auth(owner)).send(notice);
+    expect(sent.body.data.recipients).toBe(1);
+    expect((await list(aiko)).body.data.items[0]).toMatchObject({ title: 'New lesson added' });
+    expect((await list(bikash)).body.data.items[0].title).not.toBe('New lesson added');
+    // Another workspace's course is not found.
+    expect((await ctx.http.post(`${base}/notices`).set(await auth(owner)).send({ ...notice, courseId: SEED.everestCourse })).status).toBe(404);
+
+    const me = await ctx.http.get('/v1/me').set(await auth(aiko));
+    expect(me.body.data.unreadNotifications).toBe((await list(aiko)).body.data.unread);
+  });
 });

@@ -77,12 +77,24 @@ export class NotificationsService {
     );
   }
 
-  /** A notice to every active member except the sender (design screen 8). Administrators only. */
+  /**
+   * A notice to every active member except the sender, or only to the learners enrolled in one offering
+   * (design screen 8). Administrators only.
+   */
   sendNotice(scope: TenantScope, user: AuthUser, input: SendNoticeDto): Promise<NoticeSentDto> {
     if (!hasRole(scope.role, 'ADMIN')) throw Errors.forbidden('Only administrators can send notices.');
     return this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
+      if (input.courseId) {
+        const course = await tx.course.findFirst({ where: { id: input.courseId, tenantId: scope.tenantId }, select: { id: true } });
+        if (!course) throw Errors.notFound('Course');
+      }
       const members = await tx.tenantMembership.findMany({
-        where: { tenantId: scope.tenantId, status: 'ACTIVE', userId: { not: user.userId } },
+        where: {
+          tenantId: scope.tenantId,
+          status: 'ACTIVE',
+          userId: { not: user.userId },
+          ...(input.courseId ? { user: { enrollments: { some: { tenantId: scope.tenantId, courseId: input.courseId, status: 'ACTIVE' } } } } : {}),
+        },
         select: { userId: true },
       });
       const title = input.title.trim();
@@ -100,7 +112,7 @@ export class NotificationsService {
         });
       }
       await tx.auditEvent.create({
-        data: { tenantId: scope.tenantId, actorUserId: user.userId, action: 'notice.sent', targetType: 'tenant', targetId: scope.tenantId, metadata: { recipients: members.length, title } },
+        data: { tenantId: scope.tenantId, actorUserId: user.userId, action: 'notice.sent', targetType: 'tenant', targetId: scope.tenantId, metadata: { recipients: members.length, title, courseId: input.courseId ?? null } },
       });
       return { recipients: members.length };
     });
