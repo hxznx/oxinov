@@ -3,7 +3,10 @@ import { Logo } from './Logo';
 import { NotificationBell } from './NotificationBell';
 import { ThemeToggle } from './ThemeToggle';
 
-/** Oxinov Edu shell: product mark, current workspace, store and learning links, theme, account, and sign-in or sign-out. */
+/**
+ * Oxinov Edu shell: product mark, current workspace, store and learning links, Ask OXI (FR-AI-1705), theme,
+ * account, and sign-in or sign-out.
+ */
 export function EduHeader({ signedIn, workspace, returnTo }: { signedIn: boolean; workspace?: { slug: string; name: string }; returnTo?: string }) {
   return (
     <header className="border-b border-line bg-surface">
@@ -30,6 +33,9 @@ export function EduHeader({ signedIn, workspace, returnTo }: { signedIn: boolean
             </Link>
           ) : null}
         </nav>
+        <Link href="/account/messages" className="btn btn-secondary hidden px-3 py-1.5 text-sm font-studio sm:inline-flex" style={{ color: 'var(--ox-color-success)', borderColor: 'var(--ox-color-success)' }}>
+          ✦ Ask OXI
+        </Link>
         <div className="ml-auto flex flex-wrap items-center gap-3">
           <ThemeToggle />
           {signedIn ? (

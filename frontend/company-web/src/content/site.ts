@@ -72,7 +72,7 @@ export const home = {
 export const about = {
   paragraphs: [
     'Ox Inov Pvt. Ltd. is a technology company registered in Lalitpur, Nepal. We build digital products and services that solve practical problems for people, schools, and businesses.',
-    'Our first product is Oxinov Edu, a learning platform now in development. Oxinov HR is the second product module, planned for verified recruitment, direct jobs, and applications. Commodity and local-service marketplaces remain future candidates.',
+    'Our first product is Oxinov Edu, our learning store for courses, skills, and ideas, open at edu.oxinov.com and growing with each release. Oxinov HR is the second product module, planned for verified recruitment, direct jobs, and applications. Commodity and local-service marketplaces remain future candidates.',
     'Our work is organised into ten divisions. They cover education, AI, engineering, services, robotics, media, agriculture, space, research, and production. Education is our current focus. The other divisions are future initiatives. We will open each one only when it has a clear customer need, an owner, and the approvals it requires.',
     'Every product shares one Oxinov account, so people sign in once. We research user needs before we build and test with real users before we launch.',
   ],
@@ -94,11 +94,11 @@ export const divisions: Division[] = [
   {
     slug: 'education',
     name: 'Oxinov Education',
-    tagline: 'Learning tools for training providers and learners.',
+    tagline: 'Courses, skills, and ideas for learners, with free lessons first.',
     status: 'in-development',
     description:
-      'Education is our first division and our current focus. We are building Oxinov Edu, a platform where training providers can run courses, exams, and assignments in one place. It supports language, IT, and exam preparation subjects. Over time, Oxinov HR will link learning to real opportunities, so learners can show verified skills to employers.',
-    focus: ['Oxinov Edu learning platform', 'Mock exams and practice', 'Links between training and jobs'],
+      'Education is our first division and our current focus. Oxinov Edu, our learning store, is open at edu.oxinov.com with courses, skills, trainings, and ideas, starting with Japanese and the JLPT. Schools and teachers can also run private learning spaces on it. Over time, Oxinov HR will link learning to real opportunities, so learners can show verified skills to employers.',
+    focus: ['Oxinov Edu learning store', 'Japanese and JLPT preparation', 'Links between training and jobs'],
   },
   {
     slug: 'ai',
@@ -219,65 +219,65 @@ export const products: Product[] = [
     name: 'Oxinov Edu',
     address: 'edu.oxinov.com',
     division: 'education',
-    purpose: 'One place to run courses, exams, and learners.',
+    purpose: 'Courses, skills, ideas, and live classes, with free lessons to start.',
     description:
-      'Oxinov Edu helps training providers run their own branded learning platform. Instructors can publish recorded lessons, chapter practice, mock exams, and assignments. Administrators can manage learners, results, and enrolments. It is designed for subjects such as Japanese, Korean, English, and IT. Learners will use it on the web and on mobile apps.',
+      'Oxinov Edu is the Oxinov learning store. It offers courses, skills, trainings, and ideas, with Japanese and the JLPT first, and IT next. Every offering shows its full syllabus and free lessons before you pay. When you are ready, choose a plan from one month to lifetime and pay by bank QR. Learn on any phone or computer, join live classes, take practice quizzes and mock exams, and earn certificates that employers can verify. Schools and teachers can also run a private learning space with join codes.',
     status: 'in-development',
-    searchTitle: 'Oxinov Edu: online classroom and learning platform for schools',
+    searchTitle: 'Oxinov Edu: online courses, skills, and live classes with free lessons',
     summary:
-      'Oxinov Edu is an online classroom for schools and teachers: video lessons, timed mock exams, assignments, and class Q&A in one place.',
-    audience: ['Language schools', 'IT and coding training centres', 'Exam preparation institutes', 'Independent teachers'],
+      'Learn Japanese, JLPT, and IT on Oxinov Edu: free lessons first, then a plan from one month to lifetime, live classes, quizzes, and verifiable certificates.',
+    audience: ['People preparing for work or study in Japan', 'JLPT and language learners', 'IT and skills learners', 'Schools and independent teachers'],
     features: [
       {
-        title: 'Courses and lessons',
-        body: 'Build courses from chapters and lessons. Publish text, video, and audio lessons with playback speed, resume, and transcripts.',
+        title: 'Free lessons before you pay',
+        body: 'Every offering shows its full syllabus. Free lessons and free offerings open as soon as you sign in, so you can see if the teaching suits you.',
       },
       {
-        title: 'Timed practice and mock exams',
-        body: 'Create quizzes with four question types and sections that draw random questions. Attempts save as learners work, submit when time runs out, and show results with answer review.',
+        title: 'Plans from one month to lifetime',
+        body: 'Choose 1 month, 6 months, 1 year, or lifetime access. Pay by bank QR from your bank or wallet app; the team checks the payment and opens your access, and renewing adds time to the end of your plan.',
       },
       {
-        title: 'Assignments and grading',
-        body: 'Learners hand in text, links, and files before a deadline. Teachers grade with feedback or ask for a revision.',
+        title: 'Video lessons, documents, and live classes',
+        body: 'Watch lessons and read documents inside Oxinov on any phone or computer. Join live classes at the times shown in your own time zone.',
       },
       {
-        title: 'Class stream and lesson Q&A',
-        body: 'Post announcements to the class. Learners ask questions under each lesson, vote on answers, and see the best answer marked.',
+        title: 'Practice quizzes and mock exams',
+        body: 'Timed quizzes and mock exams draw random questions, save as you work, and show your score with answer review.',
       },
       {
-        title: 'Notes, books, and resources',
-        body: 'Learners keep private notes linked to video moments and download them. Teachers attach PDFs, EPUB books, Office files, images, and links to lessons.',
+        title: 'Certificates employers can verify',
+        body: 'Finish an offering to earn a certificate with a public verification link.',
       },
       {
-        title: 'Your own learning space',
-        body: 'Each school gets its own space with a course catalogue. Invite learners with join codes and give administrators, teachers, and learners their own roles.',
+        title: 'Your account centre and help',
+        body: 'See your plans, receipts, notifications, and certificates in one place. Ask OXI what to learn next, or message Oxinov support.',
       },
     ],
     faqs: [
       {
         question: 'What is Oxinov Edu?',
         answer:
-          'Oxinov Edu is an online classroom and learning management system. Schools and teachers use it to run courses, lessons, timed mock exams, and assignments in one place.',
+          'Oxinov Edu is the Oxinov learning store at edu.oxinov.com. It offers courses, skills, trainings, and ideas with free lessons first, access plans, live classes, quizzes, and certificates.',
       },
       {
-        question: 'Who is Oxinov Edu for?',
+        question: 'What can I learn on Oxinov Edu?',
         answer:
-          'It is designed for training providers anywhere in the world, such as language schools, IT training centres, exam preparation institutes, and independent teachers.',
+          'Japanese and JLPT preparation come first, for people preparing for study or work in Japan. IT and other skills follow. Each offering page shows its full syllabus and its free lessons.',
       },
       {
-        question: 'Can I run timed mock exams online?',
+        question: 'How do I pay?',
         answer:
-          'Yes. Teachers set a time limit and build sections that draw random questions. Answers save automatically, the attempt submits when time runs out, and learners can review their answers.',
+          'Choose a plan on the offering page and pay with the bank QR code from your bank or wallet app. Send the transaction ID and a screenshot; the team checks the payment, usually within a few hours, and you are notified when your access opens.',
       },
       {
-        question: 'Is Oxinov Edu available now?',
+        question: 'How long does access last?',
         answer:
-          'Oxinov Edu is in development. Its core features already work at edu.oxinov.com, and we add more with each release. Mobile apps are planned.',
+          'Plans last 1 month, 6 months, 1 year, or a lifetime. Renewing adds the new time to the end of your current plan, so you never lose paid days, and your progress and certificates stay either way.',
       },
       {
-        question: 'How much does Oxinov Edu cost?',
+        question: 'Can schools and teachers use Oxinov Edu?',
         answer:
-          'Prices are not published yet. Oxinov plans a Free plan with fair usage limits and paid plans for more. Prices will appear on the pricing page when they are set.',
+          'Yes. A school or teacher can run a private learning space with its own courses, quizzes, assignments, and learners who join with a code. Contact us to set one up.',
       },
       {
         question: 'Do I need a separate account?',
@@ -386,6 +386,10 @@ export const statusLabel: Record<Status, string> = {
 
 /** Pricing questions, shown on /pricing/ and published as FAQPage data. Facts only; no prices until approved. */
 export const pricingFaqs: Question[] = [
+  {
+    question: 'How do I pay for a course on Oxinov Edu?',
+    answer: 'Oxinov Edu offerings are bought one by one, with plans from one month to lifetime shown on each offering page and paid by bank QR. Many lessons and some offerings are free.',
+  },
   {
     question: 'Is there a free plan?',
     answer: 'Yes. The Free plan will include the core features of every launched Oxinov product with fair usage limits. No card is required.',

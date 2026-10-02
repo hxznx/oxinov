@@ -60,6 +60,14 @@ export class StorefrontService {
         }),
       ]);
       const ratings = await ReviewsService.ratingsFor(tx, tenantId, courses.map((course) => course.id));
+      // The next live classes of published offerings, free ones first among equals; no join links leave here.
+      const live = await tx.liveSession.findMany({
+        where: { tenantId, cancelledAt: null, startsAt: { gt: new Date(Date.now() - 60 * 60 * 1000) }, courseId: { in: courses.map((course) => course.id) } },
+        orderBy: [{ startsAt: 'asc' }, { visibility: 'asc' }],
+        take: 3,
+        select: { title: true, startsAt: true, durationMin: true, visibility: true, courseId: true },
+      });
+      const bySlug = new Map(courses.map((course) => [course.id, course]));
       const defaults: Record<PlanPeriod, number> = settings
         ? { MONTH_1: settings.defaultMonth1Minor, MONTH_6: settings.defaultMonth6Minor, YEAR_1: settings.defaultYear1Minor, LIFETIME: settings.defaultLifetimeMinor }
         : DEFAULT_PRICES;
@@ -68,6 +76,11 @@ export class StorefrontService {
         slug: tenant.slug,
         defaultPlans: PLAN_PERIODS.map((period) => ({ period, label: PLAN_LABELS[period], priceMinor: defaults[period], currency: 'NPR' })),
         offerings: courses.map((course) => toOffering(course, ratings.get(course.id))),
+        upcomingLive: live.map(({ courseId, ...session }) => ({
+          ...session,
+          offeringSlug: bySlug.get(courseId)?.slug ?? '',
+          offeringTitle: bySlug.get(courseId)?.publishedVersion?.title ?? '',
+        })),
       };
     });
   }

@@ -24,7 +24,7 @@ describe('Oxinov store: public pages and joining', () => {
     const res = await ctx.http.get('/v1/store');
     expect(res.status).toBe(200);
     const store = res.body.data;
-    expect(store).toMatchObject({ name: 'Sakura Japanese School', slug: 'sakura' });
+    expect(store).toMatchObject({ name: 'Sakura Japanese School', slug: 'sakura', upcomingLive: [] });
     expect(store.defaultPlans.map((plan: { label: string; priceMinor: number }) => [plan.label, plan.priceMinor])).toEqual([
       ['1 month', 500_000],
       ['6 months', 1_000_000],
@@ -62,6 +62,20 @@ describe('Oxinov store: public pages and joining', () => {
     expect((await ctx.http.get('/v1/store/offerings/jlpt-n4-grammar')).status).toBe(404);
     expect((await ctx.http.get('/v1/store/offerings/networking-fundamentals')).status).toBe(404);
     expect((await ctx.http.get('/v1/store/offerings/..%2Fsecret')).status).toBe(404);
+  });
+
+  it('lists the next live classes on the store home without their meeting links', async () => {
+    const startsAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
+    const created = await ctx.http
+      .post(`/v1/tenants/${SEED.sakura}/courses/${SEED.freeCourse}/live-sessions`)
+      .set(await auth(owner))
+      .send({ title: 'Open class: start Japanese', startsAt, durationMin: 60, joinUrl: 'https://meet.google.com/abc-defg-hij', visibility: 'FREE' });
+    expect(created.status).toBe(201);
+    const home = await ctx.http.get('/v1/store');
+    expect(home.body.data.upcomingLive).toEqual([
+      { title: 'Open class: start Japanese', startsAt, durationMin: 60, visibility: 'FREE', offeringSlug: 'hiragana-first-words', offeringTitle: expect.any(String) },
+    ]);
+    expect(JSON.stringify(home.body.data)).not.toContain('meet.google.com');
   });
 
   it('lets a signed-in visitor join the store as a learner once, and needs sign-in to do it', async () => {

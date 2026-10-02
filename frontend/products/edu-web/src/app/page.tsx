@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { EduHeader } from '@/components/EduHeader';
+import { LocalTime } from '@/components/LocalTime';
 import { OfferingCard } from '@/components/OfferingCard';
 import { auth } from '@/lib/auth.ts';
 import { EduApiError, eduApi, type Enrollment, type StoreHome as StoreHomeData, type Workspace } from '@/lib/edu-api.ts';
@@ -16,7 +17,7 @@ const TIERS = ['T1', 'T2', 'T3', 'T∞'];
 const TIER_TONES = ['--ox-color-brand', '--ox-color-brand-mid', '--ox-color-brand-2', '--ox-color-highlight'];
 const PLAN_NOTES: Record<string, string> = { MONTH_1: 'Full access for a month', MONTH_6: 'Full access, half a year', YEAR_1: 'Full access, 12 months', LIFETIME: 'No end date' };
 const TICKER =
-  '> CONNECTION SECURE · ACCESS LEVEL: VISITOR · INTRO AND SYLLABUS: OPEN · LESSONS: ENCRYPTED · UNLOCK WITH A PLAN · LANGUAGES · TECHNOLOGY · IDEAS · THINK TANK ·  ';
+  '> CONNECTION SECURE · ACCESS LEVEL: VISITOR · INTRO AND SYLLABUS: OPEN · LESSONS: ENCRYPTED · UNLOCK WITH A PLAN · LIVE CLASSES · ASK OXI WHERE TO START · LANGUAGES · TECHNOLOGY · IDEAS · THINK TANK ·  ';
 
 type Props = { searchParams: Promise<{ signin?: string; kind?: string; q?: string }> };
 
@@ -103,7 +104,8 @@ export default async function StoreHome({ searchParams }: Props) {
                 <span className="text-gradient">Own the ideas.</span>
               </h1>
               <p className="max-w-xl text-lg text-muted">
-                Courses, training, ideas and think-tank research from Oxinov. Read the introduction and syllabus free, then unlock every lesson with one plan.
+                Courses, skills, training, ideas and think-tank research from Oxinov. Watch the introduction and syllabus free, then unlock every lesson, book and live
+                class with one plan.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a href="#browse" className="btn btn-primary font-studio">
@@ -120,13 +122,16 @@ export default async function StoreHome({ searchParams }: Props) {
               </div>
               <p className="flex flex-wrap gap-x-5 gap-y-1 text-hud text-xs tracking-widest text-muted">
                 <span>
-                  <span className="tone-success">●</span> FREE PREVIEW ON THE SYLLABUS
+                  <span className="tone-success">●</span> FREE PREVIEW ON EVERY COURSE
                 </span>
                 <span>
                   <span className="tone-brand">●</span> WATCH ON PHONE OR PC
                 </span>
                 <span>
-                  <span className="tone-pink">●</span> PAY BY BANK QR
+                  <span className="tone-pink">●</span> LIVE CLASSES
+                </span>
+                <span>
+                  <span className="tone-warning">●</span> CERTIFICATES
                 </span>
               </p>
             </div>
@@ -151,7 +156,7 @@ export default async function StoreHome({ searchParams }: Props) {
                     </span>
                   </div>
                 ))}
-                <p className="text-hud text-xs tracking-wider text-muted">&gt; STARTING PRICES · EACH OFFERING SHOWS ITS OWN · CARD FOR LEARNERS ABROAD: SOON</p>
+                <p className="text-hud text-xs tracking-wider text-muted">&gt; STARTING PRICES · EACH OFFERING SHOWS ITS OWN · PAY BY BANK QR · CARD FOR LEARNERS ABROAD: SOON</p>
               </div>
             ) : null}
           </div>
@@ -185,11 +190,71 @@ export default async function StoreHome({ searchParams }: Props) {
               </Link>
             </section>
           ) : (
-            <StoreBrowse store={store} kind={kind} q={q} />
+            <>
+              <StoreBrowse store={store} kind={kind} q={q} />
+              <LiveClasses store={store} />
+              <StartHelp signedIn={session !== null} />
+            </>
           )}
         </div>
       </main>
     </>
+  );
+}
+
+/** The next live classes (design screen 1, "Live class · free to join"): time in the visitor's zone, no link. */
+function LiveClasses({ store }: { store: StoreHomeData }) {
+  if (store.upcomingLive.length === 0) return null;
+  return (
+    <section aria-labelledby="live-heading" className="grid gap-3">
+      <h2 id="live-heading" className="studio-kicker" style={{ color: 'var(--ox-color-highlight)' }}>
+        // Live classes
+      </h2>
+      <ul className="grid gap-3 md:grid-cols-3">
+        {store.upcomingLive.map((session) => (
+          <li key={`${session.offeringSlug}-${session.startsAt}`}>
+            <Link href={`/o/${session.offeringSlug}`} className="cut-md grid h-full gap-2 border bg-surface p-4 text-inherit no-underline" style={{ borderColor: 'var(--ox-color-highlight)' }}>
+              <span className={`studio-status ${session.visibility === 'FREE' ? 'tone-success' : 'tone-muted'}`}>
+                {session.visibility === 'FREE' ? '● Free to join' : '● For subscribers'}
+              </span>
+              <span className="font-studio text-lg font-bold leading-tight">{session.title}</span>
+              <span className="text-sm text-muted">
+                <LocalTime iso={session.startsAt} /> · {session.durationMin} min
+              </span>
+              <span className="text-xs text-muted">{session.offeringTitle} · See details ›</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Where to start (design screen 1): ask OXI, and invite friends ("Recruit your squad"). */
+function StartHelp({ signedIn }: { signedIn: boolean }) {
+  return (
+    <section aria-label="Getting started" className="grid gap-4 md:grid-cols-2">
+      <div className="cut-md grid content-start gap-3 border bg-surface p-5" style={{ borderColor: 'var(--ox-color-success)' }}>
+        <span className="studio-kicker" style={{ color: 'var(--ox-color-success)' }}>
+          // Not sure where to start?
+        </span>
+        <h2 className="font-studio text-2xl font-bold">Ask OXI, your course advisor</h2>
+        <p className="text-sm text-muted">Tell OXI your goal, like &quot;work in Japan&quot; or &quot;learn programming&quot;, and get picks from this store with free lessons to try first.</p>
+        <Link href="/account/messages" className="btn btn-primary justify-self-start font-studio">
+          ✦ Ask OXI
+        </Link>
+      </div>
+      <div className="cut-md grid content-start gap-3 border bg-surface p-5" style={{ borderColor: 'var(--ox-color-brand-2)' }}>
+        <span className="studio-kicker" style={{ color: 'var(--ox-color-brand-2)' }}>
+          // Recruit your squad
+        </span>
+        <h2 className="font-studio text-2xl font-bold">Learning is better together</h2>
+        <p className="text-sm text-muted">Share Oxinov or recommend a course to a friend on WhatsApp, Facebook, Viber or email.</p>
+        <Link href={signedIn ? '/account/invite' : '/auth/login?returnTo=%2Faccount%2Finvite'} className="btn btn-secondary justify-self-start font-studio">
+          ⇪ Invite friends
+        </Link>
+      </div>
+    </section>
   );
 }
 

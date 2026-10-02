@@ -34,6 +34,18 @@ export class StoreHomeDto {
   @ApiProperty({ description: 'Workspace address of the store; learners study at /w/{slug}.' }) slug: string;
   @ApiProperty({ type: [StorePlanDto], description: 'Default plan prices, for the hero price list.' }) defaultPlans: StorePlanDto[];
   @ApiProperty({ type: [StoreOfferingDto] }) offerings: StoreOfferingDto[];
+  @ApiProperty({ type: () => [StoreUpcomingLiveDto], description: 'The next live classes of published offerings, soonest first; times only, never join links.' })
+  upcomingLive: StoreUpcomingLiveDto[];
+}
+
+/** A live class on the store home (design screen 1): when, what, and which offering. No meeting link. */
+export class StoreUpcomingLiveDto {
+  @ApiProperty() title: string;
+  @ApiProperty({ format: 'date-time' }) startsAt: Date;
+  @ApiProperty() durationMin: number;
+  @ApiProperty({ enum: ['FREE', 'SUBSCRIBERS'] }) visibility: 'FREE' | 'SUBSCRIBERS';
+  @ApiProperty() offeringSlug: string;
+  @ApiProperty() offeringTitle: string;
 }
 
 export class StoreLessonDto {

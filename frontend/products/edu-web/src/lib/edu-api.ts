@@ -618,6 +618,8 @@ export interface StoreHome {
   slug: string;
   defaultPlans: StorePlan[];
   offerings: StoreOffering[];
+  /** The next live classes of published offerings: time and title only, never a join link. */
+  upcomingLive: { title: string; startsAt: string; durationMin: number; visibility: Visibility; offeringSlug: string; offeringTitle: string }[];
 }
 
 export interface StoreOfferingDetail extends StoreOffering {
