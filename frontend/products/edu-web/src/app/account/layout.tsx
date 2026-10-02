@@ -21,6 +21,8 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const { me, token, workspace } = context;
   // The unread count for the menu badge; a failure here never blocks the account centre.
   const unread = workspace ? await eduApi.myNotifications(token, workspace.id).then((result) => result.unread).catch(() => 0) : 0;
+  // A scheduled deletion is announced on every account page, with the way to cancel (FR-PRIV-3202).
+  const deletion = await eduApi.deletionStatus(token).catch(() => null);
   const groups: SideNavGroup[] = [
     {
       title: 'MY LEARNING',
@@ -61,6 +63,11 @@ export default async function AccountLayout({ children }: { children: ReactNode 
           </Link>
         </nav>
         <main id="main" className="studio-main">
+          {deletion?.state === 'SCHEDULED' && deletion.deleteAfter ? (
+            <p role="status" className="notice notice-error">
+              Your account will be deleted on {formatDate(deletion.deleteAfter, 'Asia/Kathmandu')}. <Link href="/account/privacy">Cancel the deletion</Link>
+            </p>
+          ) : null}
           {children}
         </main>
       </div>

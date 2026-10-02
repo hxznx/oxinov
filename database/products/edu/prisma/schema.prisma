@@ -129,6 +129,7 @@ model UserProfile {
   settingsUpdated     StoreSettings[]
   reviews             CourseReview[]         @relation("ReviewAuthor")
   reviewsModerated    CourseReview[]         @relation("ReviewModerator")
+  deletionRequest     AccountDeletionRequest?
 
   @@map("user_profiles")
 }
@@ -1373,4 +1374,21 @@ enum ReviewStatus {
   HIDDEN
 
   @@map("review_status")
+}
+
+/// A person's request to delete their Edu account (FR-PRIV-3202): cancellable until `deleteAfter` (14 days,
+/// the owner's choice); the deletion sweep then anonymises the profile and removes their own learning data.
+/// One row per person; a new request after a cancellation reuses it.
+model AccountDeletionRequest {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @unique @map("user_id") @db.Uuid
+  requestedAt DateTime  @default(now()) @map("requested_at") @db.Timestamptz(3)
+  deleteAfter DateTime  @map("delete_after") @db.Timestamptz(3)
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz(3)
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(3)
+
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([deleteAfter])
+  @@map("account_deletion_requests")
 }

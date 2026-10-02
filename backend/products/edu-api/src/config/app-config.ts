@@ -35,10 +35,12 @@ export interface MailConfig {
   readonly supportAddress: string;
 }
 
-/** Hourly renewal reminder sweep inside the API process (FR-COMM-704). */
+/** Hourly sweeps inside the API process: renewal reminders (FR-COMM-704) and due account deletions (FR-PRIV-3202). */
 export interface RemindersConfig {
   readonly enabled: boolean;
   readonly intervalMinutes: number;
+  /** Runs due account deletions on the same interval; `ACCOUNT_DELETION_SWEEP=off` turns it off. */
+  readonly deletionSweep: boolean;
 }
 
 /** The Edu API (internal name `api`) uses the shared service configuration (ADR-007) plus media storage, payments, mail, and reminders. */
@@ -49,14 +51,17 @@ export type AppConfig = ServiceConfig & {
   readonly reminders: RemindersConfig;
 };
 
-/** `RENEWAL_REMINDERS=off` turns the sweep off (tests run it themselves); the interval is 5 to 1440 minutes. */
+/**
+ * `RENEWAL_REMINDERS=off` and `ACCOUNT_DELETION_SWEEP=off` turn the sweeps off (tests run them themselves);
+ * the interval is 5 to 1440 minutes.
+ */
 export function loadRemindersConfig(env: NodeJS.ProcessEnv): RemindersConfig {
   const enabled = env.RENEWAL_REMINDERS?.trim().toLowerCase() !== 'off';
   const intervalMinutes = Number(env.RENEWAL_REMINDER_INTERVAL_MIN?.trim() || '60');
   if (!Number.isInteger(intervalMinutes) || intervalMinutes < 5 || intervalMinutes > 1440) {
     throw new Error('Invalid configuration: RENEWAL_REMINDER_INTERVAL_MIN must be a whole number from 5 to 1440');
   }
-  return { enabled, intervalMinutes };
+  return { enabled, intervalMinutes, deletionSweep: env.ACCOUNT_DELETION_SWEEP?.trim().toLowerCase() !== 'off' };
 }
 
 const EMAIL = /^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i;

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { eduApi } from '@/lib/edu-api.ts';
+import { formatDate } from '@/lib/format.ts';
 import { accountContext } from '../data';
 import { DeleteRequest } from './DeleteRequest';
 
@@ -7,11 +9,14 @@ export const metadata: Metadata = { title: 'Profile and privacy' };
 
 /**
  * Profile and privacy (FR-AUTH-104): who you are signed in as, sign-out on this device and everywhere
- * (FR-ID-2208, on the Oxinov sign-in account page), your learning spaces, and requests for a copy of your
- * data (FR-PRIV-3201) or deletion (FR-PRIV-3202), which Oxinov support carries out across every product.
+ * (FR-ID-2208, on the Oxinov sign-in account page), your learning spaces, a download of your Edu data
+ * (FR-PRIV-3201), and account deletion after a 14-day wait you can cancel (FR-PRIV-3202).
  */
 export default async function PrivacyPage() {
-  const { me } = await accountContext('/account/privacy');
+  const { me, token } = await accountContext('/account/privacy');
+  // A failure here shows the request form; the API still refuses a second scheduled request.
+  const deletion = await eduApi.deletionStatus(token).catch(() => null);
+  const deleteAfter = deletion?.state === 'SCHEDULED' ? deletion.deleteAfter : null;
   const issuer = process.env.OIDC_ISSUER?.replace(/\/$/, '') ?? 'https://id.oxinov.com/realms/oxinov';
   const accountPage = `${issuer}/account/`;
   const support = process.env.SUPPORT_EMAIL?.trim() || 'support@oxinov.com';
@@ -63,11 +68,11 @@ export default async function PrivacyPage() {
     },
     {
       glyph: '⤓',
-      title: 'Get a copy of my data',
-      sub: `Ask Oxinov support for your profile, learning progress, payments, and certificates. We reply from ${support}.`,
+      title: 'Download my data',
+      sub: `A file with your profile, workspaces, access, payments, certificates, notes, reviews, and notifications in Oxinov Edu. Questions? Write to ${support}.`,
       action: (
-        <a href={exportHref} className="btn btn-secondary text-sm">
-          Ask for a copy
+        <a href="/account/privacy/export" className="btn btn-secondary text-sm" download>
+          Download
         </a>
       ),
     },
@@ -95,7 +100,7 @@ export default async function PrivacyPage() {
           </li>
         ))}
       </ul>
-      <DeleteRequest email={email} support={support} />
+      <DeleteRequest deleteAfter={deleteAfter} deletionDay={deleteAfter ? formatDate(deleteAfter, 'Asia/Kathmandu') : null} />
     </>
   );
 }

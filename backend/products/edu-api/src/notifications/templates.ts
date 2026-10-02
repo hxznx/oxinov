@@ -124,3 +124,21 @@ export function renewalMail(input: {
     footer: 'Ox Inov Pvt. Ltd. You receive this because you have a time-limited plan on Oxinov.',
   });
 }
+
+/** Account deletion requested (FR-PRIV-3202): when it happens and how to cancel. */
+export function deletionRequestedMail(input: { readonly to: string; readonly deleteAfter: Date; readonly privacyUrl: string; readonly support: string }): OutgoingMail {
+  return render({
+    to: input.to,
+    subject: 'Your Oxinov Edu account will be deleted',
+    title: 'We received your request to delete your account',
+    paragraphs: [
+      `Your Oxinov Edu account will be deleted on ${formatDate(input.deleteAfter)}. Until then everything keeps working, and you can cancel at any time.`,
+      'Deletion removes your name, email, notes, reviews, notifications, progress, and certificates, and ends access to every course, including lifetime plans. Payment records are kept, without your name, as the law requires.',
+      'If you did not ask for this, cancel now and contact us.',
+    ],
+    details: [`Deletion date: ${formatDate(input.deleteAfter)}`],
+    button: { label: 'Cancel the deletion', url: input.privacyUrl },
+    support: input.support,
+    footer: 'Ox Inov Pvt. Ltd. You receive this because someone signed in to your account asked to delete it.',
+  });
+}

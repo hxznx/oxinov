@@ -637,6 +637,13 @@ export interface StoreOfferingDetail extends StoreOffering {
   reviews: { author: string; rating: number; body: string; createdAt: string }[];
 }
 
+/** Account deletion with a 14-day wait (FR-PRIV-3202). */
+export interface DeletionStatus {
+  state: 'NONE' | 'SCHEDULED' | 'CANCELLED';
+  requestedAt: string | null;
+  deleteAfter: string | null;
+}
+
 /** Ratings and reviews (FR-CATALOG-304, approve first). */
 export type ReviewStatus = 'PENDING' | 'APPROVED' | 'HIDDEN';
 
@@ -776,6 +783,11 @@ export const eduApi = {
   updateMember: (token: string, tenantId: string, userId: string, body: { role?: TenantRole; status?: 'ACTIVE' | 'SUSPENDED' }) =>
     request<Member>(token, `${tenantPath(tenantId)}/members/${encodeURIComponent(userId)}`, { method: 'PATCH', body }),
   auditEvents: (token: string, tenantId: string) => request<AuditEvent[]>(token, `${tenantPath(tenantId)}/audit-events`),
+  deletionStatus: (token: string) => request<DeletionStatus>(token, '/v1/me/deletion'),
+  requestDeletion: (token: string, confirm: string) => request<DeletionStatus>(token, '/v1/me/deletion', { method: 'POST', body: { confirm } }),
+  cancelDeletion: (token: string) => request<DeletionStatus>(token, '/v1/me/deletion', { method: 'DELETE' }),
+  /** A copy of the caller's Edu data (FR-PRIV-3201), as stored; the web app offers it as a file. */
+  exportData: (token: string) => request<unknown>(token, '/v1/me/export'),
   myReview: (token: string, tenantId: string, courseId: string) => request<MyReview>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/review`),
   saveReview: (token: string, tenantId: string, courseId: string, body: { rating: number; body: string }) =>
     request<MyReview>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/review`, { method: 'PUT', body }),

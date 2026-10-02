@@ -327,12 +327,12 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 ### 3.12 Privacy (PRIV)
 
 **FR-PRIV-3201 — Export.** People must be able to request an export of their data across all products and download it within a published time.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [privacy](../../09-security/privacy.md).
+*Priority:* Must. *Status:* Partly implemented (2026-10-03): Oxinov Edu offers an immediate JSON download of the person's Edu data (`GET /v1/me/export`, account centre › Profile and privacy); platform data and other products follow with the account portal. *Access:* T1. *Source:* [privacy](../../09-security/privacy.md).
 - Acceptance: The export includes platform data and each launched product's data for that person.
 - Acceptance: Given an export request for another person or organization, when authorization runs, then it is refused and no export job is created.
 
 **FR-PRIV-3202 — Deletion.** People must be able to request account deletion with confirmation and a waiting period; deletion propagates to every product, keeping only records the law requires.
-*Priority:* Must. *Status:* Proposed. *Access:* T1. *Source:* [retention](../../05-data/data-retention.md).
+*Priority:* Must. *Status:* Partly implemented (2026-10-03): Oxinov Edu deletes after typing DELETE and a 14-day wait the person can cancel (the owner's choice). An hourly sweep anonymises the Edu profile (no name, email, or sign-in subject, so signing in again starts an empty account), removes notes, reviews, notifications, progress, and memberships, and revokes certificates; payments, enrollments, entitlements, attempts, and submissions stay as records without personal details. Row-level security allows these writes only after the wait. The Oxinov sign-in account (Keycloak) and platform data are not deleted yet; that follows with the platform account portal. *Access:* T1. *Source:* [retention](../../05-data/data-retention.md).
 - Acceptance: Given a completed deletion, sign-in with the old methods creates a new, empty account.
 - Acceptance: Given legally retained records, when deletion completes, then the person is told the category and end condition while those records remain excluded from ordinary product use.
 

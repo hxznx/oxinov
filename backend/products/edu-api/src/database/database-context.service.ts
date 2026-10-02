@@ -13,6 +13,11 @@ export interface DbContext {
   authSubject?: string;
   /** Join code being redeemed; lets row-level security reveal exactly that one invite. */
   inviteCode?: string;
+  /**
+   * Person whose account the deletion sweep is removing (FR-PRIV-3202). Row-level security honours it only
+   * while that person has an open deletion request whose waiting period has ended.
+   */
+  deletingUserId?: string;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -28,7 +33,7 @@ export class DatabaseContext {
   constructor(private readonly prisma: PrismaService) {}
 
   run<T>(context: DbContext, work: (tx: Tx) => Promise<T>): Promise<T> {
-    for (const key of ['tenantId', 'userId'] as const) {
+    for (const key of ['tenantId', 'userId', 'deletingUserId'] as const) {
       const value = context[key];
       if (value !== undefined && !UUID.test(value)) {
         throw new Error(`DatabaseContext.${key} must be a UUID`);
@@ -39,7 +44,8 @@ export class DatabaseContext {
         set_config('app.tenant_id', ${context.tenantId ?? ''}, true),
         set_config('app.user_id', ${context.userId ?? ''}, true),
         set_config('app.auth_subject', ${context.authSubject ?? ''}, true),
-        set_config('app.invite_code', ${context.inviteCode ?? ''}, true)`;
+        set_config('app.invite_code', ${context.inviteCode ?? ''}, true),
+        set_config('app.deleting_user_id', ${context.deletingUserId ?? ''}, true)`;
       return work(tx);
     });
   }

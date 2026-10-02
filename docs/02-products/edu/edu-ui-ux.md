@@ -78,6 +78,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Reviews, built 2026-10-03:** the offering page shows the "// Learner reviews" box (design screen 2) only when approved reviews exist: the average, star bars, and the newest reviews; the hero and store cards show the rating. Learners rate from the course page (stars and optional text, with a note that it waits for approval). Studio › Reviews lists Waiting, Shown, and Hidden reviews with **Approve** and **Hide** (private reason), and the side menu counts waiting reviews.
 
+**Download and deletion, built 2026-10-03:** Profile and privacy offers **Download my data** (a JSON file) and **Delete my account…**: typing DELETE schedules deletion in 14 days and emails the date with a cancel link; while scheduled, the panel and a banner on every account page say the date with **Cancel the deletion**.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.
