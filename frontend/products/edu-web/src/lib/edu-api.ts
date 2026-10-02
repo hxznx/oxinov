@@ -634,6 +634,8 @@ export interface StoreOfferingDetail extends StoreOffering {
   liveSessions: { title: string; startsAt: string; durationMin: number; visibility: Visibility }[];
   /** Bank QR checkout is set up, so plans can be bought now. */
   checkoutOpen: boolean;
+  /** The instructor (the offering's author), by display name only (FR-CATALOG-315). */
+  instructorName: string | null;
   rating: RatingSummary;
   /** Newest approved reviews; the author is a first name and last initial. */
   reviews: { author: string; rating: number; body: string; createdAt: string }[];

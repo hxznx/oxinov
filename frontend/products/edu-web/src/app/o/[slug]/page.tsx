@@ -298,6 +298,8 @@ export default async function OfferingPage({ params, searchParams }: Props) {
                 </ul>
               </section>
             ) : null}
+            <Teacher offering={offering} />
+            <CertificatePreview title={offering.title} />
             {offering.rating.count > 0 ? <Reviews offering={offering} /> : null}
             <section aria-labelledby="faq-heading" className="grid gap-2">
               <h2 id="faq-heading" className="studio-kicker">
@@ -314,6 +316,52 @@ export default async function OfferingPage({ params, searchParams }: Props) {
         </div>
       </main>
     </>
+  );
+}
+
+/** Who teaches it (FR-CATALOG-315): the author's name and the school behind it. */
+function Teacher({ offering }: { offering: StoreOfferingDetail }) {
+  const name = offering.instructorName ?? 'The Oxinov team';
+  const initials = name
+    .split(/\s+/)
+    .map((word) => word[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+  return (
+    <section aria-labelledby="teacher-heading" className="cut-md grid grid-cols-[3rem_minmax(0,1fr)] items-center gap-3 border border-line bg-surface p-5">
+      <span className="msg-avatar h-12 w-12 text-sm" style={{ background: 'linear-gradient(135deg, var(--ox-color-brand), var(--ox-color-brand-2))' }} aria-hidden="true">
+        {initials}
+      </span>
+      <span className="grid gap-0.5">
+        <h2 id="teacher-heading" className="studio-kicker">
+          // Your instructor
+        </h2>
+        <span className="font-studio text-lg font-bold">{name}</span>
+        <span className="text-sm text-muted">Teaches this {KIND_LABELS[offering.kind].toLowerCase()} on Oxinov Edu. Ask questions under any lesson or message Oxinov support.</span>
+      </span>
+    </section>
+  );
+}
+
+/**
+ * Certificate preview (FR-CATALOG-315): what learners earn on completion, with a public verification link.
+ * It is a labelled sample with a placeholder name, never a real learner's certificate.
+ */
+function CertificatePreview({ title }: { title: string }) {
+  return (
+    <section aria-labelledby="certificate-heading" className="grid gap-2">
+      <h2 id="certificate-heading" className="studio-kicker" style={{ color: 'var(--ox-color-warning)' }}>
+        // Certificate on completion
+      </h2>
+      <figure className="cut-md grid gap-1 border bg-surface p-5 text-center" style={{ borderColor: 'var(--ox-color-warning)' }}>
+        <span className="text-hud text-xs tracking-widest text-muted">SAMPLE · CERTIFICATE OF COMPLETION</span>
+        <span className="font-display text-xl font-bold">Your name</span>
+        <span className="text-sm text-muted">has completed</span>
+        <span className="font-studio font-bold">{title}</span>
+        <figcaption className="text-hud mt-2 text-xs text-muted">Oxinov Edu · each certificate has its own public verification link</figcaption>
+      </figure>
+    </section>
   );
 }
 

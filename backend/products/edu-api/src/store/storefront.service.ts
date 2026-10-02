@@ -94,7 +94,7 @@ export class StorefrontService {
         include: offeringInclude,
       });
       if (!course?.publishedVersionId) throw Errors.notFound('Offering');
-      const [version, plans, settings, tenant, live, reviews] = await Promise.all([
+      const [version, plans, settings, tenant, live, reviews, author] = await Promise.all([
         tx.courseVersion.findUniqueOrThrow({
           where: { id: course.publishedVersionId },
           select: {
@@ -119,6 +119,7 @@ export class StorefrontService {
           select: { title: true, startsAt: true, durationMin: true, visibility: true },
         }),
         ReviewsService.publicReviews(tx, tenantId, course.id),
+        tx.userProfile.findUnique({ where: { id: course.createdByUserId }, select: { displayName: true } }),
       ]);
       return {
         ...toOffering(course, { average: reviews.rating.average, count: reviews.rating.count }),
@@ -134,6 +135,8 @@ export class StorefrontService {
         liveSessions: live,
         // Same rule as checkout (StoreService.bankDetails): a QR and an account name must be set.
         checkoutOpen: Boolean(settings?.bankQrObjectKey && settings.accountName),
+        // A name that looks like an email address is never shown (FR-CATALOG-315).
+        instructorName: author?.displayName && !author.displayName.includes('@') ? author.displayName.slice(0, 120) : null,
         rating: reviews.rating,
         reviews: reviews.reviews,
       };

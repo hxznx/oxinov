@@ -90,6 +90,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Installable app, built 2026-10-03:** Oxinov Edu can be added to a phone's home screen and opens full screen with the Oxinov icon; **⇩ Install the app** appears in the store hero when the browser can install it (on iPhone Safari it explains Share › Add to Home Screen) and disappears once installed. Without a connection, pages show "You are offline" with Try again instead of a browser error. On touch screens every button and field is at least 44 px tall.
 
+**Trust on offering pages, built 2026-10-03:** the offering page's right column adds "// Your instructor" (initials and the author's name) and "// Certificate on completion", a sample marked SAMPLE with "Your name" and the offering's title, above learner reviews and the FAQ.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

@@ -79,6 +79,8 @@ export class StoreOfferingDetailDto extends StoreOfferingDto {
   @ApiProperty() storeSlug: string;
   @ApiProperty({ type: [StoreLiveSessionDto], description: 'Upcoming live classes, soonest first; no join links.' }) liveSessions: StoreLiveSessionDto[];
   @ApiProperty({ description: 'Bank QR checkout is set up (QR and account name), so plans can be bought now.' }) checkoutOpen: boolean;
+  @ApiProperty({ nullable: true, type: String, description: 'Display name of the offering’s instructor (its author); never an email (FR-CATALOG-315).' })
+  instructorName: string | null;
   @ApiProperty({ type: RatingSummaryDto }) rating: RatingSummaryDto;
   @ApiProperty({ type: [PublicReviewDto], description: 'Newest approved reviews; author is a first name and last initial.' }) reviews: PublicReviewDto[];
 }

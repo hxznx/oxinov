@@ -25,6 +25,9 @@ describe('Oxinov store: public pages and joining', () => {
     expect(res.status).toBe(200);
     const store = res.body.data;
     expect(store).toMatchObject({ name: 'Sakura Japanese School', slug: 'sakura', upcomingLive: [] });
+    const page = (await ctx.http.get('/v1/store/offerings/jlpt-n5-complete')).body.data as { instructorName: string | null };
+    expect(page.instructorName).toEqual(expect.any(String));
+    expect(page.instructorName).not.toContain('@');
     expect(store.defaultPlans.map((plan: { label: string; priceMinor: number }) => [plan.label, plan.priceMinor])).toEqual([
       ['1 month', 500_000],
       ['6 months', 1_000_000],

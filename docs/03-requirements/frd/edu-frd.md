@@ -242,7 +242,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a payment is in review, when the learner opens a subscriber item, then it stays locked and the page says the payment is in review.
 
 **FR-CATALOG-315 — Trust on offering pages.** Every paid offering page shows what is included, the monthly cost of each plan, a certificate preview when the offering issues one, frequently asked questions with the owner's refund or change policy, and the instructor or author. Learner reviews appear only when real reviews exist (FR-CATALOG-304); the page never shows invented ratings, counts, or testimonials.
-*Priority:* Must. *Status:* Proposed. *Access:* T0 visitor and above. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+*Priority:* Must. *Status:* Implemented (2026-10-03): offering pages show "What's included", each plan's monthly cost, the FAQ with the owner's refund policy, the instructor (the author's display name, `instructorName`, never an email), a labelled sample certificate with the offering's title, and learner reviews only when approved reviews exist. An instructor photo and bio wait for the owner's decision on instructor card details. *Access:* T0 visitor and above. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
 - Acceptance: Given a published paid offering, when a visitor opens it, then the included list, each plan's monthly cost, the FAQ with the policy, and the instructor are shown.
 - Acceptance: Given an offering has no visible reviews, when its page loads, then no rating, count, or review area is shown.
 
