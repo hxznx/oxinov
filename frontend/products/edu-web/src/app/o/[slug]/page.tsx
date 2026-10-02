@@ -60,7 +60,7 @@ export default async function OfferingPage({ params, searchParams }: Props) {
   const offering = await loadOffering(slug);
   const session = await auth.currentSession(`/o/${slug}`);
   const ip = isIntellectualProperty(offering.kind);
-  const tone = ip ? '--ox-color-brand2' : CATEGORY_TONES[offering.category];
+  const tone = ip ? '--ox-color-brand-2' : CATEGORY_TONES[offering.category];
   const initial = PLAN_PERIODS.find((period) => period === query.plan) as PlanPeriod | undefined;
 
   // A signed-in learner who already has access goes straight to learning.

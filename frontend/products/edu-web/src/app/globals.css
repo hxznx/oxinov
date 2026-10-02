@@ -13,7 +13,7 @@
   --color-ink: var(--ox-color-text);
   --color-muted: var(--ox-color-text-muted);
   --color-brand: var(--ox-color-brand);
-  --color-brand-2: var(--ox-color-brand2);
+  --color-brand-2: var(--ox-color-brand-2);
   --color-brand-mid: var(--ox-color-brand-mid);
   --color-highlight: var(--ox-color-highlight);
   --color-on-neon: var(--ox-color-on-neon);
@@ -194,10 +194,10 @@
 
   .store-hero { position: relative; border-bottom: 1px solid var(--ox-color-border); overflow: hidden; }
   .store-h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.25rem, 6vw, 4rem); line-height: 1.05; letter-spacing: 0.01em; }
-  .glitch { text-shadow: 2px 0 color-mix(in srgb, var(--ox-color-brand2) 55%, transparent), -2px 0 color-mix(in srgb, var(--ox-color-brand) 55%, transparent); animation: store-glitch 5s infinite steps(1); }
+  .glitch { text-shadow: 2px 0 color-mix(in srgb, var(--ox-color-brand-2) 55%, transparent), -2px 0 color-mix(in srgb, var(--ox-color-brand) 55%, transparent); animation: store-glitch 5s infinite steps(1); }
   @keyframes store-glitch {
     0%, 93%, 100% { transform: none; }
-    94% { transform: translateX(2px); text-shadow: -4px 0 var(--ox-color-brand2), 4px 0 var(--ox-color-brand); }
+    94% { transform: translateX(2px); text-shadow: -4px 0 var(--ox-color-brand-2), 4px 0 var(--ox-color-brand); }
     96% { transform: translateX(-2px); }
   }
   .blink { animation: store-blink 1s steps(1) infinite; }
@@ -390,7 +390,7 @@
     margin-left: auto;
     min-width: 1.25rem;
     padding: 0 0.3rem;
-    background: var(--ox-color-brand2);
+    background: var(--ox-color-brand-2);
     color: var(--ox-color-on-neon);
     font-family: var(--font-hud);
     font-size: 0.75rem;
@@ -489,6 +489,27 @@
     .quiz-layout { grid-template-columns: minmax(0, 1fr); }
   }
 
+  /* Messages (design screen 15): conversation list beside the open conversation. */
+  .msg-layout { display: grid; grid-template-columns: 17rem minmax(0, 1fr); border: 1px solid var(--ox-color-border); background: var(--ox-color-surface); min-height: 32rem; }
+  .msg-list { border-right: 1px solid var(--ox-color-border); display: grid; align-content: start; }
+  .msg-conv { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; gap: 0.75rem; align-items: center; padding: 0.875rem 1rem; border-left: 3px solid transparent; border-bottom: 1px solid var(--ox-color-border); color: var(--ox-color-text); text-decoration: none; }
+  .msg-conv:hover { background: var(--ox-color-surface-raised); }
+  .msg-conv[aria-current='true'] { border-left-color: var(--ox-color-brand); background: var(--ox-color-surface-raised); }
+  .msg-avatar { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; clip-path: var(--ox-cut-sm); font-family: var(--font-display); font-weight: 800; font-size: 0.75rem; color: var(--ox-color-on-neon); }
+  .msg-pane { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; }
+  .msg-head { display: flex; align-items: center; gap: 0.875rem; padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--ox-color-border); }
+  .msg-thread { display: flex; flex-direction: column; gap: 0.875rem; padding: 1.25rem; overflow-y: auto; max-height: 34rem; }
+  .msg { max-width: 38rem; padding: 0.75rem 1rem; border: 1px solid var(--ox-color-border); background: var(--ox-color-bg); clip-path: var(--ox-cut-sm); display: grid; gap: 0.375rem; }
+  .msg-me { align-self: flex-end; border-color: var(--ox-color-brand); background: color-mix(in srgb, var(--ox-color-brand) 10%, var(--ox-color-surface)); }
+  .msg-them { align-self: flex-start; }
+  .msg-label { font-family: var(--font-hud); font-size: 0.6875rem; letter-spacing: 0.1em; }
+  .msg-compose { display: grid; gap: 0.5rem; padding: 0.875rem 1.25rem 1rem; border-top: 1px solid var(--ox-color-border); }
+  .msg-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ox-color-brand-2); }
+  @media (max-width: 48rem) {
+    .msg-layout { grid-template-columns: minmax(0, 1fr); }
+    .msg-list { border-right: 0; border-bottom: 1px solid var(--ox-color-border); }
+  }
+
   .btn-approve { background: var(--ox-color-success); color: var(--ox-color-on-neon); }
   .btn-approve:hover { box-shadow: 0 0 12px var(--ox-color-success); }
   .btn-reject { color: var(--ox-color-danger); outline: 1px solid var(--ox-color-danger); outline-offset: -1px; background: transparent; }
@@ -499,7 +520,7 @@
   .tone-warning { color: var(--ox-color-warning); }
   .tone-danger { color: var(--ox-color-danger); }
   .tone-mid { color: var(--ox-color-brand-mid); }
-  .tone-pink { color: var(--ox-color-brand2); }
+  .tone-pink { color: var(--ox-color-brand-2); }
   .tone-muted { color: var(--ox-color-text-muted); }
 
   /* Narrow screens: the sidebar becomes a scrolling strip of sections above the page. */

@@ -64,6 +64,8 @@ import { ListingController, StoreJoinController, StorefrontController } from './
 import { StorefrontService } from './store/storefront.service';
 import { LiveSessionsController } from './live/live-sessions.controller';
 import { ReviewsController } from './reviews/reviews.controller';
+import { OxiController, SupportController } from './support/support.controller';
+import { SupportService } from './support/support.service';
 import { ReviewsService } from './reviews/reviews.service';
 import { AccountController } from './account/account.controller';
 import { AccountService } from './account/account.service';
@@ -131,6 +133,7 @@ export class AppModule implements NestModule {
       LiveSessionsService,
       ReviewsService,
       AccountService,
+      SupportService,
       NotificationsService,
       RenewalRemindersService,
       CertificatesService,
@@ -161,6 +164,8 @@ export class AppModule implements NestModule {
         ReviewsController,
         MeController,
         AccountController,
+        SupportController,
+        OxiController,
         NotificationsController,
         CertificatesController,
         CertificateVerificationController,

@@ -637,6 +637,45 @@ export interface StoreOfferingDetail extends StoreOffering {
   reviews: { author: string; rating: number; body: string; createdAt: string }[];
 }
 
+/** Support messages (FR-CHAT-1301) and OXI, the rule-based course advisor (FR-AI-1705). */
+export interface SupportMessage {
+  id: string;
+  sender: 'LEARNER' | 'STAFF';
+  body: string;
+  createdAt: string;
+  /** The learner's name on their own messages; null for support. */
+  authorName: string | null;
+}
+
+export interface LearnerSupport {
+  threadId: string | null;
+  unread: boolean;
+  messages: SupportMessage[];
+}
+
+export interface SupportThreadSummary {
+  id: string;
+  learnerName: string | null;
+  learnerEmail: string | null;
+  lastMessage: string;
+  lastSender: 'LEARNER' | 'STAFF';
+  lastMessageAt: string;
+  unread: boolean;
+}
+
+export interface SupportThread {
+  id: string;
+  learnerName: string | null;
+  learnerEmail: string | null;
+  messages: SupportMessage[];
+}
+
+export interface OxiAnswer {
+  reply: string;
+  picks: { slug: string; title: string; kind: OfferingKind; category: OfferingCategory; why: string }[];
+  handoff: boolean;
+}
+
 /** Account deletion with a 14-day wait (FR-PRIV-3202). */
 export interface DeletionStatus {
   state: 'NONE' | 'SCHEDULED' | 'CANCELLED';
@@ -783,6 +822,14 @@ export const eduApi = {
   updateMember: (token: string, tenantId: string, userId: string, body: { role?: TenantRole; status?: 'ACTIVE' | 'SUSPENDED' }) =>
     request<Member>(token, `${tenantPath(tenantId)}/members/${encodeURIComponent(userId)}`, { method: 'PATCH', body }),
   auditEvents: (token: string, tenantId: string) => request<AuditEvent[]>(token, `${tenantPath(tenantId)}/audit-events`),
+  mySupport: (token: string, tenantId: string) => request<LearnerSupport>(token, `${tenantPath(tenantId)}/me/support`),
+  supportUnread: (token: string, tenantId: string) => request<boolean>(token, `${tenantPath(tenantId)}/me/support/unread`),
+  sendSupport: (token: string, tenantId: string, body: string) => request<LearnerSupport>(token, `${tenantPath(tenantId)}/me/support`, { method: 'POST', body: { body } }),
+  supportInbox: (token: string, tenantId: string) => request<SupportThreadSummary[]>(token, `${tenantPath(tenantId)}/support/threads`),
+  supportThread: (token: string, tenantId: string, threadId: string) => request<SupportThread>(token, `${tenantPath(tenantId)}/support/threads/${encodeURIComponent(threadId)}`),
+  replySupport: (token: string, tenantId: string, threadId: string, body: string) =>
+    request<SupportThread>(token, `${tenantPath(tenantId)}/support/threads/${encodeURIComponent(threadId)}/messages`, { method: 'POST', body: { body } }),
+  askOxi: (token: string, question: string) => request<OxiAnswer>(token, '/v1/oxi/ask', { method: 'POST', body: { question } }),
   deletionStatus: (token: string) => request<DeletionStatus>(token, '/v1/me/deletion'),
   requestDeletion: (token: string, confirm: string) => request<DeletionStatus>(token, '/v1/me/deletion', { method: 'POST', body: { confirm } }),
   cancelDeletion: (token: string) => request<DeletionStatus>(token, '/v1/me/deletion', { method: 'DELETE' }),

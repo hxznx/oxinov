@@ -13,7 +13,7 @@ const SIGN_IN_MESSAGES: Record<string, string> = {
 };
 
 const TIERS = ['T1', 'T2', 'T3', 'T∞'];
-const TIER_TONES = ['--ox-color-brand', '--ox-color-brand-mid', '--ox-color-brand2', '--ox-color-highlight'];
+const TIER_TONES = ['--ox-color-brand', '--ox-color-brand-mid', '--ox-color-brand-2', '--ox-color-highlight'];
 const PLAN_NOTES: Record<string, string> = { MONTH_1: 'Full access for a month', MONTH_6: 'Full access, half a year', YEAR_1: 'Full access, 12 months', LIFETIME: 'No end date' };
 const TICKER =
   '> CONNECTION SECURE · ACCESS LEVEL: VISITOR · INTRO AND SYLLABUS: OPEN · LESSONS: ENCRYPTED · UNLOCK WITH A PLAN · LANGUAGES · TECHNOLOGY · IDEAS · THINK TANK ·  ';

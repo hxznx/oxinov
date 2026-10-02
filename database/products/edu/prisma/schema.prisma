@@ -85,6 +85,8 @@ model Tenant {
   liveSessions      LiveSession[]
   notifications     Notification[]
   courseReviews     CourseReview[]
+  supportThreads    SupportThread[]
+  supportMessages   SupportMessage[]
 
   @@map("tenants")
 }
@@ -130,6 +132,8 @@ model UserProfile {
   reviews             CourseReview[]         @relation("ReviewAuthor")
   reviewsModerated    CourseReview[]         @relation("ReviewModerator")
   deletionRequest     AccountDeletionRequest?
+  supportThreads      SupportThread[]
+  supportMessages     SupportMessage[]
 
   @@map("user_profiles")
 }
@@ -1391,4 +1395,50 @@ model AccountDeletionRequest {
 
   @@index([deleteAfter])
   @@map("account_deletion_requests")
+}
+
+/// One private support conversation per learner and workspace (FR-CHAT-1301, learner-to-support). The
+/// learner sees only their own; administrators see all. `*ReadAt` give each side's unread marker.
+model SupportThread {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  lastMessageAt DateTime  @default(now()) @map("last_message_at") @db.Timestamptz(3)
+  learnerReadAt DateTime? @map("learner_read_at") @db.Timestamptz(3)
+  staffReadAt   DateTime? @map("staff_read_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user     UserProfile      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  messages SupportMessage[]
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, userId])
+  @@index([tenantId, lastMessageAt(sort: Desc)])
+  @@map("support_threads")
+}
+
+model SupportMessage {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String        @map("tenant_id") @db.Uuid
+  threadId     String        @map("thread_id") @db.Uuid
+  authorUserId String        @map("author_user_id") @db.Uuid
+  sender       MessageSender
+  body         String        @db.VarChar(4000)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  thread SupportThread @relation(fields: [tenantId, threadId], references: [tenantId, id], onDelete: Cascade)
+  author UserProfile   @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, threadId, createdAt])
+  @@map("support_messages")
+}
+
+enum MessageSender {
+  LEARNER
+  STAFF
+
+  @@map("message_sender")
 }

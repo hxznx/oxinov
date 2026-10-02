@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: { default: 'Account', template: '%s �
 
 /**
  * Learner account centre (FR-AUTH-104; design screens 10 and 12), in the same Windows Settings layout as
- * Oxinov Studio. Messages join the menu when that feature exists.
+ * Oxinov Studio.
  */
 export default async function AccountLayout({ children }: { children: ReactNode }) {
   const context = await optionalAccountContext();
@@ -21,6 +21,7 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const { me, token, workspace } = context;
   // The unread count for the menu badge; a failure here never blocks the account centre.
   const unread = workspace ? await eduApi.myNotifications(token, workspace.id).then((result) => result.unread).catch(() => 0) : 0;
+  const supportReply = workspace ? await eduApi.supportUnread(token, workspace.id).catch(() => false) : false;
   // A scheduled deletion is announced on every account page, with the way to cancel (FR-PRIV-3202).
   const deletion = await eduApi.deletionStatus(token).catch(() => null);
   const groups: SideNavGroup[] = [
@@ -28,13 +29,14 @@ export default async function AccountLayout({ children }: { children: ReactNode 
       title: 'MY LEARNING',
       items: [
         { href: '/account', label: 'My subscriptions', glyph: '▦', tone: '--ox-color-brand', exact: true },
+        { href: '/account/messages', label: 'Messages', glyph: '◈', tone: '--ox-color-success', badge: supportReply ? 1 : 0, badgeLabel: 'new reply' },
         { href: '/account/notifications', label: 'Notifications', glyph: '✉', tone: '--ox-color-product-hr', badge: unread, badgeLabel: 'unread' },
         { href: '/account/payments', label: 'Payments and receipts', glyph: '₹', tone: '--ox-color-success' },
         { href: '/account/certificates', label: 'Certificates', glyph: '★', tone: '--ox-color-highlight' },
         { href: '/account/activity', label: 'Activity', glyph: '◷', tone: '--ox-color-product-services' },
       ],
     },
-    { title: 'SHARE', items: [{ href: '/account/invite', label: 'Invite friends', glyph: '⇪', tone: '--ox-color-brand2' }] },
+    { title: 'SHARE', items: [{ href: '/account/invite', label: 'Invite friends', glyph: '⇪', tone: '--ox-color-brand-2' }] },
     { title: 'SETTINGS', items: [{ href: '/account/privacy', label: 'Profile and privacy', glyph: '⚙', tone: '--ox-color-text-muted' }] },
   ];
 

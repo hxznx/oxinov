@@ -80,6 +80,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Download and deletion, built 2026-10-03:** Profile and privacy offers **Download my data** (a JSON file) and **Delete my account…**: typing DELETE schedules deletion in 14 days and emails the date with a cancel link; while scheduled, the panel and a banner on every account page say the date with **Cancel the deletion**.
 
+**Messages and OXI, built 2026-10-03:** Account › Messages (design screen 15) lists OXI, Oxinov support, and Notices (a link to Notifications). OXI answers in the page with picks as offering cards, the chips Free courses for me, Learn Japanese, Learn programming, and Compare plans, and **Talk to a human**; its footnote says it is a simple advisor that keeps no record. Support shows the thread with a message box. Studio › Inbox lists conversations with unread dots beside the open one and a reply box. The design's teacher conversations and Report button wait for course chat. The pink accent token was misspelled (`--ox-color-brand2`) across the web app, so menu badges and pink accents had no colour; it is now `--ox-color-brand-2`.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

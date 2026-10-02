@@ -8,7 +8,7 @@ import { sendNotice } from '@/app/notification-actions';
 export function NoticeForm({ slug, tenantId, offerings }: { slug: string; tenantId: string; offerings: { id: string; title: string }[] }) {
   const [state, action, pending] = useActionState<FormState & { sent?: number }, FormData>(sendNotice, {});
   return (
-    <section aria-labelledby="notice-heading" className="studio-panel grid gap-3 p-5" style={{ borderColor: 'var(--ox-color-brand2)' }}>
+    <section aria-labelledby="notice-heading" className="studio-panel grid gap-3 p-5" style={{ borderColor: 'var(--ox-color-brand-2)' }}>
       <div className="flex items-center justify-between gap-3">
         <h2 id="notice-heading" className="studio-h2">
           Send a notice
@@ -51,7 +51,7 @@ export function NoticeForm({ slug, tenantId, offerings }: { slug: string; tenant
             Sent to {state.sent} {state.sent === 1 ? 'member' : 'members'}.
           </p>
         ) : null}
-        <button type="submit" className="btn justify-self-start font-studio" style={{ background: 'var(--ox-color-brand2)', color: 'var(--ox-color-on-neon)' }} disabled={pending}>
+        <button type="submit" className="btn justify-self-start font-studio" style={{ background: 'var(--ox-color-brand-2)', color: 'var(--ox-color-on-neon)' }} disabled={pending}>
           {pending ? 'Sending…' : 'Send notice'}
         </button>
       </form>

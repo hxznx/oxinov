@@ -8,7 +8,7 @@ export const NOTIFICATION_STYLE: Record<NotificationKind, { label: string; glyph
   PAYMENT_REJECTED: { label: 'Payment', glyph: '!', tone: '--ox-color-danger' },
   RENEWAL_DUE: { label: 'Renewal', glyph: '⏱', tone: '--ox-color-warning' },
   ACCESS_ENDED: { label: 'Renewal', glyph: '⏱', tone: '--ox-color-text-muted' },
-  NOTICE: { label: 'From Oxinov', glyph: '◆', tone: '--ox-color-brand2' },
+  NOTICE: { label: 'From Oxinov', glyph: '◆', tone: '--ox-color-brand-2' },
 };
 
 /**

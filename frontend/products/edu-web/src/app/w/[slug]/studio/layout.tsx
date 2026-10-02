@@ -23,6 +23,10 @@ export default async function StudioLayout({ children, params }: Props) {
     load(base, () => eduApi.reviewQueue(token, workspace.id, 'PENDING_REVIEW')),
     eduApi.moderationReviews(token, workspace.id, 'PENDING').catch(() => []),
   ]);
+  const unreadMessages = await eduApi
+    .supportInbox(token, workspace.id)
+    .then((threads) => threads.filter((thread) => thread.unread).length)
+    .catch(() => 0);
 
   const groups: SideNavGroup[] = [
     { title: 'OVERVIEW', items: [{ href: base, label: 'Dashboard', glyph: '⌂', tone: '--ox-color-brand', exact: true }] },
@@ -37,11 +41,12 @@ export default async function StudioLayout({ children, params }: Props) {
     {
       title: 'BUSINESS',
       items: [
+        { href: `${base}/inbox`, label: 'Inbox', glyph: '◈', tone: '--ox-color-success', badge: unreadMessages, badgeLabel: 'unread' },
         { href: `${base}/payments`, label: 'Payments', glyph: '₹', tone: '--ox-color-success', badge: waiting.length, badgeLabel: 'waiting' },
         { href: `${base}/people`, label: 'Learners and join codes', glyph: '☺', tone: '--ox-color-product-services' },
         { href: `${base}/access`, label: 'Free access', glyph: '✚', tone: '--ox-color-success' },
         { href: `${base}/reviews`, label: 'Reviews', glyph: '★', tone: '--ox-color-warning', badge: reviews.length, badgeLabel: 'waiting' },
-        { href: `${base}/marketing`, label: 'Marketing', glyph: '⇪', tone: '--ox-color-brand2' },
+        { href: `${base}/marketing`, label: 'Marketing', glyph: '⇪', tone: '--ox-color-brand-2' },
       ],
     },
     {

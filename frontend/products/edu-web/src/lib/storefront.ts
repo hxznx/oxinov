@@ -31,7 +31,7 @@ export const CATEGORY_CODES: Record<OfferingCategory, string> = {
 export const CATEGORY_TONES: Record<OfferingCategory, string> = {
   LANGUAGES: '--ox-color-brand',
   TECHNOLOGY: '--ox-color-brand-mid',
-  IDEAS_RESEARCH: '--ox-color-brand2',
+  IDEAS_RESEARCH: '--ox-color-brand-2',
   OTHER: '--ox-color-highlight',
 };
 

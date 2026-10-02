@@ -145,6 +145,7 @@ export class AccountService implements OnApplicationBootstrap, OnModuleDestroy {
       await tx.answerVote.deleteMany({ where: { userId } });
       await tx.mediaProgress.deleteMany({ where: { userId } });
       await tx.lessonCompletion.deleteMany({ where: { userId } });
+      await tx.supportThread.deleteMany({ where: { userId } });
       await tx.tenantMembership.deleteMany({ where: { userId } });
       await tx.userProfile.update({ where: { id: userId }, data: { email: null, displayName: null, emailVerified: false, authSubject: `deleted|${userId}` } });
       await tx.accountDeletionRequest.update({ where: { userId }, data: { completedAt: now } });

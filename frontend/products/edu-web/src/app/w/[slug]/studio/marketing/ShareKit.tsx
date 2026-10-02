@@ -17,7 +17,7 @@ const CHANNELS: Channel[] = [
   { name: 'Telegram', source: 'telegram', tone: '--ox-color-brand', share: (link, caption) => `https://t.me/share/url?url=${enc(link)}&text=${enc(caption)}` },
   { name: 'LinkedIn', source: 'linkedin', tone: '--ox-color-product-services', share: (link) => `https://www.linkedin.com/sharing/share-offsite/?url=${enc(link)}` },
   { name: 'Viber', source: 'viber', tone: '--ox-color-brand-mid', share: (link, caption) => `viber://forward?text=${enc(`${caption}\n${link}`)}` },
-  { name: 'Instagram', source: 'instagram', tone: '--ox-color-brand2', share: null },
+  { name: 'Instagram', source: 'instagram', tone: '--ox-color-brand-2', share: null },
   { name: 'TikTok', source: 'tiktok', tone: '--ox-color-brand', share: null },
 ];
 
