@@ -61,8 +61,11 @@ export default async function PaymentsPage() {
                     <td className={`studio-status ${status.tone}`}>{status.label}</td>
                     <td className="whitespace-nowrap">{formatDate(payment.reviewedAt ?? payment.submittedAt ?? payment.createdAt, 'Asia/Kathmandu')}</td>
                     <td className="text-right">
-                      <Link href={`/w/${workspace.slug}/pay/bank/${payment.id}`} className="btn btn-secondary text-sm">
-                        {payment.status === 'REJECTED' ? 'Fix' : payment.status === 'PENDING' ? 'Continue' : 'Open'}
+                      <Link
+                        href={`/w/${workspace.slug}/pay/bank/${payment.id}${payment.status === 'SUCCEEDED' ? '/receipt' : ''}`}
+                        className="btn btn-secondary text-sm"
+                      >
+                        {payment.status === 'REJECTED' ? 'Fix' : payment.status === 'PENDING' ? 'Continue' : payment.status === 'SUCCEEDED' ? 'Receipt' : 'Open'}
                       </Link>
                     </td>
                   </tr>

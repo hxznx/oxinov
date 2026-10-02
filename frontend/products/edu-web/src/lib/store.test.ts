@@ -1,7 +1,7 @@
 // Unit tests for the store helpers. Run: pnpm --filter @oxinov/edu-web test
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { EVIDENCE_MAX_BYTES, EVIDENCE_TYPES, fileProblem, formatNpr, parseNpr, paymentHeadline, perMonthMinor, planEnd } from './store.ts';
+import { EVIDENCE_MAX_BYTES, EVIDENCE_TYPES, fileProblem, formatNpr, parseNpr, paymentHeadline, perMonthMinor, planEnd, whatsappLink } from './store.ts';
 
 describe('store helpers (ADR-028)', () => {
   it('formats paisa as rupees', () => {
@@ -39,5 +39,14 @@ describe('store helpers (ADR-028)', () => {
     assert.equal(fileProblem({ type: 'image/png', size: 2000 }, EVIDENCE_TYPES, EVIDENCE_MAX_BYTES, 'JPG, PNG, or PDF'), null);
     assert.match(fileProblem({ type: 'image/gif', size: 2000 }, EVIDENCE_TYPES, EVIDENCE_MAX_BYTES, 'JPG, PNG, or PDF') ?? '', /Choose a JPG/);
     assert.match(fileProblem({ type: 'image/png', size: EVIDENCE_MAX_BYTES + 1 }, EVIDENCE_TYPES, EVIDENCE_MAX_BYTES, 'x') ?? '', /larger than 5 MB/);
+  });
+
+  it('turns a WhatsApp help number into a chat link, and nothing else', () => {
+    assert.equal(whatsappLink('WhatsApp +977 980-1234567'), 'https://wa.me/9779801234567');
+    assert.equal(whatsappLink('+977 9801234567', 'Payment OXE-AAAAA1'), 'https://wa.me/9779801234567?text=Payment%20OXE-AAAAA1');
+    assert.equal(whatsappLink('support@oxinov.com'), null);
+    assert.equal(whatsappLink('Viber 9801234567'), null);
+    assert.equal(whatsappLink('WhatsApp us'), null);
+    assert.equal(whatsappLink(null), null);
   });
 });

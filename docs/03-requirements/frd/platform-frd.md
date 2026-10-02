@@ -257,7 +257,7 @@ Staff roles require a separate staff identity with MFA and are never granted by 
 - Acceptance: Given a reconciliation mismatch, an alert is raised to billing operations.
 
 **FR-PAY-2705 — Invoices.** The platform must issue invoices and receipts in NPR with Ox Inov Pvt. Ltd. details and applicable tax once tax treatment is confirmed.
-*Priority:* Must. *Status:* Proposed. *Access:* Payer. *Source:* [subscription model](../../01-company/subscription-model.md).
+*Priority:* Must. *Status:* Partly implemented in Edu (2026-10-02): an approved bank payment has a printable payment receipt in NPR (Ox Inov Pvt. Ltd., learner, reference, bank transaction, plan, coupon, total), linked from Account › Payments; it is marked "not a tax invoice" until tax treatment and the company's registration details are confirmed. *Access:* Payer. *Source:* [subscription model](../../01-company/subscription-model.md).
 - Acceptance: Given a completed payment, the invoice is downloadable from the portal.
 - Acceptance: Given a different payer or an unverified payment, when an invoice is requested, then the response is "not found" and no tax document is issued.
 

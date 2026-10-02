@@ -64,6 +64,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Notifications, built 2026-10-02:** Account › Notifications lists payment results, plans ending, access ended, and notices from Oxinov, newest first, with a glowing marker on unread items, an unread badge in the menu, **Mark all as read**, and **Open**, which marks the item read and goes to its page inside Oxinov Edu (never another site). The store home shows a "You have N new notifications" banner to signed-in learners. The Studio dashboard has **Send a notice** (title, message, optional link) for an in-app notice to every member. Renewal reminders arrive by email and in-app 7 days and 1 day before a plan ends, with a **Renew my plan** button to the offering page.
 
+**Checkout and receipt, built 2026-10-02:** The bank QR page follows design screens 3 and 15 at Calm intensity: a step bar (Plan, Pay, Review), the QR with **Save QR to gallery**, the account name and number, large Amount and Remarks tiles with copy buttons, the order summary, the receipt form, a WhatsApp help button when the help contact is a WhatsApp number, and a "card payment coming soon" row. In review, needs a fix, approved, and closed each have their own panel. An approved payment links to a printable white **Payment receipt** (design screen 26) that prints without the site header, marked "not a tax invoice" until tax details are confirmed.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

@@ -17,11 +17,24 @@ export interface AccountContext {
 export const accountContext = cache(async (returnTo: string): Promise<AccountContext> => {
   const session = await auth.currentSession(returnTo);
   if (!session) redirect(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
-  const token = session.accessToken;
+  return loadContext(session.accessToken);
+});
+
+/**
+ * For the layout, which cannot see the page's address: null when signed out, so the page itself redirects
+ * to sign-in and comes back to the right section afterwards.
+ */
+export const optionalAccountContext = cache(async (): Promise<AccountContext | null> => {
+  const session = await auth.currentSession('/account');
+  return session ? loadContext(session.accessToken) : null;
+});
+
+/** One lookup per request for the layout and the page together (keyed by the session token only). */
+const loadContext = cache(async (token: string): Promise<AccountContext> => {
   const [me, home, workspaces] = await Promise.all([
-    load(returnTo, () => eduApi.me(token)),
+    load('/account', () => eduApi.me(token)),
     eduApi.storeHome().catch(() => null),
-    load(returnTo, () => eduApi.workspaces(token)),
+    load('/account', () => eduApi.workspaces(token)),
   ]);
   const store = home ? { slug: home.slug, name: home.name } : null;
   return { token, me, store, workspace: store ? workspaces.find((item) => item.slug === store.slug) : undefined };

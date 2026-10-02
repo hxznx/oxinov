@@ -162,3 +162,18 @@ export function fileProblem(file: { type: string; size: number }, types: readonl
   if (file.size > maxBytes) return `The file is larger than ${maxBytes / (1024 * 1024)} MB.`;
   return null;
 }
+
+/**
+ * A WhatsApp chat link from the store's help contact (design screen 15), when it names WhatsApp or is just a
+ * phone number; null for anything else, such as an email address or a Viber-only note.
+ */
+export function whatsappLink(helpContact: string | null | undefined, message?: string): string | null {
+  if (!helpContact) return null;
+  const text = helpContact.trim();
+  const mentions = /whats\s*app/i.test(text);
+  const onlyPhone = /^\+?[\d\s()-]{8,20}$/.test(text);
+  if (!mentions && !onlyPhone) return null;
+  const digits = (text.match(/\+?\d[\d\s()-]{6,}\d/)?.[0] ?? '').replace(/\D/g, '');
+  if (digits.length < 8 || digits.length > 15) return null;
+  return `https://wa.me/${digits}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
+}

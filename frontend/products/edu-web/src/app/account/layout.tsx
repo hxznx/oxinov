@@ -6,7 +6,7 @@ import { SideNav, type SideNavGroup } from '@/components/SideNav';
 import { initials } from '@/lib/account.ts';
 import { eduApi } from '@/lib/edu-api.ts';
 import { formatDate } from '@/lib/format.ts';
-import { accountContext } from './data';
+import { optionalAccountContext } from './data';
 
 export const metadata: Metadata = { title: { default: 'Account', template: '%s · Account · Oxinov Edu' } };
 
@@ -15,7 +15,10 @@ export const metadata: Metadata = { title: { default: 'Account', template: '%s �
  * Oxinov Studio. Messages join the menu when that feature exists.
  */
 export default async function AccountLayout({ children }: { children: ReactNode }) {
-  const { me, token, workspace } = await accountContext('/account');
+  const context = await optionalAccountContext();
+  // Signed out: each page sends the visitor to sign in and back to that same page.
+  if (!context) return <>{children}</>;
+  const { me, token, workspace } = context;
   // The unread count for the menu badge; a failure here never blocks the account centre.
   const unread = workspace ? await eduApi.myNotifications(token, workspace.id).then((result) => result.unread).catch(() => 0) : 0;
   const groups: SideNavGroup[] = [

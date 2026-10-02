@@ -264,6 +264,14 @@
 
   .store-lock { color: var(--ox-color-text-muted); }
 
+  /* Receipts print as plain white pages: only the receipt itself, no site header or footer. */
+  @media print {
+    body:has(.receipt-page) > *:not(main):not(.receipt-page) { display: none !important; }
+    body:has(.receipt-page) { background: #fff; }
+    .receipt-actions, .skip-link { display: none !important; }
+    .receipt-page { padding: 0; max-width: none; }
+  }
+
   /* View-only viewer for YouTube and Google Drive lessons (ADR-028 point 6): the viewer's email repeats
      faintly across the frame and never blocks clicks on the player. */
   .viewer-frame { position: relative; overflow: hidden; background: #000; border: 1px solid var(--ox-color-border); }

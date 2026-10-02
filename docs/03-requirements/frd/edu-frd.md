@@ -237,7 +237,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a learner has not accepted the current license version, when they request the full content, then it does not open and the license is shown.
 
 **FR-CATALOG-314 — Phone-friendly bank payment.** On a phone, checkout offers "Save QR to gallery" so the learner can use "scan from gallery" in their bank app, a copy button for the amount, the reference, and the account number, a help link to Oxinov's support chat or WhatsApp, and the expected review time. Free items of the offering stay open while the payment is in review.
-*Priority:* Must. *Status:* Proposed; partly implemented: copy buttons, open-and-save QR, help contact, and review time on the payment page. *Access:* T1 learner. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
+*Priority:* Must. *Status:* Implemented (2026-10-02): "Save QR to gallery", copy buttons for the amount, the reference, and the account number, the review time, and "Message us on WhatsApp" when the help contact is a WhatsApp number, in the design's step layout. *Access:* T1 learner. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-307.
 - Acceptance: Given a learner checks out on a phone, when they choose "Save QR to gallery", then the QR image is saved with the amount and reference shown beside it.
 - Acceptance: Given a payment is in review, when the learner opens a subscriber item, then it stays locked and the page says the payment is in review.
 
