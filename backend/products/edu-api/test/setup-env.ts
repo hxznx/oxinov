@@ -16,6 +16,8 @@ process.env.RATE_LIMIT_PER_MINUTE = '0';
 // Paid-course checkout (ADR-023): the Sakura school may sell; providers are fakes in test/payments.e2e-spec.ts.
 process.env.PAYMENTS_SELLER_TENANT_IDS = 'aaaaaaaa-0000-4000-8000-000000000001';
 process.env.EDU_WEB_URL = 'https://edu.test.oxinov.example';
+// Tests run the renewal reminder sweep themselves with a chosen clock (test/notifications.e2e-spec.ts).
+process.env.RENEWAL_REMINDERS = 'off';
 delete process.env.KHALTI_SECRET_KEY;
 delete process.env.ESEWA_PRODUCT_CODE;
 delete process.env.ESEWA_SECRET_KEY;

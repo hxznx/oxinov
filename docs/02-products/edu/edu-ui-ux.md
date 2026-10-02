@@ -62,6 +62,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Account centre, built 2026-10-02:** The header's **Account** opens `/account` in the Studio's Windows Settings layout: a profile card (initials, name, email, member since) and a menu of My subscriptions, Payments and receipts, Certificates, Activity, Invite friends, and Profile and privacy; below 1024 px the menu becomes a scrolling strip. Subscriptions list active ones first with a status (Active, Ends in N days, Lifetime, Free, Ended) and **Open** or **Renew**. Privacy offers sign-out here, the Oxinov sign-in account page for name, email, and "sign out of all devices", and email requests to support for a copy of the data or deletion; deletion opens only after typing DELETE and explains what is removed and kept.
 
+**Notifications, built 2026-10-02:** Account › Notifications lists payment results, plans ending, access ended, and notices from Oxinov, newest first, with a glowing marker on unread items, an unread badge in the menu, **Mark all as read**, and **Open**, which marks the item read and goes to its page inside Oxinov Edu (never another site). The store home shows a "You have N new notifications" banner to signed-in learners. The Studio dashboard has **Send a notice** (title, message, optional link) for an in-app notice to every member. Renewal reminders arrive by email and in-app 7 days and 1 day before a plan ends, with a **Renew my plan** button to the offering page.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

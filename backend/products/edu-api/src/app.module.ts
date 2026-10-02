@@ -64,6 +64,9 @@ import { ListingController, StoreJoinController, StorefrontController } from './
 import { StorefrontService } from './store/storefront.service';
 import { LiveSessionsController } from './live/live-sessions.controller';
 import { MeController } from './account/me.controller';
+import { NotificationsController } from './notifications/notifications.controller';
+import { NotificationsService } from './notifications/notifications.service';
+import { RenewalRemindersService } from './notifications/renewal-reminders.service';
 import { LiveSessionsService } from './live/live-sessions.service';
 import { TenantsController } from './tenants/tenants.controller';
 import { TenantsService } from './tenants/tenants.service';
@@ -122,6 +125,8 @@ export class AppModule implements NestModule {
       StoreService,
       StorefrontService,
       LiveSessionsService,
+      NotificationsService,
+      RenewalRemindersService,
       CertificatesService,
     ];
     return {
@@ -148,6 +153,7 @@ export class AppModule implements NestModule {
         ListingController,
         LiveSessionsController,
         MeController,
+        NotificationsController,
         CertificatesController,
         CertificateVerificationController,
       ],

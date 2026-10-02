@@ -10,6 +10,8 @@ export interface SideNavItem {
   /** A design-system color variable for the glyph, for example `--ox-color-success`. */
   tone: string;
   badge?: number;
+  /** Read after the badge number by screen readers, for example "waiting" or "unread". */
+  badgeLabel?: string;
   /** Dashboard matches its own address only; the others also light up for the pages under them. */
   exact?: boolean;
 }
@@ -37,7 +39,7 @@ export function SideNav({ groups }: { groups: SideNavGroup[] }) {
               {item.badge ? (
                 <span className="studio-badge">
                   {item.badge}
-                  <span className="sr-only"> waiting</span>
+                  <span className="sr-only"> {item.badgeLabel ?? 'new'}</span>
                 </span>
               ) : null}
             </Link>

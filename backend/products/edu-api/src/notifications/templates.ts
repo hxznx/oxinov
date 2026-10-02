@@ -99,3 +99,28 @@ export function rejectedMail(input: Omit<PaymentMailInput, 'endsAt'> & { readonl
     footer: 'Ox Inov Pvt. Ltd. This is a payment notice for your Oxinov account and cannot be turned off.',
   });
 }
+
+/** Renewal reminder, 7 days and 1 day before a time-limited plan ends (FR-COMM-704). */
+export function renewalMail(input: {
+  readonly to: string;
+  readonly courseTitle: string;
+  readonly endsAt: Date;
+  readonly daysLeft: 1 | 7;
+  readonly renewUrl: string;
+  readonly support: string;
+}): OutgoingMail {
+  const when = input.daysLeft === 1 ? 'tomorrow' : 'in 7 days';
+  return render({
+    to: input.to,
+    subject: `Your access to ${input.courseTitle} ends ${when}`,
+    title: input.daysLeft === 1 ? 'Last day: renew to keep learning' : 'Your plan ends in 7 days',
+    paragraphs: [
+      `Your access to ${input.courseTitle} ends on ${formatDate(input.endsAt)}.`,
+      'Renew now and the new time is added to the end of your current plan, so you never lose paid days. Your progress, notes, and certificates stay either way.',
+    ],
+    details: [`Access ends: ${formatDate(input.endsAt)}`],
+    button: { label: 'Renew my plan', url: input.renewUrl },
+    support: input.support,
+    footer: 'Ox Inov Pvt. Ltd. You receive this because you have a time-limited plan on Oxinov.',
+  });
+}

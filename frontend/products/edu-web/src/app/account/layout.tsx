@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { EduHeader } from '@/components/EduHeader';
 import { SideNav, type SideNavGroup } from '@/components/SideNav';
 import { initials } from '@/lib/account.ts';
+import { eduApi } from '@/lib/edu-api.ts';
 import { formatDate } from '@/lib/format.ts';
 import { accountContext } from './data';
 
@@ -11,15 +12,18 @@ export const metadata: Metadata = { title: { default: 'Account', template: '%s �
 
 /**
  * Learner account centre (FR-AUTH-104; design screens 10 and 12), in the same Windows Settings layout as
- * Oxinov Studio. Notifications and messages join the menu when those features exist.
+ * Oxinov Studio. Messages join the menu when that feature exists.
  */
 export default async function AccountLayout({ children }: { children: ReactNode }) {
-  const { me } = await accountContext('/account');
+  const { me, token, workspace } = await accountContext('/account');
+  // The unread count for the menu badge; a failure here never blocks the account centre.
+  const unread = workspace ? await eduApi.myNotifications(token, workspace.id).then((result) => result.unread).catch(() => 0) : 0;
   const groups: SideNavGroup[] = [
     {
       title: 'MY LEARNING',
       items: [
         { href: '/account', label: 'My subscriptions', glyph: '▦', tone: '--ox-color-brand', exact: true },
+        { href: '/account/notifications', label: 'Notifications', glyph: '✉', tone: '--ox-color-product-hr', badge: unread, badgeLabel: 'unread' },
         { href: '/account/payments', label: 'Payments and receipts', glyph: '₹', tone: '--ox-color-success' },
         { href: '/account/certificates', label: 'Certificates', glyph: '★', tone: '--ox-color-highlight' },
         { href: '/account/activity', label: 'Activity', glyph: '◷', tone: '--ox-color-product-services' },

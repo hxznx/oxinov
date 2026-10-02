@@ -8,6 +8,7 @@ import { DatabaseContext, type Tx } from '../database/database-context.service';
 import { Prisma } from '../generated/prisma/client';
 import { UPLOAD_URL_TTL_SEC, ObjectStorage } from '../media/object-storage';
 import { MAILER, type Mailer, type OutgoingMail } from '../notifications/mailer';
+import { NotificationsService } from '../notifications/notifications.service';
 import { rejectedMail, thankYouMail } from '../notifications/templates';
 import { hasRole } from '../tenancy/roles';
 import {
@@ -567,6 +568,17 @@ export class StoreService {
           endsAt: window.endsAt,
         },
       });
+      const slug = await this.tenantSlug(tx, scope.tenantId);
+      const title = (await tx.course.findFirst({ where: { id: payment.courseId, tenantId: scope.tenantId }, select: { publishedVersion: { select: { title: true } } } }))?.publishedVersion?.title ?? 'your course';
+      await NotificationsService.create(tx, {
+        tenantId: scope.tenantId,
+        userId: payment.userId,
+        kind: 'PAYMENT_APPROVED',
+        title: `Thank you for subscribing to ${title}`,
+        body: `Your ${PLAN_LABELS[payment.planPeriod as PlanPeriod]} plan is active${window.endsAt ? ` until ${window.endsAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kathmandu' })}` : ' for life'}.`,
+        linkPath: `/w/${slug}/courses/${payment.courseId}`,
+        dedupeKey: `payment:${payment.id}:approved`,
+      });
       await this.audit(tx, scope, user, 'payment.approved', 'payment', payment.id, {
         courseId: payment.courseId,
         learnerId: payment.userId,
@@ -574,7 +586,7 @@ export class StoreService {
         period: payment.planPeriod,
         endsAt: window.endsAt?.toISOString() ?? null,
       });
-      return { payment: await this.findBankPaymentForReview(tx, scope.tenantId, payment.id), granted: window, slug: await this.tenantSlug(tx, scope.tenantId) };
+      return { payment: await this.findBankPaymentForReview(tx, scope.tenantId, payment.id), granted: window, slug };
     });
 
     if (result.granted && result.payment.user.email) {
@@ -609,7 +621,18 @@ export class StoreService {
       });
       if (moved.count === 0) throw Errors.conflict('Someone else reviewed this payment just now. Reload the queue.');
       await this.audit(tx, scope, user, 'payment.rejected', 'payment', payment.id, { courseId: payment.courseId, learnerId: payment.userId, reason: trimmed });
-      return { payment: await this.findBankPaymentForReview(tx, scope.tenantId, payment.id), changed: true, slug: await this.tenantSlug(tx, scope.tenantId) };
+      const slug = await this.tenantSlug(tx, scope.tenantId);
+      await NotificationsService.create(tx, {
+        tenantId: scope.tenantId,
+        userId: payment.userId,
+        kind: 'PAYMENT_REJECTED',
+        title: 'Your payment needs a quick fix',
+        body: `Reason from our team: ${trimmed}`,
+        linkPath: `/w/${slug}/pay/bank/${payment.id}`,
+        // One notice per review: a payment fixed and rejected again gets a new one.
+        dedupeKey: `payment:${payment.id}:rejected:${now.toISOString()}`,
+      });
+      return { payment: await this.findBankPaymentForReview(tx, scope.tenantId, payment.id), changed: true, slug };
     });
 
     if (result.changed && result.payment.user.email) {

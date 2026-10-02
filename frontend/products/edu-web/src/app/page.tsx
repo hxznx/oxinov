@@ -40,10 +40,18 @@ export default async function StoreHome({ searchParams }: Props) {
   // Signed in: where they study in the store, and whether they run it. Failures here never hide the store.
   let membership: Workspace | undefined;
   let continuing: Enrollment[] = [];
+  let unread = 0;
   if (session && store) {
     try {
       membership = (await eduApi.workspaces(session.accessToken)).find((workspace) => workspace.slug === store.slug);
-      if (membership) continuing = (await eduApi.myEnrollments(session.accessToken, membership.id)).filter((enrollment) => enrollment.hasAccess).slice(0, 3);
+      if (membership) {
+        const [enrollments, notices] = await Promise.all([
+          eduApi.myEnrollments(session.accessToken, membership.id),
+          eduApi.myNotifications(session.accessToken, membership.id).catch(() => ({ unread: 0 })),
+        ]);
+        continuing = enrollments.filter((enrollment) => enrollment.hasAccess).slice(0, 3);
+        unread = notices.unread;
+      }
     } catch {
       membership = undefined;
     }
@@ -60,6 +68,17 @@ export default async function StoreHome({ searchParams }: Props) {
             {TICKER}
           </span>
         </div>
+
+        {unread > 0 ? (
+          <div className="store-wrap pt-4">
+            <Link href="/account/notifications" className="notice flex items-center justify-between gap-3 no-underline" style={{ borderLeftColor: 'var(--ox-color-brand)' }}>
+              <span>
+                ✉ You have {unread} new {unread === 1 ? 'notification' : 'notifications'}.
+              </span>
+              <span className="text-sm">Open ›</span>
+            </Link>
+          </div>
+        ) : null}
 
         {message ? (
           <div className="store-wrap pt-4">

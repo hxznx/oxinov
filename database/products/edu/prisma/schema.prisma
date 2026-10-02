@@ -83,6 +83,7 @@ model Tenant {
   coupons           Coupon[]
   storeSettings     StoreSettings?
   liveSessions      LiveSession[]
+  notifications     Notification[]
 
   @@map("tenants")
 }
@@ -114,6 +115,7 @@ model UserProfile {
   lessonNotes         LessonNote[]
   resourceFiles       ResourceFile[]
   liveSessionsCreated LiveSession[]
+  notifications       Notification[]
   announcements       CourseAnnouncement[]
   lessonQuestions     LessonQuestion[]       @relation("QuestionAuthor")
   lessonAnswers       LessonAnswer[]         @relation("AnswerAuthor")
@@ -976,6 +978,40 @@ model LiveSession {
   @@unique([tenantId, id])
   @@index([tenantId, courseId, startsAt])
   @@map("live_sessions")
+}
+
+/// What a notification is about (FR-COMM-704).
+enum NotificationKind {
+  PAYMENT_APPROVED
+  PAYMENT_REJECTED
+  RENEWAL_DUE
+  ACCESS_ENDED
+  NOTICE
+
+  @@map("notification_kind")
+}
+
+/// One in-app notification for one learner (FR-COMM-704). `dedupeKey` makes it happen at most once.
+model Notification {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String           @map("tenant_id") @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  kind      NotificationKind
+  title     String           @db.VarChar(200)
+  body      String           @default("") @db.VarChar(2000)
+  /// Path inside the Edu web app, for example /w/{slug}/courses/{id}; never another site.
+  linkPath  String?          @map("link_path") @db.VarChar(500)
+  dedupeKey String?          @map("dedupe_key") @db.VarChar(200)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  readAt    DateTime?        @map("read_at") @db.Timestamptz(3)
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user   UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, userId, dedupeKey])
+  @@index([tenantId, userId, createdAt(sort: Desc)])
+  @@map("notifications")
 }
 
 enum PlanPeriod {

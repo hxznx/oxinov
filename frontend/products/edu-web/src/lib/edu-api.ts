@@ -482,6 +482,20 @@ function eduApiBaseUrl(): string {
   return (baseUrl = value.replace(/\/$/, ''));
 }
 
+/** In-app notifications (FR-COMM-704). Mirrors backend/products/edu-api/src/notifications/notifications.dto.ts. */
+export type NotificationKind = 'PAYMENT_APPROVED' | 'PAYMENT_REJECTED' | 'RENEWAL_DUE' | 'ACCESS_ENDED' | 'NOTICE';
+
+export interface AppNotification {
+  id: string;
+  kind: NotificationKind;
+  title: string;
+  body: string;
+  /** Path inside the Edu web app. */
+  linkPath: string | null;
+  createdAt: string;
+  readAt: string | null;
+}
+
 /** Learner account centre (FR-AUTH-104). Mirrors MeDto and SubscriptionDto in the Edu API. */
 export interface Me {
   displayName: string | null;
@@ -588,6 +602,8 @@ async function request<T>(token: string, path: string, init: { method?: string; 
     body: init.body ? JSON.stringify(init.body) : undefined,
     cache: 'no-store',
   });
+  // 204 No Content: the action succeeded and there is nothing to return.
+  if (response.status === 204) return undefined as T;
   const json = (await response.json().catch(() => ({}))) as { data?: T; error?: { code: string; message: string } };
   if (!response.ok || json.data === undefined) {
     throw new EduApiError(response.status, json.error?.code ?? 'UNAVAILABLE', json.error?.message ?? 'Oxinov Edu is unavailable. Try again shortly.');
@@ -648,6 +664,12 @@ export const eduApi = {
   updateLiveSession: (token: string, tenantId: string, sessionId: string, body: LiveSessionInput) =>
     request<LiveSession>(token, `${tenantPath(tenantId)}/live-sessions/${encodeURIComponent(sessionId)}`, { method: 'PATCH', body }),
   me: (token: string) => request<Me>(token, '/v1/me'),
+  myNotifications: (token: string, tenantId: string) => request<{ items: AppNotification[]; unread: number }>(token, `${tenantPath(tenantId)}/me/notifications`),
+  readNotification: (token: string, tenantId: string, notificationId: string) =>
+    request<void>(token, `${tenantPath(tenantId)}/me/notifications/${encodeURIComponent(notificationId)}/read`, { method: 'POST' }),
+  readAllNotifications: (token: string, tenantId: string) => request<void>(token, `${tenantPath(tenantId)}/me/notifications/read-all`, { method: 'POST' }),
+  sendNotice: (token: string, tenantId: string, body: { title: string; body: string; linkPath?: string }) =>
+    request<{ recipients: number }>(token, `${tenantPath(tenantId)}/notices`, { method: 'POST', body }),
   mySubscriptions: (token: string, tenantId: string) => request<Subscription[]>(token, `${tenantPath(tenantId)}/me/subscriptions`),
   myBankPayments: (token: string, tenantId: string) => request<BankPayment[]>(token, `${tenantPath(tenantId)}/me/bank-payments`),
   storeHome: () => publicRequest<StoreHome>('/v1/store'),

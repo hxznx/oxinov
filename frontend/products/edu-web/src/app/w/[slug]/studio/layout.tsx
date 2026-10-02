@@ -33,7 +33,7 @@ export default async function StudioLayout({ children, params }: Props) {
     {
       title: 'BUSINESS',
       items: [
-        { href: `${base}/payments`, label: 'Payments', glyph: '₹', tone: '--ox-color-success', badge: waiting.length },
+        { href: `${base}/payments`, label: 'Payments', glyph: '₹', tone: '--ox-color-success', badge: waiting.length, badgeLabel: 'waiting' },
         { href: `${base}/people`, label: 'Learners and join codes', glyph: '☺', tone: '--ox-color-product-services' },
       ],
     },

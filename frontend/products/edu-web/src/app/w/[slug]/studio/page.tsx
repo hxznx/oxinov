@@ -5,6 +5,7 @@ import { load, workspaceContext } from '@/lib/guard.ts';
 import { formatNpr } from '@/lib/store.ts';
 import { approvedTotal, studioTodo } from '@/lib/studio.ts';
 import { loadOfferings } from './data';
+import { NoticeForm } from './NoticeForm';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -14,7 +15,7 @@ const TONE = { brand: 'tone-brand', success: 'tone-success', warning: 'tone-warn
 
 /**
  * Studio dashboard (ADR-028 point 12; design screen 8, "Mission control"): live counts and the list of
- * things that need the administrator. Funnel, notices, free access, and OXI arrive with their features.
+ * things that need the administrator, and "Send a notice". Funnel, free access, and OXI arrive with their features.
  */
 export default async function StudioDashboard({ params }: Props) {
   const { slug } = await params;
@@ -92,6 +93,8 @@ export default async function StudioDashboard({ params }: Props) {
           ))
         )}
       </section>
+
+      {workspace.role === 'OWNER' || workspace.role === 'ADMIN' ? <NoticeForm slug={slug} tenantId={workspace.id} /> : null}
 
       {waiting.length > 0 ? (
         <section aria-labelledby="latest-heading" className="studio-panel overflow-x-auto">

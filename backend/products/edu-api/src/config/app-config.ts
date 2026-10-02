@@ -35,8 +35,29 @@ export interface MailConfig {
   readonly supportAddress: string;
 }
 
-/** The Edu API (internal name `api`) uses the shared service configuration (ADR-007) plus media storage, payments, and mail. */
-export type AppConfig = ServiceConfig & { readonly media: MediaConfig; readonly payments: PaymentsConfig; readonly mail: MailConfig };
+/** Hourly renewal reminder sweep inside the API process (FR-COMM-704). */
+export interface RemindersConfig {
+  readonly enabled: boolean;
+  readonly intervalMinutes: number;
+}
+
+/** The Edu API (internal name `api`) uses the shared service configuration (ADR-007) plus media storage, payments, mail, and reminders. */
+export type AppConfig = ServiceConfig & {
+  readonly media: MediaConfig;
+  readonly payments: PaymentsConfig;
+  readonly mail: MailConfig;
+  readonly reminders: RemindersConfig;
+};
+
+/** `RENEWAL_REMINDERS=off` turns the sweep off (tests run it themselves); the interval is 5 to 1440 minutes. */
+export function loadRemindersConfig(env: NodeJS.ProcessEnv): RemindersConfig {
+  const enabled = env.RENEWAL_REMINDERS?.trim().toLowerCase() !== 'off';
+  const intervalMinutes = Number(env.RENEWAL_REMINDER_INTERVAL_MIN?.trim() || '60');
+  if (!Number.isInteger(intervalMinutes) || intervalMinutes < 5 || intervalMinutes > 1440) {
+    throw new Error('Invalid configuration: RENEWAL_REMINDER_INTERVAL_MIN must be a whole number from 5 to 1440');
+  }
+  return { enabled, intervalMinutes };
+}
 
 const EMAIL = /^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i;
 
@@ -113,6 +134,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     ...base,
     payments: loadPaymentsConfig(env, base.environment),
     mail: loadMailConfig(env),
+    reminders: loadRemindersConfig(env),
     media: {
       bucket,
       endpoint: endpoint?.replace(/\/$/, ''),
