@@ -242,19 +242,22 @@ enum CourseVersionStatus {
 }
 
 model Course {
-  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId           String       @map("tenant_id") @db.Uuid
-  programId          String?      @map("program_id") @db.Uuid
-  slug               String       @db.VarChar(120)
-  status             CourseStatus @default(DRAFT)
+  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String           @map("tenant_id") @db.Uuid
+  programId          String?          @map("program_id") @db.Uuid
+  slug               String           @db.VarChar(120)
+  status             CourseStatus     @default(DRAFT)
   /// Learner-visible version. Null until the first version is approved (FR-COURSE-203).
-  publishedVersionId String?      @map("published_version_id") @db.Uuid
+  publishedVersionId String?          @map("published_version_id") @db.Uuid
   /// Price in minor units of `currency`; 0 means free.
-  priceMinor         Int          @default(0) @map("price_minor")
-  currency           String       @default("USD") @db.Char(3)
-  createdByUserId    String       @map("created_by_user_id") @db.Uuid
-  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt          DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  priceMinor         Int              @default(0) @map("price_minor")
+  currency           String           @default("USD") @db.Char(3)
+  /// Offering kind and store category (ADR-028 point 1).
+  kind               OfferingKind     @default(COURSE)
+  category           OfferingCategory @default(OTHER)
+  createdByUserId    String           @map("created_by_user_id") @db.Uuid
+  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   tenant            Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   program           Program?             @relation(fields: [tenantId, programId], references: [tenantId, id], onDelete: Restrict)
@@ -902,6 +905,27 @@ model Payment {
   @@index([tenantId, userId, courseId, createdAt(sort: Desc)], map: "payments_tenant_user_course_idx")
   @@index([tenantId, status, submittedAt])
   @@map("payments")
+}
+
+/// What an offering is (ADR-028 point 1). All kinds share authoring, review, access, payment, and the player.
+enum OfferingKind {
+  COURSE
+  TRAINING
+  IDEA
+  THINK_TANK
+  SKILL
+
+  @@map("offering_kind")
+}
+
+/// Store home grouping (ADR-028 point 1).
+enum OfferingCategory {
+  LANGUAGES
+  TECHNOLOGY
+  IDEAS_RESEARCH
+  OTHER
+
+  @@map("offering_category")
 }
 
 enum PlanPeriod {

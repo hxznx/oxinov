@@ -12,8 +12,8 @@ export default function NotFound() {
           The course or learning space may have moved, or you may not be a member of it yet.
         </p>
         <p className="mt-6">
-          <Link href="/" className="btn btn-primary">
-            Go to your learning spaces
+          <Link href="/spaces" className="btn btn-primary">
+            Go to my learning
           </Link>
         </p>
       </main>

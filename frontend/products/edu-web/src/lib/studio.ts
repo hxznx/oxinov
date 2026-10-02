@@ -2,6 +2,7 @@
  * Oxinov Studio helpers (ADR-028 point 12; design screen 8): what needs the administrator's attention, and
  * how an offering's sale state reads. Pure functions so they are unit-tested without the API.
  */
+import type { OfferingCategory, OfferingKind } from './edu-api.ts';
 import type { StoreSettings } from './store.ts';
 
 export type Tone = 'brand' | 'success' | 'warning' | 'danger' | 'muted';
@@ -25,6 +26,8 @@ export interface OfferingRow {
   hasPlans: boolean;
   /** Cheapest active plan, or the single price of a course without plans, in minor units. */
   fromMinor: number | null;
+  kind: OfferingKind;
+  category: OfferingCategory;
 }
 
 /**

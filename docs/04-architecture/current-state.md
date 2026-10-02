@@ -90,5 +90,6 @@ The budget is US$50 a month, with Terraform-managed alerts at 85%, 100%, and for
 3. **Single node:** a host failure means minutes of downtime, and restores lose up to 24 hours (ADR-017). This is acceptable until a paying school needs an availability commitment.
 4. **Not live yet:**
    - Paid checkout: the Khalti and eSewa checkout (ADR-023) is built but off in production (`payments.mode: sandbox`, no merchant keys). The seller workspace in `values-production.yaml` (`payments.sellerTenantIds`) is Oxinov's own workspace, "OxinovJP" (`/w/nepal`), which sells access plans by bank QR (ADR-028).
+   - Store (ADR-028): `edu.oxinov.com` is the public store of the seller workspace (`GET /v1/store`, `GET /v1/store/offerings/{slug}`, no sign-in; titles, syllabus outline, and plans only); `POST /v1/store/join` adds a signed-in person as a learner; offerings carry a kind and a store category set in Oxinov Studio.
    - Mobile apps, and the worker and chat services (placeholder folders only) ([backlog](../11-planning/tasks.md)).
 5. **Production metrics and tracing** (OpenTelemetry, ADR-019 step 5).

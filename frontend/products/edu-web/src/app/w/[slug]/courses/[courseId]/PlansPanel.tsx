@@ -11,9 +11,24 @@ import { formatNpr, perMonthMinor, planEnd, type CheckoutInfo, type PlanPeriod }
  * exact end date before checkout; an optional coupon; then the bank QR payment page. A renewal starts
  * when current access ends, so the dates shown already include it.
  */
-export function PlansPanel({ slug, tenantId, courseId, info, timeZone }: { slug: string; tenantId: string; courseId: string; info: CheckoutInfo; timeZone: string }) {
+export function PlansPanel({
+  slug,
+  tenantId,
+  courseId,
+  info,
+  timeZone,
+  initialPeriod,
+}: {
+  slug: string;
+  tenantId: string;
+  courseId: string;
+  info: CheckoutInfo;
+  timeZone: string;
+  /** Plan chosen on the store's offering page, if it is still on sale. */
+  initialPeriod?: PlanPeriod;
+}) {
   const [state, action, pending] = useActionState<StoreFormState, FormData>(startBankCheckout, {});
-  const defaultPeriod = info.plans.find((plan) => plan.period === 'YEAR_1')?.period ?? info.plans[0]?.period;
+  const defaultPeriod = info.plans.find((plan) => plan.period === initialPeriod)?.period ?? info.plans.find((plan) => plan.period === 'YEAR_1')?.period ?? info.plans[0]?.period;
   const [period, setPeriod] = useState<PlanPeriod | undefined>(defaultPeriod);
 
   if (info.openPayment && info.openPayment.status !== 'PENDING') {
@@ -40,7 +55,7 @@ export function PlansPanel({ slug, tenantId, courseId, info, timeZone }: { slug:
   const yearSaving = year && month ? Math.round(100 - (100 * (perMonthMinor(year) ?? 0)) / month.priceMinor) : 0;
 
   return (
-    <form action={action} className="grid gap-3">
+    <form id="plans" action={action} className="grid scroll-mt-4 gap-3">
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="tenantId" value={tenantId} />
       <input type="hidden" name="courseId" value={courseId} />

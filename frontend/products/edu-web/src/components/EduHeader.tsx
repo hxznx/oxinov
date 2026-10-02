@@ -4,8 +4,8 @@ import { ThemeToggle } from './ThemeToggle';
 
 const accountUrl = () => process.env.ACCOUNT_URL?.replace(/\/$/, '') ?? 'https://app.oxinov.com';
 
-/** Oxinov Edu shell: product mark, current workspace, theme, account link, and sign-out. */
-export function EduHeader({ signedIn, workspace }: { signedIn: boolean; workspace?: { slug: string; name: string } }) {
+/** Oxinov Edu shell: product mark, current workspace, store and learning links, theme, account, and sign-in or sign-out. */
+export function EduHeader({ signedIn, workspace, returnTo }: { signedIn: boolean; workspace?: { slug: string; name: string }; returnTo?: string }) {
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-4 py-3">
@@ -21,6 +21,16 @@ export function EduHeader({ signedIn, workspace }: { signedIn: boolean; workspac
             / {workspace.name}
           </Link>
         ) : null}
+        <nav aria-label="Main" className="flex items-center gap-4 font-studio font-semibold">
+          <Link href="/" className="text-muted no-underline hover:text-brand">
+            Store
+          </Link>
+          {signedIn ? (
+            <Link href="/spaces" className="text-muted no-underline hover:text-brand">
+              My learning
+            </Link>
+          ) : null}
+        </nav>
         <div className="ml-auto flex flex-wrap items-center gap-3">
           <ThemeToggle />
           {signedIn ? (
@@ -34,7 +44,11 @@ export function EduHeader({ signedIn, workspace }: { signedIn: boolean; workspac
                 </button>
               </form>
             </>
-          ) : null}
+          ) : (
+            <a href={`/auth/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ''}`} className="btn btn-primary text-sm">
+              Sign in
+            </a>
+          )}
         </div>
       </div>
     </header>

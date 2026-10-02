@@ -4,13 +4,14 @@ import { EduHeader } from '@/components/EduHeader';
 import { EduApiError, eduApi } from '@/lib/edu-api.ts';
 import { dueLabel, STATUS_LABEL, STATUS_TONE } from '@/lib/assignment.ts';
 import { formatDate, formatDuration, formatPrice } from '@/lib/format.ts';
+import { PLAN_PERIODS } from '@/lib/store.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { BuyPanel } from './BuyPanel';
 import { EnrollButton } from './EnrollButton';
 import { PlansPanel } from './PlansPanel';
 import { StartExamButton } from './StartExamButton';
 
-type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ locked?: string; paid?: string }> };
+type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ locked?: string; paid?: string; plan?: string }> };
 
 export const metadata: Metadata = { title: 'Course' };
 
@@ -254,7 +255,7 @@ export default async function CoursePage({ params, searchParams }: Props) {
                 {plans?.accessEndsAt ? (
                   <details className="card grid gap-3">
                     <summary className="cursor-pointer">Access until {formatDate(plans.accessEndsAt, workspace.timeZone)} · Renew</summary>
-                    <PlansPanel slug={slug} tenantId={workspace.id} courseId={course.id} info={plans} timeZone={workspace.timeZone} />
+                    <PlansPanel slug={slug} tenantId={workspace.id} courseId={course.id} info={plans} timeZone={workspace.timeZone} initialPeriod={PLAN_PERIODS.find((period) => period === query.plan)} />
                   </details>
                 ) : null}
                 <Link href={`${here}/stream`} className="btn btn-secondary justify-center">
@@ -272,7 +273,7 @@ export default async function CoursePage({ params, searchParams }: Props) {
             ) : (
               <>
                 {sellsPlans && plans ? (
-                  <PlansPanel slug={slug} tenantId={workspace.id} courseId={course.id} info={plans} timeZone={workspace.timeZone} />
+                  <PlansPanel slug={slug} tenantId={workspace.id} courseId={course.id} info={plans} timeZone={workspace.timeZone} initialPeriod={PLAN_PERIODS.find((period) => period === query.plan)} />
                 ) : course.price.amountMinor === 0 ? (
                   <EnrollButton tenantId={workspace.id} courseId={course.id} returnTo={here} free />
                 ) : checkout ? (

@@ -7,6 +7,7 @@ import {
   newReference,
   normalizeCode,
   normalizeTransactionId,
+  storefrontPrice,
   type CouponRule,
 } from './store-rules';
 
@@ -95,5 +96,13 @@ describe('references and uploads (FR-CATALOG-307)', () => {
     expect(looksLikeDocument('application/pdf', new TextEncoder().encode('%PDF-1.7'))).toBe(true);
     expect(looksLikeDocument('image/png', new TextEncoder().encode('<html>'))).toBe(false);
     expect(looksLikeDocument('text/html', new TextEncoder().encode('<html>'))).toBe(false);
+  });
+});
+
+describe('store cards (ADR-028)', () => {
+  it('shows the cheapest plan, the single price, or free', () => {
+    expect(storefrontPrice([{ priceMinor: 1_500_000 }, { priceMinor: 500_000 }], 0)).toEqual({ fromMinor: 500_000, hasPlans: true, free: false });
+    expect(storefrontPrice([], 99_900)).toEqual({ fromMinor: 99_900, hasPlans: false, free: false });
+    expect(storefrontPrice([], 0)).toEqual({ fromMinor: 0, hasPlans: false, free: true });
   });
 });

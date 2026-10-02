@@ -29,6 +29,8 @@ const offering = (overrides: Partial<OfferingRow>): OfferingRow => ({
   draftStatus: null,
   hasPlans: true,
   fromMinor: 500_000,
+  kind: 'COURSE',
+  category: 'LANGUAGES',
   ...overrides,
 });
 

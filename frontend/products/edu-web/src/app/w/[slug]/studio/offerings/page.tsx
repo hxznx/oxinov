@@ -4,6 +4,7 @@ import { workspaceContext } from '@/lib/guard.ts';
 import { formatNpr } from '@/lib/store.ts';
 import { saleState } from '@/lib/studio.ts';
 import { loadOfferings } from '../data';
+import { ListingForm } from './ListingForm';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -38,10 +39,11 @@ export default async function OfferingsPage({ params }: Props) {
         </p>
       ) : (
         <div className="studio-panel overflow-x-auto">
-          <table className="studio-table min-w-[44rem]">
+          <table className="studio-table min-w-[60rem]">
             <thead>
               <tr>
                 <th>Offering</th>
+                <th>Kind and store category</th>
                 <th>Sale state</th>
                 <th>
                   <span className="sr-only">Actions</span>
@@ -58,6 +60,9 @@ export default async function OfferingsPage({ params }: Props) {
                       {offering.published && offering.draftStatus ? (
                         <span className="studio-sub block">{offering.draftStatus === 'IN_REVIEW' ? 'A new version is in review' : 'A new version is being written'}</span>
                       ) : null}
+                    </td>
+                    <td>
+                      <ListingForm slug={slug} tenantId={workspace.id} courseId={offering.courseId} kind={offering.kind} category={offering.category} title={offering.title} />
                     </td>
                     <td className={`studio-status ${TONE[state.tone]}`}>{state.text}</td>
                     <td className="whitespace-nowrap text-right">

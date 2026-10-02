@@ -60,6 +60,8 @@ import { InviteRedemptionController, TenantInvitesController } from './tenants/i
 import { InvitesService } from './tenants/invites.service';
 import { StoreController } from './store/store.controller';
 import { StoreService } from './store/store.service';
+import { ListingController, StoreJoinController, StorefrontController } from './store/storefront.controller';
+import { StorefrontService } from './store/storefront.service';
 import { TenantsController } from './tenants/tenants.controller';
 import { TenantsService } from './tenants/tenants.service';
 
@@ -115,6 +117,7 @@ export class AppModule implements NestModule {
       PaymentsService,
       options.mailer ? { provide: MAILER, useValue: options.mailer } : { provide: MAILER, useClass: SmtpMailer },
       StoreService,
+      StorefrontService,
       CertificatesService,
     ];
     return {
@@ -136,6 +139,9 @@ export class AppModule implements NestModule {
         ExamsController,
         PaymentsController,
         StoreController,
+        StorefrontController,
+        StoreJoinController,
+        ListingController,
         CertificatesController,
         CertificateVerificationController,
       ],

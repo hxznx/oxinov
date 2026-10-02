@@ -110,3 +110,18 @@ export function looksLikeDocument(contentType: string, head: Uint8Array): boolea
       return false;
   }
 }
+
+/** Offering kinds and store categories (ADR-028 point 1); the database enums have the same values. */
+export const OFFERING_KINDS = ['COURSE', 'TRAINING', 'IDEA', 'THINK_TANK', 'SKILL'] as const;
+export type OfferingKind = (typeof OFFERING_KINDS)[number];
+export const OFFERING_CATEGORIES = ['LANGUAGES', 'TECHNOLOGY', 'IDEAS_RESEARCH', 'OTHER'] as const;
+export type OfferingCategory = (typeof OFFERING_CATEGORIES)[number];
+
+/**
+ * The price a store card shows: the cheapest active plan ("from"), or the course's single price when it
+ * has no plans. `free` only when there are no plans and the single price is zero.
+ */
+export function storefrontPrice(plans: { priceMinor: number }[], priceMinor: number): { fromMinor: number; hasPlans: boolean; free: boolean } {
+  if (plans.length > 0) return { fromMinor: Math.min(...plans.map((plan) => plan.priceMinor)), hasPlans: true, free: false };
+  return { fromMinor: priceMinor, hasPlans: false, free: priceMinor === 0 };
+}

@@ -12,6 +12,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import { OFFERING_CATEGORIES, OFFERING_KINDS, type OfferingCategory, type OfferingKind } from '../store/store-rules';
 
 export class ListCoursesQuery {
   @ApiPropertyOptional({ description: 'Case-insensitive title search.' })
@@ -103,6 +104,8 @@ export class CourseSummaryDto {
   @ApiProperty() summary: string;
   @ApiProperty({ type: PriceDto, description: 'One-time price, or the cheapest access plan when hasPlans is true.' }) price: PriceDto;
   @ApiProperty({ description: 'Sold through access plans (ADR-028); show the price as "from".' }) hasPlans: boolean;
+  @ApiProperty({ enum: OFFERING_KINDS }) kind: OfferingKind;
+  @ApiProperty({ enum: OFFERING_CATEGORIES }) category: OfferingCategory;
   @ApiProperty({ nullable: true, type: String }) programId: string | null;
 }
 

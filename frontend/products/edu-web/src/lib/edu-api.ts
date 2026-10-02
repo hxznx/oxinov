@@ -31,6 +31,8 @@ export interface CourseSummary {
   price: Price;
   /** Sold through access plans (ADR-028): `price` is the cheapest plan, shown as "from". */
   hasPlans?: boolean;
+  kind?: OfferingKind;
+  category?: OfferingCategory;
   programId: string | null;
 }
 
@@ -472,6 +474,52 @@ function eduApiBaseUrl(): string {
   return (baseUrl = value.replace(/\/$/, ''));
 }
 
+/** Oxinov's public store (ADR-028). Mirrors backend/products/edu-api/src/store/storefront.dto.ts. */
+export type OfferingKind = 'COURSE' | 'TRAINING' | 'IDEA' | 'THINK_TANK' | 'SKILL';
+export type OfferingCategory = 'LANGUAGES' | 'TECHNOLOGY' | 'IDEAS_RESEARCH' | 'OTHER';
+
+export interface StorePlan {
+  period: PlanPeriod;
+  label: string;
+  priceMinor: number;
+  currency: string;
+}
+
+export interface StoreOffering {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  kind: OfferingKind;
+  category: OfferingCategory;
+  language: string;
+  fromMinor: number;
+  currency: string;
+  hasPlans: boolean;
+  free: boolean;
+  lessonCount: number;
+  freeLessonCount: number;
+}
+
+export interface StoreHome {
+  name: string;
+  slug: string;
+  defaultPlans: StorePlan[];
+  offerings: StoreOffering[];
+}
+
+export interface StoreOfferingDetail extends StoreOffering {
+  description: string;
+  outcomes: string[];
+  curriculum: { title: string; lessons: { title: string; kind: string; isPreview: boolean; durationSec: number | null }[] }[];
+  plans: StorePlan[];
+  refundPolicy: string;
+  reviewTimeText: string;
+  storeSlug: string;
+  /** Bank QR checkout is set up, so plans can be bought now. */
+  checkoutOpen: boolean;
+}
+
 async function request<T>(token: string, path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
   const response = await fetch(`${eduApiBaseUrl()}${path}`, {
     method: init.method ?? 'GET',
@@ -506,8 +554,13 @@ export const eduApi = {
   workspaces: (token: string) => request<Workspace[]>(token, '/v1/tenants'),
   createWorkspace: (token: string, body: { slug: string; name: string }) =>
     request<Workspace>(token, '/v1/tenants', { method: 'POST', body }),
-  courses: (token: string, tenantId: string, q?: string) =>
-    request<CourseSummary[]>(token, `${tenantPath(tenantId)}/courses${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  courses: (token: string, tenantId: string, q?: string, limit?: number) => {
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (limit) params.set('limit', String(limit));
+    const query = params.toString();
+    return request<CourseSummary[]>(token, `${tenantPath(tenantId)}/courses${query ? `?${query}` : ''}`);
+  },
   course: (token: string, tenantId: string, courseId: string) =>
     request<CourseDetail>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}`),
   lesson: (token: string, tenantId: string, courseId: string, lessonId: string) =>
@@ -531,6 +584,11 @@ export const eduApi = {
   revokeCertificate: (token: string, tenantId: string, code: string, reason: string) =>
     request<Certificate>(token, `${tenantPath(tenantId)}/certificates/${encodeURIComponent(code)}/revoke`, { method: 'POST', body: { reason } }),
   verifyCertificate: (code: string) => publicRequest<CertificateVerification>(`/v1/certificates/${encodeURIComponent(code)}`),
+  storeHome: () => publicRequest<StoreHome>('/v1/store'),
+  storeOffering: (slug: string) => publicRequest<StoreOfferingDetail>(`/v1/store/offerings/${encodeURIComponent(slug)}`),
+  joinStore: (token: string) => request<Workspace>(token, '/v1/store/join', { method: 'POST' }),
+  setListing: (token: string, tenantId: string, courseId: string, body: { kind: OfferingKind; category: OfferingCategory }) =>
+    request<{ courseId: string; kind: OfferingKind; category: OfferingCategory }>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/listing`, { method: 'PUT', body }),
   verifyPayment: (token: string, tenantId: string, paymentId: string) =>
     request<Payment>(token, `${tenantPath(tenantId)}/payments/${encodeURIComponent(paymentId)}/verify`, { method: 'POST' }),
   exams: (token: string, tenantId: string, courseId: string) =>

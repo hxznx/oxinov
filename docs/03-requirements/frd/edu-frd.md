@@ -197,7 +197,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given an administrator changes a plan price after a learner opened checkout, when that payment is approved, then it is recorded at the price shown at checkout, and a deactivated plan cannot start a new checkout.
 
 **FR-CATALOG-306 — Oxinov store.** `edu.oxinov.com` opens on the store of the seller workspace (ADR-023): featured offerings, categories (Languages, Technology, Ideas and research), offering kinds (course, training, idea, think tank, skill), search, "Continue learning", and "My learning". An offering page shows the kind, category, introduction, syllabus, free items, locked items, instructor, upcoming live sessions, and the plans with their prices and end dates before checkout. School workspaces and join codes are not shown in learner navigation.
-*Priority:* Must. *Status:* Proposed. *Access:* T0 visitor and above. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-301, FR-CATALOG-302.
+*Priority:* Must. *Status:* Partly implemented (2026-10-02): the public store home (hero, plan prices, kind filter, search, "Free to learn" and category rails, "Continue learning"), the offering page (kind, category, introduction, syllabus with free and locked items, plans with end dates, questions), joining the store without a join code, and "My learning" at `/spaces`; instructor, live sessions, and hiding school workspaces from navigation remain. *Access:* T0 visitor and above. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md); FR-CATALOG-301, FR-CATALOG-302.
 - Acceptance: Given a visitor opens `edu.oxinov.com`, when the page loads, then published offerings of the seller workspace appear grouped by category with their lowest plan price.
 - Acceptance: Given an offering is draft, archived, or belongs to a workspace that is not a seller, when a visitor requests the store or its page, then it does not appear and no price or curriculum is exposed.
 
@@ -217,7 +217,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given access is still active, when the learner opens "My learning", then the offering shows its end date or "Lifetime".
 
 **FR-CATALOG-310 — Free classes, ideas, and skills.** An administrator can publish any offering kind as free (no plan). Free offerings appear in a "Free to learn" section of the store and in recommendations, open immediately after sign-in without checkout, and still issue certificates when completed. Making a paid offering free later does not refund or change existing paid access.
-*Priority:* Must. *Status:* Proposed; free course enrollment exists (FR-CATALOG-303). *Access:* T0 visitor browses; T1 learner opens. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
+*Priority:* Must. *Status:* Partly implemented (2026-10-02): free offerings appear under "Free to learn" and open after sign-in through the store; recommendations remain. *Access:* T0 visitor browses; T1 learner opens. *Source:* [ADR-028](../../04-architecture/adr/adr-028-edu-knowledge-store.md).
 - Acceptance: Given a free skill is published, when a signed-in learner opens it, then every item opens without a plan and the store lists it under "Free to learn".
 - Acceptance: Given a visitor is not signed in, when they open a free item, then they are asked to sign in first and returned to the item afterwards.
 

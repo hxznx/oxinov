@@ -257,6 +257,8 @@ export class CatalogService {
         summary: input.summary,
         price: { amountMinor: course.priceMinor, currency: course.currency },
         hasPlans: false,
+        kind: course.kind,
+        category: course.category,
         programId: course.programId,
       };
     });
@@ -313,6 +315,8 @@ export class CatalogService {
       // With access plans on sale (ADR-028) the price is the cheapest plan, shown as "from".
       price: cheapest ? { amountMinor: cheapest.priceMinor, currency: cheapest.currency } : { amountMinor: course.priceMinor, currency: course.currency },
       hasPlans: cheapest !== undefined,
+      kind: course.kind,
+      category: course.category,
       programId: course.programId,
     };
   }
