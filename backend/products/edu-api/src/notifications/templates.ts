@@ -142,3 +142,17 @@ export function deletionRequestedMail(input: { readonly to: string; readonly del
     footer: 'Ox Inov Pvt. Ltd. You receive this because someone signed in to your account asked to delete it.',
   });
 }
+
+/** An in-app notice also sent by email (FR-COMM-704, FR-COMM-705): its title, text, and a link into Edu. */
+export function noticeMail(input: { readonly to: string; readonly title: string; readonly body: string; readonly url: string; readonly support: string }): OutgoingMail {
+  return render({
+    to: input.to,
+    subject: input.title,
+    title: input.title,
+    paragraphs: input.body.split(/\n{2,}/).map((part) => part.trim()).filter(Boolean),
+    details: [],
+    button: { label: 'Open Oxinov Edu', url: input.url },
+    support: input.support,
+    footer: 'Ox Inov Pvt. Ltd. You receive this because you are a learner on Oxinov Edu. It is also in your notifications.',
+  });
+}

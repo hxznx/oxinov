@@ -678,6 +678,21 @@ export interface OxiAnswer {
   handoff: boolean;
 }
 
+/** Notices by email within the daily allowance (FR-COMM-705). */
+export interface EmailAllowance {
+  limit: number;
+  used: number;
+  remaining: number;
+  /** Notices can be emailed here (the store workspace only). */
+  emailAvailable: boolean;
+}
+
+export interface NoticeSent {
+  recipients: number;
+  emailedNow: number;
+  emailWaiting: number;
+}
+
 /** Account deletion with a 14-day wait (FR-PRIV-3202). */
 export interface DeletionStatus {
   state: 'NONE' | 'SCHEDULED' | 'CANCELLED';
@@ -793,8 +808,9 @@ export const eduApi = {
   readNotification: (token: string, tenantId: string, notificationId: string) =>
     request<void>(token, `${tenantPath(tenantId)}/me/notifications/${encodeURIComponent(notificationId)}/read`, { method: 'POST' }),
   readAllNotifications: (token: string, tenantId: string) => request<void>(token, `${tenantPath(tenantId)}/me/notifications/read-all`, { method: 'POST' }),
-  sendNotice: (token: string, tenantId: string, body: { title: string; body: string; linkPath?: string; courseId?: string }) =>
-    request<{ recipients: number }>(token, `${tenantPath(tenantId)}/notices`, { method: 'POST', body }),
+  sendNotice: (token: string, tenantId: string, body: { title: string; body: string; linkPath?: string; courseId?: string; email?: boolean }) =>
+    request<NoticeSent>(token, `${tenantPath(tenantId)}/notices`, { method: 'POST', body }),
+  emailAllowance: (token: string, tenantId: string) => request<EmailAllowance>(token, `${tenantPath(tenantId)}/notices/email-allowance`),
   mySubscriptions: (token: string, tenantId: string) => request<Subscription[]>(token, `${tenantPath(tenantId)}/me/subscriptions`),
   myBankPayments: (token: string, tenantId: string) => request<BankPayment[]>(token, `${tenantPath(tenantId)}/me/bank-payments`),
   storeHome: () => publicRequest<StoreHome>('/v1/store'),
@@ -955,8 +971,8 @@ export const eduApi = {
     request<BankCheckout>(token, `${tenantPath(tenantId)}/me/bank-payments/${encodeURIComponent(paymentId)}`),
   evidenceUpload: (token: string, tenantId: string, paymentId: string, body: { contentType: string; sizeBytes: number }) =>
     request<StoreUploadTicket>(token, `${tenantPath(tenantId)}/me/bank-payments/${encodeURIComponent(paymentId)}/evidence-upload`, { method: 'POST', body }),
-  submitBankPayment: (token: string, tenantId: string, paymentId: string, bankTransactionId: string) =>
-    request<BankPayment>(token, `${tenantPath(tenantId)}/me/bank-payments/${encodeURIComponent(paymentId)}/submit`, { method: 'POST', body: { bankTransactionId } }),
+  submitBankPayment: (token: string, tenantId: string, paymentId: string, body: { bankTransactionId: string; paidAmount: number; referenceIncluded: boolean }) =>
+    request<BankPayment>(token, `${tenantPath(tenantId)}/me/bank-payments/${encodeURIComponent(paymentId)}/submit`, { method: 'POST', body }),
   reviewQueue: (token: string, tenantId: string, status: 'PENDING_REVIEW' | 'SUCCEEDED' | 'REJECTED') =>
     request<ReviewItem[]>(token, `${tenantPath(tenantId)}/store/payments?status=${status}`),
   reviewDetail: (token: string, tenantId: string, paymentId: string) =>

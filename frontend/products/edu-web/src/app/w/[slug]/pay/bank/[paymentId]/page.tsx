@@ -203,7 +203,7 @@ export default async function BankPaymentPage({ params }: Props) {
                   <h2 id="send-heading" className="studio-h2">
                     2. Send us the receipt
                   </h2>
-                  <ReceiptForm slug={slug} tenantId={workspace.id} paymentId={payment.id} resubmit={payment.status === 'REJECTED'} />
+                  <ReceiptForm slug={slug} tenantId={workspace.id} paymentId={payment.id} resubmit={payment.status === 'REJECTED'} reference={payment.reference} />
                   <p className="text-sm text-muted">{bank.reviewTimeText}. Free lessons stay open while we check.</p>
                 </div>
                 {whatsapp ? (

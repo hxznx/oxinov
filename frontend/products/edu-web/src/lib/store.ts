@@ -67,7 +67,8 @@ export interface BankCheckout {
 export interface ReviewItem extends BankPayment {
   learnerName: string | null;
   learnerEmail: string | null;
-  checks: { ok: boolean; text: string }[];
+  /** Payment match checks (FR-MGMT-1405); `block` refuses approval while it stands. */
+  checks: { ok: boolean; level: 'ok' | 'warn' | 'block'; text: string }[];
   evidenceUrl: string | null;
 }
 

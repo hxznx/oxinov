@@ -71,6 +71,7 @@ import { AccountController } from './account/account.controller';
 import { AccountService } from './account/account.service';
 import { MeController } from './account/me.controller';
 import { NotificationsController } from './notifications/notifications.controller';
+import { NoticeMailer } from './notifications/notice-mailer.service';
 import { NotificationsService } from './notifications/notifications.service';
 import { RenewalRemindersService } from './notifications/renewal-reminders.service';
 import { LiveSessionsService } from './live/live-sessions.service';
@@ -134,6 +135,7 @@ export class AppModule implements NestModule {
       ReviewsService,
       AccountService,
       SupportService,
+      NoticeMailer,
       NotificationsService,
       RenewalRemindersService,
       CertificatesService,

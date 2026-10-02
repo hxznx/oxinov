@@ -101,7 +101,7 @@ model UserProfile {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  tenantsCreated      Tenant[]               @relation("TenantCreatedBy")
+  tenantsCreated      Tenant[]                @relation("TenantCreatedBy")
   memberships         TenantMembership[]
   coursesCreated      Course[]
   enrollments         Enrollment[]
@@ -114,23 +114,23 @@ model UserProfile {
   mediaProgress       MediaProgress[]
   assignmentsCreated  Assignment[]
   submissions         AssignmentSubmission[]
-  gradedRevisions     SubmissionRevision[]   @relation("RevisionGrader")
+  gradedRevisions     SubmissionRevision[]    @relation("RevisionGrader")
   lessonNotes         LessonNote[]
   resourceFiles       ResourceFile[]
   liveSessionsCreated LiveSession[]
   notifications       Notification[]
   announcements       CourseAnnouncement[]
-  lessonQuestions     LessonQuestion[]       @relation("QuestionAuthor")
-  lessonAnswers       LessonAnswer[]         @relation("AnswerAuthor")
+  lessonQuestions     LessonQuestion[]        @relation("QuestionAuthor")
+  lessonAnswers       LessonAnswer[]          @relation("AnswerAuthor")
   answerVotes         AnswerVote[]
   lessonCompletions   LessonCompletion[]
-  certificates        Certificate[]          @relation("CertificateHolder")
-  certificatesRevoked Certificate[]          @relation("CertificateRevokedBy")
-  paymentsReviewed    Payment[]              @relation("PaymentReviewer")
+  certificates        Certificate[]           @relation("CertificateHolder")
+  certificatesRevoked Certificate[]           @relation("CertificateRevokedBy")
+  paymentsReviewed    Payment[]               @relation("PaymentReviewer")
   couponsCreated      Coupon[]
   settingsUpdated     StoreSettings[]
-  reviews             CourseReview[]         @relation("ReviewAuthor")
-  reviewsModerated    CourseReview[]         @relation("ReviewModerator")
+  reviews             CourseReview[]          @relation("ReviewAuthor")
+  reviewsModerated    CourseReview[]          @relation("ReviewModerator")
   deletionRequest     AccountDeletionRequest?
   supportThreads      SupportThread[]
   supportMessages     SupportMessage[]
@@ -904,6 +904,11 @@ model Payment {
   bankTransactionId     String?         @map("bank_transaction_id") @db.VarChar(80)
   evidenceObjectKey     String?         @map("evidence_object_key") @db.VarChar(300)
   evidenceContentType   String?         @map("evidence_content_type") @db.VarChar(120)
+  /// What the learner says they paid, and whether they wrote the reference in the remarks (FR-MGMT-1405).
+  paidAmountMinor       Int?            @map("paid_amount_minor")
+  referenceIncluded     Boolean?        @map("reference_included")
+  /// SHA-256 of the receipt file, to spot one receipt sent for two payments.
+  evidenceSha256        String?         @map("evidence_sha256") @db.Char(64)
   submittedAt           DateTime?       @map("submitted_at") @db.Timestamptz(3)
   reviewedByUserId      String?         @map("reviewed_by_user_id") @db.Uuid
   reviewedAt            DateTime?       @map("reviewed_at") @db.Timestamptz(3)
@@ -922,6 +927,7 @@ model Payment {
   @@unique([tenantId, id])
   @@unique([provider, providerPaymentId])
   @@unique([tenantId, bankTransactionId])
+  @@index([tenantId, evidenceSha256])
   @@index([tenantId, userId, courseId, createdAt(sort: Desc)], map: "payments_tenant_user_course_idx")
   @@index([tenantId, status, submittedAt])
   @@map("payments")
@@ -1002,17 +1008,20 @@ enum NotificationKind {
 
 /// One in-app notification for one learner (FR-COMM-704). `dedupeKey` makes it happen at most once.
 model Notification {
-  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String           @map("tenant_id") @db.Uuid
-  userId    String           @map("user_id") @db.Uuid
-  kind      NotificationKind
-  title     String           @db.VarChar(200)
-  body      String           @default("") @db.VarChar(2000)
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String           @map("tenant_id") @db.Uuid
+  userId      String           @map("user_id") @db.Uuid
+  kind        NotificationKind
+  title       String           @db.VarChar(200)
+  body        String           @default("") @db.VarChar(2000)
   /// Path inside the Edu web app, for example /w/{slug}/courses/{id}; never another site.
-  linkPath  String?          @map("link_path") @db.VarChar(500)
-  dedupeKey String?          @map("dedupe_key") @db.VarChar(200)
-  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
-  readAt    DateTime?        @map("read_at") @db.Timestamptz(3)
+  linkPath    String?          @map("link_path") @db.VarChar(500)
+  dedupeKey   String?          @map("dedupe_key") @db.VarChar(200)
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  readAt      DateTime?        @map("read_at") @db.Timestamptz(3)
+  /// Also email it, within the daily allowance (FR-COMM-705); `emailedAt` records the send.
+  emailWanted Boolean          @default(false) @map("email_wanted")
+  emailedAt   DateTime?        @map("emailed_at") @db.Timestamptz(3)
 
   tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   user   UserProfile @relation(fields: [userId], references: [id], onDelete: Restrict)
@@ -1020,6 +1029,7 @@ model Notification {
   @@unique([tenantId, id])
   @@unique([tenantId, userId, dedupeKey])
   @@index([tenantId, userId, createdAt(sort: Desc)])
+  @@index([tenantId, emailWanted, emailedAt])
   @@map("notifications")
 }
 
@@ -1441,4 +1451,14 @@ enum MessageSender {
   STAFF
 
   @@map("message_sender")
+}
+
+/// Emails sent per UTC day and category, for the daily allowance (FR-COMM-705). No personal or workspace data.
+model EmailDailyUsage {
+  day      DateTime @db.Date
+  category String   @db.VarChar(20)
+  sent     Int      @default(0)
+
+  @@id([day, category])
+  @@map("email_daily_usage")
 }

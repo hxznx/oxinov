@@ -7,6 +7,7 @@ import {
   IsInt,
   IsISO8601,
   IsOptional,
+  IsNumber,
   IsString,
   IsUUID,
   Length,
@@ -129,10 +130,23 @@ export class SubmitEvidenceDto {
   @Length(4, 80)
   @Matches(/^[A-Za-z0-9][A-Za-z0-9 ./_-]*$/, { message: 'Use the letters and numbers from your bank receipt.' })
   bankTransactionId: string;
+
+  @ApiProperty({ required: false, example: 15000, description: 'What the learner says they paid, in NPR (FR-MGMT-1405).' })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(1)
+  @Max(MAX_PRICE_MINOR / 100)
+  paidAmount?: number;
+
+  @ApiProperty({ required: false, description: 'The learner wrote the payment reference in the bank remarks.' })
+  @IsOptional()
+  @IsBoolean()
+  referenceIncluded?: boolean;
 }
 
 export class ReviewCheckDto {
   @ApiProperty() ok: boolean;
+  @ApiProperty({ enum: ['ok', 'warn', 'block'], description: 'block: approval is refused while this stands (FR-MGMT-1405).' }) level: 'ok' | 'warn' | 'block';
   @ApiProperty() text: string;
 }
 

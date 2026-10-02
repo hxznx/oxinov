@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Inject, Injectable } from '@nestjs/common';
@@ -84,6 +85,12 @@ export class ObjectStorage {
   async prefix(key: string, bytes = 64): Promise<Buffer> {
     const result = await this.s3().send(new GetObjectCommand({ Bucket: this.bucket, Key: key, Range: `bytes=0-${bytes - 1}` }));
     return Buffer.from(await result.Body!.transformToByteArray());
+  }
+
+  /** SHA-256 of a stored object (small files only, such as a payment receipt up to 5 MB). */
+  async sha256(key: string): Promise<string> {
+    const result = await this.s3().send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
+    return createHash('sha256').update(await result.Body!.transformToByteArray()).digest('hex');
   }
 
   async remove(key: string): Promise<void> {

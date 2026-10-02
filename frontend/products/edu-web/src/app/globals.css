@@ -109,6 +109,8 @@
   }
   .btn-primary { background: var(--ox-color-brand); color: var(--ox-color-on-neon); }
   .btn-primary:hover { box-shadow: var(--ox-glow-brand); }
+  /* A button that cannot be used now looks it: dimmed, no glow, no pointer. */
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
   .btn-secondary {
     color: var(--ox-color-text);
     background: var(--ox-color-surface);

@@ -258,4 +258,34 @@ suite('Oxinov store: plans, bank QR payments, review, coupons', () => {
       .set(await auth(SEED.users.everestOwner));
     expect(everest.body.data.bank).toMatchObject({ available: false, reason: expect.stringMatching(/not on sale/) });
   });
+
+  it('checks each payment against the others and blocks approval of a reused transaction ID (FR-MGMT-1405)', async () => {
+    type Check = { ok: boolean; level: string; text: string };
+    const started = await start(owner, 'MONTH_1');
+    expect(started.status).toBe(201);
+    const id = started.body.data.payment.id as string;
+    const ticket = await api(owner, 'post', `/me/bank-payments/${id}/evidence-upload`, { contentType: 'image/png', sizeBytes: PNG.length });
+    await fetch(ticket.body.data.uploadUrl, { method: 'PUT', headers: ticket.body.data.headers, body: new Uint8Array(PNG) });
+    // FT-26-1002 is the approved renewal FT261002 typed with dashes: the database cannot see it, the check does.
+    expect((await api(owner, 'post', `/me/bank-payments/${id}/submit`, { bankTransactionId: 'FT261099', paidAmount: -5 })).status).toBe(400);
+    const sent = await api(owner, 'post', `/me/bank-payments/${id}/submit`, { bankTransactionId: 'FT-26-1002', paidAmount: 4900, referenceIncluded: false });
+    expect(sent.status).toBe(200);
+
+    const detail = await api(owner, 'get', `/store/payments/${id}`);
+    const checks = detail.body.data.checks as Check[];
+    expect(checks.find((check) => check.level === 'block')?.text).toMatch(/^Transaction ID FT-26-1002 is also on payment OXE-[2-9A-HJKMNP-Z]{6} \(.+, approved\)/);
+    expect(checks.filter((check) => check.level === 'warn').map((check) => check.text)).toEqual(
+      expect.arrayContaining([
+        'The learner says they paid NPR 4,900: NPR 100 less than the price of NPR 5,000',
+        expect.stringMatching(/did not write OXE-.+ in the remarks/),
+        expect.stringMatching(/^The same receipt image was sent for payment/),
+      ]),
+    );
+    expect(checks.every((check) => check.ok === (check.level === 'ok'))).toBe(true);
+
+    const refused = await api(owner, 'post', `/store/payments/${id}/approve`);
+    expect(refused.status).toBe(409);
+    expect(refused.body.error.message).toMatch(/Approval is blocked/);
+    expect((await api(owner, 'get', `/store/payments/${id}`)).body.data.status).toBe('PENDING_REVIEW');
+  });
 });

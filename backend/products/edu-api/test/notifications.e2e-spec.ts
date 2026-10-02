@@ -4,6 +4,7 @@
  * learners read and clear only their own; administrators send notices to members.
  */
 import type { Mailer, OutgoingMail } from '../src/notifications/mailer';
+import { NoticeMailer } from '../src/notifications/notice-mailer.service';
 import { RenewalRemindersService } from '../src/notifications/renewal-reminders.service';
 import { SEED, createTestContext, ownerQuery, resetDatabase, type TestContext } from './helpers';
 
@@ -142,5 +143,33 @@ describe('notifications and renewal reminders', () => {
 
     const me = await ctx.http.get('/v1/me').set(await auth(aiko));
     expect(me.body.data.unreadNotifications).toBe((await list(aiko)).body.data.unread);
+  });
+
+  it('emails notices only within the daily allowance and sends the rest the next day (FR-COMM-705)', async () => {
+    const today = new Date();
+    const day = today.toISOString().slice(0, 10);
+    expect((await ctx.http.get(`${base}/notices/email-allowance`).set(await auth(aiko))).status).toBe(403);
+    // 149 of today's 150 are already used by other reminders and notices.
+    await ownerQuery(`INSERT INTO email_daily_usage (day, category, sent) VALUES ($1::date, 'BULK', 149) ON CONFLICT (day, category) DO UPDATE SET sent = 149`, [day]);
+    const allowance = await ctx.http.get(`${base}/notices/email-allowance`).set(await auth(owner));
+    expect(allowance.body.data).toEqual({ limit: 150, used: 149, remaining: 1, emailAvailable: true });
+
+    const before = mailer.sent.length;
+    const notice = { title: 'Exam week', body: 'Mock exams open on Monday.', email: true };
+    const sent = await ctx.http.post(`${base}/notices`).set(await auth(owner)).send(notice);
+    expect(sent.body.data).toEqual({ recipients: 3, emailedNow: 1, emailWaiting: 2 });
+    expect(mailer.sent.length).toBe(before + 1);
+    expect(mailer.sent.at(-1)).toMatchObject({ subject: 'Exam week', text: expect.stringContaining('Mock exams open on Monday.') });
+    // Every member has the in-app notice already.
+    for (const member of [aiko, bikash, instructor]) expect((await list(member)).body.data.items[0]).toMatchObject({ title: 'Exam week' });
+    expect((await ctx.http.get(`${base}/notices/email-allowance`).set(await auth(owner))).body.data.remaining).toBe(0);
+
+    // Nothing more goes today; tomorrow the two waiting emails go, once.
+    const notices = ctx.app.get(NoticeMailer);
+    expect(await notices.flush(SEED.sakura, today)).toBe(0);
+    const tomorrow = new Date(today.getTime() + DAY);
+    expect(await notices.flush(SEED.sakura, tomorrow)).toBe(2);
+    expect(await notices.flush(SEED.sakura, tomorrow)).toBe(0);
+    expect(mailer.sent.length).toBe(before + 3);
   });
 });

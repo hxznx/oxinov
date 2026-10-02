@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { APP_CONFIG, type AppConfig } from '../config/app-config';
 import { Errors } from '../common/errors';
 import type { AuthUser, TenantScope } from '../common/request';
 import { DatabaseContext, type Tx } from '../database/database-context.service';
 import { hasRole } from '../tenancy/roles';
-import type { NotificationKind, NotificationListDto, NoticeSentDto, SendNoticeDto } from './notifications.dto';
+import { NoticeMailer } from './notice-mailer.service';
+import type { EmailAllowanceDto, NotificationKind, NotificationListDto, NoticeSentDto, SendNoticeDto } from './notifications.dto';
 
 export interface NewNotification {
   tenantId: string;
@@ -14,6 +16,8 @@ export interface NewNotification {
   linkPath?: string | null;
   /** Makes this notification happen at most once for the person. */
   dedupeKey?: string;
+  /** Also email it within the daily allowance (FR-COMM-705); NoticeMailer.flush sends it. */
+  emailWanted?: boolean;
 }
 
 const CHUNK = 1000;
@@ -21,11 +25,22 @@ const CHUNK = 1000;
 /**
  * In-app notifications (FR-COMM-704): each learner reads and clears only their own. Payments and renewal
  * reminders write them inside their own transactions through `create`, so a notice exists exactly when the
- * event committed. Administrators can send a notice to every member of the workspace (in-app only).
+ * event committed. Administrators can send a notice to the workspace's members, in-app and, in the store
+ * workspace, also by email within the daily allowance (FR-COMM-705).
  */
 @Injectable()
 export class NotificationsService {
-  constructor(private readonly db: DatabaseContext) {}
+  constructor(
+    private readonly db: DatabaseContext,
+    private readonly mailer: NoticeMailer,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
+  ) {}
+
+  /** Today's email allowance for notices, for the administrator before sending. */
+  async emailAllowance(scope: TenantScope): Promise<EmailAllowanceDto> {
+    if (!hasRole(scope.role, 'ADMIN')) throw Errors.forbidden('Only administrators can send notices.');
+    return { ...(await this.mailer.allowance()), emailAvailable: this.config.payments.sellerTenantIds.has(scope.tenantId) };
+  }
 
   /** Writes one notification in the caller's transaction; returns false when its dedupe key already exists. */
   static async create(tx: Tx, input: NewNotification): Promise<boolean> {
@@ -39,6 +54,7 @@ export class NotificationsService {
           body: (input.body ?? '').slice(0, 2000),
           linkPath: input.linkPath ?? null,
           dedupeKey: input.dedupeKey ?? null,
+          emailWanted: input.emailWanted ?? false,
         },
       ],
       skipDuplicates: true,
@@ -81,9 +97,10 @@ export class NotificationsService {
    * A notice to every active member except the sender, or only to the learners enrolled in one offering
    * (design screen 8). Administrators only.
    */
-  sendNotice(scope: TenantScope, user: AuthUser, input: SendNoticeDto): Promise<NoticeSentDto> {
+  async sendNotice(scope: TenantScope, user: AuthUser, input: SendNoticeDto): Promise<NoticeSentDto> {
     if (!hasRole(scope.role, 'ADMIN')) throw Errors.forbidden('Only administrators can send notices.');
-    return this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
+    const email = input.email === true && this.config.payments.sellerTenantIds.has(scope.tenantId);
+    const recipients = await this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
       if (input.courseId) {
         const course = await tx.course.findFirst({ where: { id: input.courseId, tenantId: scope.tenantId }, select: { id: true } });
         if (!course) throw Errors.notFound('Course');
@@ -108,13 +125,24 @@ export class NotificationsService {
             title,
             body,
             linkPath: input.linkPath ?? null,
+            emailWanted: email,
           })),
         });
       }
       await tx.auditEvent.create({
-        data: { tenantId: scope.tenantId, actorUserId: user.userId, action: 'notice.sent', targetType: 'tenant', targetId: scope.tenantId, metadata: { recipients: members.length, title, courseId: input.courseId ?? null } },
+        data: {
+          tenantId: scope.tenantId,
+          actorUserId: user.userId,
+          action: 'notice.sent',
+          targetType: 'tenant',
+          targetId: scope.tenantId,
+          metadata: { recipients: members.length, title, courseId: input.courseId ?? null, email },
+        },
       });
-      return { recipients: members.length };
+      return members.length;
     });
+    // In-app notices are in place; emails go now within today's allowance and the rest wait for tomorrow.
+    const emailedNow = email ? await this.mailer.flush(scope.tenantId) : 0;
+    return { recipients, emailedNow, emailWaiting: email ? Math.max(0, recipients - emailedNow) : 0 };
   }
 }

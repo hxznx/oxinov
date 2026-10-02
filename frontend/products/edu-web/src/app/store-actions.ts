@@ -66,14 +66,27 @@ export async function requestEvidenceUpload(input: { tenantId: string; paymentId
 }
 
 /** Step 2: sends the uploaded receipt and the bank transaction ID for review. */
-export async function submitBankPayment(input: { slug: string; tenantId: string; paymentId: string; bankTransactionId: string }): Promise<Result<null>> {
+export async function submitBankPayment(input: {
+  slug: string;
+  tenantId: string;
+  paymentId: string;
+  bankTransactionId: string;
+  paidAmount: string;
+  referenceIncluded: boolean;
+}): Promise<Result<null>> {
   if (!SLUG.test(input.slug) || !UUID.test(input.tenantId) || !UUID.test(input.paymentId)) return { ok: false, error: STALE };
   const txId = input.bankTransactionId.trim();
   if (txId.length < 4) return { ok: false, error: 'Enter the transaction ID from your bank receipt.' };
+  const paidMinor = parseNpr(input.paidAmount);
+  if (paidMinor === null) return { ok: false, error: 'Enter the amount you paid, as shown on your receipt.' };
   const current = await auth.currentSession('/');
   if (!current) return { ok: false, error: 'Your session ended. Sign in again.' };
   try {
-    await eduApi.submitBankPayment(current.accessToken, input.tenantId, input.paymentId, txId);
+    await eduApi.submitBankPayment(current.accessToken, input.tenantId, input.paymentId, {
+      bankTransactionId: txId,
+      paidAmount: paidMinor / 100,
+      referenceIncluded: input.referenceIncluded,
+    });
   } catch (error) {
     return { ok: false, error: message(error) };
   }

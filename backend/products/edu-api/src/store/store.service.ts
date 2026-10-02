@@ -11,6 +11,7 @@ import { MAILER, type Mailer, type OutgoingMail } from '../notifications/mailer'
 import { NotificationsService } from '../notifications/notifications.service';
 import { rejectedMail, thankYouMail } from '../notifications/templates';
 import { hasRole } from '../tenancy/roles';
+import { blockingCheck, paymentChecks, transactionKey, type OtherPayment } from './payment-checks';
 import {
   EVIDENCE_MAX_BYTES,
   PLAN_LABELS,
@@ -113,6 +114,10 @@ const toCouponDto = (c: Prisma.CouponGetPayload<object>): CouponDto => ({
  * exactly one entitlement (unique payment_id); one bank transaction ID pays for one payment per seller
  * (unique index); and nothing is granted without an administrator's approval.
  */
+/** Payments read when looking for a reused transaction ID or receipt; a small store has far fewer. */
+const MATCH_ROWS = 5000;
+type MatchRow = { id: string; providerPaymentId: string; status: string; bankTransactionId: string | null; evidenceSha256: string | null; user: { displayName: string | null; email: string | null } };
+
 @Injectable()
 export class StoreService {
   constructor(
@@ -468,7 +473,13 @@ export class StoreService {
   }
 
   /** The learner's proof of payment: moves the payment to PENDING_REVIEW. Resubmitting a rejected one keeps it. */
-  async submitEvidence(scope: TenantScope, user: AuthUser, paymentId: string, bankTransactionId: string): Promise<BankPaymentDto> {
+  async submitEvidence(
+    scope: TenantScope,
+    user: AuthUser,
+    paymentId: string,
+    bankTransactionId: string,
+    answers: { paidAmountMinor: number | null; referenceIncluded: boolean | null } = { paidAmountMinor: null, referenceIncluded: null },
+  ): Promise<BankPaymentDto> {
     const ctx = this.ctx(scope, user);
     const payment = await this.db.run(ctx, (tx) => this.findOwnBankPayment(tx, scope.tenantId, user.userId, paymentId));
     if (payment.status === 'PENDING_REVIEW' || payment.status === 'SUCCEEDED') return toPaymentDto(payment);
@@ -477,11 +488,23 @@ export class StoreService {
     await this.checkUpload(payment.evidenceObjectKey, payment.evidenceContentType, EVIDENCE_MAX_BYTES, 'Upload a JPG, PNG, or PDF of your bank receipt, up to 5 MB.');
 
     const txId = normalizeTransactionId(bankTransactionId);
+    // The receipt's fingerprint lets the reviewer see one receipt sent for two payments (FR-MGMT-1405).
+    const evidenceSha256 = await this.storage.sha256(payment.evidenceObjectKey).catch(() => null);
     try {
       return await this.db.run(ctx, async (tx) => {
         const moved = await tx.payment.updateMany({
           where: { id: payment.id, tenantId: scope.tenantId, status: { in: ['PENDING', 'REJECTED'] } },
-          data: { status: 'PENDING_REVIEW', bankTransactionId: txId, submittedAt: new Date(), reviewedAt: null, reviewedByUserId: null, reviewReason: null },
+          data: {
+            status: 'PENDING_REVIEW',
+            bankTransactionId: txId,
+            submittedAt: new Date(),
+            reviewedAt: null,
+            reviewedByUserId: null,
+            reviewReason: null,
+            paidAmountMinor: answers.paidAmountMinor,
+            referenceIncluded: answers.referenceIncluded,
+            evidenceSha256,
+          },
         });
         if (moved.count > 0) {
           await this.audit(tx, scope, user, 'payment.submitted_for_review', 'payment', payment.id, { courseId: payment.courseId, resubmitted: payment.status === 'REJECTED' });
@@ -509,21 +532,22 @@ export class StoreService {
 
   async reviewQueue(scope: TenantScope, user: AuthUser, status: 'PENDING_REVIEW' | 'SUCCEEDED' | 'REJECTED'): Promise<ReviewItemDto[]> {
     this.require(scope, 'ADMIN', 'Only administrators can review payments.');
-    const rows = await this.db.run(this.ctx(scope, user), (tx) =>
-      tx.payment.findMany({
+    const { rows, matches } = await this.db.run(this.ctx(scope, user), async (tx) => ({
+      rows: await tx.payment.findMany({
         where: { tenantId: scope.tenantId, provider: 'BANK_QR', status },
         include: { ...paymentInclude, user: { select: { displayName: true, email: true } } },
         orderBy: status === 'PENDING_REVIEW' ? { submittedAt: 'asc' } : { reviewedAt: 'desc' },
         take: 100,
       }),
-    );
-    return Promise.all(rows.map((row) => this.reviewItem(row, false)));
+      matches: await this.matchRows(tx, scope.tenantId),
+    }));
+    return Promise.all(rows.map((row) => this.reviewItem(this.ctx(scope, user), row, false, matches)));
   }
 
   async reviewDetail(scope: TenantScope, user: AuthUser, paymentId: string): Promise<ReviewItemDto> {
     this.require(scope, 'ADMIN', 'Only administrators can review payments.');
     const row = await this.db.run(this.ctx(scope, user), (tx) => this.findBankPaymentForReview(tx, scope.tenantId, paymentId));
-    return this.reviewItem(row, true);
+    return this.reviewItem(this.ctx(scope, user), row, true);
   }
 
   async approve(scope: TenantScope, user: AuthUser, paymentId: string): Promise<ReviewItemDto> {
@@ -533,6 +557,9 @@ export class StoreService {
       const payment = await this.findBankPaymentForReview(tx, scope.tenantId, paymentId);
       if (payment.status === 'SUCCEEDED') return { payment, granted: null, slug: '' };
       if (payment.status !== 'PENDING_REVIEW') throw Errors.conflict('Only payments waiting for review can be approved.');
+      // A bank transaction ID already on another payment blocks approval (FR-MGMT-1405).
+      const blocked = blockingCheck(this.checksFor(payment, await this.matchRows(tx, scope.tenantId)));
+      if (blocked) throw Errors.conflict(`${blocked.text} Reject this payment or check with the learner.`);
       const now = new Date();
 
       if (payment.couponId) {
@@ -608,7 +635,7 @@ export class StoreService {
         'payment.approved',
       );
     }
-    return this.reviewItem(result.payment, true);
+    return this.reviewItem(this.ctx(scope, user), result.payment, true);
   }
 
   async reject(scope: TenantScope, user: AuthUser, paymentId: string, reason: string): Promise<ReviewItemDto> {
@@ -656,7 +683,7 @@ export class StoreService {
         'payment.rejected',
       );
     }
-    return this.reviewItem(result.payment, true);
+    return this.reviewItem(this.ctx(scope, user), result.payment, true);
   }
 
   // ---------------------------------------------------------------- free access (FR-MGMT-1404)
@@ -816,16 +843,42 @@ export class StoreService {
     return payment;
   }
 
+  /** Every bank payment of the workspace with a transaction ID or a receipt, to find reuse (FR-MGMT-1405). */
+  private matchRows(tx: Tx, tenantId: string): Promise<MatchRow[]> {
+    return tx.payment.findMany({
+      where: { tenantId, provider: 'BANK_QR', OR: [{ bankTransactionId: { not: null } }, { evidenceSha256: { not: null } }] },
+      select: { id: true, providerPaymentId: true, status: true, bankTransactionId: true, evidenceSha256: true, user: { select: { displayName: true, email: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: MATCH_ROWS,
+    });
+  }
+
+  private checksFor(row: PaymentWithRefs, matches: MatchRow[]) {
+    const other = (match: MatchRow): OtherPayment => ({ reference: match.providerPaymentId, learner: match.user.displayName ?? match.user.email ?? 'a learner', status: match.status });
+    const key = row.bankTransactionId ? transactionKey(row.bankTransactionId) : null;
+    return paymentChecks({
+      reference: row.providerPaymentId,
+      amountMinor: row.amountMinor,
+      bankTransactionId: row.bankTransactionId,
+      paidAmountMinor: row.paidAmountMinor,
+      referenceIncluded: row.referenceIncluded,
+      hasReceipt: row.evidenceObjectKey !== null,
+      createdAt: row.createdAt,
+      submittedAt: row.submittedAt,
+      sameTransaction: key ? matches.filter((match) => match.id !== row.id && match.bankTransactionId && transactionKey(match.bankTransactionId) === key).map(other) : [],
+      sameReceipt: row.evidenceSha256 ? matches.filter((match) => match.id !== row.id && match.evidenceSha256 === row.evidenceSha256).map(other) : [],
+      coupon: row.coupon ? { code: row.coupon.code, discountMinor: row.discountMinor } : null,
+    });
+  }
+
   private async reviewItem(
+    ctx: Ctx,
     row: PaymentWithRefs & { user: { displayName: string | null; email: string | null } },
     withEvidence: boolean,
+    matches?: MatchRow[],
   ): Promise<ReviewItemDto> {
-    const checks = [
-      { ok: row.bankTransactionId !== null, text: row.bankTransactionId ? 'Bank transaction ID not used on any other payment' : 'No bank transaction ID yet' },
-      { ok: row.evidenceObjectKey !== null, text: row.evidenceObjectKey ? 'Receipt screenshot attached' : 'No receipt attached' },
-      { ok: true, text: `Look for ${(row.amountMinor / 100).toLocaleString('en-US')} NPR with remark ${row.providerPaymentId} in the bank statement` },
-    ];
-    if (row.coupon) checks.push({ ok: true, text: `Coupon ${row.coupon.code}: ${(row.discountMinor / 100).toLocaleString('en-US')} NPR off` });
+    const all = matches ?? (await this.db.run(ctx, (tx) => this.matchRows(tx, row.tenantId)));
+    const checks = this.checksFor(row, all).map((check) => ({ ...check, ok: check.level === 'ok' }));
     let evidenceUrl: string | null = null;
     if (withEvidence && row.evidenceObjectKey && this.storage.enabled) {
       evidenceUrl =

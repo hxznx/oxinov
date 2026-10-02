@@ -120,7 +120,12 @@ export class StoreController {
     @Param('paymentId', ParseUUIDPipe) paymentId: string,
     @Body() body: SubmitEvidenceDto,
   ): Promise<{ data: BankPaymentDto }> {
-    return { data: await this.store.submitEvidence(scope, user, paymentId, body.bankTransactionId) };
+    return {
+      data: await this.store.submitEvidence(scope, user, paymentId, body.bankTransactionId, {
+        paidAmountMinor: body.paidAmount === undefined ? null : Math.round(body.paidAmount * 100),
+        referenceIncluded: body.referenceIncluded ?? null,
+      }),
+    };
   }
 
   // Administrators ---------------------------------------------------------------------------

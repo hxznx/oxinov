@@ -4,7 +4,7 @@ import { useActionState } from 'react';
 import { reviewPayment, type StoreFormState } from '@/app/store-actions';
 
 /** Approve (unlocks the course, sends the thank-you email) or reject with a reason the learner sees. */
-export function ReviewForms({ slug, tenantId, paymentId }: { slug: string; tenantId: string; paymentId: string }) {
+export function ReviewForms({ slug, tenantId, paymentId, blockedBy }: { slug: string; tenantId: string; paymentId: string; blockedBy: string | null }) {
   const [state, action, pending] = useActionState<StoreFormState, FormData>(reviewPayment, {});
   const hidden = (
     <>
@@ -18,9 +18,10 @@ export function ReviewForms({ slug, tenantId, paymentId }: { slug: string; tenan
       <form action={action} className="grid gap-2">
         {hidden}
         <input type="hidden" name="decision" value="approve" />
-        <button type="submit" className="btn btn-approve justify-center font-studio" disabled={pending}>
+        <button type="submit" className="btn btn-approve justify-center font-studio" disabled={pending || blockedBy !== null}>
           {pending ? 'Saving…' : 'Approve · unlock'}
         </button>
+        {blockedBy ? <p className="text-sm tone-danger">Approval is blocked: this bank transaction ID is on another payment. Check with the learner, then reject.</p> : null}
       </form>
       <form action={action} className="grid gap-2">
         {hidden}

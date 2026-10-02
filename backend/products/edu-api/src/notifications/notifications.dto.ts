@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID, Length, Matches } from 'class-validator';
+import { IsOptional, IsString, IsUUID, Length, Matches, IsBoolean } from 'class-validator';
 
 export const NOTIFICATION_KINDS = ['PAYMENT_APPROVED', 'PAYMENT_REJECTED', 'RENEWAL_DUE', 'ACCESS_ENDED', 'NOTICE'] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
@@ -30,6 +30,11 @@ export class SendNoticeDto {
   @Matches(/^\/[^/\\]/, { message: 'linkPath must be a path inside Oxinov Edu, starting with a single /' })
   linkPath?: string;
 
+  @ApiPropertyOptional({ description: 'Also email it, within the daily allowance (FR-COMM-705); the store workspace only.' })
+  @IsOptional()
+  @IsBoolean()
+  email?: boolean;
+
   @ApiPropertyOptional({ format: 'uuid', description: 'Only the learners enrolled in this offering; every member when omitted.' })
   @IsOptional()
   @IsUUID()
@@ -38,4 +43,13 @@ export class SendNoticeDto {
 
 export class NoticeSentDto {
   @ApiProperty({ description: 'How many members received it.' }) recipients: number;
+  @ApiProperty({ description: 'Emails sent now, within today’s allowance (FR-COMM-705).' }) emailedNow: number;
+  @ApiProperty({ description: 'Emails waiting for the next day’s allowance; the in-app notice is already there.' }) emailWaiting: number;
+}
+
+export class EmailAllowanceDto {
+  @ApiProperty({ description: 'Emails a day that reminders and notices may use.' }) limit: number;
+  @ApiProperty() used: number;
+  @ApiProperty() remaining: number;
+  @ApiProperty({ description: 'Notices can be emailed in this workspace (the store workspace only).' }) emailAvailable: boolean;
 }

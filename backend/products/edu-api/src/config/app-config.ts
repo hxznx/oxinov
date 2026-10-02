@@ -33,6 +33,11 @@ export interface MailConfig {
   readonly from: string;
   /** Support address printed in every learner email. */
   readonly supportAddress: string;
+  /**
+   * Emails a day that reminders and notices may use (FR-COMM-705), so sign-in codes and payment emails always
+   * fit in the provider's daily allowance (Brevo's free plan sends 300 a day).
+   */
+  readonly bulkDailyLimit: number;
 }
 
 /** Hourly sweeps inside the API process: renewal reminders (FR-COMM-704) and due account deletions (FR-PRIV-3202). */
@@ -73,7 +78,11 @@ export function loadMailConfig(env: NodeJS.ProcessEnv): MailConfig {
   const from = env.MAIL_FROM?.trim() || 'no-reply@oxinov.com';
   const supportAddress = env.MAIL_SUPPORT_ADDRESS?.trim() || 'support@oxinov.com';
   if (!EMAIL.test(from) || !EMAIL.test(supportAddress)) throw new Error('Invalid configuration: MAIL_FROM and MAIL_SUPPORT_ADDRESS must be email addresses');
-  return { ...(smtpHost ? { smtpHost } : {}), smtpPort, from, supportAddress };
+  const bulkDailyLimit = Number(env.MAIL_BULK_DAILY_LIMIT?.trim() || '150');
+  if (!Number.isInteger(bulkDailyLimit) || bulkDailyLimit < 0 || bulkDailyLimit > 100_000) {
+    throw new Error('Invalid configuration: MAIL_BULK_DAILY_LIMIT must be a whole number from 0 to 100000');
+  }
+  return { ...(smtpHost ? { smtpHost } : {}), smtpPort, from, supportAddress, bulkDailyLimit };
 }
 
 const PROVIDER_URLS = {

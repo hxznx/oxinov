@@ -92,14 +92,17 @@ export default async function ReviewPaymentPage({ params }: Props) {
             </h2>
             <ul className="grid gap-1 text-sm">
               {item.checks.map((check) => (
-                <li key={check.text}>
-                  <span aria-hidden="true">{check.ok ? '✓ ' : '⚠ '}</span>
+                <li key={check.text} className={check.level === 'block' ? 'tone-danger font-semibold' : check.level === 'warn' ? 'tone-warning' : undefined}>
+                  <span aria-hidden="true">{check.level === 'ok' ? '✓ ' : check.level === 'block' ? '⛔ ' : '⚠ '}</span>
+                  <span className="sr-only">{check.level === 'ok' ? 'Passed: ' : check.level === 'block' ? 'Blocks approval: ' : 'Check: '}</span>
                   {check.text}
                 </li>
               ))}
             </ul>
           </section>
-          {item.status === 'PENDING_REVIEW' ? <ReviewForms slug={slug} tenantId={workspace.id} paymentId={item.id} /> : null}
+          {item.status === 'PENDING_REVIEW' ? (
+            <ReviewForms slug={slug} tenantId={workspace.id} paymentId={item.id} blockedBy={item.checks.find((check) => check.level === 'block')?.text ?? null} />
+          ) : null}
         </aside>
     </div>
   );

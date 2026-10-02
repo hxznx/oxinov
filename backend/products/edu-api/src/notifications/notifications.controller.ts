@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiNoContentResponse, ApiOkResponse, ApiTags } from '@ne
 import { CurrentTenant, CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser, TenantScope } from '../common/request';
 import { TenantGuard } from '../tenancy/tenant.guard';
-import { NotificationListDto, NoticeSentDto, SendNoticeDto } from './notifications.dto';
+import { NotificationListDto, NoticeSentDto, SendNoticeDto, EmailAllowanceDto } from './notifications.dto';
 import { NotificationsService } from './notifications.service';
 
 /** In-app notifications (FR-COMM-704): the caller's own, and notices from administrators. */
@@ -34,7 +34,14 @@ export class NotificationsController {
     await this.notifications.markRead(scope, user, notificationId);
   }
 
-  /** Administrators send a notice to every member of the workspace (in-app only). */
+  /** Today's email allowance for notices (FR-COMM-705), shown before sending. */
+  @Get('notices/email-allowance')
+  @ApiOkResponse({ type: EmailAllowanceDto })
+  async allowance(@CurrentTenant() scope: TenantScope): Promise<{ data: EmailAllowanceDto }> {
+    return { data: await this.notifications.emailAllowance(scope) };
+  }
+
+  /** Administrators send a notice to the workspace's members, in-app and optionally by email. */
   @Post('notices')
   @ApiOkResponse({ type: NoticeSentDto })
   async send(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser, @Body() body: SendNoticeDto): Promise<{ data: NoticeSentDto }> {

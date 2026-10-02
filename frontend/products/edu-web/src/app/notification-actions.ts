@@ -38,7 +38,7 @@ export async function readAllNotifications(form: FormData): Promise<void> {
 }
 
 /** Studio: a notice to every member of the workspace (design screen 8). */
-export async function sendNotice(_: FormState, form: FormData): Promise<FormState & { sent?: number }> {
+export async function sendNotice(_: FormState, form: FormData): Promise<FormState & { sent?: number; emailedNow?: number; emailWaiting?: number }> {
   const [slug, tenantId] = [field(form, 'slug'), field(form, 'tenantId')];
   if (!SLUG.test(slug) || !UUID.test(tenantId)) return { error: 'This page is out of date. Reload and try again.' };
   const title = field(form, 'title');
@@ -51,8 +51,15 @@ export async function sendNotice(_: FormState, form: FormData): Promise<FormStat
   const linkPath = link ? safeLinkPath(link) : undefined;
   if (link && !linkPath) return { error: 'The link must be a page on Oxinov Edu, starting with /, for example /o/japanese-n5.' };
   try {
-    const result = await eduApi.sendNotice(await token(`/w/${slug}/studio`), tenantId, { title, body, ...(linkPath ? { linkPath } : {}), ...(courseId ? { courseId } : {}) });
-    return { error: undefined, sent: result.recipients };
+    const email = form.get('email') === 'on';
+    const result = await eduApi.sendNotice(await token(`/w/${slug}/studio`), tenantId, {
+      title,
+      body,
+      ...(linkPath ? { linkPath } : {}),
+      ...(courseId ? { courseId } : {}),
+      ...(email ? { email: true } : {}),
+    });
+    return { error: undefined, sent: result.recipients, emailedNow: result.emailedNow, emailWaiting: result.emailWaiting };
   } catch (error) {
     return { error: error instanceof EduApiError ? error.message : 'Oxinov Edu is unavailable. Try again shortly.' };
   }

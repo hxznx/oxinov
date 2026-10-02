@@ -84,6 +84,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Store home refresh, 2026-10-03:** following design screen 1, the header has **✦ Ask OXI** (hidden on phones, where the home page card offers it), the hero names live classes and certificates, the store home lists the next three live classes of published offerings with times in the visitor's zone and no meeting links (`upcomingLive` on `GET /v1/store`), and two cards close the page: "Not sure where to start? Ask OXI" and "Recruit your squad" (invite friends). Mission paths wait for bundles.
 
+**Payment checks and the email allowance, built 2026-10-03:** the bank receipt form asks for the amount paid and has "I wrote {reference} in the remarks" (ticked by default). The payment review screen lists checks with ✓, ⚠, and ⛔; a ⛔ (transaction ID on another payment) disables **Approve · unlock** with a line saying why. Disabled buttons are now dimmed across the app. Studio's notice form adds "Also send it by email" with today's remaining notice emails, and the result says how many went now and how many go tomorrow.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

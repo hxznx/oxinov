@@ -2,10 +2,9 @@ import { Inject, Injectable, type OnApplicationBootstrap, type OnModuleDestroy }
 import { LOGGER, type JsonLogger } from '@oxinov/server-kit';
 import { APP_CONFIG, type AppConfig } from '../config/app-config';
 import { DatabaseContext } from '../database/database-context.service';
-import { MAILER, type Mailer } from './mailer';
+import { NoticeMailer } from './notice-mailer.service';
 import { NotificationsService } from './notifications.service';
 import { accessEnds, reminderKey, reminderStage } from './renewal-rules';
-import { renewalMail } from './templates';
 
 const DAY = 24 * 60 * 60 * 1000;
 /** First sweep a minute after start, so a deploy never delays sign-in or health checks. */
@@ -30,7 +29,7 @@ export class RenewalRemindersService implements OnApplicationBootstrap, OnModule
   constructor(
     private readonly db: DatabaseContext,
     @Inject(APP_CONFIG) private readonly config: AppConfig,
-    @Inject(MAILER) private readonly mailer: Mailer,
+    private readonly mailer: NoticeMailer,
     @Inject(LOGGER) private readonly logger: JsonLogger,
   ) {}
 
@@ -81,18 +80,17 @@ export class RenewalRemindersService implements OnApplicationBootstrap, OnModule
       .filter((entry) => entry.stage !== null);
     if (due.length === 0) return result;
 
-    const web = this.config.payments.webUrl;
     for (const entry of due) {
       const stage = entry.stage!;
       // Each reminder commits on its own, so one failure never blocks the rest.
-      const mail = await this.db.run({ tenantId }, async (tx) => {
+      const created = await this.db.run({ tenantId }, async (tx) => {
         const [course, profile] = await Promise.all([
           tx.course.findFirst({ where: { id: entry.courseId, tenantId }, select: { slug: true, publishedVersion: { select: { title: true } } } }),
           tx.userProfile.findUnique({ where: { id: entry.userId }, select: { email: true } }),
         ]);
         const title = course?.publishedVersion?.title ?? 'your course';
         const renewPath = course ? `/o/${course.slug}` : '/';
-        const created = await NotificationsService.create(tx, {
+        return NotificationsService.create(tx, {
           tenantId,
           userId: entry.userId,
           kind: stage === 'ENDED' ? 'ACCESS_ENDED' : 'RENEWAL_DUE',
@@ -106,24 +104,13 @@ export class RenewalRemindersService implements OnApplicationBootstrap, OnModule
               : 'Renew now and the new time is added to the end of your current plan.',
           linkPath: renewPath,
           dedupeKey: reminderKey(stage, entry.courseId, entry.endsAt),
+          // Reminders before the end are also emailed, within the daily allowance (FR-COMM-705).
+          emailWanted: stage !== 'ENDED' && Boolean(profile?.email),
         });
-        if (!created) return null;
-        return stage === 'ENDED' || !profile?.email ? { sent: false } : { sent: true, to: profile.email, title, renewUrl: `${web}${renewPath}` };
       });
-      if (!mail) continue;
-      result.notified += 1;
-      if (mail.sent && mail.to && mail.title && mail.renewUrl) {
-        try {
-          await this.mailer.send(
-            renewalMail({ to: mail.to, courseTitle: mail.title, endsAt: entry.endsAt, daysLeft: stage === 'DAYS_1' ? 1 : 7, renewUrl: mail.renewUrl, support: this.config.mail.supportAddress }),
-          );
-          result.emailed += 1;
-        } catch (error) {
-          // The in-app notice stands; email never decides the outcome and is not retried.
-          this.logger.event('warn', 'mail.failed', { trigger: 'renewal.reminder', error: error instanceof Error ? error.name : 'unknown' });
-        }
-      }
+      if (created) result.notified += 1;
     }
+    result.emailed = await this.mailer.flush(tenantId, now);
     return result;
   }
 }
