@@ -38,7 +38,13 @@ export default async function StudioLayout({ children, params }: Props) {
         { href: `${base}/marketing`, label: 'Marketing', glyph: '⇪', tone: '--ox-color-brand2' },
       ],
     },
-    { title: 'SYSTEM', items: [{ href: `${base}/settings`, label: 'Settings', glyph: '⚙', tone: '--ox-color-text-muted' }] },
+    {
+      title: 'SYSTEM',
+      items: [
+        { href: `${base}/team`, label: 'Team and roles', glyph: '⛨', tone: '--ox-color-danger' },
+        { href: `${base}/settings`, label: 'Settings', glyph: '⚙', tone: '--ox-color-text-muted' },
+      ],
+    },
   ];
 
   return (

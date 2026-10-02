@@ -482,6 +482,18 @@ function eduApiBaseUrl(): string {
   return (baseUrl = value.replace(/\/$/, ''));
 }
 
+/** One line of the workspace audit log (design screen 22). */
+export interface AuditEvent {
+  id: string;
+  action: string;
+  targetType: string;
+  targetId: string | null;
+  reason: string | null;
+  metadata: Record<string, unknown>;
+  actor: string | null;
+  createdAt: string;
+}
+
 /** In-app notifications (FR-COMM-704). Mirrors backend/products/edu-api/src/notifications/notifications.dto.ts. */
 export type NotificationKind = 'PAYMENT_APPROVED' | 'PAYMENT_REJECTED' | 'RENEWAL_DUE' | 'ACCESS_ENDED' | 'NOTICE';
 
@@ -698,6 +710,9 @@ export const eduApi = {
   revokeInvite: (token: string, tenantId: string, inviteId: string) =>
     request<Invite>(token, `${tenantPath(tenantId)}/invites/${encodeURIComponent(inviteId)}`, { method: 'DELETE' }),
   members: (token: string, tenantId: string) => request<Member[]>(token, `${tenantPath(tenantId)}/members`),
+  updateMember: (token: string, tenantId: string, userId: string, body: { role?: TenantRole; status?: 'ACTIVE' | 'SUSPENDED' }) =>
+    request<Member>(token, `${tenantPath(tenantId)}/members/${encodeURIComponent(userId)}`, { method: 'PATCH', body }),
+  auditEvents: (token: string, tenantId: string) => request<AuditEvent[]>(token, `${tenantPath(tenantId)}/audit-events`),
   redeemInvite: (token: string, code: string) => request<Workspace>(token, '/v1/invites/redeem', { method: 'POST', body: { code } }),
   authoredCourses: (token: string, tenantId: string) => request<AuthoredCourse[]>(token, `${tenantPath(tenantId)}/authoring/courses`),
   createCourse: (

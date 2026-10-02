@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { CurrentTenant, CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser, TenantScope } from '../common/request';
 import { RequireRole, TenantGuard } from '../tenancy/tenant.guard';
-import { CreateInviteDto, InviteDto, MemberDto, RedeemInviteDto } from './invites.dto';
+import { AuditEventDto, CreateInviteDto, InviteDto, MemberDto, RedeemInviteDto, UpdateMemberDto } from './invites.dto';
 import { InvitesService } from './invites.service';
 import { WorkspaceDto } from './tenants.dto';
 
@@ -49,6 +49,26 @@ export class TenantInvitesController {
   @ApiOkResponse({ type: [MemberDto] })
   async members(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser): Promise<{ data: MemberDto[] }> {
     return { data: await this.invites.members(scope, user) };
+  }
+
+  /** Change a member's role or suspend and restore access (owners for administrators and owners). */
+  @Patch('members/:userId')
+  @RequireRole('ADMIN')
+  @ApiOkResponse({ type: MemberDto })
+  async updateMember(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Body() body: UpdateMemberDto,
+  ): Promise<{ data: MemberDto }> {
+    return { data: await this.invites.updateMember(scope, user, userId, body) };
+  }
+
+  @Get('audit-events')
+  @RequireRole('ADMIN')
+  @ApiOkResponse({ type: [AuditEventDto] })
+  async auditLog(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser): Promise<{ data: AuditEventDto[] }> {
+    return { data: await this.invites.auditLog(scope, user) };
   }
 }
 

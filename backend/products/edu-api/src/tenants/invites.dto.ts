@@ -52,3 +52,24 @@ export class MemberDto {
   @ApiProperty() status: string;
   @ApiProperty() joinedAt: Date;
 }
+
+const MEMBER_ROLES = ['LEARNER', 'INSTRUCTOR', 'ADMIN', 'OWNER'] as const;
+const MEMBER_STATUSES = ['ACTIVE', 'SUSPENDED'] as const;
+
+/** Change one member's role or access (design screen 22). Send at least one field. */
+export class UpdateMemberDto {
+  @ApiPropertyOptional({ enum: MEMBER_ROLES }) @IsOptional() @IsIn(MEMBER_ROLES) role?: (typeof MEMBER_ROLES)[number];
+  @ApiPropertyOptional({ enum: MEMBER_STATUSES }) @IsOptional() @IsIn(MEMBER_STATUSES) status?: (typeof MEMBER_STATUSES)[number];
+}
+
+/** One line of the workspace audit log (design screen 22). */
+export class AuditEventDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty() action: string;
+  @ApiProperty() targetType: string;
+  @ApiProperty({ nullable: true, type: String }) targetId: string | null;
+  @ApiProperty({ nullable: true, type: String }) reason: string | null;
+  @ApiProperty({ type: Object }) metadata: unknown;
+  @ApiProperty({ nullable: true, type: String, description: 'Name or email of the person who did it; null for automatic actions.' }) actor: string | null;
+  @ApiProperty({ format: 'date-time' }) createdAt: Date;
+}

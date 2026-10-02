@@ -7,7 +7,8 @@ import { DatabaseContext } from '../database/database-context.service';
 import { Prisma } from '../generated/prisma/client';
 import { hasRole } from '../tenancy/roles';
 import type { WorkspaceDto } from './tenants.dto';
-import type { CreateInviteDto, InviteDto, MemberDto } from './invites.dto';
+import type { AuditEventDto, CreateInviteDto, InviteDto, MemberDto, UpdateMemberDto } from './invites.dto';
+import { memberChangeProblem } from './member-rules';
 
 /** 31 characters without look-alikes (0/O, 1/I/L); 31^8 ≈ 8.5 × 10^11 possible codes. */
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -222,6 +223,61 @@ export class InvitesService {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return join();
       throw error;
     }
+  }
+
+  /**
+   * Changes one member's role or access (design screen 22). The owner rows are locked first, so two owners
+   * demoting each other at once can never leave the workspace without an active owner.
+   */
+  async updateMember(scope: TenantScope, user: AuthUser, targetUserId: string, input: UpdateMemberDto): Promise<MemberDto> {
+    if (!input.role && !input.status) throw Errors.conflict('Choose a new role or access.');
+    return this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
+      await tx.$queryRaw`SELECT id FROM tenant_memberships WHERE tenant_id = ${scope.tenantId}::uuid AND role = 'OWNER' FOR UPDATE`;
+      const target = await tx.tenantMembership.findUnique({
+        where: { tenantId_userId: { tenantId: scope.tenantId, userId: targetUserId } },
+        select: { id: true, role: true, status: true, createdAt: true, user: { select: { id: true, displayName: true, email: true } } },
+      });
+      if (!target) throw Errors.notFound('Member');
+      const activeOwners = await tx.tenantMembership.count({ where: { tenantId: scope.tenantId, role: 'OWNER', status: 'ACTIVE' } });
+      const problem = memberChangeProblem({
+        actorUserId: user.userId,
+        actorRole: scope.role,
+        target: { userId: targetUserId, role: target.role, status: target.status },
+        ...(input.role ? { role: input.role } : {}),
+        ...(input.status ? { status: input.status } : {}),
+        activeOwners,
+      });
+      if (problem) throw Errors.forbidden(problem);
+      const updated = await tx.tenantMembership.update({
+        where: { id: target.id },
+        data: { ...(input.role ? { role: input.role } : {}), ...(input.status ? { status: input.status } : {}) },
+        select: { role: true, status: true },
+      });
+      await tx.auditEvent.create({
+        data: {
+          tenantId: scope.tenantId,
+          actorUserId: user.userId,
+          action: 'tenant.member.updated',
+          targetType: 'user',
+          targetId: targetUserId,
+          metadata: { from: { role: target.role, status: target.status }, to: { role: updated.role, status: updated.status } },
+        },
+      });
+      return { userId: target.user.id, displayName: target.user.displayName, email: target.user.email, role: updated.role, status: updated.status, joinedAt: target.createdAt };
+    });
+  }
+
+  /** The newest 100 audit events of the workspace, with who did each (design screen 22). Administrators only. */
+  auditLog(scope: TenantScope, user: AuthUser): Promise<AuditEventDto[]> {
+    return this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
+      const rows = await tx.auditEvent.findMany({
+        where: { tenantId: scope.tenantId },
+        orderBy: { createdAt: 'desc' },
+        take: 100,
+        select: { id: true, action: true, targetType: true, targetId: true, reason: true, metadata: true, createdAt: true, actor: { select: { displayName: true, email: true } } },
+      });
+      return rows.map(({ actor, ...row }) => ({ ...row, actor: actor ? (actor.displayName ?? actor.email) : null }));
+    });
   }
 
   /** The workspace's people with their roles (Classroom-style "People"). Administrators only. */
