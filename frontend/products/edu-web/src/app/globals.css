@@ -109,6 +109,10 @@
   }
   .btn-primary { background: var(--ox-color-brand); color: var(--ox-color-on-neon); }
   .btn-primary:hover { box-shadow: var(--ox-glow-brand); }
+  /* Touch screens: every button and field is at least 44 px tall (FR-MOBILE-1504, WCAG 2.5.5). */
+  @media (pointer: coarse) {
+    .btn, .field, .store-chip { min-height: 44px; }
+  }
   /* A button that cannot be used now looks it: dimmed, no glow, no pointer. */
   .btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
   .btn-secondary {

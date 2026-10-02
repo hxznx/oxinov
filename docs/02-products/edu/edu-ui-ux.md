@@ -88,6 +88,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Faster course building, built 2026-10-03:** the course builder's Review panel lists a publish checklist (✕ needed before review, ⚠ suggested, ✓ done) and keeps Send for review and Approve and publish disabled while something is needed. Each chapter has **Paste many links at once** with the result ("Added 5 lessons", then each refused line and why). **Duplicate as a template** sits beside Plans and prices and opens the copy with a note that it has no learners, plans, or sales.
 
+**Installable app, built 2026-10-03:** Oxinov Edu can be added to a phone's home screen and opens full screen with the Oxinov icon; **⇩ Install the app** appears in the store hero when the browser can install it (on iPhone Safari it explains Share › Add to Home Screen) and disappears once installed. Without a connection, pages show "You are offline" with Try again instead of a browser error. On touch screens every button and field is at least 44 px tall.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

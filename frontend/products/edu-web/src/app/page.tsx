@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { EduHeader } from '@/components/EduHeader';
+import { InstallApp } from '@/components/InstallApp';
 import { LocalTime } from '@/components/LocalTime';
 import { OfferingCard } from '@/components/OfferingCard';
 import { auth } from '@/lib/auth.ts';
@@ -119,6 +120,7 @@ export default async function StoreHome({ searchParams }: Props) {
                     Oxinov Studio
                   </Link>
                 ) : null}
+                <InstallApp />
               </div>
               <p className="flex flex-wrap gap-x-5 gap-y-1 text-hud text-xs tracking-widest text-muted">
                 <span>

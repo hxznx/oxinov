@@ -1,6 +1,7 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Chakra_Petch, Inter, JetBrains_Mono, Noto_Sans_Devanagari, Orbitron, Rajdhani, Share_Tech_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { ServiceWorker } from '@/components/InstallApp';
 import { SiteFooter } from '@/components/SiteFooter';
 import { themeInitScript } from '@/components/ThemeToggle';
 import './globals.css';
@@ -20,9 +21,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL?.replace(/\/$/, '') || 'https://edu.oxinov.com'),
   title: { default: 'Oxinov Edu', template: '%s · Oxinov Edu' },
   description: 'Oxinov Edu: courses, lessons, and practice exams from your school, with your one Oxinov account.',
-  icons: { icon: '/brand/oxinov-symbol.svg' },
+  icons: { icon: '/brand/oxinov-symbol.svg', apple: '/icons/apple-touch-icon.png' },
+  // Installable web app (FR-MOBILE-1504): full screen from the home screen icon, on iPhone too.
+  appleWebApp: { capable: true, title: 'Oxinov Edu', statusBarStyle: 'black-translucent' },
   robots: { index: false, follow: false },
 };
+
+export const viewport: Viewport = { themeColor: '#07070D', width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const fonts = [orbitron, rajdhani, inter, devanagari, jetbrains, chakra, techMono].map((font) => font.variable).join(' ');
@@ -37,6 +42,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         {children}
         <SiteFooter />
+        <ServiceWorker />
       </body>
     </html>
   );
