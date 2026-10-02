@@ -98,3 +98,39 @@ export function cardTag(offering: Pick<StoreOffering, 'free' | 'freeLessonCount'
   if (offering.freeLessonCount > 0) return 'Free preview';
   return 'Syllabus open';
 }
+
+export type ShareFormat = 'fb' | 'square' | 'story';
+/** Pixel sizes of the share images (design screen 19): Facebook link post, Instagram square, story or status. */
+export const SHARE_SIZES: Record<ShareFormat, { width: number; height: number; label: string }> = {
+  fb: { width: 1200, height: 630, label: 'Facebook post' },
+  square: { width: 1080, height: 1080, label: 'Instagram square' },
+  story: { width: 1080, height: 1920, label: 'Story, Reel, or WhatsApp status' },
+};
+
+export function parseShareFormat(value: string | null | undefined): ShareFormat {
+  return value === 'square' || value === 'story' ? value : 'fb';
+}
+
+/**
+ * A ready caption for a share post (design screen 19), from the offering's own words and price. It never
+ * promises jobs, visas, or results; the author edits it before posting.
+ */
+export function shareCaption(offering: Pick<StoreOffering, 'title' | 'summary' | 'free' | 'hasPlans' | 'fromMinor' | 'freeLessonCount' | 'category'>, coupon?: string): string {
+  const price = offering.free ? 'Free to learn.' : offering.hasPlans ? `Plans from NPR ${(offering.fromMinor / 100).toLocaleString('en-US')}.` : '';
+  const preview = offering.free ? 'Start now:' : offering.freeLessonCount > 0 ? 'Watch the free lesson today:' : 'Read the syllabus:';
+  const tags = ['#Oxinov', '#Nepal', offering.category === 'LANGUAGES' ? '#LearnLanguages' : offering.category === 'TECHNOLOGY' ? '#Tech' : '#Learning'];
+  return [
+    `${offering.title} on Oxinov.`,
+    offering.summary,
+    [price, coupon ? `Use code ${coupon} at checkout.` : ''].filter(Boolean).join(' '),
+    preview,
+    tags.join(' '),
+  ]
+    .filter((line) => line.trim().length > 0)
+    .join('\n');
+}
+
+/** The offering link with the channel named, so later analytics can tell which post brought a visit. */
+export function trackedLink(origin: string, slug: string, channel: string): string {
+  return `${origin.replace(/\/$/, '')}/o/${encodeURIComponent(slug)}?utm_source=${encodeURIComponent(channel)}&utm_medium=social&utm_campaign=share-kit`;
+}

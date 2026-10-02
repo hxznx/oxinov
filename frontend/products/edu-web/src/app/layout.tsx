@@ -16,6 +16,8 @@ const chakra = Chakra_Petch({ subsets: ['latin'], weight: ['500', '600', '700'],
 const techMono = Share_Tech_Mono({ subsets: ['latin'], weight: '400', variable: '--font-techmono', display: 'swap' });
 
 export const metadata: Metadata = {
+  // Absolute addresses for link previews (Open Graph images of offering pages).
+  metadataBase: new URL(process.env.APP_URL?.replace(/\/$/, '') || 'https://edu.oxinov.com'),
   title: { default: 'Oxinov Edu', template: '%s · Oxinov Edu' },
   description: 'Oxinov Edu: courses, lessons, and practice exams from your school, with your one Oxinov account.',
   icons: { icon: '/brand/oxinov-symbol.svg' },

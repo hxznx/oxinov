@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { StoreOffering } from './edu-api.ts';
-import { cardGlyph, cardTag, isIntellectualProperty, parseKind, storeRails } from './storefront.ts';
+import { cardGlyph, cardTag, isIntellectualProperty, parseKind, parseShareFormat, shareCaption, storeRails, trackedLink } from './storefront.ts';
 
 const offering = (overrides: Partial<StoreOffering>): StoreOffering => ({
   id: overrides.slug ?? 'x',
@@ -74,5 +74,20 @@ describe('store helpers (ADR-028)', () => {
     assert.equal(parseKind('IDEA'), 'IDEA');
     assert.equal(parseKind('idea'), undefined);
     assert.equal(parseKind(undefined), undefined);
+  });
+
+  it('writes a share caption from the offering, with an optional coupon', () => {
+    const caption = shareCaption(offering({ title: 'Japanese JLPT N5', summary: 'Hiragana to first kanji.' }), 'DASHAIN25');
+    assert.equal(
+      caption,
+      'Japanese JLPT N5 on Oxinov.\nHiragana to first kanji.\nPlans from NPR 5,000. Use code DASHAIN25 at checkout.\nWatch the free lesson today:\n#Oxinov #Nepal #LearnLanguages',
+    );
+    assert.match(shareCaption(offering({ free: true, hasPlans: false, category: 'TECHNOLOGY' })), /Free to learn\.\nStart now:\n#Oxinov #Nepal #Tech$/);
+  });
+
+  it('makes tracked links and reads share formats', () => {
+    assert.equal(trackedLink('https://edu.oxinov.com/', 'jlpt-n5', 'facebook'), 'https://edu.oxinov.com/o/jlpt-n5?utm_source=facebook&utm_medium=social&utm_campaign=share-kit');
+    assert.equal(parseShareFormat('story'), 'story');
+    assert.equal(parseShareFormat('anything'), 'fb');
   });
 });

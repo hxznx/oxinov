@@ -66,6 +66,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Checkout and receipt, built 2026-10-02:** The bank QR page follows design screens 3 and 15 at Calm intensity: a step bar (Plan, Pay, Review), the QR with **Save QR to gallery**, the account name and number, large Amount and Remarks tiles with copy buttons, the order summary, the receipt form, a WhatsApp help button when the help contact is a WhatsApp number, and a "card payment coming soon" row. In review, needs a fix, approved, and closed each have their own panel. An approved payment links to a printable white **Payment receipt** (design screen 26) that prints without the site header, marked "not a tax invoice" until tax details are confirmed.
 
+**Share kit, built 2026-10-02:** Studio › Marketing (design screen 19) picks a published offering and shows its post image in three sizes (Facebook 1200×630, Instagram square 1080×1080, story or WhatsApp status 1080×1920), drawn on the server in the store style with **Download image**; a ready caption from the offering's own words and price, editable, with an optional active coupon; and a tracked link per channel (Facebook, WhatsApp, Telegram, LinkedIn, Viber open with the post ready; Instagram and TikTok get the image and a link to copy). The Facebook-size image is also the Open Graph preview of every offering page, so a pasted link shows the picture. AI-written captions wait for the AI gateway (ADR-014).
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

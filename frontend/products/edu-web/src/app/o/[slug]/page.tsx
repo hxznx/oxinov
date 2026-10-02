@@ -35,7 +35,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const offering = await loadOffering(slug);
-    return { title: offering.title, description: offering.summary };
+    // Link previews on Facebook, WhatsApp, and Messenger show the share picture (design screen 19).
+    const image = { url: `/o/${slug}/share-image?format=fb`, width: 1200, height: 630, alt: offering.title };
+    return {
+      title: offering.title,
+      description: offering.summary,
+      openGraph: { type: 'website', siteName: 'Oxinov Edu', title: offering.title, description: offering.summary, url: `/o/${slug}`, images: [image] },
+      twitter: { card: 'summary_large_image', title: offering.title, description: offering.summary, images: [image.url] },
+    };
   } catch {
     return { title: 'Offering' };
   }
