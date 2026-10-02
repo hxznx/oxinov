@@ -75,7 +75,7 @@ export class CertificatesService {
       if (!(await hasActiveEntitlement(tx, scope.tenantId, user.userId, courseId))) throw Errors.notEntitled();
       // Uploaded video and audio complete by playing them; text, documents, and YouTube or Drive lessons,
       // whose players Oxinov cannot observe, are marked complete by the learner (ADR-028 point 6).
-      if (lesson.mediaAssetId !== null) {
+      if (!completedByHand(lesson)) {
         throw Errors.conflict('Video and audio lessons are completed by playing them.');
       }
       await tx.lessonCompletion.createMany({
@@ -254,7 +254,7 @@ export class CertificatesService {
       where: { id: courseId, tenantId, status: 'PUBLISHED' },
       select: {
         publishedVersion: {
-          select: { sections: { select: { lessons: { select: { id: true, title: true, kind: true, isRequired: true, lineageId: true, mediaAssetId: true } } } } },
+          select: { sections: { select: { lessons: { select: { id: true, title: true, kind: true, isRequired: true, lineageId: true, mediaAssetId: true, externalSource: true } } } } },
         },
       },
     });
@@ -283,7 +283,7 @@ export class CertificatesService {
     const doneLineages = new Set(completions.map((c) => c.lessonLineageId));
     const doneMedia = new Set(media.map((m) => m.mediaAssetId));
     const lessonDone = (lesson: (typeof lessons)[number]) =>
-      lesson.mediaAssetId !== null ? doneMedia.has(lesson.mediaAssetId) : doneLineages.has(lesson.lineageId);
+      completedByHand(lesson) ? doneLineages.has(lesson.lineageId) : lesson.mediaAssetId !== null && doneMedia.has(lesson.mediaAssetId);
 
     const lessonItems = lessons.map((lesson) => ({ id: lesson.id, title: lesson.title, kind: lesson.kind, required: lesson.isRequired, completed: lessonDone(lesson) }));
     const examItems = exams.map((exam) => ({ id: exam.id, title: exam.title, passed: exam.attempts.some((a) => a.results[0]?.passed === true) }));
@@ -310,7 +310,7 @@ export class CertificatesService {
     if (!course?.publishedVersionId) throw Errors.notFound('Course');
     const lesson = await tx.lesson.findFirst({
       where: { id: lessonId, tenantId, section: { courseVersionId: course.publishedVersionId } },
-      select: { kind: true, lineageId: true, mediaAssetId: true },
+      select: { kind: true, lineageId: true, externalSource: true },
     });
     if (!lesson) throw Errors.notFound('Lesson');
     return lesson;
@@ -324,4 +324,12 @@ export class CertificatesService {
     const tenant = await tx.tenant.findUnique({ where: { id: tenantId }, select: { name: true } });
     return tenant?.name ?? 'Oxinov';
   }
+}
+
+/**
+ * Text and document lessons, and lessons played from YouTube or Google Drive (whose playback Oxinov cannot
+ * observe), are marked complete by the learner; Oxinov-hosted video and audio complete by playing them.
+ */
+function completedByHand(lesson: { kind: string; externalSource: string | null }): boolean {
+  return lesson.kind === 'TEXT' || lesson.kind === 'DOCUMENT' || lesson.externalSource !== null;
 }
