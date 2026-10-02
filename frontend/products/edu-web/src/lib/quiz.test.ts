@@ -1,7 +1,7 @@
 // Unit tests for quiz builder helpers. Run: pnpm --filter @oxinov/edu-web test
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { answerSummary, questionFromForm } from './quiz.ts';
+import { answerSummary, questionFromForm, quizSelection, shortPrompt } from './quiz.ts';
 
 const form = (entries: [string, string][]) => {
   const data = new FormData();
@@ -50,5 +50,28 @@ describe('answer summary', () => {
     assert.equal(answerSummary({ type: 'SINGLE_CHOICE', choices, answerKey: ['a'] }), 'Correct: ひ');
     assert.equal(answerSummary({ type: 'TRUE_FALSE', choices: [], answerKey: ['false'] }), 'Answer: False');
     assert.equal(answerSummary({ type: 'FILL_BLANK', choices: [], answerKey: ['ki', 'き'] }), 'Accepts: ki, き');
+  });
+});
+
+describe('quiz editor selection (design screen 10)', () => {
+  const question = (id: string) => ({ id, type: 'SINGLE_CHOICE' as const, prompt: id, passage: null, choices: [], answerKey: [], explanation: null, marks: 1, version: 1 });
+  const section = (id: string) => ({ id, sectionKey: id, title: id, position: 1, questionCount: 1, available: 1 });
+  const quiz = { sections: [section('s1'), section('s2')], questions: { s1: [question('a'), question('b')], s2: [question('c')] } };
+
+  it('numbers questions across sections and finds the one in the address', () => {
+    assert.deepEqual(quizSelection(quiz, { q: 'c' }), { mode: 'edit', sectionId: 's2', question: question('c'), number: 3 });
+    assert.deepEqual(quizSelection(quiz, { q: 'b' }), { mode: 'edit', sectionId: 's1', question: question('b'), number: 2 });
+  });
+
+  it('opens the add form for a known section and falls back to the first question otherwise', () => {
+    assert.deepEqual(quizSelection(quiz, { add: 's2' }), { mode: 'add', sectionId: 's2' });
+    assert.equal(quizSelection(quiz, { add: 'other', q: 'missing' }).mode, 'edit');
+    assert.deepEqual(quizSelection({ sections: [section('s1')], questions: {} }, {}), { mode: 'add', sectionId: 's1' });
+    assert.deepEqual(quizSelection({ sections: [], questions: {} }, { q: 'a' }), { mode: 'none' });
+  });
+
+  it('shortens prompts to one line', () => {
+    assert.equal(shortPrompt('Which   character\nis "ki"?'), 'Which character is "ki"?');
+    assert.equal(shortPrompt('x'.repeat(80), 10), `${'x'.repeat(9)}…`);
   });
 });

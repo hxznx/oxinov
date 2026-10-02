@@ -30,8 +30,12 @@ export function QuestionForm({ hidden, question, onDone }: Props) {
       setFormKey((key) => key + 1);
     }
     if (result.saved) {
-      // Drop an earlier error message carried in the address.
-      if (window.location.search) router.replace(pathname, { scroll: false });
+      // Drop an earlier error message carried in the address; keep the selected question.
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('error')) {
+        params.delete('error');
+        router.replace(params.size > 0 ? `${pathname}?${params}` : pathname, { scroll: false });
+      }
       onDone?.();
     }
     return result;
@@ -61,7 +65,7 @@ export function QuestionForm({ hidden, question, onDone }: Props) {
         <label htmlFor={id('prompt')} className="field-label">
           Question
         </label>
-        <textarea id={id('prompt')} name="prompt" className="field min-h-20" defaultValue={question?.prompt} maxLength={2000} required />
+        <textarea id={id('prompt')} name="prompt" className="field min-h-20 text-lg" defaultValue={question?.prompt} maxLength={2000} required />
       </div>
       <details open={Boolean(question?.passage)}>
         <summary className="cursor-pointer text-sm text-muted">Reading passage (optional)</summary>
@@ -72,9 +76,10 @@ export function QuestionForm({ hidden, question, onDone }: Props) {
         <fieldset className="grid gap-2">
           <legend className="field-label">Choices · mark {multiple ? 'every correct choice' : 'the correct choice'}</legend>
           {choices.map((text, index) => (
-            <div key={index} className="flex items-center gap-2">
+            <div key={index} className="flex items-center gap-3">
               <input
                 type={multiple ? 'checkbox' : 'radio'}
+                className="h-5 w-5 shrink-0 accent-[var(--ox-color-success)]"
                 name="correct"
                 value={index}
                 defaultChecked={question ? correctIds.has(question.choices[index]?.id ?? '') : false}
@@ -82,7 +87,7 @@ export function QuestionForm({ hidden, question, onDone }: Props) {
               />
               <input
                 name="choice"
-                className="field flex-1"
+                className="field flex-1 text-lg"
                 value={text}
                 maxLength={500}
                 placeholder={`Choice ${index + 1}`}
@@ -152,7 +157,7 @@ export function QuestionForm({ hidden, question, onDone }: Props) {
           {question ? 'Question updated.' : 'Question added.'}
         </p>
       ) : null}
-      <button type="submit" className="btn btn-primary justify-self-start" disabled={pending}>
+      <button type="submit" className="btn btn-primary justify-self-end font-studio" disabled={pending}>
         {pending ? 'Saving…' : question ? 'Save question' : 'Add question'}
       </button>
     </form>

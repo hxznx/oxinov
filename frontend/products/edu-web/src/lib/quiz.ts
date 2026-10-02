@@ -1,4 +1,4 @@
-import type { QuestionType, QuizQuestion } from './edu-api.ts';
+import type { QuestionType, Quiz, QuizQuestion } from './edu-api.ts';
 
 export const QUESTION_TYPES: [QuestionType, string][] = [
   ['SINGLE_CHOICE', 'One correct choice'],
@@ -43,4 +43,30 @@ export function answerSummary(question: Pick<QuizQuestion, 'type' | 'choices' | 
   if (question.type === 'TRUE_FALSE') return `Answer: ${question.answerKey[0] === 'true' ? 'True' : 'False'}`;
   const texts = question.choices.filter((choice) => question.answerKey.includes(choice.id)).map((choice) => choice.text);
   return `Correct: ${texts.join(', ')}`;
+}
+
+/** A question prompt cut to one line for the question list (design screen 10). */
+export function shortPrompt(prompt: string, max = 60): string {
+  const line = prompt.replace(/\s+/g, ' ').trim();
+  return line.length > max ? `${line.slice(0, max - 1).trimEnd()}…` : line;
+}
+
+export type QuizSelection =
+  | { mode: 'edit'; sectionId: string; question: QuizQuestion; number: number }
+  | { mode: 'add'; sectionId: string }
+  | { mode: 'none' };
+
+/**
+ * Which question the editor shows, from the address (`?q=` a question, `?add=` a section). Unknown values
+ * fall back to the first question, then to adding to the first section, so the editor is never empty while
+ * the quiz has a section.
+ */
+export function quizSelection(quiz: Pick<Quiz, 'sections' | 'questions'>, wanted: { q?: string; add?: string }): QuizSelection {
+  const numbered = quiz.sections.flatMap((section) => (quiz.questions?.[section.id] ?? []).map((question) => ({ sectionId: section.id, question })));
+  if (wanted.add && quiz.sections.some((section) => section.id === wanted.add)) return { mode: 'add', sectionId: wanted.add };
+  const index = Math.max(0, numbered.findIndex((item) => item.question.id === wanted.q));
+  const item = numbered[index];
+  if (item) return { mode: 'edit', sectionId: item.sectionId, question: item.question, number: index + 1 };
+  const first = quiz.sections[0];
+  return first ? { mode: 'add', sectionId: first.id } : { mode: 'none' };
 }

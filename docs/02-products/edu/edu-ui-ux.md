@@ -74,6 +74,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Media library, built 2026-10-02:** Studio › Media library (design screen 9) lists every YouTube video, Google Drive file, and upload with the lessons that use it, filters (All, YouTube, Google Drive, Uploads, Not used) with counts, search, **Open**, and **Copy link**; lessons link to the course builder. The lesson editor adds **Or reuse an earlier upload** for video and audio lessons. Link-health flags wait for the YouTube and Drive API connection.
 
+**Quiz editor, restyled 2026-10-02:** the quiz editor follows design screen 10: the title with status and publish actions, settings in one strip (type, time limit, pass mark, attempts, answer release, random order), the question list on the left grouped by section with written and drawn counts, and the selected question or a new one on the right (`?q=` and `?add=` keep the selection across saves). Section titles and draw counts are under **Sections**. The AI question drafts and the learner preview button wait for the AI gateway and a preview mode.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

@@ -11,6 +11,7 @@ type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ show?:
 export const metadata: Metadata = { title: 'Media library' };
 
 const KIND_TONE = { YOUTUBE: 'tone-danger', GOOGLE_DRIVE: 'tone-success', UPLOAD: 'tone-mid' } as const;
+const KIND_GLYPH = { YOUTUBE: '▶', GOOGLE_DRIVE: '▤', UPLOAD: '▣' } as const;
 const STATUS_LABEL = { UPLOADING: 'Uploading', READY: 'Ready', FAILED: 'Failed' } as const;
 
 /**
@@ -95,18 +96,25 @@ export default async function MediaLibraryPage({ params, searchParams }: Props) 
             <tbody>
               {items.map((item) => (
                 <tr key={`${item.kind}:${item.id}`}>
-                  <td className="max-w-[18rem]">
-                    <span className={`studio-status ${KIND_TONE[item.kind]}`}>{KIND_LABEL[item.kind]}</span>
-                    <span className="mt-1 block break-words font-semibold">{itemName(item)}</span>
-                    {item.upload ? (
-                      <span className="studio-sub block">
-                        {item.upload.kind === 'VIDEO' ? 'Video' : 'Audio'} · {formatBytes(item.upload.sizeBytes)}
-                        {item.upload.durationSec ? ` · ${formatDuration(item.upload.durationSec)}` : ''} ·{' '}
-                        <span className={item.upload.status === 'READY' ? 'tone-success' : 'tone-warning'}>{STATUS_LABEL[item.upload.status]}</span>
+                  <td className="max-w-[20rem]">
+                    <span className="flex items-start gap-3">
+                      <span className={`studio-icon text-hud ${KIND_TONE[item.kind]}`} aria-hidden="true">
+                        {KIND_GLYPH[item.kind]}
                       </span>
-                    ) : (
-                      <span className="studio-sub block break-all text-hud">{item.id}</span>
-                    )}
+                      <span className="grid min-w-0">
+                        <span className={`studio-status ${KIND_TONE[item.kind]}`}>{KIND_LABEL[item.kind]}</span>
+                        <span className="mt-1 block break-words font-semibold">{itemName(item)}</span>
+                        {item.upload ? (
+                          <span className="studio-sub block">
+                            {item.upload.kind === 'VIDEO' ? 'Video' : 'Audio'} · {formatBytes(item.upload.sizeBytes)}
+                            {item.upload.durationSec ? ` · ${formatDuration(item.upload.durationSec)}` : ''} ·{' '}
+                            <span className={item.upload.status === 'READY' ? 'tone-success' : 'tone-warning'}>{STATUS_LABEL[item.upload.status]}</span>
+                          </span>
+                        ) : (
+                          <span className="studio-sub block break-all text-hud">{item.id}</span>
+                        )}
+                      </span>
+                    </span>
                   </td>
                   <td>
                     {item.uses.length === 0 ? (
