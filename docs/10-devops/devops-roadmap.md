@@ -29,7 +29,7 @@ Related: [ADR-017 starter hosting and ADR-019 multi-product architecture](../04-
 
 ## Phase 1 — Go live with continuous deployment (now)
 
-1. Keycloak 26.7.4 passes the Trivy gate with reviewed, expiring exceptions for upstream libraries (done).
+1. Keycloak 26.7.5 passes the Trivy gate; the only remaining exception is a scanner false positive on the unused SQL Server driver (done 2026-10-02; upgraded from 26.7.4 with five library exceptions).
 2. Continuous deployment on k3s: planner, node bootstrap, Helm release with automatic rollback, smoke
    test, `oxctl`, `check-delivery.sh`, `rehearse-local.sh`, ADR-018, NFR-17, and the AGENTS.md rules (done).
 3. Apply the Terraform additions (backup and chart repositories, budget import) after the owner's "yes apply".

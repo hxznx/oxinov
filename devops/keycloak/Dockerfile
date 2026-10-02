@@ -2,9 +2,9 @@
 # Oxinov identity server (id.oxinov.com): Keycloak plus the reviewed email one-time-code extension (ADR-016).
 # The extension is fetched by exact release URL and SHA-256 so a changed file fails the build.
 # Keycloak stays on the minor version the extension is built for; upgrade both together.
-ARG KEYCLOAK_VERSION=26.7.4
+ARG KEYCLOAK_VERSION=26.7.5
 
-FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c AS builder
+FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}@sha256:37dbaf6f0722c9ec246335f36e1ef8b2e6cb960f7c27e0d8c615121a3d475a85 AS builder
 # Build-time options: `start --optimized` refuses to start if these differ at runtime, so set them only here.
 # The user event metrics (keycloak_user_events_total, tagged by realm and client only) feed the sign-in alerts.
 ENV KC_DB=postgres \
@@ -18,7 +18,7 @@ ADD --chown=keycloak:keycloak \
     /opt/keycloak/providers/email-otp-authenticator.jar
 RUN /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
+FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}@sha256:37dbaf6f0722c9ec246335f36e1ef8b2e6cb960f7c27e0d8c615121a3d475a85
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 # Oxinov sign-in pages and emails for the `oxinov` realm (themes/oxinov; selected by configure-realm.sh).
 # Themes need no `kc.sh build`; Keycloak falls back to its default theme if this folder is ever missing.

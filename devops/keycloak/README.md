@@ -6,7 +6,7 @@ Keycloak implements the one Oxinov account (ADR-011) with the sign-in design in 
 
 | File | Purpose |
 | --- | --- |
-| `Dockerfile` | Keycloak 26.7.4 pinned by digest, plus `email-otp-authenticator` v1.5.0 fetched by exact release URL and SHA-256 |
+| `Dockerfile` | Keycloak 26.7.5 pinned by digest, plus `email-otp-authenticator` v1.5.0 fetched by exact release URL and SHA-256 |
 | `configure-realm.sh` | Idempotent local setup of the `oxinov` realm: flows, token lifetimes, SMTP, and the account portal client |
 | `init-db.sh` | Local Docker init: creates the `keycloak` database and role on a fresh PostgreSQL volume |
 | `admin/` | Separate local administrator environment and operator instructions; real credentials stay untracked |
@@ -18,7 +18,7 @@ The email-code extension (`for-keycloak/email-otp-authenticator`, Unlicense) was
 
 - SHA-256 `deb04851…d3d42a` matches the digest GitHub publishes for the release asset; the Docker build refuses any other file.
 - Its Sigstore bundle verifies (`cosign verify-blob`) against a certificate issued to the project's own GitHub Actions workflow.
-- The extension release is built for Keycloak 26.7.3; the image runs 26.7.4 in the same minor version. Upgrade Keycloak and the extension together, and repeat both checks.
+- The extension release is built for Keycloak 26.7.3; the image runs 26.7.5 in the same minor version (upgraded from 26.7.4 on 2026-10-02 with the same extension file and checksum). Upgrade Keycloak and the extension together across minor versions, and repeat both checks. Keycloak 26.8 waits for an extension build for 26.8.
 - **Code review (ADR-016), 2026-09-30:** the source at tag `v1.5.0` (commit `bdf32589`) was reviewed, mainly `EmailOTPFormAuthenticator.java`, the flow the realm uses.
   - **Sound:**
     - Codes come from `SecureRandom` and are compared in constant time (`MessageDigest.isEqual`).

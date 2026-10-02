@@ -1,25 +1,13 @@
-# Time-boxed exceptions for the Keycloak image scan only (ADR-018 security gate). Each entry is a library
-# bundled by upstream Keycloak 26.7.4 with no Keycloak release that updates it yet. Entries expire so the
-# deploy gate fails again and forces a re-check; the fix is a Keycloak patch release, not a longer expiry.
-# Reviewed 2026-09-26. Owner: platform engineering. Re-check every Keycloak 26.7.x release.
+# Time-boxed exceptions for the Keycloak image scan only (ADR-018 security gate). Entries expire so the
+# deploy gate fails again and forces a re-check; the fix for a real upstream issue is a Keycloak patch
+# release, not a longer expiry. Owner: platform engineering. Re-check every Keycloak 26.7.x release.
+#
+# 2026-10-02, Keycloak 26.7.5: the FreeMarker (CVE-2026-84939), Netty SNI (CVE-2026-75595), Bouncy Castle
+# (CVE-2026-8763, CVE-2026-13506), and jackson-databind (CVE-2026-68497) exceptions were removed. 26.7.5
+# bundles FreeMarker 2.3.35, Netty 4.1.138, Bouncy Castle 1.86.1, and jackson-databind 2.21.6 (Quarkus
+# 3.33.4), all at or above the fixed versions.
 
-# SQL Server JDBC driver: we use PostgreSQL only (KC_DB=postgres); the driver is never loaded.
-CVE-2025-59250 exp:2026-10-26
-
-# Netty SNI routing bypass: TLS ends at Caddy; Keycloak serves plain HTTP on a private network, no SNI.
-CVE-2026-75595 exp:2026-10-26
-
-# FreeMarker path issue: affects untrusted templates; only Keycloak's built-in themes are installed and
-# the administration console is not reachable from the internet.
-CVE-2026-84939 exp:2026-10-26
-
-# Bouncy Castle 1.84 (fixed in 1.85): not fully assessed; accepted as an upstream risk only until the next
-# Keycloak patch. Mitigated by the private admin console and realm brute-force protection.
-CVE-2026-8763 exp:2026-10-26
-CVE-2026-13506 exp:2026-10-26
-
-# jackson-databind 2.21.5 (fixed in 2.21.6): CPU denial of service through unbounded numeric parsing. Bundled by
-# Keycloak 26.7.4 (also inside keycloak-admin-cli); no Keycloak release carries 2.21.6 yet. Denial of service
-# only, no data or account access. Reachable JSON endpoints: the account API (signed-in customers only) and the
-# admin API (private, not on the internet). Accepted by the owner on 2026-09-30 until the next Keycloak patch.
-CVE-2026-68497 exp:2026-10-30
+# SQL Server JDBC driver: Keycloak bundles mssql-jdbc 13.2.1.jre11, which is the patched release in
+# GHSA-m494-w24q-6f7w (vulnerable: 13.2.0 to before 13.2.1); the scanner still reports it. We use
+# PostgreSQL only (KC_DB=postgres) and the driver is never loaded. Re-checked 2026-10-02.
+CVE-2025-59250 exp:2027-01-26
