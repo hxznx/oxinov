@@ -59,6 +59,12 @@ export function describeAudit(event: Pick<AuditEvent, 'action' | 'metadata' | 'r
       return 'Scheduled a live class';
     case 'live_session.cancelled':
       return 'Cancelled a live class';
+    case 'access.granted': {
+      const lengths: Record<string, string> = { DAYS_7: '7 days', MONTH_1: '1 month', MONTH_6: '6 months', YEAR_1: '1 year', LIFETIME: 'lifetime' };
+      return `Gave free access for ${lengths[text(m.length)] ?? 'a period'}${text(m.reason) ? `: ${text(m.reason)}` : ''}`;
+    }
+    case 'access.revoked':
+      return `Ended free access${text(m.reason) ? `: ${text(m.reason)}` : ''}`;
     case 'certificate.revoked':
       return 'Revoked a certificate';
     default:

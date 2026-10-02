@@ -17,6 +17,7 @@ describe('team and roles helpers (FR-AUTH-102)', () => {
     );
     assert.equal(describeAudit({ action: 'course.review.rejected', metadata: {}, reason: 'Add a lesson' }), 'Sent a course back: Add a lesson');
     assert.equal(describeAudit({ action: 'store.settings.updated', metadata: {}, reason: null }), 'store settings updated');
+    assert.equal(describeAudit({ action: 'access.granted', metadata: { length: 'MONTH_1', reason: 'Scholarship' }, reason: null }), 'Gave free access for 1 month: Scholarship');
   });
 
   it('lists a permission row for every role', () => {

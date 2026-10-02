@@ -7,6 +7,7 @@ import {
   newReference,
   normalizeCode,
   normalizeTransactionId,
+  grantWindow,
   storefrontPrice,
   summarizeAccess,
   type AccessRow,
@@ -143,5 +144,16 @@ describe('account centre access summary (FR-AUTH-104)', () => {
     expect(summarizeAccess([row({ endsAt: null, revokedAt: at('2026-09-20T00:00:00Z') })], now)).toMatchObject({ state: 'ENDED', endsAt: at('2026-09-20T00:00:00Z') });
     expect(summarizeAccess([row({ endsAt: null, enrollmentActive: false })], now)?.state).toBe('ENDED');
     expect(summarizeAccess([], now)).toBeNull();
+  });
+});
+
+describe('free access grants (FR-MGMT-1404)', () => {
+  const now = at('2026-10-02T06:00:00Z');
+  it('gives 7 days or a plan length, after any current access, and lifetime stays lifetime', () => {
+    expect(grantWindow('DAYS_7', now, undefined)).toEqual({ startsAt: now, endsAt: at('2026-10-09T06:00:00Z') });
+    expect(grantWindow('DAYS_7', now, at('2026-10-20T00:00:00Z'))).toEqual({ startsAt: at('2026-10-20T00:00:00Z'), endsAt: at('2026-10-27T00:00:00Z') });
+    expect(grantWindow('MONTH_1', now, undefined)).toEqual({ startsAt: now, endsAt: at('2026-11-02T06:00:00Z') });
+    expect(grantWindow('LIFETIME', now, undefined).endsAt).toBeNull();
+    expect(grantWindow('DAYS_7', now, null)).toEqual({ startsAt: now, endsAt: null });
   });
 });

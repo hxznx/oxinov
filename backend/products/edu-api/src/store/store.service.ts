@@ -21,6 +21,8 @@ import {
   looksLikeDocument,
   newReference,
   normalizeCode,
+  GRANT_LABELS,
+  grantWindow,
   normalizeTransactionId,
   summarizeAccess,
   type PlanPeriod,
@@ -32,6 +34,8 @@ import type {
   CheckoutInfoDto,
   CouponDto,
   CreateCouponDto,
+  GrantAccessDto,
+  GrantDto,
   PlanDto,
   ReviewItemDto,
   SettingsDto,
@@ -653,6 +657,89 @@ export class StoreService {
       );
     }
     return this.reviewItem(result.payment, true);
+  }
+
+  // ---------------------------------------------------------------- free access (FR-MGMT-1404)
+
+  /** Gives a member free access to an offering for a length, with a required reason; never a payment. */
+  async grantAccess(scope: TenantScope, user: AuthUser, input: GrantAccessDto): Promise<GrantDto> {
+    this.require(scope, 'ADMIN', 'Only administrators can give free access.');
+    const email = input.email.trim().toLowerCase();
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const member = await tx.tenantMembership.findFirst({
+        where: { tenantId: scope.tenantId, status: 'ACTIVE', user: { email: { equals: email, mode: 'insensitive' } } },
+        select: { userId: true },
+      });
+      if (!member) throw Errors.notFound('Learner with that email in this workspace');
+      const course = await this.findCourse(tx, scope.tenantId, input.courseId, true);
+      const now = new Date();
+      const window = grantWindow(input.length, now, await this.currentAccessEnd(tx, scope.tenantId, member.userId, input.courseId));
+      const enrollment =
+        (await tx.enrollment.findFirst({ where: { tenantId: scope.tenantId, userId: member.userId, courseId: input.courseId, status: 'ACTIVE' }, select: { id: true } })) ??
+        (await tx.enrollment.create({ data: { tenantId: scope.tenantId, userId: member.userId, courseId: input.courseId }, select: { id: true } }));
+      const grant = await tx.entitlement.create({
+        data: { tenantId: scope.tenantId, userId: member.userId, courseId: input.courseId, enrollmentId: enrollment.id, source: 'ADMIN_GRANT', startsAt: window.startsAt, endsAt: window.endsAt },
+        select: { id: true },
+      });
+      const title = course.publishedVersion?.title ?? 'a course';
+      const slug = await this.tenantSlug(tx, scope.tenantId);
+      await NotificationsService.create(tx, {
+        tenantId: scope.tenantId,
+        userId: member.userId,
+        kind: 'NOTICE',
+        title: `You have been given access to ${title}`,
+        body: window.endsAt ? `Free access for ${GRANT_LABELS[input.length]}, until ${window.endsAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kathmandu' })}.` : 'Free lifetime access.',
+        linkPath: `/w/${slug}/courses/${input.courseId}`,
+        dedupeKey: `grant:${grant.id}`,
+      });
+      await this.audit(tx, scope, user, 'access.granted', 'entitlement', grant.id, {
+        learnerId: member.userId,
+        courseId: input.courseId,
+        length: input.length,
+        endsAt: window.endsAt?.toISOString() ?? null,
+        reason: input.reason,
+      });
+      return (await this.listGrantsTx(tx, scope.tenantId, grant.id))[0]!;
+    });
+  }
+
+  /** The newest 50 free access grants of the workspace. Administrators only. */
+  async listGrants(scope: TenantScope, user: AuthUser): Promise<GrantDto[]> {
+    this.require(scope, 'ADMIN');
+    return this.db.run(this.ctx(scope, user), (tx) => this.listGrantsTx(tx, scope.tenantId));
+  }
+
+  /** Ends a free grant now, with a reason; paid access is untouched. */
+  async revokeGrant(scope: TenantScope, user: AuthUser, grantId: string, reason: string): Promise<GrantDto> {
+    this.require(scope, 'ADMIN', 'Only administrators can revoke free access.');
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const revoked = await tx.entitlement.updateMany({
+        where: { id: grantId, tenantId: scope.tenantId, source: 'ADMIN_GRANT', revokedAt: null },
+        data: { revokedAt: new Date(), revokeReason: reason.trim() },
+      });
+      if (revoked.count === 0) throw Errors.notFound('Active free access grant');
+      await this.audit(tx, scope, user, 'access.revoked', 'entitlement', grantId, { reason: reason.trim() });
+      return (await this.listGrantsTx(tx, scope.tenantId, grantId))[0]!;
+    });
+  }
+
+  private async listGrantsTx(tx: Tx, tenantId: string, id?: string): Promise<GrantDto[]> {
+    const rows = await tx.entitlement.findMany({
+      where: { tenantId, source: 'ADMIN_GRANT', ...(id ? { id } : {}) },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      select: {
+        id: true,
+        startsAt: true,
+        endsAt: true,
+        revokedAt: true,
+        revokeReason: true,
+        createdAt: true,
+        user: { select: { displayName: true, email: true } },
+        course: { select: { publishedVersion: { select: { title: true } } } },
+      },
+    });
+    return rows.map(({ user, course, ...row }) => ({ ...row, learnerName: user.displayName, learnerEmail: user.email, courseTitle: course.publishedVersion?.title ?? 'Course' }));
   }
 
   // ---------------------------------------------------------------- helpers

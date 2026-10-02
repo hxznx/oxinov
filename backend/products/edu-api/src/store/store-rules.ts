@@ -169,3 +169,16 @@ export function summarizeAccess(rows: AccessRow[], now: Date): AccessSummary | n
   const ends = rows.map((row) => row.revokedAt ?? row.endsAt).filter((value): value is Date => value !== null && value <= now);
   return { state: 'ENDED', endsAt: ends.length > 0 ? new Date(Math.max(...ends.map((date) => date.getTime()))) : null, ...base };
 }
+
+/** Lengths an administrator can give for free (FR-MGMT-1404): a 7-day trial or any plan length. */
+export const GRANT_LENGTHS = ['DAYS_7', 'MONTH_1', 'MONTH_6', 'YEAR_1', 'LIFETIME'] as const;
+export type GrantLength = (typeof GRANT_LENGTHS)[number];
+export const GRANT_LABELS: Record<GrantLength, string> = { DAYS_7: '7 days', ...PLAN_LABELS };
+
+/** Free access window: like a plan, it starts when current access ends, so a grant never cuts paid time. */
+export function grantWindow(length: GrantLength, now: Date, currentEnd: Date | null | undefined): { startsAt: Date; endsAt: Date | null } {
+  if (length !== 'DAYS_7') return accessWindow(length, now, currentEnd);
+  if (currentEnd === null) return { startsAt: now, endsAt: null };
+  const startsAt = currentEnd && currentEnd > now ? currentEnd : now;
+  return { startsAt, endsAt: new Date(startsAt.getTime() + 7 * 24 * 60 * 60 * 1000) };
+}

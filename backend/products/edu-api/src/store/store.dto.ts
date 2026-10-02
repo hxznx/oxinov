@@ -16,7 +16,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { EVIDENCE_MAX_BYTES, EVIDENCE_TYPES, PLAN_PERIODS, QR_MAX_BYTES, QR_TYPES, type PlanPeriod } from './store-rules';
+import { EVIDENCE_MAX_BYTES, EVIDENCE_TYPES, GRANT_LENGTHS, PLAN_PERIODS, QR_MAX_BYTES, QR_TYPES, type GrantLength, type PlanPeriod } from './store-rules';
 
 /** Largest price accepted for one plan: NPR 10,000,000 in paisa. */
 const MAX_PRICE_MINOR = 1_000_000_000;
@@ -207,4 +207,28 @@ export class CreateCouponDto {
 
 export class UpdateCouponDto {
   @ApiProperty() @IsBoolean() active: boolean;
+}
+
+/** Free access for one learner (FR-MGMT-1404): scholarships, prizes, partners. A reason is required. */
+export class GrantAccessDto {
+  @ApiProperty({ description: 'Email of a member of this workspace.' }) @IsString() @Length(3, 254) email: string;
+  @ApiProperty({ format: 'uuid' }) @IsUUID() courseId: string;
+  @ApiProperty({ enum: GRANT_LENGTHS }) @IsIn(GRANT_LENGTHS) length: GrantLength;
+  @ApiProperty({ description: 'Kept in the audit log.' }) @Transform(({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value)) @IsString() @Length(3, 500) reason: string;
+}
+
+export class RevokeGrantDto {
+  @ApiProperty() @Transform(({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value)) @IsString() @Length(3, 500) reason: string;
+}
+
+export class GrantDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ nullable: true, type: String }) learnerName: string | null;
+  @ApiProperty({ nullable: true, type: String }) learnerEmail: string | null;
+  @ApiProperty() courseTitle: string;
+  @ApiProperty({ format: 'date-time' }) startsAt: Date;
+  @ApiProperty({ nullable: true, type: String, format: 'date-time' }) endsAt: Date | null;
+  @ApiProperty({ nullable: true, type: String, format: 'date-time' }) revokedAt: Date | null;
+  @ApiProperty({ nullable: true, type: String }) revokeReason: string | null;
+  @ApiProperty({ format: 'date-time' }) createdAt: Date;
 }

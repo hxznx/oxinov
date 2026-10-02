@@ -1,5 +1,7 @@
 # Project changelog
 
+- **2026-10-02, Free access grants (FR-MGMT-1404):** Studio › Free access gives a workspace member 7 days to lifetime of an offering with a required reason (scholarships, prizes, partners, trials). The grant is an `ADMIN_GRANT` entitlement that starts after any current access, the learner gets a notification, grants are listed and can be ended with a reason, and both are audited. New Edu API routes: `GET/POST store/grants`, `POST store/grants/{id}/revoke`.
+
 - **2026-10-02, Team and roles and the audit log (FR-MGMT-1406, design screen 22):** Studio › Team and roles changes a member's role, suspends and restores access, shows what each role can do, and lists the newest 100 audit events in plain English. New Edu API routes: `PATCH members/{userId}` (owners for administrators and owners, administrators for learners and teachers, never yourself, and an active owner always remains, with owner rows locked during a change) and `GET audit-events`.
 
 - **2026-10-02, Share kit (FR-CATALOG-316, design screen 19):** Studio › Marketing creates social posts for a published offering: a post image in three sizes drawn on the server in the store style (Facebook, Instagram square, story or WhatsApp status) with Download, a ready caption with an optional campaign coupon, and a tracked link per channel. Offering pages now carry Open Graph tags with the Facebook-size image, so links pasted on Facebook, WhatsApp, or Messenger show a picture.

@@ -11,10 +11,13 @@ import {
   CompleteQrDto,
   CouponDto,
   CreateCouponDto,
+  GrantAccessDto,
+  GrantDto,
   EvidenceUploadDto,
   PlanDto,
   QrUploadDto,
   RejectPaymentDto,
+  RevokeGrantDto,
   ReviewItemDto,
   SetPlansDto,
   SettingsDto,
@@ -55,6 +58,29 @@ export class StoreController {
     @Body() body: StartBankQrDto,
   ): Promise<{ data: BankCheckoutDto }> {
     return { data: await this.store.startBankQr(scope, user, courseId, body.period, body.couponCode) };
+  }
+
+  // Free access (FR-MGMT-1404) ----------------------------------------------------------------
+
+  @Get('store/grants')
+  async grants(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser): Promise<{ data: GrantDto[] }> {
+    return { data: await this.store.listGrants(scope, user) };
+  }
+
+  @Post('store/grants')
+  async grant(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser, @Body() body: GrantAccessDto): Promise<{ data: GrantDto }> {
+    return { data: await this.store.grantAccess(scope, user, body) };
+  }
+
+  @Post('store/grants/:grantId/revoke')
+  @HttpCode(HttpStatus.OK)
+  async revokeGrant(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('grantId', ParseUUIDPipe) grantId: string,
+    @Body() body: RevokeGrantDto,
+  ): Promise<{ data: GrantDto }> {
+    return { data: await this.store.revokeGrant(scope, user, grantId, body.reason) };
   }
 
   /** The caller's own subscriptions and free courses, active first (FR-AUTH-104). */

@@ -70,6 +70,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Team and roles, built 2026-10-02:** Studio › Team and roles (design screen 22) lists every member with a role selector, Save, and Suspend or Restore (your own row is locked), a table of what each role can do, and the audit log in plain English ("Approved a payment of NPR 15,000", "Changed a member from Teacher to Administrator").
 
+**Free access, built 2026-10-02:** Studio › Free access (design screen 8, "Give free access") takes a learner email, a published offering, a length (7 days to lifetime), and a required reason; recent grants show their end date with **End access** and a reason.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

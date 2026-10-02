@@ -482,6 +482,21 @@ function eduApiBaseUrl(): string {
   return (baseUrl = value.replace(/\/$/, ''));
 }
 
+/** Free access grants (FR-MGMT-1404). */
+export type GrantLength = 'DAYS_7' | 'MONTH_1' | 'MONTH_6' | 'YEAR_1' | 'LIFETIME';
+
+export interface Grant {
+  id: string;
+  learnerName: string | null;
+  learnerEmail: string | null;
+  courseTitle: string;
+  startsAt: string;
+  endsAt: string | null;
+  revokedAt: string | null;
+  revokeReason: string | null;
+  createdAt: string;
+}
+
 /** One line of the workspace audit log (design screen 22). */
 export interface AuditEvent {
   id: string;
@@ -713,6 +728,11 @@ export const eduApi = {
   updateMember: (token: string, tenantId: string, userId: string, body: { role?: TenantRole; status?: 'ACTIVE' | 'SUSPENDED' }) =>
     request<Member>(token, `${tenantPath(tenantId)}/members/${encodeURIComponent(userId)}`, { method: 'PATCH', body }),
   auditEvents: (token: string, tenantId: string) => request<AuditEvent[]>(token, `${tenantPath(tenantId)}/audit-events`),
+  grants: (token: string, tenantId: string) => request<Grant[]>(token, `${tenantPath(tenantId)}/store/grants`),
+  grantAccess: (token: string, tenantId: string, body: { email: string; courseId: string; length: GrantLength; reason: string }) =>
+    request<Grant>(token, `${tenantPath(tenantId)}/store/grants`, { method: 'POST', body }),
+  revokeGrant: (token: string, tenantId: string, grantId: string, reason: string) =>
+    request<Grant>(token, `${tenantPath(tenantId)}/store/grants/${encodeURIComponent(grantId)}/revoke`, { method: 'POST', body: { reason } }),
   redeemInvite: (token: string, code: string) => request<Workspace>(token, '/v1/invites/redeem', { method: 'POST', body: { code } }),
   authoredCourses: (token: string, tenantId: string) => request<AuthoredCourse[]>(token, `${tenantPath(tenantId)}/authoring/courses`),
   createCourse: (
