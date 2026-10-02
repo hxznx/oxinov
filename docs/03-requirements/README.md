@@ -2,7 +2,7 @@
 
 How Ox Inov Pvt. Ltd. writes, numbers, and changes functional requirements documents (FRDs) for the company website, the shared platform, and each product. Read it before you add or change a requirement: code, tests, and migrations cite the IDs it defines.
 
-**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-09-28
+**Status:** Current · **Owner:** Founder · **Last reviewed:** 2026-10-01
 
 ## Requirement hierarchy
 
@@ -56,7 +56,8 @@ Format: `FR-<AREA>-<NUMBER>`, for example `FR-TRUST-2302`.
 | 8500–8599 | STUDIO | [Oxinov Studio FRD](frd/studio-frd.md) (proposed) | Studio product owner |
 | 8600–8699 | JP | [Oxinov JP FRD](frd/jp-frd.md) (proposed; definition to validate) | JP product owner |
 | 8700–8799 | TECH | [Oxinov Tech FRD](frd/tech-frd.md) (proposed; definition to validate) | Tech product owner |
-| 8800–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
+| 8800–8899 | AGRI | [Oxinov Agri FRD](frd/agri-frd.md) (owner-requested discovery draft; [ADR-029](../04-architecture/adr/adr-029-agri-requirements-discovery.md) proposed) | Founder; product owner unassigned |
+| 8900–8999 | Reserved | Future products (Oxinov AI and others) | Assigned at release gate |
 
 Edu areas keep their historical numbers. New Edu requirements continue in the Edu block (101–1799).
 
@@ -119,6 +120,8 @@ Writing rules:
 Every FRD lives in [`frd/`](frd/) and is named `<product>-frd.md` in lowercase. This folder also holds this standard and the shared [non-functional requirements](nfr.md).
 
 A product FRD is normally created when its charter passes the release gate. [ADR-026](../04-architecture/adr/adr-026-central-frd-folder.md) records the owner's exception for early discovery drafts for Market, Services Market, Studio, JP, and Tech. Those FRDs stay **Proposed**. They do not authorize application scaffolding or spending, and their release gates stay closed until the owner approves the missing owner, customer, legal, operating, data, and budget decisions.
+
+The owner's explicit 2026-10-01 request also authorizes the [Agri discovery FRD](frd/agri-frd.md). Its documentation-only ID reservation is recorded in [proposed ADR-029](../04-architecture/adr/adr-029-agri-requirements-discovery.md); the Market boundary and product release gate remain unresolved. This draft does not authorize scaffolding or spending.
 
 Each FRD uses the product's number block from the registry and contains these parts:
 

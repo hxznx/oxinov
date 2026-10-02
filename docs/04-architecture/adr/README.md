@@ -34,6 +34,7 @@ Each decision has its own file, named `adr-NNN-short-title.md`. Add new decision
 | [ADR-026](adr-026-central-frd-folder.md) | Central FRD folder and five proposed module definitions | Accepted for requirements discovery only |
 | [ADR-027](adr-027-edu-technical-slug.md) | One slug for Oxinov Edu: `edu` replaces `lms` | Accepted; database renamed 2026-10-01, image and token audience pending |
 | [ADR-028](adr-028-edu-knowledge-store.md) | Oxinov Edu becomes Oxinov's own knowledge store (plans, bank QR review, YouTube and Drive material, view-only) | Accepted |
+| [ADR-029](adr-029-agri-requirements-discovery.md) | Agri requirements discovery and documentation number reservation; Market boundary unresolved | Proposed |
 
 ## Pending
 

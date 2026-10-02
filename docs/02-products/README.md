@@ -15,6 +15,7 @@ The register of every Oxinov product and candidate offering, with its address, c
 
 | Product | Address | Pillar | Origin | Charter status |
 | --- | --- | --- | --- | --- |
+| [Oxinov Agri](agri/README.md) | Open decision | AgriTech | Owner-requested agricultural store concept, 2026-10-01 | Candidate discovery [FRD](../03-requirements/frd/agri-frd.md); paid-access model and Market boundary open; no product plane approved |
 | [Oxinov Edu](edu/README.md) | `edu.oxinov.com` | Education | Oxinov | Approved and live ([FRD](../03-requirements/frd/edu-frd.md)); technical slug `edu` (ADR-027) |
 | [Oxinov HR](hr/README.md) | `hr.oxinov.com` | Services / talent | Oxinov plus the adopted Flo Softwares HR and jobs concept | Candidate unified product: direct-hiring requirements approved, managed recruitment proposed ([FRD](../03-requirements/frd/hr-frd.md), ADR-025) |
 | [Oxinov Market](market/market-charter.md) | `market.oxinov.com` | Production & Trade / AgriTech | Flo Softwares concept (`comodity-market`, `BT-Bazz-ComodityMarket-server`), expanded to all commodities and second-hand items; the earlier [Agri Market](market/market-charter.md) scope is superseded (ADR-013) | Draft charter and [proposed FRD](../03-requirements/frd/market-frd.md) |
@@ -27,6 +28,7 @@ The register of every Oxinov product and candidate offering, with its address, c
 
 | Offering | Technical slug | Canonical implementation or evidence |
 | --- | --- | --- |
+| Oxinov Agri | `agri` (documentation candidate) | [Product record](agri/README.md), [proposed FRD](../03-requirements/frd/agri-frd.md); no application scaffold or subdomain approved |
 | Oxinov Edu | `edu` | [Product record](edu/README.md), [web](../../frontend/products/edu-web/README.md), [API](../../backend/products/edu-api/README.md), [database](../../database/products/edu/README.md), [release history](../11-planning/changelog.md) |
 | Oxinov HR, including direct hiring | `hr` | [Product record](hr/README.md); unified FRD only, no application scaffold exists |
 | Oxinov Market | `market` | Draft charter and proposed FRD above; no application scaffold authorized |
