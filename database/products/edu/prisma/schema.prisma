@@ -84,6 +84,7 @@ model Tenant {
   storeSettings     StoreSettings?
   liveSessions      LiveSession[]
   notifications     Notification[]
+  courseReviews     CourseReview[]
 
   @@map("tenants")
 }
@@ -126,6 +127,8 @@ model UserProfile {
   paymentsReviewed    Payment[]              @relation("PaymentReviewer")
   couponsCreated      Coupon[]
   settingsUpdated     StoreSettings[]
+  reviews             CourseReview[]         @relation("ReviewAuthor")
+  reviewsModerated    CourseReview[]         @relation("ReviewModerator")
 
   @@map("user_profiles")
 }
@@ -281,6 +284,7 @@ model Course {
   plans             CoursePlan[]
   coupons           Coupon[]
   liveSessions      LiveSession[]
+  reviews           CourseReview[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, slug])
@@ -1333,4 +1337,40 @@ model AuditEvent {
 
   @@index([tenantId, createdAt])
   @@map("audit_events")
+}
+
+/// One learner's rating and review of an offering (FR-CATALOG-304). Approve-first: only APPROVED reviews
+/// are shown or counted; an edit returns the review to PENDING.
+model CourseReview {
+  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String       @map("tenant_id") @db.Uuid
+  courseId          String       @map("course_id") @db.Uuid
+  userId            String       @map("user_id") @db.Uuid
+  rating            Int          @db.SmallInt
+  body              String       @default("") @db.VarChar(2000)
+  status            ReviewStatus @default(PENDING)
+  moderatedByUserId String?      @map("moderated_by_user_id") @db.Uuid
+  moderatedAt       DateTime?    @map("moderated_at") @db.Timestamptz(3)
+  /// Why it was hidden; seen only by administrators.
+  moderationReason  String?      @map("moderation_reason") @db.VarChar(500)
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course      Course       @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  user        UserProfile  @relation("ReviewAuthor", fields: [userId], references: [id], onDelete: Restrict)
+  moderatedBy UserProfile? @relation("ReviewModerator", fields: [moderatedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@unique([tenantId, courseId, userId])
+  @@index([tenantId, status, createdAt])
+  @@map("course_reviews")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  HIDDEN
+
+  @@map("review_status")
 }

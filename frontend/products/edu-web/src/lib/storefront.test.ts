@@ -18,6 +18,8 @@ const offering = (overrides: Partial<StoreOffering>): StoreOffering => ({
   free: false,
   lessonCount: 10,
   freeLessonCount: 2,
+  ratingAverage: null,
+  ratingCount: 0,
   ...overrides,
 });
 

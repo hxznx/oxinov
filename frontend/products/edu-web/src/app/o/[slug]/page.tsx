@@ -9,6 +9,7 @@ import { formatDate, formatDuration, formatPrice } from '@/lib/format.ts';
 import { PLAN_PERIODS, type PlanPeriod } from '@/lib/store.ts';
 import { CATEGORY_LABELS, CATEGORY_TONES, KIND_LABELS, isIntellectualProperty } from '@/lib/storefront.ts';
 import { LocalTime } from '@/components/LocalTime';
+import { ratingLabel, starShares, stars } from '@/lib/reviews.ts';
 import { EnterButton, PlanPicker } from './PlanPicker';
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ plan?: string; problem?: string }> };
@@ -114,6 +115,16 @@ export default async function OfferingPage({ params, searchParams }: Props) {
               </div>
               <h1 className="font-display text-3xl font-bold leading-tight sm:text-5xl">{offering.title}</h1>
               <p className="max-w-2xl text-lg text-muted">{offering.summary}</p>
+              {offering.rating.count > 0 && offering.rating.average !== null ? (
+                <a href="#reviews-heading" className="flex items-center gap-2 text-sm text-muted no-underline" aria-label={ratingLabel(offering.rating.average, offering.rating.count)}>
+                  <span className="tone-warning text-lg" aria-hidden="true">
+                    {stars(offering.rating.average)}
+                  </span>
+                  <span aria-hidden="true">
+                    {offering.rating.average.toFixed(1)} · {offering.rating.count} {offering.rating.count === 1 ? 'review' : 'reviews'}
+                  </span>
+                </a>
+              ) : null}
               {query.problem && PROBLEMS[query.problem] ? (
                 <p role="alert" className="notice notice-error">
                   {PROBLEMS[query.problem]}
@@ -287,6 +298,7 @@ export default async function OfferingPage({ params, searchParams }: Props) {
                 </ul>
               </section>
             ) : null}
+            {offering.rating.count > 0 ? <Reviews offering={offering} /> : null}
             <section aria-labelledby="faq-heading" className="grid gap-2">
               <h2 id="faq-heading" className="studio-kicker">
                 // Questions
@@ -302,6 +314,54 @@ export default async function OfferingPage({ params, searchParams }: Props) {
         </div>
       </main>
     </>
+  );
+}
+
+/** Learner reviews (FR-CATALOG-304; design screen 2): approved reviews only, hidden while there are none. */
+function Reviews({ offering }: { offering: StoreOfferingDetail }) {
+  const { rating } = offering;
+  const shares = starShares(rating.stars);
+  return (
+    <section aria-labelledby="reviews-heading" className="cut-md grid gap-4 border border-line bg-surface p-5">
+      <h2 id="reviews-heading" className="studio-kicker" style={{ color: 'var(--ox-color-warning)' }}>
+        // Learner reviews
+      </h2>
+      <div className="grid items-center gap-4 sm:grid-cols-[auto_minmax(0,1fr)]">
+        <div className="grid justify-items-start gap-1">
+          <span className="font-display text-4xl font-bold">{rating.average?.toFixed(1)}</span>
+          <span className="tone-warning" aria-hidden="true">
+            {stars(rating.average ?? 0)}
+          </span>
+          <span className="text-hud text-xs text-muted">{ratingLabel(rating.average, rating.count)}</span>
+        </div>
+        <ul className="grid gap-1" aria-label="Reviews by stars">
+          {shares.map((share, index) => (
+            <li key={index} className="grid grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-center gap-2 text-xs">
+              <span className="text-hud">{5 - index} ★</span>
+              <span className="h-1.5 bg-[var(--ox-color-border)]">
+                <span className="block h-full" style={{ width: `${share}%`, background: 'var(--ox-color-warning)' }} />
+              </span>
+              <span className="text-hud text-muted">{rating.stars[index] ?? 0}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <ul className="grid gap-3">
+        {offering.reviews.map((review) => (
+          <li key={`${review.author}-${review.createdAt}`} className="grid gap-1 border-t border-line pt-3">
+            <span className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="tone-warning" aria-label={`${review.rating} out of 5`}>
+                {stars(review.rating)}
+              </span>
+              <span className="font-semibold">{review.author}</span>
+              <span className="text-hud text-xs text-muted">{formatDate(review.createdAt, 'Asia/Kathmandu')}</span>
+            </span>
+            {review.body ? <p className="whitespace-pre-line text-sm text-muted">{review.body}</p> : null}
+          </li>
+        ))}
+      </ul>
+      <p className="text-xs text-muted">Reviews come from learners who joined this offering and are checked by the store before they appear.</p>
+    </section>
   );
 }
 

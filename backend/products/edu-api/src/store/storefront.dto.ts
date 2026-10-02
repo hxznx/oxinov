@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn } from 'class-validator';
+import { PublicReviewDto, RatingSummaryDto } from '../reviews/reviews.dto';
 import { OFFERING_CATEGORIES, OFFERING_KINDS, PLAN_PERIODS, type OfferingCategory, type OfferingKind, type PlanPeriod } from './store-rules';
 
 /** One offering on the public store (ADR-028): what a visitor may see before signing in. */
@@ -17,6 +18,8 @@ export class StoreOfferingDto {
   @ApiProperty({ description: 'No plans and no price: anyone signed in can learn it.' }) free: boolean;
   @ApiProperty() lessonCount: number;
   @ApiProperty({ description: 'Lessons open to everyone as a free preview.' }) freeLessonCount: number;
+  @ApiProperty({ nullable: true, type: Number, description: 'Average of approved reviews (FR-CATALOG-304).' }) ratingAverage: number | null;
+  @ApiProperty() ratingCount: number;
 }
 
 export class StorePlanDto {
@@ -64,6 +67,8 @@ export class StoreOfferingDetailDto extends StoreOfferingDto {
   @ApiProperty() storeSlug: string;
   @ApiProperty({ type: [StoreLiveSessionDto], description: 'Upcoming live classes, soonest first; no join links.' }) liveSessions: StoreLiveSessionDto[];
   @ApiProperty({ description: 'Bank QR checkout is set up (QR and account name), so plans can be bought now.' }) checkoutOpen: boolean;
+  @ApiProperty({ type: RatingSummaryDto }) rating: RatingSummaryDto;
+  @ApiProperty({ type: [PublicReviewDto], description: 'Newest approved reviews; author is a first name and last initial.' }) reviews: PublicReviewDto[];
 }
 
 export class SetListingDto {

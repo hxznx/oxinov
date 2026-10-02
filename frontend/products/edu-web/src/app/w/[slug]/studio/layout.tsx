@@ -19,7 +19,10 @@ export default async function StudioLayout({ children, params }: Props) {
   const base = `/w/${slug}/studio`;
   const { token, workspace } = await workspaceContext(slug, base);
   if (!isStudioRole(workspace.role)) notFound();
-  const waiting = await load(base, () => eduApi.reviewQueue(token, workspace.id, 'PENDING_REVIEW'));
+  const [waiting, reviews] = await Promise.all([
+    load(base, () => eduApi.reviewQueue(token, workspace.id, 'PENDING_REVIEW')),
+    eduApi.moderationReviews(token, workspace.id, 'PENDING').catch(() => []),
+  ]);
 
   const groups: SideNavGroup[] = [
     { title: 'OVERVIEW', items: [{ href: base, label: 'Dashboard', glyph: '⌂', tone: '--ox-color-brand', exact: true }] },
@@ -37,6 +40,7 @@ export default async function StudioLayout({ children, params }: Props) {
         { href: `${base}/payments`, label: 'Payments', glyph: '₹', tone: '--ox-color-success', badge: waiting.length, badgeLabel: 'waiting' },
         { href: `${base}/people`, label: 'Learners and join codes', glyph: '☺', tone: '--ox-color-product-services' },
         { href: `${base}/access`, label: 'Free access', glyph: '✚', tone: '--ox-color-success' },
+        { href: `${base}/reviews`, label: 'Reviews', glyph: '★', tone: '--ox-color-warning', badge: reviews.length, badgeLabel: 'waiting' },
         { href: `${base}/marketing`, label: 'Marketing', glyph: '⇪', tone: '--ox-color-brand2' },
       ],
     },

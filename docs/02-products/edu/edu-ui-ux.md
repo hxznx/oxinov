@@ -76,6 +76,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Quiz editor, restyled 2026-10-02:** the quiz editor follows design screen 10: the title with status and publish actions, settings in one strip (type, time limit, pass mark, attempts, answer release, random order), the question list on the left grouped by section with written and drawn counts, and the selected question or a new one on the right (`?q=` and `?add=` keep the selection across saves). Section titles and draw counts are under **Sections**. The AI question drafts and the learner preview button wait for the AI gateway and a preview mode.
 
+**Reviews, built 2026-10-03:** the offering page shows the "// Learner reviews" box (design screen 2) only when approved reviews exist: the average, star bars, and the newest reviews; the hero and store cards show the rating. Learners rate from the course page (stars and optional text, with a note that it waits for approval). Studio › Reviews lists Waiting, Shown, and Hidden reviews with **Approve** and **Hide** (private reason), and the side menu counts waiting reviews.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

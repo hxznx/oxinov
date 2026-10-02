@@ -3,6 +3,7 @@ import type { StoreOffering } from '@/lib/edu-api.ts';
 import { formatNpr } from '@/lib/store.ts';
 import { CATEGORY_TONES, KIND_LABELS, cardGlyph, cardTag } from '@/lib/storefront.ts';
 import { formatPrice } from '@/lib/format.ts';
+import { ratingLabel } from '@/lib/reviews.ts';
 
 /** One offering on the store home (design screen 1): mark, kind, title, summary, what is free, and price. */
 export function OfferingCard({ offering, tone }: { offering: StoreOffering; tone?: string }) {
@@ -21,6 +22,11 @@ export function OfferingCard({ offering, tone }: { offering: StoreOffering; tone
       <span className="flex flex-1 flex-col gap-2 p-4">
         <span className="font-studio text-lg font-bold leading-tight">{offering.title}</span>
         <span className="flex-1 text-sm text-muted">{offering.summary}</span>
+        {offering.ratingCount > 0 && offering.ratingAverage !== null ? (
+          <span className="text-hud text-xs text-muted" aria-label={ratingLabel(offering.ratingAverage, offering.ratingCount)}>
+            <span className="tone-warning">★ {offering.ratingAverage.toFixed(1)}</span> ({offering.ratingCount})
+          </span>
+        ) : null}
         <span className="flex items-center justify-between gap-2 border-t border-line pt-3">
           <span className="studio-status" style={{ color: `var(${offering.free ? '--ox-color-success' : '--ox-color-text-muted'})` }}>
             {cardTag(offering)}

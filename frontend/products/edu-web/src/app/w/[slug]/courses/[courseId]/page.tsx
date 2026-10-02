@@ -9,6 +9,7 @@ import { load, workspaceContext } from '@/lib/guard.ts';
 import { BuyPanel } from './BuyPanel';
 import { EnrollButton } from './EnrollButton';
 import { PlansPanel } from './PlansPanel';
+import { ReviewForm } from './ReviewForm';
 import { StartExamButton } from './StartExamButton';
 import { LiveClassList } from '@/components/LiveClassList';
 
@@ -55,6 +56,8 @@ export default async function CoursePage({ params, searchParams }: Props) {
   // Access plans and bank QR (ADR-028); a failure here hides the plans only.
   const plans = await eduApi.checkoutInfo(token, workspace.id, courseId).catch(() => null);
   const sellsPlans = plans !== null && (plans.plans.length > 0 || plans.openPayment !== null);
+  // Ratings and reviews (FR-CATALOG-304): only learners who have had access may write one.
+  const review = await eduApi.myReview(token, workspace.id, courseId).catch(() => null);
   const lessons = course.curriculum.flatMap((section) => section.lessons);
   const firstLesson = lessons.find((lesson) => entitled || lesson.isPreview);
 
@@ -203,6 +206,8 @@ export default async function CoursePage({ params, searchParams }: Props) {
               </ul>
             </section>
           ) : null}
+
+          {review?.canReview ? <ReviewForm hidden={{ slug, tenantId: workspace.id, courseId }} review={review} /> : null}
         </div>
 
         <div className="grid h-fit gap-4 lg:sticky lg:top-6">

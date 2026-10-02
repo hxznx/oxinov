@@ -187,7 +187,7 @@ One account may be a learner or instructor in one tenant and an administrator in
 - Acceptance: Given a failed, canceled, or unverified payment, when the learner returns from checkout, then no entitlement or enrollment is created; a subsequent full refund or chargeback removes only the entitlement created by that transaction unless another valid entitlement exists.
 
 **FR-CATALOG-304 — Ratings and reviews.** An enrolled learner may leave one rating and review per course and edit it. The rating summary uses visible reviews only. Administrators can hide abusive reviews with a recorded reason.
-*Priority:* Should. *Status:* Proposed. *Access:* T1 enrolled learner writes own review; tenant administrator moderates. *Source:* Edu product scope.
+*Priority:* Should. *Status:* Implemented (2026-10-03): learners who have had access write one 1-to-5-star review per offering and can change or withdraw it; the owner chose approve first, so a new or changed review waits in Studio › Reviews and only approved reviews show on the offering page and store cards and count in the rating (first name and last initial, never the email). Hiding needs a reason that only administrators see; approving and hiding are audited and the learner is notified on approval. *Access:* T1 enrolled learner writes own review; tenant administrator moderates. *Source:* Edu product scope.
 - Acceptance: Given an enrolled learner has not yet reviewed a course, when they submit a rating and review, then it is saved once and only that learner can later edit it.
 - Acceptance: Given a review is hidden by an administrator with a recorded reason, when the rating summary is computed, then the hidden review is excluded and the moderation reason is not shown to other users.
 

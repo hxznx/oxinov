@@ -4,6 +4,7 @@ import { Errors } from '../common/errors';
 import type { AuthUser, TenantScope } from '../common/request';
 import { DatabaseContext, type Tx } from '../database/database-context.service';
 import { Prisma } from '../generated/prisma/client';
+import { ReviewsService } from '../reviews/reviews.service';
 import { hasRole } from '../tenancy/roles';
 import type { WorkspaceDto } from '../tenants/tenants.dto';
 import { PLAN_LABELS, PLAN_PERIODS, storefrontPrice, type PlanPeriod } from './store-rules';
@@ -58,6 +59,7 @@ export class StorefrontService {
           take: 200,
         }),
       ]);
+      const ratings = await ReviewsService.ratingsFor(tx, tenantId, courses.map((course) => course.id));
       const defaults: Record<PlanPeriod, number> = settings
         ? { MONTH_1: settings.defaultMonth1Minor, MONTH_6: settings.defaultMonth6Minor, YEAR_1: settings.defaultYear1Minor, LIFETIME: settings.defaultLifetimeMinor }
         : DEFAULT_PRICES;
@@ -65,7 +67,7 @@ export class StorefrontService {
         name: tenant.name,
         slug: tenant.slug,
         defaultPlans: PLAN_PERIODS.map((period) => ({ period, label: PLAN_LABELS[period], priceMinor: defaults[period], currency: 'NPR' })),
-        offerings: courses.map(toOffering),
+        offerings: courses.map((course) => toOffering(course, ratings.get(course.id))),
       };
     });
   }
@@ -79,7 +81,7 @@ export class StorefrontService {
         include: offeringInclude,
       });
       if (!course?.publishedVersionId) throw Errors.notFound('Offering');
-      const [version, plans, settings, tenant, live] = await Promise.all([
+      const [version, plans, settings, tenant, live, reviews] = await Promise.all([
         tx.courseVersion.findUniqueOrThrow({
           where: { id: course.publishedVersionId },
           select: {
@@ -103,9 +105,10 @@ export class StorefrontService {
           take: 10,
           select: { title: true, startsAt: true, durationMin: true, visibility: true },
         }),
+        ReviewsService.publicReviews(tx, tenantId, course.id),
       ]);
       return {
-        ...toOffering(course),
+        ...toOffering(course, { average: reviews.rating.average, count: reviews.rating.count }),
         description: version.description,
         outcomes: version.outcomes,
         curriculum: version.sections.map((section) => ({ title: section.title, lessons: section.lessons })),
@@ -118,6 +121,8 @@ export class StorefrontService {
         liveSessions: live,
         // Same rule as checkout (StoreService.bankDetails): a QR and an account name must be set.
         checkoutOpen: Boolean(settings?.bankQrObjectKey && settings.accountName),
+        rating: reviews.rating,
+        reviews: reviews.reviews,
       };
     });
   }
@@ -174,7 +179,7 @@ export class StorefrontService {
   }
 }
 
-function toOffering(course: OfferingRow): StoreOfferingDto {
+function toOffering(course: OfferingRow, rating?: { average: number | null; count: number }): StoreOfferingDto {
   const version = course.publishedVersion!;
   const lessons = version.sections.flatMap((section) => section.lessons);
   return {
@@ -189,5 +194,7 @@ function toOffering(course: OfferingRow): StoreOfferingDto {
     currency: course.plans.length > 0 ? 'NPR' : course.currency,
     lessonCount: lessons.length,
     freeLessonCount: lessons.filter((lesson) => lesson.isPreview).length,
+    ratingAverage: rating?.average ?? null,
+    ratingCount: rating?.count ?? 0,
   };
 }

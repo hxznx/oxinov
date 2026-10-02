@@ -65,6 +65,10 @@ export function describeAudit(event: Pick<AuditEvent, 'action' | 'metadata' | 'r
     }
     case 'access.revoked':
       return `Ended free access${text(m.reason) ? `: ${text(m.reason)}` : ''}`;
+    case 'review.approved':
+      return `Approved a ${typeof m.rating === 'number' ? `${m.rating}-star ` : ''}review`;
+    case 'review.hidden':
+      return `Hid a review${text(m.reason) ? `: ${text(m.reason)}` : ''}`;
     case 'certificate.revoked':
       return 'Revoked a certificate';
     default:

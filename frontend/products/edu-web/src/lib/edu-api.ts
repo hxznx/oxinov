@@ -608,6 +608,9 @@ export interface StoreOffering {
   free: boolean;
   lessonCount: number;
   freeLessonCount: number;
+  /** Average of approved reviews; null when there are none (FR-CATALOG-304). */
+  ratingAverage: number | null;
+  ratingCount: number;
 }
 
 export interface StoreHome {
@@ -629,6 +632,40 @@ export interface StoreOfferingDetail extends StoreOffering {
   liveSessions: { title: string; startsAt: string; durationMin: number; visibility: Visibility }[];
   /** Bank QR checkout is set up, so plans can be bought now. */
   checkoutOpen: boolean;
+  rating: RatingSummary;
+  /** Newest approved reviews; the author is a first name and last initial. */
+  reviews: { author: string; rating: number; body: string; createdAt: string }[];
+}
+
+/** Ratings and reviews (FR-CATALOG-304, approve first). */
+export type ReviewStatus = 'PENDING' | 'APPROVED' | 'HIDDEN';
+
+export interface RatingSummary {
+  average: number | null;
+  count: number;
+  /** Approved reviews with 5, 4, 3, 2, and 1 stars. */
+  stars: number[];
+}
+
+export interface MyReview {
+  canReview: boolean;
+  rating: number | null;
+  body: string;
+  status: ReviewStatus | null;
+  updatedAt: string | null;
+}
+
+export interface ModerationReview {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  learnerName: string | null;
+  learnerEmail: string | null;
+  rating: number;
+  body: string;
+  status: ReviewStatus;
+  moderationReason: string | null;
+  updatedAt: string;
 }
 
 async function request<T>(token: string, path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
@@ -739,6 +776,17 @@ export const eduApi = {
   updateMember: (token: string, tenantId: string, userId: string, body: { role?: TenantRole; status?: 'ACTIVE' | 'SUSPENDED' }) =>
     request<Member>(token, `${tenantPath(tenantId)}/members/${encodeURIComponent(userId)}`, { method: 'PATCH', body }),
   auditEvents: (token: string, tenantId: string) => request<AuditEvent[]>(token, `${tenantPath(tenantId)}/audit-events`),
+  myReview: (token: string, tenantId: string, courseId: string) => request<MyReview>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/review`),
+  saveReview: (token: string, tenantId: string, courseId: string, body: { rating: number; body: string }) =>
+    request<MyReview>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/review`, { method: 'PUT', body }),
+  withdrawReview: (token: string, tenantId: string, courseId: string) =>
+    request<void>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/review`, { method: 'DELETE' }),
+  moderationReviews: (token: string, tenantId: string, status: ReviewStatus) =>
+    request<ModerationReview[]>(token, `${tenantPath(tenantId)}/store/reviews?status=${status}`),
+  approveReview: (token: string, tenantId: string, reviewId: string) =>
+    request<void>(token, `${tenantPath(tenantId)}/store/reviews/${encodeURIComponent(reviewId)}/approve`, { method: 'POST' }),
+  hideReview: (token: string, tenantId: string, reviewId: string, reason: string) =>
+    request<void>(token, `${tenantPath(tenantId)}/store/reviews/${encodeURIComponent(reviewId)}/hide`, { method: 'POST', body: { reason } }),
   mediaLibrary: (token: string, tenantId: string) => request<LibraryItem[]>(token, `${tenantPath(tenantId)}/media/library`),
   grants: (token: string, tenantId: string) => request<Grant[]>(token, `${tenantPath(tenantId)}/store/grants`),
   grantAccess: (token: string, tenantId: string, body: { email: string; courseId: string; length: GrantLength; reason: string }) =>
