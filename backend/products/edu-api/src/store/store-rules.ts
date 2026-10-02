@@ -125,3 +125,47 @@ export function storefrontPrice(plans: { priceMinor: number }[], priceMinor: num
   if (plans.length > 0) return { fromMinor: Math.min(...plans.map((plan) => plan.priceMinor)), hasPlans: true, free: false };
   return { fromMinor: priceMinor, hasPlans: false, free: priceMinor === 0 };
 }
+
+/** One entitlement as the account centre needs it (FR-AUTH-104). */
+export interface AccessRow {
+  source: 'FREE' | 'PURCHASE' | 'SUBSCRIPTION' | 'ADMIN_GRANT';
+  startsAt: Date;
+  endsAt: Date | null;
+  revokedAt: Date | null;
+  enrollmentActive: boolean;
+  planPeriod: PlanPeriod | null;
+  paidMinor: number | null;
+}
+
+export interface AccessSummary {
+  state: 'ACTIVE' | 'ENDED';
+  /** First access to this course. */
+  since: Date;
+  /** When access ends: null while active means lifetime; once ended, when it ended. */
+  endsAt: Date | null;
+  source: AccessRow['source'];
+  planPeriod: PlanPeriod | null;
+  paidMinor: number | null;
+}
+
+/**
+ * A learner's access to one course from all its entitlements (FR-AUTH-104): active when any entitlement
+ * grants access now (the same rule as `hasActiveEntitlement`), ending at the latest end of the current and
+ * renewed windows, or never for lifetime. The plan and price shown are those of the latest payment.
+ */
+export function summarizeAccess(rows: AccessRow[], now: Date): AccessSummary | null {
+  const live = rows.filter((row) => row.revokedAt === null && row.enrollmentActive);
+  if (rows.length === 0) return null;
+  const since = new Date(Math.min(...rows.map((row) => row.startsAt.getTime())));
+  const latestPaid = [...rows].filter((row) => row.paidMinor !== null).sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())[0];
+  const latest = latestPaid ?? [...rows].sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())[0]!;
+  const base = { since, source: latest.source, planPeriod: latestPaid?.planPeriod ?? null, paidMinor: latestPaid?.paidMinor ?? null };
+  const activeNow = live.some((row) => row.startsAt <= now && (row.endsAt === null || row.endsAt > now));
+  if (activeNow) {
+    const current = live.filter((row) => row.endsAt === null || row.endsAt > now);
+    const endsAt = current.some((row) => row.endsAt === null) ? null : new Date(Math.max(...current.map((row) => row.endsAt!.getTime())));
+    return { state: 'ACTIVE', endsAt, ...base };
+  }
+  const ends = rows.map((row) => row.revokedAt ?? row.endsAt).filter((value): value is Date => value !== null && value <= now);
+  return { state: 'ENDED', endsAt: ends.length > 0 ? new Date(Math.max(...ends.map((date) => date.getTime()))) : null, ...base };
+}

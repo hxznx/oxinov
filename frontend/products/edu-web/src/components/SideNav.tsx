@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export interface StudioNavItem {
+export interface SideNavItem {
   href: string;
   label: string;
   glyph: string;
@@ -14,15 +14,15 @@ export interface StudioNavItem {
   exact?: boolean;
 }
 
-export interface StudioNavGroup {
+export interface SideNavGroup {
   title: string;
-  items: StudioNavItem[];
+  items: SideNavItem[];
 }
 
-/** Studio sidebar sections; the current one carries the lit bar (design screens 7, 8 and 24). */
-export function StudioNav({ groups }: { groups: StudioNavGroup[] }) {
+/** Windows Settings sidebar for Studio and the account centre; the current section carries the lit bar. */
+export function SideNav({ groups }: { groups: SideNavGroup[] }) {
   const pathname = usePathname();
-  const current = (item: StudioNavItem) => (item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`));
+  const current = (item: SideNavItem) => (item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`));
   return (
     <>
       {groups.map((group) => (

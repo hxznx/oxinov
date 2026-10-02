@@ -21,6 +21,7 @@ import {
   newReference,
   normalizeCode,
   normalizeTransactionId,
+  summarizeAccess,
   type PlanPeriod,
 } from './store-rules';
 import type {
@@ -33,6 +34,7 @@ import type {
   PlanDto,
   ReviewItemDto,
   SettingsDto,
+  SubscriptionDto,
   UpdateSettingsDto,
   UploadTicketDto,
 } from './store.dto';
@@ -370,6 +372,74 @@ export class StoreService {
         throw error;
       }
     }
+  }
+
+  /** FR-AUTH-104: every offering the caller can open or could open, with plan, price paid, and end date. */
+  async mySubscriptions(scope: TenantScope, user: AuthUser): Promise<SubscriptionDto[]> {
+    const rows = await this.db.run(this.ctx(scope, user), (tx) =>
+      tx.entitlement.findMany({
+        where: { tenantId: scope.tenantId, userId: user.userId },
+        select: {
+          courseId: true,
+          source: true,
+          startsAt: true,
+          endsAt: true,
+          revokedAt: true,
+          enrollment: { select: { status: true } },
+          payment: { select: { planPeriod: true, amountMinor: true } },
+          course: { select: { slug: true, kind: true, publishedVersion: { select: { title: true } } } },
+        },
+        take: 500,
+      }),
+    );
+    const now = new Date();
+    const byCourse = new Map<string, typeof rows>();
+    for (const row of rows) byCourse.set(row.courseId, [...(byCourse.get(row.courseId) ?? []), row]);
+    const out: SubscriptionDto[] = [];
+    for (const [courseId, list] of byCourse) {
+      const summary = summarizeAccess(
+        list.map((row) => ({
+          source: row.source,
+          startsAt: row.startsAt,
+          endsAt: row.endsAt,
+          revokedAt: row.revokedAt,
+          enrollmentActive: row.enrollment.status === 'ACTIVE',
+          planPeriod: row.payment?.planPeriod ?? null,
+          paidMinor: row.payment?.amountMinor ?? null,
+        })),
+        now,
+      );
+      if (!summary) continue;
+      const course = list[0]!.course;
+      out.push({
+        courseId,
+        courseTitle: course.publishedVersion?.title ?? 'Course',
+        courseSlug: course.slug,
+        kind: course.kind,
+        state: summary.state,
+        source: summary.source,
+        planLabel: summary.planPeriod ? PLAN_LABELS[summary.planPeriod] : null,
+        paidMinor: summary.paidMinor,
+        since: summary.since,
+        endsAt: summary.endsAt,
+      });
+    }
+    // Active first; then the ones ending soonest; lifetime and free last among the active.
+    const rank = (s: SubscriptionDto) => (s.state === 'ACTIVE' ? 0 : 1);
+    return out.sort((a, b) => rank(a) - rank(b) || (a.endsAt?.getTime() ?? Infinity) - (b.endsAt?.getTime() ?? Infinity) || a.courseTitle.localeCompare(b.courseTitle));
+  }
+
+  /** FR-AUTH-104: the caller's own bank payments, newest first. */
+  async myPayments(scope: TenantScope, user: AuthUser): Promise<BankPaymentDto[]> {
+    const rows = await this.db.run(this.ctx(scope, user), (tx) =>
+      tx.payment.findMany({
+        where: { tenantId: scope.tenantId, userId: user.userId, provider: 'BANK_QR' },
+        include: paymentInclude,
+        orderBy: { createdAt: 'desc' },
+        take: 100,
+      }),
+    );
+    return rows.map(toPaymentDto);
   }
 
   async myPayment(scope: TenantScope, user: AuthUser, paymentId: string): Promise<BankCheckoutDto> {

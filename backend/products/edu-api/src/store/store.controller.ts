@@ -20,6 +20,7 @@ import {
   SettingsDto,
   StartBankQrDto,
   SubmitEvidenceDto,
+  SubscriptionDto,
   UpdateCouponDto,
   UpdateSettingsDto,
   UploadTicketDto,
@@ -54,6 +55,18 @@ export class StoreController {
     @Body() body: StartBankQrDto,
   ): Promise<{ data: BankCheckoutDto }> {
     return { data: await this.store.startBankQr(scope, user, courseId, body.period, body.couponCode) };
+  }
+
+  /** The caller's own subscriptions and free courses, active first (FR-AUTH-104). */
+  @Get('me/subscriptions')
+  async mySubscriptions(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser): Promise<{ data: SubscriptionDto[] }> {
+    return { data: await this.store.mySubscriptions(scope, user) };
+  }
+
+  /** The caller's own bank payments, newest first (FR-AUTH-104, FR-PAY-2705). */
+  @Get('me/bank-payments')
+  async myPayments(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser): Promise<{ data: BankPaymentDto[] }> {
+    return { data: await this.store.myPayments(scope, user) };
   }
 
   @Get('me/bank-payments/:paymentId')

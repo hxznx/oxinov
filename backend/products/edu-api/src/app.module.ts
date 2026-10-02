@@ -63,6 +63,7 @@ import { StoreService } from './store/store.service';
 import { ListingController, StoreJoinController, StorefrontController } from './store/storefront.controller';
 import { StorefrontService } from './store/storefront.service';
 import { LiveSessionsController } from './live/live-sessions.controller';
+import { MeController } from './account/me.controller';
 import { LiveSessionsService } from './live/live-sessions.service';
 import { TenantsController } from './tenants/tenants.controller';
 import { TenantsService } from './tenants/tenants.service';
@@ -146,6 +147,7 @@ export class AppModule implements NestModule {
         StoreJoinController,
         ListingController,
         LiveSessionsController,
+        MeController,
         CertificatesController,
         CertificateVerificationController,
       ],

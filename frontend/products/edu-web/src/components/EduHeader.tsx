@@ -2,8 +2,6 @@ import Link from 'next/link';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
-const accountUrl = () => process.env.ACCOUNT_URL?.replace(/\/$/, '') ?? 'https://app.oxinov.com';
-
 /** Oxinov Edu shell: product mark, current workspace, store and learning links, theme, account, and sign-in or sign-out. */
 export function EduHeader({ signedIn, workspace, returnTo }: { signedIn: boolean; workspace?: { slug: string; name: string }; returnTo?: string }) {
   return (
@@ -35,9 +33,9 @@ export function EduHeader({ signedIn, workspace, returnTo }: { signedIn: boolean
           <ThemeToggle />
           {signedIn ? (
             <>
-              <a href={accountUrl()} className="btn btn-secondary text-sm">
+              <Link href="/account" className="btn btn-secondary text-sm">
                 Account
-              </a>
+              </Link>
               <form action="/auth/logout" method="post">
                 <button type="submit" className="btn btn-secondary text-sm">
                   Sign out

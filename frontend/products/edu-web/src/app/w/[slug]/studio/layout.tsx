@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { EduHeader } from '@/components/EduHeader';
 import { eduApi } from '@/lib/edu-api.ts';
 import { isStudioRole, load, workspaceContext } from '@/lib/guard.ts';
-import { StudioNav, type StudioNavGroup } from './StudioNav';
+import { SideNav, type SideNavGroup } from '@/components/SideNav';
 
 type Props = { children: ReactNode; params: Promise<{ slug: string }> };
 
@@ -21,7 +21,7 @@ export default async function StudioLayout({ children, params }: Props) {
   if (!isStudioRole(workspace.role)) notFound();
   const waiting = await load(base, () => eduApi.reviewQueue(token, workspace.id, 'PENDING_REVIEW'));
 
-  const groups: StudioNavGroup[] = [
+  const groups: SideNavGroup[] = [
     { title: 'OVERVIEW', items: [{ href: base, label: 'Dashboard', glyph: '⌂', tone: '--ox-color-brand', exact: true }] },
     {
       title: 'CONTENT',
@@ -57,7 +57,7 @@ export default async function StudioLayout({ children, params }: Props) {
               </span>
             </span>
           </div>
-          <StudioNav groups={groups} />
+          <SideNav groups={groups} />
           <Link href={`/w/${slug}`} className="studio-link mt-2">
             <span className="studio-glyph" aria-hidden="true">
               ←

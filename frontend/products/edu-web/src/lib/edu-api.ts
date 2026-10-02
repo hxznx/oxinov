@@ -482,6 +482,27 @@ function eduApiBaseUrl(): string {
   return (baseUrl = value.replace(/\/$/, ''));
 }
 
+/** Learner account centre (FR-AUTH-104). Mirrors MeDto and SubscriptionDto in the Edu API. */
+export interface Me {
+  displayName: string | null;
+  email: string | null;
+  memberSince: string;
+}
+
+export interface Subscription {
+  courseId: string;
+  courseTitle: string;
+  courseSlug: string;
+  kind: OfferingKind;
+  state: 'ACTIVE' | 'ENDED';
+  source: 'FREE' | 'PURCHASE' | 'SUBSCRIPTION' | 'ADMIN_GRANT';
+  planLabel: string | null;
+  paidMinor: number | null;
+  since: string;
+  /** Null while active means lifetime. */
+  endsAt: string | null;
+}
+
 /** Live classes (ADR-028 point 8). Mirrors backend/products/edu-api/src/live/live-sessions.dto.ts. */
 export type Visibility = 'FREE' | 'SUBSCRIBERS';
 export type LiveProvider = 'GOOGLE_MEET' | 'ZOOM' | 'MICROSOFT_TEAMS' | 'OTHER';
@@ -626,6 +647,9 @@ export const eduApi = {
     request<LiveSession>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/live-sessions`, { method: 'POST', body }),
   updateLiveSession: (token: string, tenantId: string, sessionId: string, body: LiveSessionInput) =>
     request<LiveSession>(token, `${tenantPath(tenantId)}/live-sessions/${encodeURIComponent(sessionId)}`, { method: 'PATCH', body }),
+  me: (token: string) => request<Me>(token, '/v1/me'),
+  mySubscriptions: (token: string, tenantId: string) => request<Subscription[]>(token, `${tenantPath(tenantId)}/me/subscriptions`),
+  myBankPayments: (token: string, tenantId: string) => request<BankPayment[]>(token, `${tenantPath(tenantId)}/me/bank-payments`),
   storeHome: () => publicRequest<StoreHome>('/v1/store'),
   storeOffering: (slug: string) => publicRequest<StoreOfferingDetail>(`/v1/store/offerings/${encodeURIComponent(slug)}`),
   joinStore: (token: string) => request<Workspace>(token, '/v1/store/join', { method: 'POST' }),

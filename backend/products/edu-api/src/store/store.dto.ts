@@ -56,6 +56,20 @@ export class BankDetailsDto {
   @ApiProperty() refundPolicy: string;
 }
 
+/** One offering in the learner's account centre (FR-AUTH-104). */
+export class SubscriptionDto {
+  @ApiProperty({ format: 'uuid' }) courseId: string;
+  @ApiProperty() courseTitle: string;
+  @ApiProperty() courseSlug: string;
+  @ApiProperty({ example: 'COURSE' }) kind: string;
+  @ApiProperty({ enum: ['ACTIVE', 'ENDED'] }) state: 'ACTIVE' | 'ENDED';
+  @ApiProperty({ enum: ['FREE', 'PURCHASE', 'SUBSCRIPTION', 'ADMIN_GRANT'] }) source: string;
+  @ApiProperty({ nullable: true, type: String, example: '1 year' }) planLabel: string | null;
+  @ApiProperty({ nullable: true, type: Number, description: 'Amount paid for the latest plan, in minor units.' }) paidMinor: number | null;
+  @ApiProperty({ format: 'date-time' }) since: Date;
+  @ApiProperty({ nullable: true, type: String, format: 'date-time', description: 'Null while active means lifetime.' }) endsAt: Date | null;
+}
+
 export class BankPaymentDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty({ format: 'uuid' }) courseId: string;

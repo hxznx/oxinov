@@ -8,6 +8,8 @@ import {
   normalizeCode,
   normalizeTransactionId,
   storefrontPrice,
+  summarizeAccess,
+  type AccessRow,
   type CouponRule,
 } from './store-rules';
 
@@ -104,5 +106,42 @@ describe('store cards (ADR-028)', () => {
     expect(storefrontPrice([{ priceMinor: 1_500_000 }, { priceMinor: 500_000 }], 0)).toEqual({ fromMinor: 500_000, hasPlans: true, free: false });
     expect(storefrontPrice([], 99_900)).toEqual({ fromMinor: 99_900, hasPlans: false, free: false });
     expect(storefrontPrice([], 0)).toEqual({ fromMinor: 0, hasPlans: false, free: true });
+  });
+});
+
+describe('account centre access summary (FR-AUTH-104)', () => {
+  const now = at('2026-10-02T00:00:00Z');
+  const row = (overrides: Partial<AccessRow>): AccessRow => ({
+    source: 'PURCHASE',
+    startsAt: at('2026-09-01T00:00:00Z'),
+    endsAt: at('2026-10-01T00:00:00Z'),
+    revokedAt: null,
+    enrollmentActive: true,
+    planPeriod: 'MONTH_1',
+    paidMinor: 500_000,
+    ...overrides,
+  });
+
+  it('ends at the latest renewed window and shows the latest plan paid', () => {
+    const summary = summarizeAccess(
+      [
+        row({ endsAt: at('2026-11-01T00:00:00Z') }),
+        row({ startsAt: at('2026-11-01T00:00:00Z'), endsAt: at('2027-11-01T00:00:00Z'), planPeriod: 'YEAR_1', paidMinor: 1_500_000 }),
+      ],
+      now,
+    );
+    expect(summary).toEqual({ state: 'ACTIVE', since: at('2026-09-01T00:00:00Z'), endsAt: at('2027-11-01T00:00:00Z'), source: 'PURCHASE', planPeriod: 'YEAR_1', paidMinor: 1_500_000 });
+  });
+
+  it('shows lifetime access with no end, and free access without a price', () => {
+    expect(summarizeAccess([row({ endsAt: null, planPeriod: 'LIFETIME' })], now)).toMatchObject({ state: 'ACTIVE', endsAt: null, planPeriod: 'LIFETIME' });
+    expect(summarizeAccess([row({ source: 'FREE', endsAt: null, planPeriod: null, paidMinor: null })], now)).toMatchObject({ state: 'ACTIVE', endsAt: null, source: 'FREE', paidMinor: null });
+  });
+
+  it('reports ended, revoked, and dropped access as ended, and nothing for no rows', () => {
+    expect(summarizeAccess([row({})], now)).toMatchObject({ state: 'ENDED', endsAt: at('2026-10-01T00:00:00Z') });
+    expect(summarizeAccess([row({ endsAt: null, revokedAt: at('2026-09-20T00:00:00Z') })], now)).toMatchObject({ state: 'ENDED', endsAt: at('2026-09-20T00:00:00Z') });
+    expect(summarizeAccess([row({ endsAt: null, enrollmentActive: false })], now)?.state).toBe('ENDED');
+    expect(summarizeAccess([], now)).toBeNull();
   });
 });
