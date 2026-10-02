@@ -6,16 +6,21 @@ import { DatabaseContext, type Tx } from '../database/database-context.service';
 import { safeFileName } from '../media/media-rules';
 import { ObjectStorage } from '../media/object-storage';
 import { hasRole } from '../tenancy/roles';
+import { parseBulkLinks } from './bulk-links';
 import { authorUrl, parseExternal, sourceProblem, type ExternalRef } from './external-content';
 import { resourceFileProblem, resourceLooksLike } from './resource-files';
 import type {
   AuthoredCourseDto,
+  BulkLessonsDto,
+  BulkLessonsResultDto,
   CreateLessonDto,
   DraftDto,
   ReorderDto,
   ResourceInputDto,
   ResourceUploadDto,
   ResourceUploadTicketDto,
+  DuplicateCourseDto,
+  DuplicatedCourseDto,
   UpdateDraftDto,
   UpdateLessonDto,
 } from './authoring.dto';
@@ -220,6 +225,123 @@ export class AuthoringService {
           durationSec: input.durationSec ?? null,
         },
       });
+    });
+  }
+
+  /**
+   * Pasted links become lessons at the end of a chapter, in order (FR-COURSE-209). Lines without a YouTube or
+   * Google Drive link are refused with their reason; the valid ones are still created.
+   */
+  async addLessonsFromLinks(scope: TenantScope, user: AuthUser, courseId: string, sectionId: string, input: BulkLessonsDto): Promise<BulkLessonsResultDto> {
+    let created = 0;
+    let refused: BulkLessonsResultDto['refused'] = [];
+    const draft = await this.edit(scope, user, courseId, async (tx, _course, current) => {
+      await this.draftSection(tx, scope.tenantId, current.id, sectionId);
+      const last = await tx.lesson.aggregate({ where: { tenantId: scope.tenantId, sectionId }, _max: { position: true } });
+      const count = await tx.lesson.count({ where: { tenantId: scope.tenantId, section: { courseVersionId: current.id } } });
+      const parsed = parseBulkLinks(input.text, input.driveKind ?? 'DOCUMENT', count + 1);
+      refused = parsed.refused;
+      const start = last._max.position ?? 0;
+      if (parsed.lessons.length > 0) {
+        await tx.lesson.createMany({
+          data: parsed.lessons.map((lesson, index) => ({
+            tenantId: scope.tenantId,
+            sectionId,
+            title: lesson.title,
+            kind: lesson.kind,
+            externalSource: lesson.external.source,
+            externalId: lesson.external.id,
+            position: start + index + 1,
+          })),
+        });
+      }
+      created = parsed.lessons.length;
+      await this.audit(tx, scope, user, 'course.lessons.pasted', courseId, { created, refused: refused.length });
+    });
+    return { draft, created, refused };
+  }
+
+  /**
+   * A copy of an offering to start a new one from (FR-COURSE-209): a new DRAFT course with the same chapters,
+   * lessons, materials, kind, and category, and none of the original's learners, payments, reviews,
+   * certificates, or plans. Copies the open draft when there is one, otherwise the published version.
+   */
+  duplicate(scope: TenantScope, user: AuthUser, courseId: string, input: DuplicateCourseDto): Promise<DuplicatedCourseDto> {
+    return this.db.run(this.ctx(scope, user), async (tx) => {
+      const course = await this.editableCourse(tx, scope, user, courseId);
+      const original = await tx.course.findUniqueOrThrow({ where: { id: course.id }, select: { slug: true, programId: true, kind: true, category: true } });
+      const open = await this.openDraft(tx, scope.tenantId, courseId);
+      const source = await tx.courseVersion.findFirst({
+        where: { tenantId: scope.tenantId, courseId, ...(open ? { id: open.id } : course.publishedVersionId ? { id: course.publishedVersionId } : {}) },
+        orderBy: { version: 'desc' },
+        include: { sections: { orderBy: { position: 'asc' }, include: { lessons: { orderBy: { position: 'asc' }, include: { resources: true } } } } },
+      });
+      if (!source) throw Errors.notFound('Course');
+      const slug = await this.freeSlug(tx, scope.tenantId, `${original.slug.slice(0, 100)}-copy`);
+      const title = (input.title?.trim() || `${source.title} (copy)`).slice(0, 200);
+      const copy = await tx.course.create({
+        data: {
+          tenantId: scope.tenantId,
+          programId: original.programId,
+          slug,
+          priceMinor: course.priceMinor,
+          currency: course.currency,
+          kind: original.kind,
+          category: original.category,
+          createdByUserId: user.userId,
+        },
+      });
+      const version = await tx.courseVersion.create({
+        data: {
+          tenantId: scope.tenantId,
+          courseId: copy.id,
+          version: 1,
+          title,
+          summary: source.summary,
+          description: source.description,
+          language: source.language,
+          outcomes: source.outcomes,
+        },
+      });
+      for (const section of source.sections) {
+        const newSection = await tx.section.create({ data: { tenantId: scope.tenantId, courseVersionId: version.id, title: section.title, position: section.position } });
+        for (const lesson of section.lessons) {
+          // A new offering: new lesson identities, so nothing from the original's learners follows.
+          const newLesson = await tx.lesson.create({
+            data: {
+              tenantId: scope.tenantId,
+              sectionId: newSection.id,
+              title: lesson.title,
+              kind: lesson.kind,
+              position: lesson.position,
+              bodyMarkdown: lesson.bodyMarkdown,
+              isPreview: lesson.isPreview,
+              isRequired: lesson.isRequired,
+              durationSec: lesson.durationSec,
+              mediaAssetId: lesson.mediaAssetId,
+              externalSource: lesson.externalSource,
+              externalId: lesson.externalId,
+            },
+          });
+          if (lesson.resources.length > 0) {
+            await tx.lessonResource.createMany({
+              data: lesson.resources.map((resource) => ({
+                tenantId: scope.tenantId,
+                lessonId: newLesson.id,
+                kind: resource.kind,
+                title: resource.title,
+                resourceFileId: resource.resourceFileId,
+                url: resource.url,
+                position: resource.position,
+              })),
+            });
+          }
+        }
+      }
+      await tx.auditEvent.create({
+        data: { tenantId: scope.tenantId, actorUserId: user.userId, action: 'course.duplicated', targetType: 'course', targetId: copy.id, metadata: { from: courseId } },
+      });
+      return { courseId: copy.id, slug, title };
     });
   }
 
@@ -450,6 +572,15 @@ export class AuthoringService {
       throw Errors.forbidden('You can edit only your own courses.');
     }
     return course;
+  }
+
+  /** `base`, or `base-2`, `base-3`… when taken in the workspace. */
+  private async freeSlug(tx: Tx, tenantId: string, base: string): Promise<string> {
+    for (let n = 1; n <= 50; n += 1) {
+      const slug = n === 1 ? base : `${base}-${n}`;
+      if (!(await tx.course.findFirst({ where: { tenantId, slug }, select: { id: true } }))) return slug;
+    }
+    return `${base}-${randomBytes(3).toString('hex')}`;
   }
 
   private openDraft(tx: Tx, tenantId: string, courseId: string): Promise<DraftVersion | null> {

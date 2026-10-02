@@ -880,6 +880,14 @@ export const eduApi = {
   draft: (token: string, tenantId: string, courseId: string) =>
     request<Draft>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft`),
   /** Draft editing call: `path` is relative to the course's draft, for example `/sections`. */
+  pasteLessons: (token: string, tenantId: string, courseId: string, sectionId: string, body: { text: string; driveKind: 'DOCUMENT' | 'VIDEO' }) =>
+    request<{ draft: Draft; created: number; refused: { line: number; text: string; reason: string }[] }>(
+      token,
+      `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft/sections/${encodeURIComponent(sectionId)}/lessons/bulk`,
+      { method: 'POST', body },
+    ),
+  duplicateCourse: (token: string, tenantId: string, courseId: string, body: { title?: string }) =>
+    request<{ courseId: string; slug: string; title: string }>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/duplicate`, { method: 'POST', body }),
   draftCall: (token: string, tenantId: string, courseId: string, method: 'POST' | 'PATCH' | 'PUT' | 'DELETE', path: string, body?: unknown) =>
     request<Draft>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/draft${path}`, { method, body }),
   createUpload: (token: string, tenantId: string, body: { kind: 'VIDEO' | 'AUDIO'; contentType: string; sizeBytes: number; fileName: string }) =>

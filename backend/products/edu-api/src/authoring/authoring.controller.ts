@@ -17,6 +17,10 @@ import {
   SectionInputDto,
   UpdateDraftDto,
   UpdateLessonDto,
+  BulkLessonsDto,
+  BulkLessonsResultDto,
+  DuplicateCourseDto,
+  DuplicatedCourseDto,
 } from './authoring.dto';
 import { AuthoringService } from './authoring.service';
 
@@ -112,6 +116,32 @@ export class AuthoringController {
     @Body() body: CreateLessonDto,
   ): Draft {
     return { data: await this.authoring.addLesson(scope, user, courseId, sectionId, body) };
+  }
+
+  /** Many YouTube or Google Drive links at once become lessons in order (FR-COURSE-209). */
+  @Post('courses/:courseId/draft/sections/:sectionId/lessons/bulk')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: BulkLessonsResultDto })
+  async addLessonsFromLinks(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Param('sectionId', ParseUUIDPipe) sectionId: string,
+    @Body() body: BulkLessonsDto,
+  ): Promise<{ data: BulkLessonsResultDto }> {
+    return { data: await this.authoring.addLessonsFromLinks(scope, user, courseId, sectionId, body) };
+  }
+
+  /** A copy of an offering to start a new one from, without its learners or sales (FR-COURSE-209). */
+  @Post('courses/:courseId/duplicate')
+  @ApiOkResponse({ type: DuplicatedCourseDto })
+  async duplicate(
+    @CurrentTenant() scope: TenantScope,
+    @CurrentUser() user: AuthUser,
+    @Param('courseId', ParseUUIDPipe) courseId: string,
+    @Body() body: DuplicateCourseDto,
+  ): Promise<{ data: DuplicatedCourseDto }> {
+    return { data: await this.authoring.duplicate(scope, user, courseId, body) };
   }
 
   @Patch('courses/:courseId/draft/lessons/:lessonId')

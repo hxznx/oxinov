@@ -211,3 +211,36 @@ export class DraftResourceDto {
   @ApiProperty({ nullable: true, type: String }) url: string | null;
   @ApiProperty({ nullable: true }) file: { name: string; sizeBytes: number; contentType: string } | null;
 }
+
+/** Many YouTube or Google Drive links at once, one per line with an optional title (FR-COURSE-209). */
+export class BulkLessonsDto {
+  @ApiProperty({ example: 'Hiragana part 1 https://youtu.be/dQw4w9WgXcQ' }) @IsString() @Length(1, 30_000) text: string;
+
+  @ApiPropertyOptional({ enum: ['DOCUMENT', 'VIDEO'], default: 'DOCUMENT', description: 'What Google Drive links are; YouTube links are always videos.' })
+  @IsOptional()
+  @IsIn(['DOCUMENT', 'VIDEO'])
+  driveKind?: 'DOCUMENT' | 'VIDEO';
+}
+
+export class BulkRefusalDto {
+  @ApiProperty() line: number;
+  @ApiProperty() text: string;
+  @ApiProperty() reason: string;
+}
+
+export class BulkLessonsResultDto {
+  @ApiProperty({ type: () => DraftDto }) draft: DraftDto;
+  @ApiProperty() created: number;
+  @ApiProperty({ type: [BulkRefusalDto] }) refused: BulkRefusalDto[];
+}
+
+/** Duplicate an offering as a template: structure and content, none of its learners or sales (FR-COURSE-209). */
+export class DuplicateCourseDto {
+  @ApiPropertyOptional({ example: 'JLPT N4 Foundations' }) @IsOptional() @IsString() @Length(3, 200) title?: string;
+}
+
+export class DuplicatedCourseDto {
+  @ApiProperty({ format: 'uuid' }) courseId: string;
+  @ApiProperty() slug: string;
+  @ApiProperty() title: string;
+}

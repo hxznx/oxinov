@@ -86,6 +86,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Payment checks and the email allowance, built 2026-10-03:** the bank receipt form asks for the amount paid and has "I wrote {reference} in the remarks" (ticked by default). The payment review screen lists checks with ✓, ⚠, and ⛔; a ⛔ (transaction ID on another payment) disables **Approve · unlock** with a line saying why. Disabled buttons are now dimmed across the app. Studio's notice form adds "Also send it by email" with today's remaining notice emails, and the result says how many went now and how many go tomorrow.
 
+**Faster course building, built 2026-10-03:** the course builder's Review panel lists a publish checklist (✕ needed before review, ⚠ suggested, ✓ done) and keeps Send for review and Approve and publish disabled while something is needed. Each chapter has **Paste many links at once** with the result ("Added 5 lessons", then each refused line and why). **Duplicate as a template** sits beside Plans and prices and opens the copy with a note that it has no learners, plans, or sales.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.

@@ -6,6 +6,7 @@ import {
   addSection,
   approveDraft,
   deleteLesson,
+  duplicateCourse,
   deleteSection,
   move,
   renameSection,
@@ -20,18 +21,20 @@ import { EduApiError, eduApi, type Assignment, type Draft, type Quiz } from '@/l
 import { formatDuration } from '@/lib/format.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
 import { courseState } from '@/lib/teach.ts';
+import { hasBlockers, publishChecklist } from '@/lib/course-checklist.ts';
+import { PasteLinksForm } from './PasteLinksForm';
 import { DetailsForm } from './DetailsForm';
 import { RejectForm } from './RejectForm';
 import { LiveClassesEditor } from './LiveClassesEditor';
 
 export const metadata: Metadata = { title: 'Edit course' };
 
-type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ error?: string; published?: string }> };
+type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ error?: string; published?: string; copied?: string }> };
 
 /** Course editor (FR-COURSE-201/203): details, chapters, lessons, and the review workflow. */
 export default async function CourseEditorPage({ params, searchParams }: Props) {
   const { slug, courseId } = await params;
-  const { error, published } = await searchParams;
+  const { error, published, copied } = await searchParams;
   const here = `/w/${slug}/teach/${courseId}`;
   const { token, workspace } = await workspaceContext(slug, here);
   if (workspace.role === 'LEARNER') notFound();
@@ -47,11 +50,14 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
     if (!(caught instanceof EduApiError && caught.status === 404)) throw caught;
   }
 
-  const [quizzes, assignments, liveSessions] = await Promise.all([
+  const [quizzes, assignments, liveSessions, sale] = await Promise.all([
     load(here, () => eduApi.quizzes(token, workspace.id, courseId)),
     load(here, () => eduApi.manageAssignments(token, workspace.id, courseId)),
     load(here, () => eduApi.liveSessions(token, workspace.id, courseId)),
+    // Whether plans are on sale, for the checklist; null outside the store.
+    eduApi.checkoutInfo(token, workspace.id, courseId).catch(() => null),
   ]);
+  const sellsPlans = sale ? sale.plans.length > 0 : null;
   const hidden = { slug, tenantId: workspace.id, courseId };
   const Hidden = ({ extra = {} }: { extra?: Record<string, string> }) => (
     <>
@@ -74,16 +80,29 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
             // {courseState(summary)}
             {draft ? ` · version ${draft.version}` : ''}
           </p>
-          {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
-            <Link href={`/w/${slug}/studio/offerings/${courseId}/plans`} className="btn btn-secondary mt-3">
-              Plans and prices
-            </Link>
-          ) : null}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {workspace.role === 'ADMIN' || workspace.role === 'OWNER' ? (
+              <Link href={`/w/${slug}/studio/offerings/${courseId}/plans`} className="btn btn-secondary">
+                Plans and prices
+              </Link>
+            ) : null}
+            <form action={duplicateCourse}>
+              <Hidden />
+              <button type="submit" className="btn btn-secondary" title="A new draft with the same chapters, lessons, and materials; no learners, plans, or sales">
+                Duplicate as a template
+              </button>
+            </form>
+          </div>
         </div>
 
         {error ? (
           <p role="alert" className="notice notice-error">
             {error}
+          </p>
+        ) : null}
+        {copied ? (
+          <p role="status" className="notice">
+            This is a copy: same chapters, lessons, and materials, with no learners, plans, or sales. Rename it in Course details.
           </p>
         ) : null}
         {published ? (
@@ -108,7 +127,7 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
             </form>
           </section>
         ) : (
-          <Editor draft={draft} slug={slug} hidden={hidden} Hidden={Hidden} />
+          <Editor draft={draft} slug={slug} hidden={hidden} Hidden={Hidden} sellsPlans={sellsPlans} />
         )}
 
         <LiveClassesEditor ids={hidden} sessions={liveSessions} />
@@ -126,13 +145,17 @@ function Editor({
   slug,
   hidden,
   Hidden,
+  sellsPlans,
 }: {
   draft: Draft;
   slug: string;
   hidden: { slug: string; tenantId: string; courseId: string };
   Hidden: (props: { extra?: Record<string, string> }) => React.JSX.Element;
+  sellsPlans: boolean | null;
 }) {
   const locked = draft.status === 'IN_REVIEW';
+  const checklist = publishChecklist(draft, { sellsPlans });
+  const blocked = hasBlockers(checklist);
   const editor = `/w/${slug}/teach/${draft.courseId}`;
   const lessonCount = draft.sections.reduce((sum, section) => sum + section.lessons.length, 0);
 
@@ -148,6 +171,15 @@ function Editor({
             <p className="whitespace-pre-line">{draft.reviewFeedback}</p>
           </div>
         ) : null}
+        <ul className="grid gap-1 text-sm" aria-label="Publish checklist">
+          {checklist.map((item) => (
+            <li key={item.text} className={item.level === 'block' ? 'tone-danger' : item.level === 'warn' ? 'tone-warning' : 'tone-success'}>
+              <span aria-hidden="true">{item.level === 'ok' ? '✓ ' : item.level === 'block' ? '✕ ' : '⚠ '}</span>
+              <span className="sr-only">{item.level === 'ok' ? 'Done: ' : item.level === 'block' ? 'Needed before review: ' : 'Suggested: '}</span>
+              {item.text}
+            </li>
+          ))}
+        </ul>
         {locked ? (
           <p>This draft is waiting for review. Editing is paused until it is approved or sent back.</p>
         ) : (
@@ -167,7 +199,7 @@ function Editor({
           ) : (
             <form action={submitForReview}>
               <Hidden />
-              <button type="submit" className="btn btn-secondary" disabled={lessonCount === 0}>
+              <button type="submit" className="btn btn-secondary" disabled={lessonCount === 0 || blocked}>
                 Send for review
               </button>
             </form>
@@ -175,7 +207,7 @@ function Editor({
           {draft.canReview ? (
             <form action={approveDraft}>
               <Hidden />
-              <button type="submit" className="btn btn-primary" disabled={lessonCount === 0}>
+              <button type="submit" className="btn btn-primary" disabled={lessonCount === 0 || (blocked && !locked)}>
                 Approve and publish
               </button>
             </form>
@@ -296,6 +328,7 @@ function Editor({
                   </button>
                 </form>
               )}
+              {locked ? null : <PasteLinksForm hidden={hidden} sectionId={section.id} sectionTitle={section.title} />}
             </li>
           ))}
         </ol>

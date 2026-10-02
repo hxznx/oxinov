@@ -243,3 +243,35 @@ export async function rejectDraft(_: FormState, form: FormData): Promise<FormSta
   if (reason.length < 3) return { error: 'Tell the teacher what to change.' };
   return act(form, (t) => eduApi.draftCall(t.token, t.tenantId, t.courseId, 'POST', '/reject', { reason }));
 }
+
+export type PasteState = { error?: string; created?: number; refused?: { line: number; text: string; reason: string }[] };
+
+/** Many YouTube or Google Drive links at once become lessons in a chapter (FR-COURSE-209). */
+export async function pasteLinks(_: PasteState, form: FormData): Promise<PasteState> {
+  const t = await target(form);
+  const text = String(form.get('text') ?? '');
+  if (!text.trim()) return { error: 'Paste at least one link.' };
+  const driveKind = form.get('driveKind') === 'VIDEO' ? 'VIDEO' : 'DOCUMENT';
+  try {
+    const result = await eduApi.pasteLessons(t.token, t.tenantId, t.courseId, id(form, 'sectionId'), { text: text.slice(0, 30_000), driveKind });
+    revalidatePath(t.editor, 'layout');
+    return { created: result.created, refused: result.refused };
+  } catch (error) {
+    return { error: message(error) };
+  }
+}
+
+/** Copies an offering as a draft template and opens the copy (FR-COURSE-209). */
+export async function duplicateCourse(form: FormData) {
+  const t = await target(form);
+  let next: string | null = null;
+  let error: string | undefined;
+  try {
+    const copy = await eduApi.duplicateCourse(t.token, t.tenantId, t.courseId, {});
+    next = `/w/${t.slug}/teach/${copy.courseId}?copied=1`;
+  } catch (caught) {
+    error = message(caught);
+  }
+  revalidatePath(`/w/${t.slug}/teach`, 'layout');
+  redirect(next ?? `${t.editor}?error=${encodeURIComponent((error ?? '').slice(0, 300))}`);
+}
