@@ -4,7 +4,8 @@ import { Errors } from '../common/errors';
 import type { AuthUser, TenantScope } from '../common/request';
 import { DatabaseContext } from '../database/database-context.service';
 import { hasRole } from '../tenancy/roles';
-import type { CompleteUploadDto, CreateUploadDto, MediaDto, ProgressDto, SaveProgressDto, UploadTicketDto } from './media.dto';
+import { groupLibrary } from './library-rules';
+import type { CompleteUploadDto, CreateUploadDto, LibraryItemDto, MediaDto, ProgressDto, SaveProgressDto, UploadTicketDto } from './media.dto';
 import { looksLike, safeFileName, uploadProblem } from './media-rules';
 import { ObjectStorage, UPLOAD_URL_TTL_SEC } from './object-storage';
 
@@ -12,6 +13,8 @@ import { ObjectStorage, UPLOAD_URL_TTL_SEC } from './object-storage';
 const MAX_PLAYED_PER_SAVE_SEC = 30;
 /** FR-PLAYER-402: a video or audio lesson completes after 90% of its duration has actually been played. */
 const COMPLETION_RATIO = 0.9;
+/** Upper bound on the rows one library request reads. */
+const LIBRARY_MAX_LESSONS = 2000;
 
 type AssetRow = { id: string; kind: string; status: string; fileName: string; sizeBytes: bigint; durationSec: number | null };
 const toDto = (asset: AssetRow): MediaDto => ({
@@ -124,6 +127,55 @@ export class MediaService {
         update: { positionSec: position, watchedSec: watched, completedAt },
       });
       return { positionSec: saved.positionSec, watchedSec: saved.watchedSec, completed: saved.completedAt !== null };
+    });
+  }
+
+  /**
+   * The media library (FR-COURSE-210): every YouTube video, Google Drive file, and upload used in the
+   * published or draft version of the workspace's offerings, with where each is used. Administrators see
+   * everything; a teacher sees only their own offerings and uploads.
+   */
+  library(scope: TenantScope, user: AuthUser): Promise<LibraryItemDto[]> {
+    const admin = hasRole(scope.role, 'ADMIN');
+    return this.db.run({ tenantId: scope.tenantId, userId: user.userId }, async (tx) => {
+      const lessons = await tx.lesson.findMany({
+        where: {
+          tenantId: scope.tenantId,
+          OR: [{ externalSource: { not: null } }, { mediaAssetId: { not: null } }],
+          section: { courseVersion: { status: { in: ['DRAFT', 'IN_REVIEW', 'PUBLISHED'] }, ...(admin ? {} : { course: { createdByUserId: user.userId } }) } },
+        },
+        select: {
+          id: true,
+          title: true,
+          lineageId: true,
+          externalSource: true,
+          externalId: true,
+          mediaAssetId: true,
+          section: { select: { courseVersion: { select: { courseId: true, title: true, status: true } } } },
+        },
+        take: LIBRARY_MAX_LESSONS,
+      });
+      const used = [...new Set(lessons.flatMap((lesson) => (lesson.mediaAssetId ? [lesson.mediaAssetId] : [])))];
+      const uploads = await tx.mediaAsset.findMany({
+        where: { tenantId: scope.tenantId, OR: [{ id: { in: used } }, { status: 'READY', ...(admin ? {} : { createdByUserId: user.userId }) }] },
+        select: { id: true, kind: true, status: true, fileName: true, sizeBytes: true, durationSec: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+        take: LIBRARY_MAX_LESSONS,
+      });
+      return groupLibrary(
+        lessons.map((lesson) => ({
+          courseId: lesson.section.courseVersion.courseId,
+          courseTitle: lesson.section.courseVersion.title,
+          lessonId: lesson.id,
+          lessonTitle: lesson.title,
+          lineageId: lesson.lineageId,
+          draft: lesson.section.courseVersion.status !== 'PUBLISHED',
+          externalSource: lesson.externalSource,
+          externalId: lesson.externalId,
+          mediaAssetId: lesson.mediaAssetId,
+        })),
+        uploads.map((upload) => ({ ...upload, sizeBytes: Number(upload.sizeBytes) })),
+      );
     });
   }
 }

@@ -170,6 +170,20 @@ export async function saveExternalLink(_: FormState, form: FormData): Promise<Fo
   return { error: undefined };
 }
 
+/** Puts an earlier upload from the media library into this lesson (FR-COURSE-210). */
+export async function reuseUpload(_: FormState, form: FormData): Promise<FormState> {
+  const t = await target(form);
+  const mediaId = String(form.get('mediaId') ?? '');
+  if (!UUID.test(mediaId)) return { error: 'Choose a file from the library.' };
+  try {
+    await eduApi.draftCall(t.token, t.tenantId, t.courseId, 'PATCH', `/lessons/${id(form, 'lessonId')}`, { mediaId });
+  } catch (error) {
+    return { error: message(error) };
+  }
+  revalidatePath(t.editor, 'layout');
+  return { error: undefined };
+}
+
 export async function deleteLesson(form: FormData) {
   return act(form, (t) => eduApi.draftCall(t.token, t.tenantId, t.courseId, 'DELETE', `/lessons/${id(form, 'lessonId')}`));
 }

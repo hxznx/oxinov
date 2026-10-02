@@ -28,6 +28,7 @@ export default async function StudioLayout({ children, params }: Props) {
       items: [
         { href: `${base}/offerings`, label: 'Offerings and prices', glyph: '▦', tone: '--ox-color-brand' },
         { href: `/w/${slug}/teach`, label: 'Course builder', glyph: '✎', tone: '--ox-color-brand-mid' },
+        { href: `${base}/media`, label: 'Media library', glyph: '▶', tone: '--ox-color-danger' },
       ],
     },
     {

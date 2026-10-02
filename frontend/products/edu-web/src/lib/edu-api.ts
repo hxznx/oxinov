@@ -482,6 +482,17 @@ function eduApiBaseUrl(): string {
   return (baseUrl = value.replace(/\/$/, ''));
 }
 
+/** One video, file, or upload in the media library (FR-COURSE-210), with the lessons that use it. */
+export type LibraryKind = 'YOUTUBE' | 'GOOGLE_DRIVE' | 'UPLOAD';
+
+export interface LibraryItem {
+  kind: LibraryKind;
+  id: string;
+  url: string | null;
+  upload: { kind: 'VIDEO' | 'AUDIO'; status: 'UPLOADING' | 'READY' | 'FAILED'; fileName: string; sizeBytes: number; durationSec: number | null } | null;
+  uses: { courseId: string; courseTitle: string; lessonId: string; lessonTitle: string; draft: boolean }[];
+}
+
 /** Free access grants (FR-MGMT-1404). */
 export type GrantLength = 'DAYS_7' | 'MONTH_1' | 'MONTH_6' | 'YEAR_1' | 'LIFETIME';
 
@@ -728,6 +739,7 @@ export const eduApi = {
   updateMember: (token: string, tenantId: string, userId: string, body: { role?: TenantRole; status?: 'ACTIVE' | 'SUSPENDED' }) =>
     request<Member>(token, `${tenantPath(tenantId)}/members/${encodeURIComponent(userId)}`, { method: 'PATCH', body }),
   auditEvents: (token: string, tenantId: string) => request<AuditEvent[]>(token, `${tenantPath(tenantId)}/audit-events`),
+  mediaLibrary: (token: string, tenantId: string) => request<LibraryItem[]>(token, `${tenantPath(tenantId)}/media/library`),
   grants: (token: string, tenantId: string) => request<Grant[]>(token, `${tenantPath(tenantId)}/store/grants`),
   grantAccess: (token: string, tenantId: string, body: { email: string; courseId: string; length: GrantLength; reason: string }) =>
     request<Grant>(token, `${tenantPath(tenantId)}/store/grants`, { method: 'POST', body }),

@@ -47,3 +47,27 @@ export class ProgressDto {
   @ApiProperty() watchedSec: number;
   @ApiProperty() completed: boolean;
 }
+
+export class LibraryUseDto {
+  @ApiProperty({ format: 'uuid' }) courseId: string;
+  @ApiProperty() courseTitle: string;
+  @ApiProperty({ format: 'uuid' }) lessonId: string;
+  @ApiProperty() lessonTitle: string;
+  @ApiProperty({ description: 'True when the lesson is only in an unpublished draft or a version waiting for review.' }) draft: boolean;
+}
+
+export class LibraryUploadDto {
+  @ApiProperty({ enum: ['VIDEO', 'AUDIO'] }) kind: string;
+  @ApiProperty({ enum: ['UPLOADING', 'READY', 'FAILED'] }) status: string;
+  @ApiProperty() fileName: string;
+  @ApiProperty() sizeBytes: number;
+  @ApiProperty({ nullable: true, type: Number }) durationSec: number | null;
+}
+
+export class LibraryItemDto {
+  @ApiProperty({ enum: ['YOUTUBE', 'GOOGLE_DRIVE', 'UPLOAD'] }) kind: string;
+  @ApiProperty({ description: 'The YouTube or Google Drive ID, or the media ID of an upload.' }) id: string;
+  @ApiProperty({ nullable: true, type: String, description: 'The ordinary link to open or paste into another lesson; null for uploads.' }) url: string | null;
+  @ApiProperty({ nullable: true, type: LibraryUploadDto }) upload: LibraryUploadDto | null;
+  @ApiProperty({ type: [LibraryUseDto] }) uses: LibraryUseDto[];
+}

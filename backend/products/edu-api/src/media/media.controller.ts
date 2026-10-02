@@ -1,9 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentTenant, CurrentUser } from '../auth/current-user.decorator';
 import type { AuthUser, TenantScope } from '../common/request';
 import { RequireRole, TenantGuard } from '../tenancy/tenant.guard';
-import { CompleteUploadDto, CreateUploadDto, MediaDto, ProgressDto, SaveProgressDto, UploadTicketDto } from './media.dto';
+import { CompleteUploadDto, CreateUploadDto, LibraryItemDto, MediaDto, ProgressDto, SaveProgressDto, UploadTicketDto } from './media.dto';
 import { MediaService } from './media.service';
 
 @ApiTags('Media')
@@ -12,6 +12,14 @@ import { MediaService } from './media.service';
 @Controller('v1/tenants/:tenantId/media')
 export class MediaController {
   constructor(private readonly media: MediaService) {}
+
+  /** The media library (FR-COURSE-210): every video, file, and upload in use, with where it is used. */
+  @Get('library')
+  @RequireRole('INSTRUCTOR')
+  @ApiOkResponse({ type: [LibraryItemDto] })
+  async library(@CurrentTenant() scope: TenantScope, @CurrentUser() user: AuthUser): Promise<{ data: LibraryItemDto[] }> {
+    return { data: await this.media.library(scope, user) };
+  }
 
   /** Teachers get a signed URL to upload a lesson video or audio file directly to storage. */
   @Post('uploads')

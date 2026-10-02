@@ -14,7 +14,7 @@ Today the APIs have no public host: browsers call the web apps, which call the A
 | Catalogue | `GET courses`, `GET courses/{courseId}`, `GET courses/{courseId}/lessons/{lessonId}` |
 | Authoring | `GET authoring/courses`; course draft, sections, lessons, reordering, review, and publishing under `courses/{courseId}/draft` |
 | Enrollment | `POST courses/{courseId}/enrollments`, `GET me/enrollments` |
-| Media | `POST media/uploads` (presigned upload), `POST media/{id}/complete`, `PUT media/{id}/progress` |
+| Media | `POST media/uploads` (presigned upload), `POST media/{id}/complete`, `PUT media/{id}/progress`, `GET media/library` (FR-COURSE-210; teachers and above: every YouTube, Google Drive, and upload item in published or draft versions with the lessons that use it; teachers see only their own offerings and uploads) |
 | Quizzes (authoring) | `GET/POST courses/{courseId}/quizzes`, `GET/PATCH quizzes/{id}`, sections and questions, publish, close, copy |
 | Exams (taking) | `GET courses/{courseId}/exams`, `POST exams/{examId}/attempts`, `GET exam-attempts/{id}`, `PUT exam-attempts/{id}/answers` (batch autosave), `POST exam-attempts/{id}/submit` |
 | Assignments | Manage, publish, close; learner submissions with drafts and revisions; grading with feedback |

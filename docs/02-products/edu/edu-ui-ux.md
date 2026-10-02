@@ -72,6 +72,8 @@ Management screens for learners and administrators follow the Windows 11 Setting
 
 **Free access, built 2026-10-02:** Studio › Free access (design screen 8, "Give free access") takes a learner email, a published offering, a length (7 days to lifetime), and a required reason; recent grants show their end date with **End access** and a reason.
 
+**Media library, built 2026-10-02:** Studio › Media library (design screen 9) lists every YouTube video, Google Drive file, and upload with the lessons that use it, filters (All, YouTube, Google Drive, Uploads, Not used) with counts, search, **Open**, and **Copy link**; lessons link to the course builder. The lesson editor adds **Or reuse an earlier upload** for video and audio lessons. Link-health flags wait for the YouTube and Drive API connection.
+
 ## Expert review of the store (2026-10-01)
 
 A review of the store as a place to sell courses, skills, ideas, and intellectual property found these gaps; each now has a requirement and a screen on the design canvas.
