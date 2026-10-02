@@ -25,6 +25,6 @@
     "edu:seed": "pnpm --filter @oxinov/edu-api db:seed"
   },
   "devDependencies": {
-    "turbo": "2.11.3"
+    "turbo": "2.11.4"
   }
 }
