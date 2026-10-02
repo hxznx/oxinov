@@ -35,7 +35,7 @@ export class VerificationDto {
 export class ProgressLessonDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty() title: string;
-  @ApiProperty({ enum: ['TEXT', 'VIDEO', 'AUDIO'] }) kind: string;
+  @ApiProperty({ enum: ['TEXT', 'VIDEO', 'AUDIO', 'DOCUMENT'] }) kind: string;
   @ApiProperty() required: boolean;
   @ApiProperty() completed: boolean;
 }

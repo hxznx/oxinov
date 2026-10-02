@@ -121,12 +121,12 @@ export async function deleteSection(form: FormData) {
   return act(form, (t) => eduApi.draftCall(t.token, t.tenantId, t.courseId, 'DELETE', `/sections/${id(form, 'sectionId')}`));
 }
 
-/** Adds a text, video, or audio lesson and opens it in the lesson editor. */
+/** Adds a text, video, audio, or document lesson and opens it in the lesson editor. */
 export async function addLesson(form: FormData) {
   const sectionId = id(form, 'sectionId');
   const title = String(form.get('title') ?? '').trim() || 'New lesson';
   const requested = String(form.get('kind') ?? 'TEXT');
-  const kind = requested === 'VIDEO' || requested === 'AUDIO' ? requested : 'TEXT';
+  const kind = requested === 'VIDEO' || requested === 'AUDIO' || requested === 'DOCUMENT' ? requested : 'TEXT';
   let lessonId = '';
   return act(
     form,
@@ -150,6 +150,19 @@ export async function saveLesson(_: FormState, form: FormData): Promise<FormStat
       isRequired: form.get('isRequired') === 'on',
       durationSec: Number.isFinite(minutes) && minutes > 0 ? Math.round(minutes * 60) : null,
     });
+  } catch (error) {
+    return { error: message(error) };
+  }
+  revalidatePath(t.editor, 'layout');
+  return { error: undefined };
+}
+
+/** ADR-028 point 5: sets (or with an empty value, removes) a lesson's YouTube or Google Drive link. */
+export async function saveExternalLink(_: FormState, form: FormData): Promise<FormState> {
+  const t = await target(form);
+  const link = String(form.get('externalUrl') ?? '').trim();
+  try {
+    await eduApi.draftCall(t.token, t.tenantId, t.courseId, 'PATCH', `/lessons/${id(form, 'lessonId')}`, { externalUrl: link || null });
   } catch (error) {
     return { error: message(error) };
   }

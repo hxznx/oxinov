@@ -157,9 +157,17 @@ export class LessonResourceDto {
   file: { name: string; sizeBytes: number; contentType: string; downloadUrl: string; viewUrl: string | null } | null;
 }
 
+export class LessonExternalDto {
+  @ApiProperty({ enum: ['YOUTUBE', 'GOOGLE_DRIVE'] }) source: 'YOUTUBE' | 'GOOGLE_DRIVE';
+  @ApiProperty({ description: 'View-only player address: YouTube privacy-enhanced embed or Drive preview.' }) embedUrl: string;
+}
+
 export class LessonDto extends LessonOutlineDto {
   @ApiProperty() bodyMarkdown: string;
   @ApiProperty({ type: LessonMediaDto, nullable: true }) media: LessonMediaDto | null;
+  @ApiProperty({ type: LessonExternalDto, nullable: true, description: 'YouTube or Google Drive source, returned only after the access check (ADR-028 point 5).' })
+  external: LessonExternalDto | null;
+  @ApiProperty({ description: 'Text drawn over external players to discourage sharing: the viewer email.' }) watermark: string;
   @ApiProperty({ type: [LessonResourceDto], description: 'Only for learners with course access and teachers; never on free previews (FR-COURSE-204).' })
   resources: LessonResourceDto[];
 }

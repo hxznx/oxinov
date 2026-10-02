@@ -143,9 +143,15 @@ export interface LessonResource {
   file: { name: string; sizeBytes: number; contentType: string; downloadUrl: string; viewUrl: string | null } | null;
 }
 
+export type ContentSource = 'YOUTUBE' | 'GOOGLE_DRIVE';
+
 export interface Lesson extends LessonOutline {
   bodyMarkdown: string;
   media: LessonMedia | null;
+  /** View-only player address, returned only after the access check (ADR-028 point 5). */
+  external: { source: ContentSource; embedUrl: string } | null;
+  /** The viewer's email, drawn over external players. */
+  watermark: string;
   /** Empty on free previews for people without course access. */
   resources: LessonResource[];
 }
@@ -258,6 +264,8 @@ export interface DraftLesson {
   isRequired: boolean;
   durationSec: number | null;
   media: { id: string; status: string; fileName: string; durationSec: number | null } | null;
+  /** YouTube or Google Drive source (ADR-028), with the ordinary link the author pasted. */
+  external: { source: ContentSource; id: string; url: string } | null;
   resources: { id: string; kind: 'FILE' | 'LINK'; title: string; url: string | null; file: { name: string; sizeBytes: number; contentType: string } | null }[];
 }
 
@@ -474,6 +482,32 @@ function eduApiBaseUrl(): string {
   return (baseUrl = value.replace(/\/$/, ''));
 }
 
+/** Live classes (ADR-028 point 8). Mirrors backend/products/edu-api/src/live/live-sessions.dto.ts. */
+export type Visibility = 'FREE' | 'SUBSCRIBERS';
+export type LiveProvider = 'GOOGLE_MEET' | 'ZOOM' | 'MICROSOFT_TEAMS' | 'OTHER';
+
+export interface LiveSession {
+  id: string;
+  title: string;
+  startsAt: string;
+  durationMin: number;
+  visibility: Visibility;
+  provider: LiveProvider;
+  cancelled: boolean;
+  /** Only for people allowed to join. */
+  joinUrl: string | null;
+  locked: boolean;
+}
+
+export interface LiveSessionInput {
+  title?: string;
+  startsAt?: string;
+  durationMin?: number;
+  joinUrl?: string;
+  visibility?: Visibility;
+  cancelled?: boolean;
+}
+
 /** Oxinov's public store (ADR-028). Mirrors backend/products/edu-api/src/store/storefront.dto.ts. */
 export type OfferingKind = 'COURSE' | 'TRAINING' | 'IDEA' | 'THINK_TANK' | 'SKILL';
 export type OfferingCategory = 'LANGUAGES' | 'TECHNOLOGY' | 'IDEAS_RESEARCH' | 'OTHER';
@@ -516,6 +550,8 @@ export interface StoreOfferingDetail extends StoreOffering {
   refundPolicy: string;
   reviewTimeText: string;
   storeSlug: string;
+  /** Upcoming live classes: time and title only. */
+  liveSessions: { title: string; startsAt: string; durationMin: number; visibility: Visibility }[];
   /** Bank QR checkout is set up, so plans can be bought now. */
   checkoutOpen: boolean;
 }
@@ -584,6 +620,12 @@ export const eduApi = {
   revokeCertificate: (token: string, tenantId: string, code: string, reason: string) =>
     request<Certificate>(token, `${tenantPath(tenantId)}/certificates/${encodeURIComponent(code)}/revoke`, { method: 'POST', body: { reason } }),
   verifyCertificate: (code: string) => publicRequest<CertificateVerification>(`/v1/certificates/${encodeURIComponent(code)}`),
+  liveSessions: (token: string, tenantId: string, courseId: string) =>
+    request<LiveSession[]>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/live-sessions`),
+  createLiveSession: (token: string, tenantId: string, courseId: string, body: LiveSessionInput) =>
+    request<LiveSession>(token, `${tenantPath(tenantId)}/courses/${encodeURIComponent(courseId)}/live-sessions`, { method: 'POST', body }),
+  updateLiveSession: (token: string, tenantId: string, sessionId: string, body: LiveSessionInput) =>
+    request<LiveSession>(token, `${tenantPath(tenantId)}/live-sessions/${encodeURIComponent(sessionId)}`, { method: 'PATCH', body }),
   storeHome: () => publicRequest<StoreHome>('/v1/store'),
   storeOffering: (slug: string) => publicRequest<StoreOfferingDetail>(`/v1/store/offerings/${encodeURIComponent(slug)}`),
   joinStore: (token: string) => request<Workspace>(token, '/v1/store/join', { method: 'POST' }),

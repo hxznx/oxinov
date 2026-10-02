@@ -79,7 +79,7 @@ export class StorefrontService {
         include: offeringInclude,
       });
       if (!course?.publishedVersionId) throw Errors.notFound('Offering');
-      const [version, plans, settings, tenant] = await Promise.all([
+      const [version, plans, settings, tenant, live] = await Promise.all([
         tx.courseVersion.findUniqueOrThrow({
           where: { id: course.publishedVersionId },
           select: {
@@ -97,6 +97,12 @@ export class StorefrontService {
         tx.coursePlan.findMany({ where: { tenantId, courseId: course.id, active: true } }),
         tx.storeSettings.findUnique({ where: { tenantId }, select: { refundPolicy: true, reviewTimeText: true, bankQrObjectKey: true, accountName: true } }),
         tx.tenant.findUniqueOrThrow({ where: { id: tenantId }, select: { slug: true } }),
+        tx.liveSession.findMany({
+          where: { tenantId, courseId: course.id, cancelledAt: null, startsAt: { gt: new Date(Date.now() - 60 * 60 * 1000) } },
+          orderBy: { startsAt: 'asc' },
+          take: 10,
+          select: { title: true, startsAt: true, durationMin: true, visibility: true },
+        }),
       ]);
       return {
         ...toOffering(course),
@@ -109,6 +115,7 @@ export class StorefrontService {
         refundPolicy: settings?.refundPolicy ?? '',
         reviewTimeText: settings?.reviewTimeText ?? 'Usually within a few hours',
         storeSlug: tenant.slug,
+        liveSessions: live,
         // Same rule as checkout (StoreService.bankDetails): a QR and an account name must be set.
         checkoutOpen: Boolean(settings?.bankQrObjectKey && settings.accountName),
       };

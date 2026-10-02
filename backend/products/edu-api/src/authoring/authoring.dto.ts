@@ -16,8 +16,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-/** Lesson kinds authors can create (FR-COURSE-202/205). Video and audio lessons attach an uploaded media file. */
-export const AUTHORABLE_LESSON_KINDS = ['TEXT', 'VIDEO', 'AUDIO'] as const;
+/**
+ * Lesson kinds authors can create (FR-COURSE-202/205). Video and audio lessons attach an uploaded media file
+ * or, for video, an unlisted YouTube or Google Drive link; document lessons show a Google Drive file (ADR-028).
+ */
+export const AUTHORABLE_LESSON_KINDS = ['TEXT', 'VIDEO', 'AUDIO', 'DOCUMENT'] as const;
 
 export class UpdateDraftDto {
   @ApiPropertyOptional() @IsOptional() @IsString() @Length(3, 200) title?: string;
@@ -73,6 +76,12 @@ export class CreateLessonDto {
   @IsUUID()
   mediaId?: string;
 
+  @ApiPropertyOptional({ description: 'An unlisted YouTube video (video lessons) or a Google Drive file (video or document lessons), instead of an uploaded file.' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 2000)
+  externalUrl?: string;
+
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isPreview?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isRequired?: boolean;
 
@@ -91,6 +100,11 @@ export class UpdateLessonDto {
   @IsOptional()
   @IsUUID()
   mediaId?: string | null;
+  @ApiPropertyOptional({ nullable: true, description: 'Set (or with null, remove) the YouTube or Google Drive link; replaces any uploaded file.' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 2000)
+  externalUrl?: string | null;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isPreview?: boolean;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isRequired?: boolean;
   @ApiPropertyOptional({ nullable: true }) @IsOptional() @IsInt() @Min(1) @Max(86_400) durationSec?: number | null;
@@ -126,6 +140,8 @@ export class DraftLessonDto {
   @ApiProperty({ nullable: true, type: Number }) durationSec: number | null;
   @ApiProperty({ nullable: true, description: 'Attached video or audio file.' })
   media: { id: string; status: string; fileName: string; durationSec: number | null } | null;
+  @ApiProperty({ nullable: true, description: 'YouTube or Google Drive source, with a link authors can open.' })
+  external: { source: 'YOUTUBE' | 'GOOGLE_DRIVE'; id: string; url: string } | null;
   @ApiProperty({ description: 'Files and links attached to the lesson.' })
   resources: { id: string; kind: string; title: string; url: string | null; file: { name: string; sizeBytes: number; contentType: string } | null }[];
 }

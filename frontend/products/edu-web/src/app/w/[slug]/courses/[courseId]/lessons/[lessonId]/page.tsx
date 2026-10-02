@@ -9,6 +9,7 @@ import { formatBytes } from '@/lib/assignment.ts';
 import { resourceLabel } from '@/lib/resources.ts';
 import { CompleteLessonButton } from './CompleteLessonButton';
 import { LessonQuestions } from './LessonQuestions';
+import { ExternalViewer } from './ExternalViewer';
 import { MediaPlayer } from './MediaPlayer';
 import { NotesPanel } from './NotesPanel';
 
@@ -68,13 +69,14 @@ export default async function LessonPage({ params }: Props) {
         </div>
 
         {lesson.media ? <MediaPlayer media={lesson.media} tenantId={workspace.id} title={lesson.title} /> : null}
-        {lesson.kind !== 'TEXT' && !lesson.media ? (
+        {lesson.external ? <ExternalViewer source={lesson.external.source} embedUrl={lesson.external.embedUrl} title={lesson.title} watermark={lesson.watermark} /> : null}
+        {(lesson.kind === 'VIDEO' || lesson.kind === 'AUDIO') && !lesson.media && !lesson.external ? (
           <p className="notice">This {lesson.kind === 'VIDEO' ? 'video' : 'recording'} is not available right now. The transcript is below.</p>
         ) : null}
 
         {lesson.bodyMarkdown.trim() ? (
-          <article className="prose-ox card" aria-label={lesson.kind === 'TEXT' ? undefined : 'Transcript'}>
-            {lesson.kind === 'TEXT' ? null : <p className="hud-label">// Transcript</p>}
+          <article className="prose-ox card" aria-label={lesson.kind === 'TEXT' ? undefined : lesson.kind === 'DOCUMENT' ? 'Notes' : 'Transcript'}>
+            {lesson.kind === 'TEXT' ? null : <p className="hud-label">// {lesson.kind === 'DOCUMENT' ? 'Notes' : 'Transcript'}</p>}
             <LessonMarkdown>{lesson.bodyMarkdown}</LessonMarkdown>
           </article>
         ) : null}
@@ -143,7 +145,7 @@ export default async function LessonPage({ params }: Props) {
               <p className="notice" role="status">
                 Lesson complete.
               </p>
-            ) : lesson.kind === 'TEXT' ? (
+            ) : !lesson.media ? (
               <CompleteLessonButton tenantId={workspace.id} courseId={courseId} lessonId={lesson.id} returnTo={here} />
             ) : (
               <p className="text-sm opacity-80">This lesson is complete once you have played at least 90% of it.</p>

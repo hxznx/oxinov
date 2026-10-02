@@ -263,6 +263,27 @@
   .store-plan input { accent-color: var(--tone, var(--ox-color-brand)); width: 1.125rem; height: 1.125rem; }
 
   .store-lock { color: var(--ox-color-text-muted); }
+
+  /* View-only viewer for YouTube and Google Drive lessons (ADR-028 point 6): the viewer's email repeats
+     faintly across the frame and never blocks clicks on the player. */
+  .viewer-frame { position: relative; overflow: hidden; background: #000; border: 1px solid var(--ox-color-border); }
+  .viewer-document { height: min(80vh, 56rem); }
+  .viewer-watermark {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    user-select: none;
+    display: grid;
+    align-content: space-evenly;
+    justify-items: center;
+    transform: rotate(-18deg) scale(1.3);
+    font-family: var(--font-hud);
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+    color: rgb(255 255 255 / 0.16);
+    text-shadow: 0 0 2px rgb(0 0 0 / 0.35);
+    white-space: nowrap;
+  }
   .store-faq { background: var(--ox-color-surface); border: 1px solid var(--ox-color-border); clip-path: var(--ox-cut-sm); padding: 0.875rem 1.125rem; }
   .store-faq > summary { cursor: pointer; font-weight: 600; }
 

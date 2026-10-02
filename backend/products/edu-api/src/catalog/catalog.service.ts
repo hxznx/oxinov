@@ -4,6 +4,7 @@ import type { AuthUser, TenantScope } from '../common/request';
 import { DatabaseContext, type Tx } from '../database/database-context.service';
 import type { Prisma } from '../generated/prisma/client';
 import { hasActiveEntitlement } from '../learning/access';
+import { embedUrl } from '../authoring/external-content';
 import { ObjectStorage } from '../media/object-storage';
 import { canAuthor } from '../tenancy/roles';
 import type {
@@ -171,6 +172,9 @@ export class CatalogService {
         durationSec: lesson.durationSec,
         bodyMarkdown: lesson.bodyMarkdown,
         media,
+        // The video or file ID leaves the API only now, after the access check above (ADR-028 point 5).
+        external: lesson.externalSource && lesson.externalId ? { source: lesson.externalSource, embedUrl: embedUrl({ source: lesson.externalSource, id: lesson.externalId }) } : null,
+        watermark: lesson.externalSource ? await this.viewerMark(tx, user.userId) : '',
         resources: await this.lessonResources(lesson.resources, entitled || author),
       };
     });
@@ -299,6 +303,12 @@ export class CatalogService {
       (course.status === 'PUBLISHED' || (course.status === 'ARCHIVED' && entitled));
     if (!visible || !course.publishedVersionId) throw Errors.notFound('Course');
     return { course, versionId: course.publishedVersionId, entitled, author };
+  }
+
+  /** The viewer's email (or name) for the watermark over external players. */
+  private async viewerMark(tx: Tx, userId: string): Promise<string> {
+    const profile = await tx.userProfile.findUnique({ where: { id: userId }, select: { email: true, displayName: true } });
+    return (profile?.email ?? profile?.displayName ?? 'Oxinov learner').slice(0, 120);
   }
 
   private toSummary(course: CourseWithVersions, author: boolean): CourseSummaryDto {

@@ -10,6 +10,7 @@ import { BuyPanel } from './BuyPanel';
 import { EnrollButton } from './EnrollButton';
 import { PlansPanel } from './PlansPanel';
 import { StartExamButton } from './StartExamButton';
+import { LiveClassList } from '@/components/LiveClassList';
 
 type Props = { params: Promise<{ slug: string; courseId: string }>; searchParams: Promise<{ locked?: string; paid?: string; plan?: string }> };
 
@@ -41,6 +42,8 @@ export default async function CoursePage({ params, searchParams }: Props) {
         })
       : null;
   const latest = stream?.announcements[0];
+  // Live classes (ADR-028 point 8): every member sees the times; links only where they may join.
+  const liveSessions = await eduApi.liveSessions(token, workspace.id, courseId).catch(() => []);
   // Completion and the certificate (FR-PLAYER-402, FR-CERT-601): checking progress also issues the
   // certificate the first time the course is complete.
   const progress = entitled ? await eduApi.progress(token, workspace.id, courseId).catch(() => null) : null;
@@ -202,7 +205,8 @@ export default async function CoursePage({ params, searchParams }: Props) {
           ) : null}
         </div>
 
-        <aside className="card h-fit lg:sticky lg:top-6" aria-label="Enrollment">
+        <div className="grid h-fit gap-4 lg:sticky lg:top-6">
+        <aside className="card" aria-label="Enrollment">
           <p className="font-display text-3xl">{formatPrice(course.price)}</p>
           <p className="hud-label mt-1">
             // {lessons.length} lessons · {course.language.toUpperCase()}
@@ -290,6 +294,8 @@ export default async function CoursePage({ params, searchParams }: Props) {
             )}
           </div>
         </aside>
+        <LiveClassList sessions={liveSessions} />
+        </div>
       </main>
     </>
   );

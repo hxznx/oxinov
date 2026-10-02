@@ -25,6 +25,8 @@ const config: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Lesson viewers frame only YouTube's privacy-enhanced embed and Google Drive previews (ADR-028).
+          { key: 'Content-Security-Policy', value: "frame-src 'self' https://www.youtube-nocookie.com https://drive.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'" },
         ],
       },
     ];

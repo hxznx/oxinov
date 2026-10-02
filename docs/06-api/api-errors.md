@@ -33,6 +33,7 @@ Every API error returns a stable JSON envelope. Do not expose stack traces, secr
 | `403` | `POLICY_ACCEPTANCE_REQUIRED` | The user must accept a new policy before proceeding. |
 | `404` | `RESOURCE_NOT_FOUND` | The resource does not exist, or exists in another tenant (cross-tenant accesses return 404, not 403, to avoid data leakage). |
 | `409` | `CONFLICT` | The request conflicts with the current state (e.g., creating a user that already exists). |
+| `422` | `CONTENT_LINK_INVALID` | A lesson link is not an unlisted YouTube video or a Google Drive file, or does not fit the lesson kind (Edu, ADR-028 point 5); or a live class link is not https. The message says which and is safe to show. |
 | `422` | `COUPON_INVALID` | A coupon code is unknown, expired, used up, or not for this course or plan (Edu store, FR-CATALOG-317). The message says which and is safe to show. |
 | `429` | `RATE_LIMIT_EXCEEDED` | The client has sent too many requests in a given timeframe. |
 | `500` | `INTERNAL_ERROR` | An unexpected server failure. Log the underlying cause server-side with tenant context. |

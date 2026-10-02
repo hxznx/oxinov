@@ -82,6 +82,7 @@ model Tenant {
   coursePlans       CoursePlan[]
   coupons           Coupon[]
   storeSettings     StoreSettings?
+  liveSessions      LiveSession[]
 
   @@map("tenants")
 }
@@ -112,6 +113,7 @@ model UserProfile {
   gradedRevisions     SubmissionRevision[]   @relation("RevisionGrader")
   lessonNotes         LessonNote[]
   resourceFiles       ResourceFile[]
+  liveSessionsCreated LiveSession[]
   announcements       CourseAnnouncement[]
   lessonQuestions     LessonQuestion[]       @relation("QuestionAuthor")
   lessonAnswers       LessonAnswer[]         @relation("AnswerAuthor")
@@ -276,6 +278,7 @@ model Course {
   certificates      Certificate[]
   plans             CoursePlan[]
   coupons           Coupon[]
+  liveSessions      LiveSession[]
 
   @@unique([tenantId, id])
   @@unique([tenantId, slug])
@@ -335,28 +338,34 @@ enum LessonKind {
   VIDEO
   AUDIO
   TEXT
+  /// A Google Drive PDF, slide deck, or document shown in the viewer (ADR-028 point 5).
+  DOCUMENT
 
   @@map("lesson_kind")
 }
 
 model Lesson {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId     String     @map("tenant_id") @db.Uuid
-  sectionId    String     @map("section_id") @db.Uuid
-  title        String     @db.VarChar(200)
-  kind         LessonKind
-  position     Int
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String         @map("tenant_id") @db.Uuid
+  sectionId      String         @map("section_id") @db.Uuid
+  title          String         @db.VarChar(200)
+  kind           LessonKind
+  position       Int
   /// Markdown body for text lessons and transcripts/text alternatives for media lessons.
-  bodyMarkdown String     @default("") @map("body_markdown")
-  isPreview    Boolean    @default(false) @map("is_preview")
-  isRequired   Boolean    @default(true) @map("is_required")
-  durationSec  Int?       @map("duration_sec")
+  bodyMarkdown   String         @default("") @map("body_markdown")
+  isPreview      Boolean        @default(false) @map("is_preview")
+  isRequired     Boolean        @default(true) @map("is_required")
+  durationSec    Int?           @map("duration_sec")
   /// Video or audio for VIDEO and AUDIO lessons (FR-COURSE-202/205); shared by copied draft versions.
-  mediaAssetId String?    @map("media_asset_id") @db.Uuid
+  mediaAssetId   String?        @map("media_asset_id") @db.Uuid
+  /// Unlisted YouTube video or Google Drive file instead of an Oxinov-hosted file (ADR-028 point 5).
+  /// Only the ID is stored; the API reveals it after the lesson's access check.
+  externalSource ContentSource? @map("external_source")
+  externalId     String?        @map("external_id") @db.VarChar(128)
   /// Stable identity of this lesson across course versions (copied into each new draft), so learner
   /// data such as notes survives republishing.
-  lineageId    String     @default(dbgenerated("gen_random_uuid()")) @map("lineage_id") @db.Uuid
-  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  lineageId      String         @default(dbgenerated("gen_random_uuid()")) @map("lineage_id") @db.Uuid
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
 
   tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   section    Section          @relation(fields: [tenantId, sectionId], references: [tenantId, id], onDelete: Restrict)
@@ -926,6 +935,47 @@ enum OfferingCategory {
   OTHER
 
   @@map("offering_category")
+}
+
+/// Where an externally hosted lesson lives (ADR-028 point 5).
+enum ContentSource {
+  YOUTUBE
+  GOOGLE_DRIVE
+
+  @@map("content_source")
+}
+
+/// Who may open a live class or item (ADR-028 point 7).
+enum ItemVisibility {
+  FREE
+  SUBSCRIBERS
+
+  @@map("item_visibility")
+}
+
+/// A live class link for an offering (ADR-028 point 8). Oxinov does not host calls; the join link is
+/// shown only to people allowed to join. Cancelled, never deleted.
+model LiveSession {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String         @map("tenant_id") @db.Uuid
+  courseId        String         @map("course_id") @db.Uuid
+  title           String         @db.VarChar(200)
+  startsAt        DateTime       @map("starts_at") @db.Timestamptz(3)
+  durationMin     Int            @map("duration_min")
+  joinUrl         String         @map("join_url") @db.VarChar(500)
+  visibility      ItemVisibility @default(SUBSCRIBERS)
+  cancelledAt     DateTime?      @map("cancelled_at") @db.Timestamptz(3)
+  createdByUserId String         @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  tenant    Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  course    Course      @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict)
+  createdBy UserProfile @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([tenantId, id])
+  @@index([tenantId, courseId, startsAt])
+  @@map("live_sessions")
 }
 
 enum PlanPeriod {

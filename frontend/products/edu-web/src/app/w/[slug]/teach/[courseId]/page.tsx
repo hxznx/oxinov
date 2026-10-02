@@ -22,6 +22,7 @@ import { load, workspaceContext } from '@/lib/guard.ts';
 import { courseState } from '@/lib/teach.ts';
 import { DetailsForm } from './DetailsForm';
 import { RejectForm } from './RejectForm';
+import { LiveClassesEditor } from './LiveClassesEditor';
 
 export const metadata: Metadata = { title: 'Edit course' };
 
@@ -46,9 +47,10 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
     if (!(caught instanceof EduApiError && caught.status === 404)) throw caught;
   }
 
-  const [quizzes, assignments] = await Promise.all([
+  const [quizzes, assignments, liveSessions] = await Promise.all([
     load(here, () => eduApi.quizzes(token, workspace.id, courseId)),
     load(here, () => eduApi.manageAssignments(token, workspace.id, courseId)),
+    load(here, () => eduApi.liveSessions(token, workspace.id, courseId)),
   ]);
   const hidden = { slug, tenantId: workspace.id, courseId };
   const Hidden = ({ extra = {} }: { extra?: Record<string, string> }) => (
@@ -108,6 +110,8 @@ export default async function CourseEditorPage({ params, searchParams }: Props) 
         ) : (
           <Editor draft={draft} slug={slug} hidden={hidden} Hidden={Hidden} />
         )}
+
+        <LiveClassesEditor ids={hidden} sessions={liveSessions} />
 
         <Assignments assignments={assignments} editor={here} Hidden={Hidden} />
 
@@ -242,12 +246,13 @@ function Editor({
                         {locked ? lesson.title : <Link href={`${editor}/lessons/${lesson.id}`}>{lesson.title}</Link>}
                         <span className="hud-label ml-2">
                           {[
-                            lesson.kind === 'VIDEO' ? 'Video' : lesson.kind === 'AUDIO' ? 'Audio' : null,
-                            lesson.kind !== 'TEXT' && lesson.media?.status !== 'READY' ? 'No file yet' : null,
+                            lesson.kind === 'VIDEO' ? 'Video' : lesson.kind === 'AUDIO' ? 'Audio' : lesson.kind === 'DOCUMENT' ? 'Document' : null,
+                            lesson.external ? (lesson.external.source === 'YOUTUBE' ? 'YouTube' : 'Google Drive') : null,
+                            lesson.kind !== 'TEXT' && lesson.media?.status !== 'READY' && !lesson.external ? 'No file yet' : null,
                             lesson.isPreview ? 'Preview' : null,
                             lesson.isRequired ? null : 'Optional',
                             formatDuration(lesson.durationSec ?? lesson.media?.durationSec ?? null),
-                            lesson.bodyMarkdown.trim() ? null : lesson.kind === 'TEXT' ? 'Empty' : 'No transcript',
+                            lesson.bodyMarkdown.trim() || lesson.kind === 'DOCUMENT' ? null : lesson.kind === 'TEXT' ? 'Empty' : 'No transcript',
                           ]
                             .filter(Boolean)
                             .join(' · ')}
@@ -284,6 +289,7 @@ function Editor({
                     <option value="TEXT">Text</option>
                     <option value="VIDEO">Video</option>
                     <option value="AUDIO">Audio</option>
+                    <option value="DOCUMENT">Document (Google Drive)</option>
                   </select>
                   <button type="submit" className="btn btn-secondary">
                     Add lesson

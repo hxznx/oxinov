@@ -24,6 +24,7 @@ export type ErrorCode =
   | 'MEDIA_NOT_UPLOADED'
   | 'MEDIA_INVALID'
   | 'COUPON_INVALID'
+  | 'CONTENT_LINK_INVALID'
   | 'RATE_LIMITED'
   | 'INTERNAL_ERROR';
 
@@ -70,4 +71,5 @@ export const Errors = {
     new DomainError('MEDIA_NOT_UPLOADED', 409, 'The file has not finished uploading. Upload it again.'),
   mediaInvalid: (message: string) => new DomainError('MEDIA_INVALID', 422, message),
   couponInvalid: (message: string) => new DomainError('COUPON_INVALID', 422, message),
+  contentLinkInvalid: (message: string) => new DomainError('CONTENT_LINK_INVALID', 422, message),
 } as const;

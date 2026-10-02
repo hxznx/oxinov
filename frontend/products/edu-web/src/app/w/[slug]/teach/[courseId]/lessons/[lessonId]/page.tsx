@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { EduHeader } from '@/components/EduHeader';
 import { eduApi } from '@/lib/edu-api.ts';
 import { load, workspaceContext } from '@/lib/guard.ts';
+import { ExternalLinkForm } from './ExternalLinkForm';
 import { LessonEditor } from './LessonEditor';
 import { MediaUploader } from './MediaUploader';
 import { ResourcesEditor } from './ResourcesEditor';
@@ -12,7 +13,10 @@ export const metadata: Metadata = { title: 'Edit lesson' };
 
 type Props = { params: Promise<{ slug: string; courseId: string; lessonId: string }> };
 
-/** Lesson editor for a draft: text, and for video and audio lessons the media file (FR-COURSE-202/205). */
+/**
+ * Lesson editor for a draft: text, for video and audio lessons the media file (FR-COURSE-202/205), and for
+ * video and document lessons a YouTube or Google Drive link (ADR-028 point 5).
+ */
 export default async function LessonEditorPage({ params }: Props) {
   const { slug, courseId, lessonId } = await params;
   const editor = `/w/${slug}/teach/${courseId}`;
@@ -39,6 +43,7 @@ export default async function LessonEditorPage({ params }: Props) {
         {lesson.kind === 'VIDEO' || lesson.kind === 'AUDIO' ? (
           <MediaUploader kind={lesson.kind} hidden={{ slug, tenantId: workspace.id, courseId, lessonId }} current={lesson.media} />
         ) : null}
+        {lesson.kind === 'VIDEO' || lesson.kind === 'DOCUMENT' ? <ExternalLinkForm hidden={{ slug, tenantId: workspace.id, courseId, lessonId }} lesson={lesson} /> : null}
         <LessonEditor hidden={{ slug, tenantId: workspace.id, courseId, lessonId }} lesson={lesson} />
         <ResourcesEditor ids={{ slug, tenantId: workspace.id, courseId, lessonId }} resources={lesson.resources} />
         <p>

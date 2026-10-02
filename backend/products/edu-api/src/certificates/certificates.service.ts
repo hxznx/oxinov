@@ -73,7 +73,9 @@ export class CertificatesService {
     await this.db.run(ctx, async (tx) => {
       const lesson = await this.publishedLesson(tx, scope.tenantId, courseId, lessonId);
       if (!(await hasActiveEntitlement(tx, scope.tenantId, user.userId, courseId))) throw Errors.notEntitled();
-      if (lesson.kind !== 'TEXT') {
+      // Uploaded video and audio complete by playing them; text, documents, and YouTube or Drive lessons,
+      // whose players Oxinov cannot observe, are marked complete by the learner (ADR-028 point 6).
+      if (lesson.mediaAssetId !== null) {
         throw Errors.conflict('Video and audio lessons are completed by playing them.');
       }
       await tx.lessonCompletion.createMany({
@@ -281,7 +283,7 @@ export class CertificatesService {
     const doneLineages = new Set(completions.map((c) => c.lessonLineageId));
     const doneMedia = new Set(media.map((m) => m.mediaAssetId));
     const lessonDone = (lesson: (typeof lessons)[number]) =>
-      lesson.kind === 'TEXT' ? doneLineages.has(lesson.lineageId) : lesson.mediaAssetId !== null && doneMedia.has(lesson.mediaAssetId);
+      lesson.mediaAssetId !== null ? doneMedia.has(lesson.mediaAssetId) : doneLineages.has(lesson.lineageId);
 
     const lessonItems = lessons.map((lesson) => ({ id: lesson.id, title: lesson.title, kind: lesson.kind, required: lesson.isRequired, completed: lessonDone(lesson) }));
     const examItems = exams.map((exam) => ({ id: exam.id, title: exam.title, passed: exam.attempts.some((a) => a.results[0]?.passed === true) }));
@@ -308,7 +310,7 @@ export class CertificatesService {
     if (!course?.publishedVersionId) throw Errors.notFound('Course');
     const lesson = await tx.lesson.findFirst({
       where: { id: lessonId, tenantId, section: { courseVersionId: course.publishedVersionId } },
-      select: { kind: true, lineageId: true },
+      select: { kind: true, lineageId: true, mediaAssetId: true },
     });
     if (!lesson) throw Errors.notFound('Lesson');
     return lesson;

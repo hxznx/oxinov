@@ -6,6 +6,7 @@ import { DatabaseContext, type Tx } from '../database/database-context.service';
 import { safeFileName } from '../media/media-rules';
 import { ObjectStorage } from '../media/object-storage';
 import { hasRole } from '../tenancy/roles';
+import { authorUrl, parseExternal, sourceProblem, type ExternalRef } from './external-content';
 import { resourceFileProblem, resourceLooksLike } from './resource-files';
 import type {
   AuthoredCourseDto,
@@ -130,6 +131,8 @@ export class AuthoringService {
               isRequired: lesson.isRequired,
               durationSec: lesson.durationSec,
               mediaAssetId: lesson.mediaAssetId,
+              externalSource: lesson.externalSource,
+              externalId: lesson.externalId,
               // Same lesson in a new version: learner notes follow it.
               lineageId: lesson.lineageId,
             })),
@@ -197,7 +200,9 @@ export class AuthoringService {
     return this.edit(scope, user, courseId, async (tx, _course, draft) => {
       await this.draftSection(tx, scope.tenantId, draft.id, sectionId);
       const kind = input.kind ?? 'TEXT';
+      if (input.mediaId && input.externalUrl) throw Errors.contentLinkInvalid('Choose an uploaded file or a YouTube or Drive link, not both.');
       if (input.mediaId) await this.readyMedia(tx, scope.tenantId, input.mediaId, kind);
+      const external = input.externalUrl ? externalFor(kind, input.externalUrl) : null;
       const last = await tx.lesson.aggregate({ where: { tenantId: scope.tenantId, sectionId }, _max: { position: true } });
       await tx.lesson.create({
         data: {
@@ -206,6 +211,8 @@ export class AuthoringService {
           title: input.title,
           kind,
           mediaAssetId: input.mediaId ?? null,
+          externalSource: external?.source ?? null,
+          externalId: external?.id ?? null,
           position: (last._max.position ?? 0) + 1,
           bodyMarkdown: input.bodyMarkdown ?? '',
           isPreview: input.isPreview ?? false,
@@ -219,11 +226,20 @@ export class AuthoringService {
   updateLesson(scope: TenantScope, user: AuthUser, courseId: string, lessonId: string, input: UpdateLessonDto): Promise<DraftDto> {
     return this.edit(scope, user, courseId, async (tx, _course, draft) => {
       const lesson = await this.draftLesson(tx, scope.tenantId, draft.id, lessonId);
-      const { mediaId, ...fields } = input;
+      const { mediaId, externalUrl, ...fields } = input;
+      if (mediaId && externalUrl) throw Errors.contentLinkInvalid('Choose an uploaded file or a YouTube or Drive link, not both.');
       if (mediaId) await this.readyMedia(tx, scope.tenantId, mediaId, lesson.kind);
+      const external = externalUrl ? externalFor(lesson.kind, externalUrl) : null;
       await tx.lesson.update({
         where: { id: lessonId },
-        data: { ...fields, ...(mediaId !== undefined ? { mediaAssetId: mediaId } : {}) },
+        data: {
+          ...fields,
+          ...(mediaId !== undefined ? { mediaAssetId: mediaId } : {}),
+          // A link replaces an uploaded file and an uploaded file replaces a link (one source per lesson).
+          ...(mediaId ? { externalSource: null, externalId: null } : {}),
+          ...(externalUrl !== undefined ? { externalSource: external?.source ?? null, externalId: external?.id ?? null } : {}),
+          ...(external ? { mediaAssetId: null } : {}),
+        },
       });
     });
   }
@@ -468,23 +484,30 @@ export class AuthoringService {
   private async assertComplete(tx: Tx, tenantId: string, draftId: string): Promise<void> {
     const sections = await tx.section.findMany({
       where: { tenantId, courseVersionId: draftId },
-      select: { lessons: { select: { title: true, kind: true, bodyMarkdown: true, mediaAsset: { select: { status: true } } } } },
+      select: { lessons: { select: { title: true, kind: true, bodyMarkdown: true, externalSource: true, mediaAsset: { select: { status: true } } } } },
     });
     if (sections.length === 0 || sections.some((section) => section.lessons.length === 0)) {
       throw Errors.conflict('Add at least one chapter, and at least one lesson in every chapter, before sending for review.');
     }
-    // FR-COURSE-202: media lessons need their file and a transcript or other text alternative.
-    const incomplete = sections
-      .flatMap((section) => section.lessons)
-      .find((lesson) => lesson.kind !== 'TEXT' && (lesson.mediaAsset?.status !== 'READY' || !lesson.bodyMarkdown.trim()));
+    const lessons = sections.flatMap((section) => section.lessons);
+    // ADR-028 point 5: a document lesson shows its Google Drive file.
+    const noDocument = lessons.find((lesson) => lesson.kind === 'DOCUMENT' && lesson.externalSource === null);
+    if (noDocument) throw Errors.conflict(`“${noDocument.title}” needs its Google Drive link before review.`);
+    // FR-COURSE-202: media lessons need their file (uploaded, or a YouTube or Drive link) and a transcript or
+    // other text alternative.
+    const incomplete = lessons.find(
+      (lesson) =>
+        (lesson.kind === 'VIDEO' || lesson.kind === 'AUDIO') &&
+        ((lesson.mediaAsset?.status !== 'READY' && lesson.externalSource === null) || !lesson.bodyMarkdown.trim()),
+    );
     if (incomplete) {
-      throw Errors.conflict(`“${incomplete.title}” needs its ${incomplete.kind === 'VIDEO' ? 'video' : 'audio'} file and a transcript or text alternative before review.`);
+      throw Errors.conflict(`“${incomplete.title}” needs its ${incomplete.kind === 'VIDEO' ? 'video (upload or YouTube or Drive link)' : 'audio file'} and a transcript or text alternative before review.`);
     }
   }
 
   /** A media file can be attached only when it is READY, in this tenant, and of the lesson's kind. */
   private async readyMedia(tx: Tx, tenantId: string, mediaId: string, kind: string): Promise<void> {
-    if (kind === 'TEXT') throw Errors.conflict('Text lessons do not take a video or audio file.');
+    if (kind === 'TEXT' || kind === 'DOCUMENT') throw Errors.conflict('Text and document lessons do not take a video or audio file.');
     const asset = await tx.mediaAsset.findFirst({ where: { id: mediaId, tenantId }, select: { status: true, kind: true } });
     if (!asset) throw Errors.notFound('Media');
     if (asset.status !== 'READY') throw Errors.mediaNotUploaded();
@@ -555,6 +578,7 @@ export class AuthoringService {
           isRequired: lesson.isRequired,
           durationSec: lesson.durationSec,
           media: lesson.mediaAsset,
+          external: lesson.externalSource && lesson.externalId ? { source: lesson.externalSource, id: lesson.externalId, url: authorUrl({ source: lesson.externalSource, id: lesson.externalId }) } : null,
           resources: lesson.resources.map((resource) => ({
             id: resource.id,
             kind: resource.kind,
@@ -577,4 +601,13 @@ export class AuthoringService {
       data: { tenantId: scope.tenantId, actorUserId: user.userId, action, targetType: 'course', targetId: courseId, metadata, ...(reason ? { reason } : {}) },
     });
   }
+}
+
+/** A pasted YouTube or Google Drive link, checked against the lesson kind (ADR-028 point 5). */
+function externalFor(kind: string, input: string): ExternalRef {
+  const ref = parseExternal(input);
+  if (!ref) throw Errors.contentLinkInvalid('Paste a YouTube video link or a Google Drive file link (Share › Copy link).');
+  const problem = sourceProblem(kind, ref);
+  if (problem) throw Errors.contentLinkInvalid(problem);
+  return ref;
 }

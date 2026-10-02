@@ -45,6 +45,14 @@ export class StoreSectionDto {
   @ApiProperty({ type: [StoreLessonDto] }) lessons: StoreLessonDto[];
 }
 
+/** An upcoming live class on the public offering page: time and title, never the join link. */
+export class StoreLiveSessionDto {
+  @ApiProperty() title: string;
+  @ApiProperty({ format: 'date-time' }) startsAt: Date;
+  @ApiProperty() durationMin: number;
+  @ApiProperty({ enum: ['FREE', 'SUBSCRIBERS'] }) visibility: 'FREE' | 'SUBSCRIBERS';
+}
+
 /** Offering page: introduction and syllabus are always public (ADR-028 point 7); lesson content is not. */
 export class StoreOfferingDetailDto extends StoreOfferingDto {
   @ApiProperty() description: string;
@@ -54,6 +62,7 @@ export class StoreOfferingDetailDto extends StoreOfferingDto {
   @ApiProperty() refundPolicy: string;
   @ApiProperty() reviewTimeText: string;
   @ApiProperty() storeSlug: string;
+  @ApiProperty({ type: [StoreLiveSessionDto], description: 'Upcoming live classes, soonest first; no join links.' }) liveSessions: StoreLiveSessionDto[];
   @ApiProperty({ description: 'Bank QR checkout is set up (QR and account name), so plans can be bought now.' }) checkoutOpen: boolean;
 }
 
